@@ -79,7 +79,7 @@ public class EngineImpl implements Engine {
         System.out.println("Result: " + programExecutor.getResultValue());
         System.out.println();
         System.out.println(programExecutor.getVariablesWithValuesSortedString());
-        System.out.println(programExecutor.getTotalCyclesOfProgram());
+        System.out.println("Total Cycles: " + programExecutor.getTotalCyclesOfProgram());
     }
 
     @Override

@@ -40,6 +40,14 @@ public class ProgramImpl implements Program {
     }
 
     @Override
+    public Program cloneProgram() {
+        Program cloned = new ProgramImpl(this.getName());
+
+
+        return cloned;
+    }
+
+    @Override
     public void initialize() {
         initNextLabelNumber();
         initNextWorkVariableNumber();
@@ -134,8 +142,46 @@ public class ProgramImpl implements Program {
     }
 
     @Override
+    public List<Variable> getInputAndWorkVariablesSortedBySerial() {
+        sortVariableSetByNumber(inputVariables);
+        sortVariableSetByNumber(workVariables);
+
+        List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
+        inputAndWorkVariablesAndTheirValues.addAll(workVariables);
+        return inputAndWorkVariablesAndTheirValues;
+    }
+
+    @Override
+    public List<Label> getLabelsInProgram() {
+        return labelsInProgram;
+    }
+
+    @Override
+    public Map<Label, Instruction> getLabelToInstruction() {
+        return labelToInstruction;
+    }
+
+    @Override
     public void validateProgram() throws EngineLoadException {
         validateLabelReferencesExist();
+    }
+
+    @Override
+    public List<String> getInputVariableSorted() {
+        return inputVariables.stream()
+                .sorted(Comparator.comparingInt(Variable::getNumber))
+                .map(Variable::getRepresentation)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getOrderedLabelsExitLast() {
+        return labelsInProgram.stream()
+                .sorted(
+                        Comparator.comparing((Label l) -> FixedLabel.EXIT.equals(l))
+                                .thenComparingInt(Label::getNumber)
+                )
+                .map(Label::getLabelRepresentation)
+                .toList();
     }
 
     private void validateLabelReferencesExist() throws EngineLoadException {
@@ -152,40 +198,6 @@ public class ProgramImpl implements Program {
         }
     }
 
-    private List<String> getOrderedLabelsExitLast() {
-        return labelsInProgram.stream()
-                .sorted(
-                        Comparator.comparing((Label l) -> FixedLabel.EXIT.equals(l))
-                                .thenComparingInt(Label::getNumber)
-                )
-                .map(Label::getLabelRepresentation)
-                .toList();
-    }
-
-/*    private List<String> getOrderedLabelsExitLast() {
-        List<Label> labels = reorderLabelsExitLast(labelsInProgram);
-
-        return labels.stream()
-                .map(Label::getLabelRepresentation)
-                .collect(Collectors.toList());
-    }
-
-    private List<Label> reorderLabelsExitLast(List<Label> labelsInOrder) {
-        return Stream
-                .concat(
-                labelsInOrder.stream().filter(l -> !FixedLabel.EXIT.equals(l)),
-                labelsInOrder.stream().filter(l ->  FixedLabel.EXIT.equals(l))
-        ).collect(Collectors.toList());
-    }*/
-
-    @Override
-    public List<String> getInputVariableSorted() {
-        return inputVariables.stream()
-                .sorted(Comparator.comparingInt(Variable::getNumber))
-                .map(Variable::getRepresentation)
-                .collect(Collectors.toList());
-    }
-
     private String programRepresentation() {
         StringBuilder programDisplay = new StringBuilder();
         int numberOfInstructionsInProgram = programInstructions.size();
@@ -197,11 +209,6 @@ public class ProgramImpl implements Program {
 
         return programDisplay.toString();
     }
-
-/*    @Override
-    public int getTotalCyclesOfProgram() {
-        return totalCycles;
-    }*/
 
     @Override
     public String getExtendedProgramDisplay() {
@@ -229,45 +236,6 @@ public class ProgramImpl implements Program {
         return maxDegree;
     }
 
-/*    @Override
-    public int calculateProgramMaxDegree() {
-        int maxDegree = 0;
-
-        for (Instruction instruction : programInstructions) {
-            maxDegree = Math.max(maxDegree, instruction.calculateInstructionMaxDegree(this));
-        }
-
-        return maxDegree;
-    }*/
-
-/*    @Override
-    public void extendProgram(int degree) {
-        if (degree <= 0) {
-            return;
-        }
-
-        for (int i = 0 ; i < degree ; i++) {
-            for (ListIterator<Instruction> iterator = programInstructions.listIterator(); iterator.hasNext(); ) {
-                Instruction instruction = iterator.next();
-                Label originalLabel = instruction.getLabel();
-                List<Instruction> extendedInstructions = instruction.getExtendedInstruction();
-
-                if(extendedInstructions.size() == 1 && extendedInstructions.getFirst() == instruction) {   // If instruction is basic
-                    continue;
-                }
-
-                iterator.remove();                              // Remove the old (synthetic) instruction
-                labelToInstruction.remove(originalLabel);       // Remove the label from the map because we will add it again in line 239
-                labelsInProgram.remove(originalLabel);          // Remove the label from the map because we will add it again in line 239
-
-                for (Instruction extendedInstruction : extendedInstructions) {
-                    updateVariableAndLabel(extendedInstruction);
-                    iterator.add(extendedInstruction);          // Add the extended (inner) instruction to the list
-                }
-            }
-        }
-    }*/
-
     @Override
     public void expandProgram(int degree) {
         for (int i = 0 ; i < degree ; i++) {
@@ -277,9 +245,6 @@ public class ProgramImpl implements Program {
                 Instruction instruction = iterator.next();
                 Label originalLabel = instruction.getLabel();
                 List<Instruction> newInstructionsList = new ArrayList<>();
-
-                //int cycleOfOldInstruction = instruction.getCycleOfInstruction();
-                //totalCycles -=  cycleOfOldInstruction;
 
                 // initialize
                 instruction.setProgramOfThisInstruction(this);
@@ -359,25 +324,5 @@ public class ProgramImpl implements Program {
     @Override
     public void addInputVariable(Variable variable) {
         inputVariables.add(variable);
-    }
-
-    @Override
-    public List<Variable> getInputAndWorkVariablesSortedBySerial() {
-        sortVariableSetByNumber(inputVariables);
-        sortVariableSetByNumber(workVariables);
-
-        List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
-        inputAndWorkVariablesAndTheirValues.addAll(workVariables);
-        return inputAndWorkVariablesAndTheirValues;
-    }
-
-    @Override
-    public List<Label> getLabelsInProgram() {
-        return labelsInProgram;
-    }
-
-    @Override
-    public Map<Label, Instruction> getLabelToInstruction() {
-        return labelToInstruction;
     }
 }

@@ -22,6 +22,7 @@ public interface Program {
     List<Label> getLabelsInProgram();
     Map<Label, Instruction> getLabelToInstruction();
 
+    Program cloneProgram();
     void addInstruction(Instruction instruction);
     void validateProgram() throws EngineLoadException;
     int calculateProgramMaxDegree();
