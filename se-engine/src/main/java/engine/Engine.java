@@ -11,11 +11,11 @@ public interface Engine {
     void displayProgram();
 
     int getMaxDegree();
-    void displayExpandedProgram(int degree);
+    void displayExpandedProgram(int degree) throws EngineLoadException;
 
 
     void displayUsedInputVariables();
-    void runProgram(int degree, Long... inputs);
+    void runProgram(int degree, Long... inputs) throws EngineLoadException;
     int getNumberOfInputVariables();
     void displayProgramAfterRun();
     void displayHistory();

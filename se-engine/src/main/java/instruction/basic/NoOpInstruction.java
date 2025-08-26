@@ -1,15 +1,12 @@
 package instruction.basic;
 
 import execution.ExecutionContext;
-import instruction.AbstractInstruction;
-import instruction.Instruction;
-import instruction.InstructionData;
-import instruction.InstructionType;
+import instruction.*;
 import label.FixedLabel;
 import label.Label;
 import variable.Variable;
 
-public class NoOpInstruction extends AbstractInstruction {
+public class NoOpInstruction extends AbstractInstruction implements BasicInstruction {
 
     public NoOpInstruction(Variable variable, Instruction origin, int instructionNumber) {
         super(InstructionData.NO_OP, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin ,instructionNumber);
@@ -23,6 +20,12 @@ public class NoOpInstruction extends AbstractInstruction {
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
         return new NoOpInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
     }
+
+    @Override
+    public Instruction cloneInstruction(Variable targetVariable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new NoOpInstruction(targetVariable, label, origin, instructionNumber);
+    }
+
 
     @Override
     public Label execute(ExecutionContext context) {

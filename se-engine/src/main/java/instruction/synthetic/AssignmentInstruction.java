@@ -34,6 +34,11 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
     }
 
     @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new AssignmentInstruction(targetVariable, label, sourceVariable, origin, instructionNumber);
+    }
+
+    @Override
     public Label execute(ExecutionContext context) {
         long sourceVariableValue = context.getVariableValue(sourceVariable);
         context.updateVariable(getTargetVariable(), sourceVariableValue);

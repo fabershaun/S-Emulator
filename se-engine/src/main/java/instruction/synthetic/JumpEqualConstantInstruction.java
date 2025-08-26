@@ -12,7 +12,7 @@ import variable.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JumpEqualConstantInstruction extends AbstractInstruction implements LabelReferencesInstruction, SyntheticInstruction {
+public class JumpEqualConstantInstruction extends AbstractInstruction implements LabelReferencesInstruction, SyntheticInstruction, ConstantInstructions {
 
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Label referencelabel;
@@ -34,6 +34,16 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
         return new JumpEqualConstantInstruction(getTargetVariable(), getLabel(), constantValue, referencelabel, getOriginalInstruction(), instructionNumber);
+    }
+
+    @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new JumpEqualConstantInstruction(targetVariable, label, constantValue, referencesLabel, origin, instructionNumber);
+    }
+
+    @Override
+    public long getConstantValue() {
+        return constantValue;
     }
 
     @Override

@@ -1,15 +1,12 @@
 package instruction.basic;
 
 import execution.ExecutionContext;
-import instruction.AbstractInstruction;
-import instruction.Instruction;
-import instruction.InstructionData;
-import instruction.InstructionType;
+import instruction.*;
 import label.Label;
 import label.FixedLabel;
 import variable.Variable;
 
-public class DecreaseInstruction extends AbstractInstruction {
+public class DecreaseInstruction extends AbstractInstruction implements BasicInstruction {
 
     public DecreaseInstruction(Variable variable, Instruction origin, int instructionNumber) {
         super(InstructionData.DECREASE, InstructionType.BASIC, variable, FixedLabel.EMPTY, origin, instructionNumber);
@@ -22,6 +19,11 @@ public class DecreaseInstruction extends AbstractInstruction {
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
         return new DecreaseInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
+    }
+
+    @Override
+    public Instruction cloneInstruction(Variable targetVariable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new DecreaseInstruction(targetVariable, label, origin, instructionNumber);
     }
 
     @Override

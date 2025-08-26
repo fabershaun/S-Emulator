@@ -29,7 +29,7 @@ final class XmlProgramMapper {
 
     static Program map(SProgram sProgram) {
         String programName = safeTrim(sProgram.getName());
-        ProgramImpl targetProgram = new ProgramImpl(programName != null ? programName : "Unnamed");
+        Program targetProgram = new ProgramImpl(programName != null ? programName : "Unnamed");
 
         List<SInstruction> sInstructions = sProgram.getSInstructions().getSInstruction();
 

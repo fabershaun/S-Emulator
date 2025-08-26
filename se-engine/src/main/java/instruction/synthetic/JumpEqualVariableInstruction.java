@@ -36,6 +36,11 @@ public class JumpEqualVariableInstruction extends AbstractInstruction implements
     }
 
     @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new JumpEqualVariableInstruction(targetVariable, label, sourceVariable, referencesLabel, origin, instructionNumber);
+    }
+
+    @Override
     public Label execute(ExecutionContext context) {
         long targetVariableValue = context.getVariableValue(getTargetVariable());
         long sourceVariableValue = context.getVariableValue(sourceVariable);

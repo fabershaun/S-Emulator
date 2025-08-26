@@ -29,6 +29,11 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
     }
 
     @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new ZeroVariableInstruction(targetVariable, label, origin, instructionNumber);
+    }
+
+    @Override
     public Label execute(ExecutionContext context) {
         context.updateVariable(getTargetVariable() ,0);
 

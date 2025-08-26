@@ -32,6 +32,11 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
     }
 
     @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new GotoLabelInstruction(targetVariable, label, referencesLabel, origin, instructionNumber);
+    }
+
+    @Override
     public Label execute(ExecutionContext context) {
         return referencesLabel;
     }

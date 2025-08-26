@@ -1,16 +1,16 @@
 package program;
 
 import exceptions.EngineLoadException;
+import instruction.*;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
+import loader.XmlProgramLoader;
 import variable.Variable;
 import variable.VariableImpl;
 import variable.VariableType;
-import instruction.Instruction;
-import instruction.LabelReferencesInstruction;
-import instruction.SyntheticInstruction;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,13 +39,162 @@ public class ProgramImpl implements Program {
         this.referencedLabels  = new LinkedHashSet<>();
     }
 
-    @Override
-    public Program cloneProgram() {
-        Program cloned = new ProgramImpl(this.getName());
+    // TODO:         this.labelsAddedAfterExtension = new LinkedHashSet<>();
+    // TODO: understand the need , delete
 
+
+    @Override
+    public Program cloneProgram(Path xmlPath, int nextLabelNumber, int nextWorkVariableNumber) throws EngineLoadException {
+        XmlProgramLoader loader = new XmlProgramLoader();
+        Program cloned = loader.load(xmlPath);
+        cloned.setNextLabelNumber(nextLabelNumber);
+        cloned.setNextWorkVariableNumber(nextWorkVariableNumber);
+        cloned.initialize();
 
         return cloned;
     }
+
+    @Override
+    public void setNextLabelNumber(int nextLabelNumber) {
+        this.nextLabelNumber = nextLabelNumber;
+    }
+
+    @Override
+    public void setNextWorkVariableNumber(int nextWorkVariableNumber) {
+        this.nextLabelNumber = nextWorkVariableNumber;
+    }
+
+    @Override
+    public int getNextLabelNumber() {
+        return nextLabelNumber;
+    }
+
+    @Override
+    public int getNextWorkVariableNumber() {
+        return nextWorkVariableNumber;
+    }
+
+/*    public Program cloneProgram1() {
+        Map<Variable, Variable> oldToNewVariable = new HashMap<>();
+        Map<Label, Label> oldToNewLabels = new HashMap<>();
+        Map<Instruction, Instruction> oldToNewInstructions = new HashMap<>();
+
+        Program cloned = new ProgramImpl(this.getName());
+        cloned.cloneVariables(this, oldToNewVariable);
+        cloned.cloneLabels(this, oldToNewLabels);
+        cloned.cloneInstructions(this, oldToNewVariable, oldToNewLabels, oldToNewInstructions);
+        cloned.cloneMapLabelToInstructions(this, oldToNewLabels, oldToNewInstructions);
+
+        return cloned;
+    }
+
+
+
+    @Override
+    public void cloneLabels(ProgramImpl originalProgram, Map<Label, Label> oldToNewLabels) {
+        for (Label originalLabel : originalProgram.getLabelsInProgram()) {
+            Label newLabel = new LabelImpl(originalLabel.getNumber());
+            oldToNewLabels.put(originalLabel, newLabel);
+            this.labelsInProgram.add(newLabel);
+        }
+
+        for (Label originalLabel : originalProgram.getReferencedLabels()) {
+            Label newLabel = new LabelImpl(originalLabel.getNumber());
+            oldToNewLabels.put(originalLabel, newLabel);
+            this.referencedLabels.add(new LabelImpl(originalLabel.getNumber()));
+        }
+
+        for (Label originalLabel : originalProgram.getLabelsAddedAfterExtension()) {
+            Label newLabel = new LabelImpl(originalLabel.getNumber());
+            oldToNewLabels.put(originalLabel, newLabel);
+            this.labelsAddedAfterExtension.add(new LabelImpl(originalLabel.getNumber()));
+        }
+    }
+
+    @Override
+    public void cloneVariables(ProgramImpl program, Map<Variable, Variable> oldToNewVariable) {
+        for (Variable originalVariable : program.getInputVariables()) {
+            Variable newVariable = new VariableImpl(originalVariable.getType(), originalVariable.getNumber());
+            oldToNewVariable.put(originalVariable, newVariable);
+            this.inputVariables.add(newVariable);
+        }
+
+        for (Variable originalVariable : program.getWorkVariables()) {
+            Variable newVariable = new VariableImpl(originalVariable.getType(), originalVariable.getNumber());
+            oldToNewVariable.put(originalVariable, newVariable);
+            this.workVariables.add(new VariableImpl(originalVariable.getType(), originalVariable.getNumber()));
+        }
+    }
+
+    @Override
+    public void cloneInstructions(ProgramImpl program, Map<Variable, Variable> oldToNewVariable, Map<Label, Label> oldToNewLabels, Map<Instruction, Instruction> oldToNewInstructions) {
+        int nextInstructionNumber = 1;
+        Instruction originInstruction = new OriginOfAllInstruction();
+
+        for (Instruction originalInstruction : program.programInstructions) {
+            Instruction newInstruction = null;
+
+            if (originalInstruction instanceof BasicInstruction basicInstruction) {
+                Variable targetVariable = oldToNewVariable.get(originalInstruction.getTargetVariable());
+                Label label = oldToNewLabels.get(originalInstruction.getLabel());
+                int instructionNumber = originalInstruction.getInstructionNumber();
+
+                Label referenceLabel = null;
+                if (originalInstruction instanceof LabelReferencesInstruction referencesInstruction) {
+                    referenceLabel = oldToNewLabels.get(referencesInstruction.getReferenceLabel());
+                }
+
+                newInstruction = basicInstruction.cloneInstruction(targetVariable, label, referenceLabel, originInstruction, instructionNumber);
+            }
+            else if (originalInstruction instanceof SyntheticInstruction syntheticInstruction) {
+                Variable targetVariable = oldToNewVariable.get(originalInstruction.getTargetVariable());
+                Label label = oldToNewLabels.get(originalInstruction.getLabel());
+                int instructionNumber = originalInstruction.getInstructionNumber();
+                Label referenceLabel = null;
+                if (originalInstruction instanceof LabelReferencesInstruction referencesInstruction) {
+                    referenceLabel = oldToNewLabels.get(referencesInstruction.getReferenceLabel());
+                }
+
+                Variable sourceVariable = oldToNewVariable.get(originalInstruction.getSourceVariable());
+                long constantValue = 0;
+                if (originalInstruction instanceof ConstantInstructions constantInstruction) {
+                    constantValue = constantInstruction.getConstantValue();
+                }
+
+                newInstruction = syntheticInstruction.CloneInstruction(targetVariable, label, sourceVariable, constantValue, referenceLabel, originInstruction, instructionNumber);
+            }
+
+            this.addInstruction(newInstruction);
+            oldToNewInstructions.put(originalInstruction, newInstruction);
+            nextInstructionNumber++;
+        }
+    }
+
+    @Override
+    public void cloneMapLabelToInstructions(ProgramImpl program, Map<Label, Label> oldToNewLabels, Map<Instruction, Instruction> oldToNewInstructions) {
+        for (Map.Entry<Label, Instruction> entry : program.getLabelToInstruction().entrySet()) {
+            Label originalLabel = entry.getKey();
+            Instruction originalInstruction = entry.getValue();
+
+            Label clonedLabel = oldToNewLabels.get(originalLabel);
+            Instruction clonedInstruction = oldToNewInstructions.get(originalInstruction);
+
+            this.labelToInstruction.put(clonedLabel, clonedInstruction);
+        }
+    }*/
+
+/*    public Set<Label> getLabelsAddedAfterExtension() {
+        return labelsAddedAfterExtension;
+    }
+
+    public Set<Label> getReferencedLabels() {
+        return referencedLabels;
+    }*/
+
+
+
+
+
 
     @Override
     public void initialize() {
@@ -63,7 +212,6 @@ public class ProgramImpl implements Program {
 
         updateVariableAndLabel(instruction);
 
-        //totalCycles += instruction.getCycleOfInstruction();
         programInstructions.add(instruction);
     }
 

@@ -6,7 +6,7 @@ import label.Label;
 import variable.Variable;
 import instruction.*;
 
-public class JumpNotZeroInstruction extends AbstractInstruction implements LabelReferencesInstruction {
+public class JumpNotZeroInstruction extends AbstractInstruction implements LabelReferencesInstruction,BasicInstruction {
     private final Label referencesLabel;
 
     public JumpNotZeroInstruction(Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
@@ -22,6 +22,11 @@ public class JumpNotZeroInstruction extends AbstractInstruction implements Label
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
         return new JumpNotZeroInstruction(getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
+    }
+
+    @Override
+    public Instruction cloneInstruction(Variable targetVariable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new JumpNotZeroInstruction(targetVariable, label, referencesLabel, origin, instructionNumber);
     }
 
     @Override

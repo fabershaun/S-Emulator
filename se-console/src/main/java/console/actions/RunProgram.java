@@ -3,6 +3,7 @@ package console.actions;
 import console.menu.MenuActionable;
 import console.validator.Validator;
 import engine.Engine;
+import exceptions.EngineLoadException;
 
 import java.util.List;
 import java.util.Scanner;
@@ -12,7 +13,7 @@ public class RunProgram implements MenuActionable {
     Engine engine;
 
     @Override
-    public void startAction(Scanner scanner, Engine engine) {
+    public void startAction(Scanner scanner, Engine engine) throws EngineLoadException {
 
         System.out.println("Max degree of loaded program: " + engine.getMaxDegree());
         System.out.print("Please enter degree for this run: ");

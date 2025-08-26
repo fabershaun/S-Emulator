@@ -31,6 +31,11 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
     }
 
     @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new JumpZeroInstruction(targetVariable, label, referencesLabel, origin, instructionNumber);
+    }
+
+    @Override
     public Label execute(ExecutionContext context) {
         long variableValue = context.getVariableValue(this.getTargetVariable());
 

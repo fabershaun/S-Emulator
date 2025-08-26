@@ -10,7 +10,7 @@ import variable.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConstantAssignmentInstruction extends AbstractInstruction implements SyntheticInstruction {
+public class ConstantAssignmentInstruction extends AbstractInstruction implements SyntheticInstruction, ConstantInstructions {
 
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final long constantValue;
@@ -28,6 +28,16 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
     @Override
     public Instruction createInstructionWithInstructionNumber(int  instructionNumber) {
         return new ConstantAssignmentInstruction(getTargetVariable(), getLabel(), constantValue, getOriginalInstruction(), instructionNumber);
+    }
+
+    @Override
+    public Instruction CloneInstruction(Variable targetVariable, Label label, Variable sourceVariable, long constantValue, Label referencesLabel, Instruction origin, int instructionNumber) {
+        return new ConstantAssignmentInstruction(targetVariable, label, constantValue, origin, instructionNumber);
+    }
+
+    @Override
+    public long getConstantValue() {
+        return constantValue;
     }
 
     @Override

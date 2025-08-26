@@ -12,7 +12,7 @@ import loader.XmlProgramLoader;
 import java.nio.file.Path;
 
 public class EngineImpl implements Engine {
-
+    private Path xmlPath;
     private Program program;
     private ProgramExecutor programExecutor;
     private ExecutionHistory executionHistory = new ExecutionHistoryImpl();;
@@ -20,6 +20,8 @@ public class EngineImpl implements Engine {
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
+        this.xmlPath = xmlPath;
+
         XmlProgramLoader loader = new XmlProgramLoader();
         program = loader.load(xmlPath);
         program.validateProgram();
@@ -27,10 +29,12 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void runProgram(int degree, Long... inputs) {
-        program.expandProgram(degree);
+    public void runProgram(int degree, Long... inputs) throws EngineLoadException {
+        Program deepCopyOfProgram = program.cloneProgram(xmlPath, program.getNextLabelNumber(), program.getNextWorkVariableNumber());
 
-        programExecutor = new ProgramExecutorImpl(program);
+        deepCopyOfProgram.expandProgram(degree);
+
+        programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
 
         programExecutor.run(degree, inputs);
         executionHistory.addProgramToHistory(programExecutor);
@@ -52,11 +56,13 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void displayExpandedProgram(int degree) {
-        // TODO: CALL ANOTHER METHOD
-        program.expandProgram(degree);
+    public void displayExpandedProgram(int degree) throws EngineLoadException {
+        Program deepCopyOfProgram = program.cloneProgram(xmlPath, program.getNextLabelNumber(), program.getNextWorkVariableNumber());
+        deepCopyOfProgram.expandProgram(degree);
+        System.out.println(deepCopyOfProgram.getExtendedProgramDisplay());
 
-        System.out.println(program.getExtendedProgramDisplay());
+/*        program.expandProgram(degree);
+        System.out.println(program.getExtendedProgramDisplay());*/
     }
 
     @Override

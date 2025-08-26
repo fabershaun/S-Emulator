@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Expand implements MenuActionable {
 
     @Override
-    public void startAction(Scanner scanner, Engine engine) {
+    public void startAction(Scanner scanner, Engine engine) throws EngineLoadException {
 
         System.out.println("Max degree of loaded program: " + engine.getMaxDegree());
 
