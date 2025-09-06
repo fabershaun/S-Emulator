@@ -21,7 +21,7 @@ public class LoadFileController {
     }
 
     @FXML
-    void onLoadFile(ActionEvent event) throws EngineLoadException {
+    void onLoadFile(ActionEvent event) {
         FileChooser fc = new FileChooser();
         fc.setTitle("Select XML File");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));

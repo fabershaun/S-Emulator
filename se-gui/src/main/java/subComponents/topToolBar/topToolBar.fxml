@@ -18,7 +18,7 @@
          </toggleGroup>
       </ToggleButton>
       <ToggleButton fx:id="functionTB" mnemonicParsing="false" text="Function" toggleGroup="$programFunctionGroup" />
-      <ToggleButton fx:id="callapseTB" mnemonicParsing="false" text="Collapse">
+      <ToggleButton fx:id="collapseTB" mnemonicParsing="false" text="Collapse">
          <HBox.margin>
             <Insets left="15.0" right="5.0" />
          </HBox.margin>
