@@ -4,6 +4,6 @@
 <?import javafx.scene.layout.StackPane?>
 
 <StackPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="subComponents.loadComponent.MainController">
+           fx:controller="subComponents.loadFile.MainController">
     <Label text="Hello from FXML!" />
 </StackPane>

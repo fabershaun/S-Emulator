@@ -22,6 +22,8 @@ public class EngineImpl implements Engine, Serializable {
     private Program program;
     private ProgramExecutor programExecutor;
     private ExecutionHistory executionHistory;
+    private int currentDegree;
+
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -33,8 +35,14 @@ public class EngineImpl implements Engine, Serializable {
         newProgram.validateProgram();
         newProgram.initialize();
 
+        currentDegree = 0;
         program = newProgram;
         executionHistory = new ExecutionHistoryImpl();
+    }
+
+    @Override
+    public int getCurrentDegree() {
+        return this.currentDegree;
     }
 
     @Override
@@ -45,6 +53,7 @@ public class EngineImpl implements Engine, Serializable {
         programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
 
         programExecutor.run(degree, inputs);
+        this.currentDegree = degree;
         executionHistory.addProgramToHistory(programExecutor);
     }
 
@@ -54,12 +63,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramDTO getProgramToDisplay() {
+    public ProgramDTO getProgram() {
         return buildProgramDTO(program);
     }
 
     @Override
-    public ProgramExecutorDTO getProgramToDisplayAfterRun() {
+    public ProgramExecutorDTO getProgramAfterRun() {
         ProgramDTO programDTO = buildProgramDTO(programExecutor.getProgram());
 
         return new ProgramExecutorDTO(programDTO,
@@ -103,7 +112,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramDTO getExpandedProgramToDisplay(int degree) {
+    public ProgramDTO getExpandedProgram(int degree) {
         Program deepCopyOfProgram = program.deepClone();
         deepCopyOfProgram.expandProgram(degree);
 

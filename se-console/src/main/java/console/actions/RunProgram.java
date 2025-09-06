@@ -31,12 +31,12 @@ public class RunProgram implements MenuActionable {
 
         engine.runProgram(degree, inputs);
 
-        ProgramExecutorDTO programExecutorDTO = engine.getProgramToDisplayAfterRun();
+        ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun();
         displayProgramAfterRun(programExecutorDTO);
     }
 
     private void displayInputVariables() {
-        List<String> variablesInputInProgram = engine.getProgramToDisplay().getInputVariables();
+        List<String> variablesInputInProgram = engine.getProgram().getInputVariables();
 
         String displayInputVariables = String.format(
                 "Inputs: %s", String.join(", ", variablesInputInProgram)

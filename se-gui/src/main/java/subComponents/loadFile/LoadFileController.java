@@ -1,4 +1,4 @@
-package subComponents.loadComponent;
+package subComponents.loadFile;
 
 import exceptions.EngineLoadException;
 import javafx.event.ActionEvent;

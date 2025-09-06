@@ -11,9 +11,10 @@ public interface Engine {
 
     void loadProgram(Path path) throws EngineLoadException;
 
-    ProgramDTO getProgramToDisplay();
-    ProgramDTO getExpandedProgramToDisplay(int degree);
-    ProgramExecutorDTO getProgramToDisplayAfterRun();
+    int getCurrentDegree();
+    ProgramDTO getProgram();
+    ProgramDTO getExpandedProgram(int degree);
+    ProgramExecutorDTO getProgramAfterRun();
     List<ProgramExecutorDTO> getHistoryToDisplay();
 
     int getMaxDegree() throws EngineLoadException;

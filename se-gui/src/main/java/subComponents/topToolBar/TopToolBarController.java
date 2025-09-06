@@ -1,17 +1,13 @@
-package subComponents.expandAndCollapseComponent;
+package subComponents.topToolBar;
 
+import exceptions.EngineLoadException;
 import subComponents.fullApp.FullAppController;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 
-public class ExpandAndCollapseController {
+public class TopToolBarController {
     private FullAppController mainController;
-
-    public void setMainController(FullAppController mainController) {
-        this.mainController = mainController;
-    }
-
     @FXML private ToggleButton ProgramTB;
     @FXML private ToggleButton functionTB;
     @FXML private ToggleButton collapseTB;
@@ -20,6 +16,10 @@ public class ExpandAndCollapseController {
     @FXML private ToggleGroup expandCollapseGroup;
     @FXML private ToggleGroup programFunctionGroup;
 
+
+    public void setMainController(FullAppController mainController) {
+        this.mainController = mainController;
+    }
 
     @FXML
     private void initialize() {
@@ -49,7 +49,11 @@ public class ExpandAndCollapseController {
             if (mode.equals("COLLAPSE")) {
                 mainController.collapseOneStep();
             } else {
-                mainController.expandOneStep();
+                try {
+                    mainController.expandOneStep();
+                } catch (EngineLoadException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

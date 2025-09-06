@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="subComponents.topToolBar.TopToolBarController">
+   <children>
+      <ToggleButton fx:id="ProgramTB" mnemonicParsing="false" selected="true" text="Program">
+         <HBox.margin>
+            <Insets right="5.0" />
+         </HBox.margin>
+         <toggleGroup>
+            <ToggleGroup fx:id="programFunctionGroup" />
+         </toggleGroup>
+      </ToggleButton>
+      <ToggleButton fx:id="functionTB" mnemonicParsing="false" text="Function" toggleGroup="$programFunctionGroup" />
+      <ToggleButton fx:id="callapseTB" mnemonicParsing="false" text="Collapse">
+         <HBox.margin>
+            <Insets left="15.0" right="5.0" />
+         </HBox.margin>
+         <toggleGroup>
+            <ToggleGroup fx:id="expandCollapseGroup" />
+         </toggleGroup>
+      </ToggleButton>
+      <TextField editable="false" promptText="No program loaded" />
+      <ToggleButton fx:id="expandTB" mnemonicParsing="false" selected="true" text="Expand" toggleGroup="$expandCollapseGroup">
+         <HBox.margin>
+            <Insets left="5.0" />
+         </HBox.margin>
+      </ToggleButton>
+      <ComboBox prefWidth="150.0" promptText="Highlight Selection">
+         <HBox.margin>
+            <Insets left="15.0" />
+         </HBox.margin>
+      </ComboBox>
+   </children>
+</HBox>
