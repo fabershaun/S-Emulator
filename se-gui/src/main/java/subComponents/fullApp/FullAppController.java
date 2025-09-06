@@ -5,7 +5,9 @@ import engine.Engine;
 import engine.EngineImpl;
 import exceptions.EngineLoadException;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
+import subComponents.instructionsTable.InstructionsTableController;
 import subComponents.loadFile.LoadFileController;
 import subComponents.topToolBar.TopToolBarController;
 
@@ -20,20 +22,25 @@ public class FullAppController {
     @FXML private LoadFileController loadFileController;    // must: field name = fx:id + "Controller"
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;
+    @FXML private TableView<?> instructionsTable;
+    @FXML private InstructionsTableController instructionsTableController;
 
     @FXML
     public void initialize() {                          // We need that the subcomponents will know the main controller (FullAppController)
         if (
-                loadFileController != null &&
-                topToolBarController != null
+            loadFileController != null &&
+            topToolBarController != null &&
+            instructionsTableController != null
         ) {
             loadFileController.setMainController(this);
             topToolBarController.setMainController(this);
+            instructionsTableController.setMainController(this);
         }
     }
 
     public void loadNewFile(Path xmlPath) throws EngineLoadException {
         engine.loadProgram(xmlPath);
+        //TODO: להציג את התוכנית בטבלה
     }
 
     public void collapseOneStep() {
@@ -43,9 +50,9 @@ public class FullAppController {
             engine.runProgram(--currentDegreeLoaded, inputs);   // TODO: initialize inputs
             ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun();
 
-            // להציג ברכיב הפקודות את התוכנית המורחבת
-            // להציג ברכיב הפקודה המורחבת את חלקי הפקודה המורחבת
-            // לעדכן את המשתנים בערכים השונים
+            //TODO: להציג ברכיב הפקודות את התוכנית המורחבת
+            //TODO: להציג ברכיב הפקודה המורחבת את חלקי הפקודה המורחבת
+            //TODO: לעדכן את המשתנים בערכים השונים
         }
     }
 
@@ -56,14 +63,13 @@ public class FullAppController {
             engine.runProgram(++currentDegreeLoaded, inputs);   // TODO: initialize inputs
             ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun();
 
-            // להציג ברכיב הפקודות את התוכנית המורחבת
-            // להציג ברכיב הפקודה המורחבת את חלקי הפקודה המורחבת
-            // לעדכן את המשתנים בערכים השונים
+            //TODO: להציג ברכיב הפקודות את התוכנית המורחבת
+            //TODO: להציג ברכיב הפקודה המורחבת את חלקי הפקודה המורחבת
+            //TODO: לעדכן את המשתנים בערכים השונים
         }
     }
 
     public void switchToProgram() {
-
     }
 
     public void switchToFunction() {
