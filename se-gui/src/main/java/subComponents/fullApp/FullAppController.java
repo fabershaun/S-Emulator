@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import subComponents.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import subComponents.instructionsTable.InstructionsTableController;
 import subComponents.loadFile.LoadFileController;
 import subComponents.topToolBar.TopToolBarController;
@@ -26,17 +28,22 @@ public class FullAppController {
     @FXML private TableView<?> instructionsTable;
     @FXML private InstructionsTableController instructionsTableController;
     @FXML private TextField summaryLineTF;
+    @FXML private TextField summaryHistoryLineTF;
+    @FXML private VBox debuggerExecutionMenu;
+    @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;
 
     @FXML
     public void initialize() {                          // We need that the subcomponents will know the main controller (FullAppController)
         if (
             loadFileController != null &&
             topToolBarController != null &&
-            instructionsTableController != null
+            instructionsTableController != null &&
+            debuggerExecutionMenuController != null
         ) {
             loadFileController.setMainController(this);
             topToolBarController.setMainController(this);
             instructionsTableController.setMainController(this);
+            debuggerExecutionMenuController.setMainController(this);
         }
     }
 
