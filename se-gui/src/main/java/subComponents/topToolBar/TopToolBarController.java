@@ -7,12 +7,12 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 
 public class TopToolBarController {
+
     private FullAppController mainController;
     @FXML private ToggleButton ProgramTB;
     @FXML private ToggleButton functionTB;
     @FXML private ToggleButton collapseTB;
     @FXML private ToggleButton expandTB;
-
     @FXML private ToggleGroup expandCollapseGroup;
     @FXML private ToggleGroup programFunctionGroup;
 

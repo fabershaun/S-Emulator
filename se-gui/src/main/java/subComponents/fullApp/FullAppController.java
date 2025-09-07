@@ -6,6 +6,7 @@ import engine.EngineImpl;
 import exceptions.EngineLoadException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import subComponents.instructionsTable.InstructionsTableController;
 import subComponents.loadFile.LoadFileController;
@@ -24,6 +25,7 @@ public class FullAppController {
     @FXML private TopToolBarController topToolBarController;
     @FXML private TableView<?> instructionsTable;
     @FXML private InstructionsTableController instructionsTableController;
+    @FXML private TextField summaryLineTF;
 
     @FXML
     public void initialize() {                          // We need that the subcomponents will know the main controller (FullAppController)
