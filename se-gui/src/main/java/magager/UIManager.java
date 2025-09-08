@@ -1,5 +1,8 @@
 package magager;
 
+import components.mainApp.MainAppController;
+import engine.Engine;
+import engine.EngineImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +14,7 @@ import java.net.URL;
 
 
 public class UIManager extends Application {
-    private final static String FULL_APP_FXML_RESOURCE = "/subComponents/fullApp/fullApp.fxml";
+    private final static String FULL_APP_FXML_RESOURCE = "/components/mainApp/mainApp.fxml";
 
     public void run() {
         launch();
@@ -19,13 +22,22 @@ public class UIManager extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(FULL_APP_FXML_RESOURCE);
-        fxmlLoader.setLocation(url);
-        Parent root = fxmlLoader.load(url.openStream());
 
-        Scene scene = new Scene(root, 1000,550);
+        FXMLLoader loader = new FXMLLoader();
+
+        // Load main fxml
+        URL url = getClass().getResource(FULL_APP_FXML_RESOURCE);
+        loader.setLocation(url);
+        Parent root = loader.load();
+
+        // Wire up controller
+        EngineImpl engine = new EngineImpl();
+        MainAppController mainAppController = loader.getController();
+        mainAppController.setEngine(engine);
+
+        // Set stage
         stage.setTitle("S-Emulator GUI");
+        Scene scene = new Scene(root, 1200,600);
         stage.setScene(scene);
         stage.show();
     }

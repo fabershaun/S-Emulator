@@ -9,7 +9,7 @@
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="subComponents.topToolBar.TopToolBarController">
+      fx:controller="components.topToolBar.TopToolBarController">
     <ToggleButton fx:id="ProgramTB" mnemonicParsing="false" selected="true" text="Program">
         <HBox.margin>
           <Insets right="5.0"/>

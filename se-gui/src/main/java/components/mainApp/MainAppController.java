@@ -1,25 +1,29 @@
-package subComponents.fullApp;
+package components.mainApp;
 
 import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import exceptions.EngineLoadException;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import subComponents.debuggerExecutionMenu.DebuggerExecutionMenuController;
-import subComponents.instructionsTable.InstructionsTableController;
-import subComponents.loadFile.LoadFileController;
-import subComponents.topToolBar.TopToolBarController;
+import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
+import components.instructionsTable.InstructionsTableController;
+import components.loadFile.LoadFileController;
+import components.topToolBar.TopToolBarController;
 
 import java.nio.file.Path;
 
 
-public class FullAppController {
+public class MainAppController {
 
-    private final Engine engine = new EngineImpl();
+    private final AppState state = new AppState();
+    private Engine engine;
+
     Long[] inputs;
     @FXML private HBox loadFile;
     @FXML private LoadFileController loadFileController;    // must: field name = fx:id + "Controller"
@@ -32,6 +36,15 @@ public class FullAppController {
     @FXML private VBox debuggerExecutionMenu;
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;
 
+
+
+
+    public MainAppController() {
+    }
+    public void setEngine(EngineImpl engine) {
+        this.engine = engine;
+    }
+
     @FXML
     public void initialize() {                          // We need that the subcomponents will know the main controller (FullAppController)
         if (
@@ -40,11 +53,23 @@ public class FullAppController {
             instructionsTableController != null &&
             debuggerExecutionMenuController != null
         ) {
-            loadFileController.setMainController(this);
-            topToolBarController.setMainController(this);
-            instructionsTableController.setMainController(this);
-            debuggerExecutionMenuController.setMainController(this);
+            setMainControllerForSubcomponents();
+            setStateForSubcomponents();
         }
+    }
+
+    private void setMainControllerForSubcomponents() {
+        loadFileController.setMainController(this);
+        topToolBarController.setMainController(this);
+        instructionsTableController.setMainController(this);
+        debuggerExecutionMenuController.setMainController(this);
+    }
+
+    private void setStateForSubcomponents() {
+        loadFileController.setState(state);
+        topToolBarController.setState(state);
+        instructionsTableController.setState(state);
+        debuggerExecutionMenuController.setState(state);
     }
 
     public void loadNewFile(Path xmlPath) throws EngineLoadException {

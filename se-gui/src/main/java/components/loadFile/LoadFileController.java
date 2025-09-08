@@ -1,37 +1,44 @@
-package subComponents.loadFile;
+package components.loadFile;
 
+import components.mainApp.AppState;
+import components.mainApp.MainAppController;
 import exceptions.EngineLoadException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import subComponents.fullApp.FullAppController;
+
 import java.io.File;
 
 
 public class LoadFileController {
 
-    private FullAppController mainController;
+    private MainAppController mainController;
+    private AppState state;
     @FXML private Button loadFileButton;
     @FXML private TextField pathTextField;
 
-    public void setMainController(FullAppController mainController) {
+    public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setState(AppState state) {
+        this.state = state;
     }
 
     @FXML
     void onLoadFile(ActionEvent event) {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Select XML File");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select XML File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
 
-        File file = fc.showOpenDialog(pathTextField.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(pathTextField.getScene().getWindow());
         if (file == null) {
             return;
         }
 
-        loadFileButton.setDisable(true);
+        loadFileButton.setDisable(true); // TODO: change to property
 
         try {
             mainController.loadNewFile(file.toPath());
@@ -44,7 +51,7 @@ public class LoadFileController {
             showPathError("Unexpected error");
         }
         finally {
-            loadFileButton.setDisable(false);
+            loadFileButton.setDisable(false);        loadFileButton.setDisable(true); // TODO: change to property
         }
     }
 
