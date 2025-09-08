@@ -1,5 +1,6 @@
 package components.mainApp;
 
+import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
@@ -71,7 +72,10 @@ public class MainAppController {
 
     public void loadNewFile(Path xmlPath) throws EngineLoadException {
         engine.loadProgram(xmlPath);
-        //TODO: להציג את התוכנית בטבלה
+    }
+
+    public ProgramDTO getCurrentProgram() {
+        return engine.getProgram();
     }
 
     public void collapseOneStep() {

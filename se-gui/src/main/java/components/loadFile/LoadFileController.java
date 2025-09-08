@@ -2,7 +2,6 @@ package components.loadFile;
 
 import components.mainApp.AppState;
 import components.mainApp.MainAppController;
-import exceptions.EngineLoadException;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,7 +41,7 @@ public class LoadFileController {
         javafx.concurrent.Task<Void> task = createLoadFileTask(file);
         // TODO: להוסיף בדיקות במנוע - לבדוק אם אין הפניה לפונקציה שאני מוגדרת במסגרת הקובץ / הפונקציות שבקובץ
 
-        javafx.stage.Stage progressStage = showProgressDialog(task, pathTextField.getScene().getWindow());
+        Stage progressStage = showProgressDialog(task, pathTextField.getScene().getWindow());
 
         task.setOnSucceeded(ev -> handleTaskSuccess(file, progressStage));
         task.setOnFailed(ev -> handleTaskFailure(task, progressStage));
@@ -81,7 +80,7 @@ public class LoadFileController {
 
     // Helper method to create the loading task
     private Task<Void> createLoadFileTask(File file) {
-        return new javafx.concurrent.Task<>() {
+        return new Task<>() {
             @Override
             protected Void call() throws Exception {
                 updateMessage("Preparing");
@@ -120,7 +119,8 @@ public class LoadFileController {
     private void handleTaskSuccess(File file, javafx.stage.Stage progressStage) {
         progressStage.close();
         state.selectedFilePathProperty().set(file.getAbsolutePath());
-        state.isFileSelectedProperty().set(true);
+        //state.isFileSelectedProperty().set(true);
+        state.currentProgramProperty().set(mainController.getCurrentProgram());
     }
 
     // Handle task failure
@@ -138,7 +138,7 @@ public class LoadFileController {
         }
 
         showEngineError(msg);
-        state.isFileSelectedProperty().set(false);
+        //state.isFileSelectedProperty().set(false);
     }
 
     private void showEngineError(String engineMsg) {

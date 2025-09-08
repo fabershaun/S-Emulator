@@ -1,12 +1,16 @@
 package components.mainApp;
 
+import dto.ProgramDTO;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public final class AppState {
 
     private final SimpleStringProperty selectedFilePathProperty;
-    private final SimpleBooleanProperty isFileSelected;
+    //private final SimpleBooleanProperty isFileSelected;
+    private final ObjectProperty<ProgramDTO> currentProgramProperty;
     private final SimpleBooleanProperty isProgramSelected;
     private final SimpleBooleanProperty isFunctionSelected;
     private final SimpleBooleanProperty isExpandSelected;
@@ -14,7 +18,8 @@ public final class AppState {
 
     public  AppState() {
         selectedFilePathProperty = new SimpleStringProperty("");
-        isFileSelected = new SimpleBooleanProperty(false);
+        //isFileSelected = new SimpleBooleanProperty(false);
+        currentProgramProperty = new SimpleObjectProperty<>(null);
         isProgramSelected = new SimpleBooleanProperty(true);
         isFunctionSelected = new SimpleBooleanProperty(false);
         isExpandSelected = new SimpleBooleanProperty(true);
@@ -25,8 +30,12 @@ public final class AppState {
         return selectedFilePathProperty;
     }
 
-    public SimpleBooleanProperty isFileSelectedProperty() {
+/*    public SimpleBooleanProperty isFileSelectedProperty() {
         return isFileSelected;
+    }*/
+
+    public ObjectProperty<ProgramDTO> currentProgramProperty() {
+        return currentProgramProperty;
     }
 
     public SimpleBooleanProperty isProgramSelectedProperty() {
