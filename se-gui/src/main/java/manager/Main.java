@@ -1,4 +1,4 @@
-package magager;
+package manager;
 
 public class Main {
 

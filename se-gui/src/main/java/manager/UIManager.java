@@ -1,7 +1,6 @@
-package magager;
+package manager;
 
 import components.mainApp.MainAppController;
-import engine.Engine;
 import engine.EngineImpl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

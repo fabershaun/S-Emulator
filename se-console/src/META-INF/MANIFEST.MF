@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: console.Main
-Class-Path: se-engine.jar se-api.jar lib/jakarta.xml.bind-api.jar lib/jaxb-core.jar lib/jaxb-impl.jar lib/angus-activation.jar lib/jakarta.activation-api.jar
-
