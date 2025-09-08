@@ -3,11 +3,13 @@ package components.loadFile;
 import components.mainApp.AppState;
 import components.mainApp.MainAppController;
 import exceptions.EngineLoadException;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 
@@ -25,44 +27,128 @@ public class LoadFileController {
 
     public void setState(AppState state) {
         this.state = state;
+        pathTextField.textProperty().bind(state.selectedFilePathProperty());
     }
 
     @FXML
-    void onLoadFile(ActionEvent event) {
+    void openFileButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select XML File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
 
         File file = fileChooser.showOpenDialog(pathTextField.getScene().getWindow());
-        if (file == null) {
-            return;
-        }
+        if (file == null) return;
 
-        loadFileButton.setDisable(true); // TODO: change to property
+        javafx.concurrent.Task<Void> task = createLoadFileTask(file);
+        // TODO: להוסיף בדיקות במנוע - לבדוק אם אין הפניה לפונקציה שאני מוגדרת במסגרת הקובץ / הפונקציות שבקובץ
 
-        try {
-            mainController.loadNewFile(file.toPath());
-            showPathOk(file.getAbsolutePath());
-        }
-        catch (EngineLoadException e) {
-            showPathError("The file is not supported");
-        }
-        catch (Exception e) {
-            showPathError("Unexpected error");
-        }
-        finally {
-            loadFileButton.setDisable(false);        loadFileButton.setDisable(true); // TODO: change to property
-        }
+        javafx.stage.Stage progressStage = showProgressDialog(task, pathTextField.getScene().getWindow());
+
+        task.setOnSucceeded(ev -> handleTaskSuccess(file, progressStage));
+        task.setOnFailed(ev -> handleTaskFailure(task, progressStage));
+        task.setOnCancelled(ev -> progressStage.close());
+
+        new Thread(task, "load-xml-task").start();
     }
 
-    private void showPathError(String message) {
-        pathTextField.setText(message);
-        pathTextField.setStyle("-fx-text-inner-color: red;");
+    private Stage showProgressDialog(javafx.concurrent.Task<?> task, javafx.stage.Window owner) {
+        ProgressBar progressBar = new javafx.scene.control.ProgressBar();
+        progressBar.setPrefWidth(260);
+        progressBar.progressProperty().bind(task.progressProperty());
+
+        Label msg = new javafx.scene.control.Label();
+        msg.textProperty().bind(task.messageProperty());
+
+        Button cancelBtn = new javafx.scene.control.Button("Cancel");
+        cancelBtn.setOnAction(e -> task.cancel());
+
+        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(12, msg, progressBar, cancelBtn);
+        root.setStyle("-fx-padding: 16;");
+
+        Scene scene = new javafx.scene.Scene(root);
+        Stage stage = new javafx.stage.Stage();
+        stage.setTitle("Loading file");
+        stage.initOwner(owner);
+        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        stage.setResizable(false);
+        stage.setScene(scene);
+
+        stage.setOnCloseRequest(e -> task.cancel());
+
+        stage.show();
+        return stage;
     }
 
-    private void showPathOk(String path) {
-        pathTextField.setText(path);
-        pathTextField.setStyle("");         // Reset to default system color
+    // Helper method to create the loading task
+    private Task<Void> createLoadFileTask(File file) {
+        return new javafx.concurrent.Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                updateMessage("Preparing");
+                updateProgress(0, 100);
+
+                // Simulate short progress before actual load
+                for (int p = 0; p <= 40; p += 10) {
+                    if (isCancelled()) return null;
+                    Thread.sleep(150);
+                    updateProgress(p, 100);
+                }
+
+                updateMessage("Loading");
+                try {
+                    mainController.loadNewFile(file.toPath());
+                } catch (exceptions.EngineLoadException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+                // Simulate remaining progress after loading
+                for (int p = 50; p <= 100; p += 10) {
+                    if (isCancelled()) return null;
+                    Thread.sleep(120);
+                    updateProgress(p, 100);
+                }
+
+                updateMessage("Done");
+                return null;
+            }
+        };
     }
 
+    // Handle task success
+    private void handleTaskSuccess(File file, javafx.stage.Stage progressStage) {
+        progressStage.close();
+        state.selectedFilePathProperty().set(file.getAbsolutePath());
+        state.isFileSelectedProperty().set(true);
+    }
+
+    // Handle task failure
+    private void handleTaskFailure(javafx.concurrent.Task<?> task, javafx.stage.Stage progressStage) {
+        progressStage.close();
+        Throwable ex = task.getException();
+        String msg;
+
+        if (ex instanceof exceptions.EngineLoadException) {
+            msg = ex.getMessage();
+        } else if (ex != null && ex.getCause() instanceof exceptions.EngineLoadException) {
+            msg = ex.getCause().getMessage();
+        } else {
+            msg = "Unexpected error";
+        }
+
+        showEngineError(msg);
+        state.isFileSelectedProperty().set(false);
+    }
+
+    private void showEngineError(String engineMsg) {
+        javafx.scene.control.Alert alert =
+                new Alert(Alert.AlertType.NONE, engineMsg, ButtonType.CLOSE);
+
+        alert.setTitle("Load failed");
+        alert.setHeaderText(null);   // no header
+        alert.setGraphic(null);      // no icon
+        alert.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        alert.showAndWait();
+    }
 }

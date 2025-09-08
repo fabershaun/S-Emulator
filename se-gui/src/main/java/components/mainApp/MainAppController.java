@@ -37,10 +37,6 @@ public class MainAppController {
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;
 
 
-
-
-    public MainAppController() {
-    }
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
     }
@@ -55,6 +51,7 @@ public class MainAppController {
         ) {
             setMainControllerForSubcomponents();
             setStateForSubcomponents();
+
         }
     }
 

@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 public final class AppState {
 
-    private final SimpleStringProperty selectedFileProperty;
+    private final SimpleStringProperty selectedFilePathProperty;
     private final SimpleBooleanProperty isFileSelected;
     private final SimpleBooleanProperty isProgramSelected;
     private final SimpleBooleanProperty isFunctionSelected;
@@ -13,7 +13,7 @@ public final class AppState {
     private final SimpleBooleanProperty isCollapseSelected;
 
     public  AppState() {
-        selectedFileProperty = new SimpleStringProperty("");
+        selectedFilePathProperty = new SimpleStringProperty("");
         isFileSelected = new SimpleBooleanProperty(false);
         isProgramSelected = new SimpleBooleanProperty(true);
         isFunctionSelected = new SimpleBooleanProperty(false);
@@ -21,8 +21,8 @@ public final class AppState {
         isCollapseSelected = new SimpleBooleanProperty(false);
     }
 
-    public SimpleStringProperty selectedFileProperty() {
-        return selectedFileProperty;
+    public SimpleStringProperty selectedFilePathProperty() {
+        return selectedFilePathProperty;
     }
 
     public SimpleBooleanProperty isFileSelectedProperty() {
