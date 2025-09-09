@@ -1,6 +1,5 @@
 package components.topToolBar;
 
-import components.mainApp.AppState;
 import components.mainApp.MainAppController;
 import exceptions.EngineLoadException;
 import javafx.fxml.FXML;
@@ -10,7 +9,7 @@ import javafx.scene.control.ToggleGroup;
 public class TopToolBarController {
 
     private MainAppController mainController;
-    private AppState state;
+
     @FXML private ToggleButton ProgramTB;
     @FXML private ToggleButton functionTB;
     @FXML private ToggleButton collapseTB;
@@ -21,10 +20,6 @@ public class TopToolBarController {
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
-    }
-
-    public void setState(AppState state) {
-        this.state = state;
     }
 
     @FXML

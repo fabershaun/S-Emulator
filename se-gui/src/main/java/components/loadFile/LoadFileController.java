@@ -1,7 +1,9 @@
 package components.loadFile;
 
-import components.mainApp.AppState;
 import components.mainApp.MainAppController;
+import dto.ProgramDTO;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,17 +18,23 @@ import java.io.File;
 public class LoadFileController {
 
     private MainAppController mainController;
-    private AppState state;
     @FXML private Button loadFileButton;
     @FXML private TextField pathTextField;
+
+    StringProperty selectedFilePathProperty;
+    ObjectProperty<ProgramDTO> currentProgramProperty;
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
     }
 
-    public void setState(AppState state) {
-        this.state = state;
-        pathTextField.textProperty().bind(state.selectedFilePathProperty());
+    public void setProperty(StringProperty selectedFilePathProperty, ObjectProperty<ProgramDTO> currentProgramProperty) {
+        this.selectedFilePathProperty = selectedFilePathProperty;
+        this.currentProgramProperty = currentProgramProperty;
+    }
+
+    public void initializeBindings() {
+        pathTextField.textProperty().bind(selectedFilePathProperty);
     }
 
     @FXML
@@ -43,6 +51,7 @@ public class LoadFileController {
 
         Stage progressStage = showProgressDialog(task, pathTextField.getScene().getWindow());
 
+        // Run by JAT (javafx thread)
         task.setOnSucceeded(ev -> handleTaskSuccess(file, progressStage));
         task.setOnFailed(ev -> handleTaskFailure(task, progressStage));
         task.setOnCancelled(ev -> progressStage.close());
@@ -118,9 +127,10 @@ public class LoadFileController {
     // Handle task success
     private void handleTaskSuccess(File file, javafx.stage.Stage progressStage) {
         progressStage.close();
-        state.selectedFilePathProperty().set(file.getAbsolutePath());
+
         //state.isFileSelectedProperty().set(true);
-        state.currentProgramProperty().set(mainController.getCurrentProgram());
+        selectedFilePathProperty.set(file.getAbsolutePath());
+        currentProgramProperty.set(mainController.getCurrentProgram());
     }
 
     // Handle task failure

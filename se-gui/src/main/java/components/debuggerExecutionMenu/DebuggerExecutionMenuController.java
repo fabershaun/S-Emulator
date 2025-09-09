@@ -1,6 +1,5 @@
 package components.debuggerExecutionMenu;
 
-import components.mainApp.AppState;
 import components.mainApp.MainAppController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,7 +9,6 @@ import javafx.scene.control.TextField;
 public class DebuggerExecutionMenuController {
 
     private MainAppController mainController;
-    private AppState state;
 
     @FXML private Button runButton;
     @FXML private Button debugButton;
@@ -23,10 +21,6 @@ public class DebuggerExecutionMenuController {
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
-    }
-
-    public void setState(AppState state) {
-        this.state = state;
     }
 
     @FXML

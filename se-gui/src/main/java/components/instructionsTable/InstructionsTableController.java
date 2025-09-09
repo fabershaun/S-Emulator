@@ -1,9 +1,9 @@
 package components.instructionsTable;
 
-import components.mainApp.AppState;
 import components.mainApp.MainAppController;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -14,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 public class InstructionsTableController {
 
     private MainAppController mainController;
-    private AppState state;
 
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Number> colIndex;
@@ -23,14 +22,17 @@ public class InstructionsTableController {
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
 
+    ObjectProperty<ProgramDTO> currentProgramProperty;
+
+
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
     }
 
-    public void setState(AppState state) {
-        this.state = state;
+    public void setProperty(ObjectProperty<ProgramDTO> currentProgramProperty) {
+        this.currentProgramProperty = currentProgramProperty;
 
-        this.state.currentProgramProperty().addListener((obs, oldProgram, newProgram) -> {
+        currentProgramProperty.addListener((obs, oldProgram, newProgram) -> {
             if (newProgram != null) {    // ProgramDTO was updated successfully
                 fillTable(newProgram);
             }
@@ -39,7 +41,6 @@ public class InstructionsTableController {
 
     @FXML
     private void initialize() {
-        // Bind columns to InstructionDTO fields
         colIndex.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getInstructionNumber()));
         colType.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getInstructionTypeStr()));
         colLabel.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getLabelStr()));

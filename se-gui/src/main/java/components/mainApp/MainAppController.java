@@ -5,6 +5,10 @@ import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import exceptions.EngineLoadException;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -20,7 +24,6 @@ import java.nio.file.Path;
 
 public class MainAppController {
 
-    private final AppState state = new AppState();
     private Engine engine;
 
     Long[] inputs;
@@ -35,6 +38,9 @@ public class MainAppController {
     @FXML private VBox debuggerExecutionMenu;
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;
 
+    private final StringProperty selectedFilePath = new SimpleStringProperty();
+    private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>(null);
+
 
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
@@ -48,11 +54,16 @@ public class MainAppController {
             instructionsTableController != null &&
             debuggerExecutionMenuController != null
         ) {
-            setMainControllerForSubcomponents();
-            setStateForSubcomponents();
-
+            initializeSubComponents();
         }
     }
+
+    private void initializeSubComponents() {
+        setMainControllerForSubcomponents();
+        setPropertiesForSubcomponents();
+        initializeBindingsForSubcomponents();
+    }
+
 
     private void setMainControllerForSubcomponents() {
         loadFileController.setMainController(this);
@@ -61,11 +72,13 @@ public class MainAppController {
         debuggerExecutionMenuController.setMainController(this);
     }
 
-    private void setStateForSubcomponents() {
-        loadFileController.setState(state);
-        topToolBarController.setState(state);
-        instructionsTableController.setState(state);
-        debuggerExecutionMenuController.setState(state);
+    private void setPropertiesForSubcomponents() {
+        loadFileController.setProperty(selectedFilePath, currentProgramProperty);
+        instructionsTableController.setProperty(currentProgramProperty);
+    }
+
+    private void initializeBindingsForSubcomponents() {
+        loadFileController.initializeBindings();
     }
 
     public void loadNewFile(Path xmlPath) throws EngineLoadException {
