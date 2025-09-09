@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -33,8 +34,7 @@ public class MainAppController {
     @FXML private TopToolBarController topToolBarController;
     @FXML private TableView<?> instructionsTable;
     @FXML private InstructionsTableController instructionsTableController;
-    @FXML private TextField summaryLineTF;
-    @FXML private TextField summaryHistoryLineTF;
+    @FXML private Label summaryLineLabel;
     @FXML private VBox debuggerExecutionMenu;
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;
 
