@@ -18,8 +18,7 @@ import java.io.File;
 public class LoadFileController {
 
     private MainAppController mainController;
-    @FXML private Button loadFileButton;
-    @FXML private TextField pathTextField;
+    @FXML private Label pathLabel;
 
     StringProperty selectedFilePathProperty;
     ObjectProperty<ProgramDTO> currentProgramProperty;
@@ -34,7 +33,7 @@ public class LoadFileController {
     }
 
     public void initializeBindings() {
-        pathTextField.textProperty().bind(selectedFilePathProperty);
+        pathLabel.textProperty().bind(selectedFilePathProperty);
     }
 
     @FXML
@@ -43,13 +42,13 @@ public class LoadFileController {
         fileChooser.setTitle("Select XML File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
 
-        File file = fileChooser.showOpenDialog(pathTextField.getScene().getWindow());
+        File file = fileChooser.showOpenDialog(pathLabel.getScene().getWindow());
         if (file == null) return;
 
         javafx.concurrent.Task<Void> task = createLoadFileTask(file);
         // TODO: להוסיף בדיקות במנוע - לבדוק אם אין הפניה לפונקציה שאני מוגדרת במסגרת הקובץ / הפונקציות שבקובץ
 
-        Stage progressStage = showProgressDialog(task, pathTextField.getScene().getWindow());
+        Stage progressStage = showProgressDialog(task, pathLabel.getScene().getWindow());
 
         // Run by JAT (javafx thread)
         task.setOnSucceeded(ev -> handleTaskSuccess(file, progressStage));
