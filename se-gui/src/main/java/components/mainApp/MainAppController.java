@@ -6,6 +6,7 @@ import engine.Engine;
 import engine.EngineImpl;
 import exceptions.EngineLoadException;
 import javafx.beans.property.*;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
@@ -15,6 +16,7 @@ import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.instructionsTable.InstructionsTableController;
 import components.loadFile.LoadFileController;
 import components.topToolBar.TopToolBarController;
+import tasks.ExpandProgramTask;
 
 import java.nio.file.Path;
 
@@ -102,30 +104,24 @@ public class MainAppController {
 
     public void jumpToDegree(int target) throws EngineLoadException {
         int maxDegree = engine.getMaxDegree();
-        int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));     // Clamp the requested degree to a valid range [0, maxDegree]
+        int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));          // Clamp the requested degree to a valid range [0, maxDegree]
 
-        try {
-            ProgramDTO programByDegree;
+        ExpandProgramTask task = new ExpandProgramTask(engine, safeTargetDegree);
 
-            if (safeTargetDegree == 0) {
-                programByDegree = engine.getProgram();
-            } else {
-                programByDegree = engine.getExpandedProgram(safeTargetDegree);                    // Execute the engine at the requested degree
-            }
-
+        bindTaskToUIComponents(task, () -> {
+            ProgramDTO programByDegree = task.getValue();
             currentProgramProperty.set(programByDegree);
-            degreeModel.setMaxDegree(engine.getMaxDegree());          // Sync the view model so UI bindings update label and combo boxes
+            degreeModel.setMaxDegree(maxDegree);
             degreeModel.setCurrentDegree(safeTargetDegree);
+        });
 
-        } catch (EngineLoadException e) {
-            e.printStackTrace();            // TODO: change
-        }
+        new Thread(task).start();
     }
 
-    public void switchToProgram() {
-    }
+    public void bindTaskToUIComponents(Task<?> task, Runnable onFinish) {
 
-    public void switchToFunction() {
+        task.valueProperty().addListener((obs, oldVal, newVal) -> {
+            onFinish.run();
+        });
     }
-
 }

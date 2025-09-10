@@ -50,11 +50,11 @@ public class TopToolBarController {
         expandCB.disableProperty().bind(Bindings.isEmpty(model.getExpandOptions()));
 
         // Use helper method to apply placeholder text
-        applyPlaceholderText(collapseCB, "Collapse");
-        applyPlaceholderText(expandCB, "Expand");
+        configureComboBoxDisplay(collapseCB, "Collapse");
+        configureComboBoxDisplay(expandCB, "Expand");
     }
 
-    private void applyPlaceholderText(ComboBox<Integer> comboBox, String placeholder) {
+    private void configureComboBoxDisplay(ComboBox<Integer> comboBox, String placeholder) {
         comboBox.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
@@ -62,7 +62,20 @@ public class TopToolBarController {
                 setText(placeholder); // Always show placeholder text
             }
         });
+
+        comboBox.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);   // Dont display an empty line
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
     }
+
 
     private void registerDegreeSelectionHandlers() {
         // Attach the same selection logic to both ComboBoxes
@@ -80,12 +93,10 @@ public class TopToolBarController {
     }
 
     private void attemptJumpToDegreeAndClearSelection(int chosenDegree, ComboBox<Integer> sourceCombo) {
-        Platform.runLater(() -> {
-            try {
-                mainController.jumpToDegree(chosenDegree);
-            } catch (EngineLoadException e) {
-                e.printStackTrace();
-            }
-        });
+        try {
+            mainController.jumpToDegree(chosenDegree);
+        } catch (EngineLoadException e) {
+            e.printStackTrace();
+        }
     }
 }
