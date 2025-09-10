@@ -1,23 +1,20 @@
 package components.mainApp;
 
+import components.topToolBar.ExpansionCollapseModel;
 import dto.ProgramDTO;
-import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import exceptions.EngineLoadException;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.instructionsTable.InstructionsTableController;
 import components.loadFile.LoadFileController;
 import components.topToolBar.TopToolBarController;
-import org.glassfish.jaxb.runtime.v2.runtime.property.ValueProperty;
 
 import java.nio.file.Path;
 
@@ -40,8 +37,9 @@ public class MainAppController {
     private final StringProperty selectedFilePath = new SimpleStringProperty();
     private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>(null);
     private final StringProperty programOrFunctionProperty = new SimpleStringProperty();
-    private final IntegerProperty collapseProperty = new SimpleIntegerProperty();
-    private final IntegerProperty expandProperty = new SimpleIntegerProperty();
+
+    private final ExpansionCollapseModel degreeModel = new ExpansionCollapseModel();
+
 
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
@@ -61,6 +59,11 @@ public class MainAppController {
 
     private void initializeSubComponents() {
         setMainControllerForSubcomponents();
+
+        degreeModel.setProgram(currentProgramProperty.get());
+        currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> degreeModel.setProgram(newProgram));
+        topToolBarController.setModel(degreeModel);
+
         setPropertiesForSubcomponents();
         initializeBindingsForSubcomponents();
         initializeListenersForSubcomponents();
@@ -76,7 +79,6 @@ public class MainAppController {
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath, currentProgramProperty);
         instructionsTableController.setProperty(currentProgramProperty);
-        topToolBarController.setProperty(collapseProperty, expandProperty, currentProgramProperty);
     }
 
     private void initializeListenersForSubcomponents() {
@@ -89,35 +91,30 @@ public class MainAppController {
 
     public void loadNewFile(Path xmlPath) throws EngineLoadException {
         engine.loadProgram(xmlPath);
+        currentProgramProperty.set(engine.getProgram());
+        degreeModel.setMaxDegree(engine.getMaxDegree());
+        degreeModel.setCurrentDegree(engine.getCurrentDegree());
     }
 
     public ProgramDTO getCurrentProgram() {
         return engine.getProgram();
     }
 
-    public void collapseOneStep() {
-        int currentDegreeLoaded = engine.getCurrentDegree();
+    public void jumpToDegree(int target) throws EngineLoadException {
+        int maxDegree = engine.getMaxDegree();
+        int currentDegree = engine.getCurrentDegree();
+        int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));     // Clamp the requested degree to a valid range [0, maxDegree]
+        if (safeTargetDegree == currentDegree) return;                       // No work needed if we are already at the requested degree
 
-        if (currentDegreeLoaded > 0) {
-            engine.runProgram(--currentDegreeLoaded, inputs);   // TODO: initialize inputs
-            ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun();
+        try {
+            ProgramDTO programByDegree = engine.getExpandedProgram(safeTargetDegree);                    // Execute the engine at the requested degree
 
-            //TODO: להציג ברכיב הפקודות את התוכנית המורחבת
-            //TODO: להציג ברכיב הפקודה המורחבת את חלקי הפקודה המורחבת
-            //TODO: לעדכן את המשתנים בערכים השונים
-        }
-    }
+            currentProgramProperty.set(programByDegree);
+            degreeModel.setMaxDegree(engine.getMaxDegree());          // Sync the view model so UI bindings update label and combo boxes
+            degreeModel.setCurrentDegree(safeTargetDegree);
 
-    public void expandOneStep() throws EngineLoadException {
-        int currentDegreeLoaded = engine.getCurrentDegree();
-
-        if (currentDegreeLoaded < engine.getMaxDegree()) {
-            engine.runProgram(++currentDegreeLoaded, inputs);   // TODO: initialize inputs
-            ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun();
-
-            //TODO: להציג ברכיב הפקודות את התוכנית המורחבת
-            //TODO: להציג ברכיב הפקודה המורחבת את חלקי הפקודה המורחבת
-            //TODO: לעדכן את המשתנים בערכים השונים
+        } catch (EngineLoadException e) {
+            e.printStackTrace();            // TODO: change
         }
     }
 

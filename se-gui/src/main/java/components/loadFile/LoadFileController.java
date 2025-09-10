@@ -103,7 +103,7 @@ public class LoadFileController {
 
                 updateMessage("Loading");
                 try {
-                    mainController.loadNewFile(file.toPath());
+                    mainController.loadNewFile(file.toPath());  // Engine loading the file
                 } catch (exceptions.EngineLoadException e) {
                     throw e;
                 } catch (Exception e) {
