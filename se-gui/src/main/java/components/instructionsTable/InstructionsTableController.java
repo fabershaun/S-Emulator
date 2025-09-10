@@ -22,7 +22,7 @@ public class InstructionsTableController {
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
 
-    ObjectProperty<ProgramDTO> currentProgramProperty;
+    private ObjectProperty<ProgramDTO> currentProgramProperty;
 
 
     public void setMainController(MainAppController mainController) {
@@ -31,7 +31,9 @@ public class InstructionsTableController {
 
     public void setProperty(ObjectProperty<ProgramDTO> currentProgramProperty) {
         this.currentProgramProperty = currentProgramProperty;
+    }
 
+    public void initializeListener() {
         currentProgramProperty.addListener((obs, oldProgram, newProgram) -> {
             if (newProgram != null) {    // ProgramDTO was updated successfully
                 fillTable(newProgram);

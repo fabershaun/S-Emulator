@@ -5,11 +5,9 @@ import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import exceptions.EngineLoadException;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -19,6 +17,7 @@ import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.instructionsTable.InstructionsTableController;
 import components.loadFile.LoadFileController;
 import components.topToolBar.TopToolBarController;
+import org.glassfish.jaxb.runtime.v2.runtime.property.ValueProperty;
 
 import java.nio.file.Path;
 
@@ -40,7 +39,9 @@ public class MainAppController {
 
     private final StringProperty selectedFilePath = new SimpleStringProperty();
     private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>(null);
-
+    private final StringProperty programOrFunctionProperty = new SimpleStringProperty();
+    private final IntegerProperty collapseProperty = new SimpleIntegerProperty();
+    private final IntegerProperty expandProperty = new SimpleIntegerProperty();
 
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
@@ -62,8 +63,8 @@ public class MainAppController {
         setMainControllerForSubcomponents();
         setPropertiesForSubcomponents();
         initializeBindingsForSubcomponents();
+        initializeListenersForSubcomponents();
     }
-
 
     private void setMainControllerForSubcomponents() {
         loadFileController.setMainController(this);
@@ -75,6 +76,11 @@ public class MainAppController {
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath, currentProgramProperty);
         instructionsTableController.setProperty(currentProgramProperty);
+        topToolBarController.setProperty(collapseProperty, expandProperty, currentProgramProperty);
+    }
+
+    private void initializeListenersForSubcomponents() {
+        instructionsTableController.initializeListener();
     }
 
     private void initializeBindingsForSubcomponents() {

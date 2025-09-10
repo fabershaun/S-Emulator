@@ -20,8 +20,8 @@ public class LoadFileController {
     private MainAppController mainController;
     @FXML private Label pathLabel;
 
-    StringProperty selectedFilePathProperty;
-    ObjectProperty<ProgramDTO> currentProgramProperty;
+    private StringProperty selectedFilePathProperty;
+    private ObjectProperty<ProgramDTO> currentProgramProperty;
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
