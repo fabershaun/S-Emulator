@@ -93,7 +93,7 @@ public class MainAppController {
         engine.loadProgram(xmlPath);
         currentProgramProperty.set(engine.getProgram());
         degreeModel.setMaxDegree(engine.getMaxDegree());
-        degreeModel.setCurrentDegree(engine.getCurrentDegree());
+        degreeModel.setCurrentDegree(engine.getCurrentDegreeAfterRun());
     }
 
     public ProgramDTO getCurrentProgram() {
@@ -102,12 +102,16 @@ public class MainAppController {
 
     public void jumpToDegree(int target) throws EngineLoadException {
         int maxDegree = engine.getMaxDegree();
-        int currentDegree = engine.getCurrentDegree();
         int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));     // Clamp the requested degree to a valid range [0, maxDegree]
-        if (safeTargetDegree == currentDegree) return;                       // No work needed if we are already at the requested degree
 
         try {
-            ProgramDTO programByDegree = engine.getExpandedProgram(safeTargetDegree);                    // Execute the engine at the requested degree
+            ProgramDTO programByDegree;
+
+            if (safeTargetDegree == 0) {
+                programByDegree = engine.getProgram();
+            } else {
+                programByDegree = engine.getExpandedProgram(safeTargetDegree);                    // Execute the engine at the requested degree
+            }
 
             currentProgramProperty.set(programByDegree);
             degreeModel.setMaxDegree(engine.getMaxDegree());          // Sync the view model so UI bindings update label and combo boxes

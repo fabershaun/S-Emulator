@@ -41,7 +41,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public int getCurrentDegree() {
+    public int getCurrentDegreeAfterRun() {
         return this.currentDegree;
     }
 
