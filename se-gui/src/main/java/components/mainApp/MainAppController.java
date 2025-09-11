@@ -1,6 +1,9 @@
 package components.mainApp;
 
+import components.chainInstructionTable.ChainInstructionsTableController;
+import components.mainInstructionsTable.MainInstructionsTableController;
 import components.topToolBar.ExpansionCollapseModel;
+import dto.InstructionDTO;
 import dto.ProgramDTO;
 import engine.Engine;
 import engine.EngineImpl;
@@ -13,13 +16,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
-import components.instructionsTable.InstructionsTableController;
 import components.loadFile.LoadFileController;
 import components.topToolBar.TopToolBarController;
 import tasks.ExpandProgramTask;
 
 import java.nio.file.Path;
-
+import java.util.List;
 
 public class MainAppController {
 
@@ -27,14 +29,16 @@ public class MainAppController {
 
     Long[] inputs;
     @FXML private HBox loadFile;
-    @FXML private LoadFileController loadFileController;    // must: field name = fx:id + "Controller"
+    @FXML private LoadFileController loadFileController;        // must: field name = fx:id + "Controller"
     @FXML private HBox topToolBar;
-    @FXML private TopToolBarController topToolBarController;
-    @FXML private TableView<?> instructionsTable;
-    @FXML private InstructionsTableController instructionsTableController;
+    @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
+    @FXML private TableView<InstructionDTO> mainInstructionsTable;
+    @FXML private MainInstructionsTableController mainInstructionsTableController;          // must: field name = fx:id + "Controller"
     @FXML private Label summaryLineLabel;
+    @FXML private TableView<InstructionDTO> chainInstructionTable;
+    @FXML private ChainInstructionsTableController chainInstructionTableController;    // must: field name = fx:id + "Controller"
     @FXML private VBox debuggerExecutionMenu;
-    @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;
+    @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
 
     private final StringProperty selectedFilePath = new SimpleStringProperty();
     private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>(null);
@@ -52,8 +56,9 @@ public class MainAppController {
         if (
             loadFileController != null &&
             topToolBarController != null &&
-            instructionsTableController != null &&
-            debuggerExecutionMenuController != null
+            mainInstructionsTableController != null &&
+            debuggerExecutionMenuController != null &&
+            chainInstructionTableController != null
         ) {
             initializeSubComponents();
         }
@@ -74,17 +79,18 @@ public class MainAppController {
     private void setMainControllerForSubcomponents() {
         loadFileController.setMainController(this);
         topToolBarController.setMainController(this);
-        instructionsTableController.setMainController(this);
+        mainInstructionsTableController.setMainController(this);
         debuggerExecutionMenuController.setMainController(this);
+        chainInstructionTableController.setMainController(this);
     }
 
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath, currentProgramProperty);
-        instructionsTableController.setProperty(currentProgramProperty);
+        mainInstructionsTableController.setProperty(currentProgramProperty);
     }
 
     private void initializeListenersForSubcomponents() {
-        instructionsTableController.initializeListener();
+        mainInstructionsTableController.initializeListeners();
     }
 
     private void initializeBindingsForSubcomponents() {
@@ -123,5 +129,15 @@ public class MainAppController {
         task.valueProperty().addListener((obs, oldVal, newVal) -> {
             onFinish.run();
         });
+    }
+
+    public void onInstructionSelected(InstructionDTO selectedInstruction) {
+        int instructionNumber = selectedInstruction.getInstructionNumber();
+        List<InstructionDTO> selectedInstructionChain = currentProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
+        chainInstructionTableController.fillTable(selectedInstructionChain);
+    }
+
+    public void onInstructionDeselected() {
+        chainInstructionTableController.clearHistory();
     }
 }

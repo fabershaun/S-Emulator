@@ -3,7 +3,6 @@ package components.topToolBar;
 import components.mainApp.MainAppController;
 import dto.ProgramDTO;
 import exceptions.EngineLoadException;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
