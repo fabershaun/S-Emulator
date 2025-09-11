@@ -18,10 +18,10 @@ import java.io.File;
 public class LoadFileController {
 
     private MainAppController mainController;
-    @FXML private Label pathLabel;
-
     private StringProperty selectedFilePathProperty;
     private ObjectProperty<ProgramDTO> currentProgramProperty;
+
+    @FXML private Label pathLabel;
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;

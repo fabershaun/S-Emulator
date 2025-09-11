@@ -44,10 +44,10 @@ public class MainInstructionsTableController {
 
     public void initializeListeners() {
         // Listen to program changes and repopulate the table
-        currentProgramProperty.addListener((obs, oldProg, newProg) -> {
-            if (newProg != null) {
+        currentProgramProperty.addListener((obs, oldProg, newProgram) -> {
+            if (newProgram != null) {
                 instructionsTable.getItems().setAll(
-                        newProg.getInstructions().getProgramInstructionsDtoList()
+                        newProgram.getInstructions().getProgramInstructionsDtoList()
                 );
             } else {
                 instructionsTable.getItems().clear();

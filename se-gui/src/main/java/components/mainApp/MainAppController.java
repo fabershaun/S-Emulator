@@ -2,6 +2,7 @@ package components.mainApp;
 
 import components.chainInstructionTable.ChainInstructionsTableController;
 import components.mainInstructionsTable.MainInstructionsTableController;
+import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
@@ -11,7 +12,6 @@ import exceptions.EngineLoadException;
 import javafx.beans.property.*;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,7 +34,8 @@ public class MainAppController {
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
     @FXML private TableView<InstructionDTO> mainInstructionsTable;
     @FXML private MainInstructionsTableController mainInstructionsTableController;          // must: field name = fx:id + "Controller"
-    @FXML private Label summaryLineLabel;
+    @FXML private HBox summaryLine;
+    @FXML private SummaryLineController summaryLineController;
     @FXML private TableView<InstructionDTO> chainInstructionTable;
     @FXML private ChainInstructionsTableController chainInstructionTableController;    // must: field name = fx:id + "Controller"
     @FXML private VBox debuggerExecutionMenu;
@@ -57,8 +58,9 @@ public class MainAppController {
             loadFileController != null &&
             topToolBarController != null &&
             mainInstructionsTableController != null &&
-            debuggerExecutionMenuController != null &&
-            chainInstructionTableController != null
+            summaryLineController != null &&
+            chainInstructionTableController != null &&
+            debuggerExecutionMenuController != null
         ) {
             initializeSubComponents();
         }
@@ -68,7 +70,10 @@ public class MainAppController {
         setMainControllerForSubcomponents();
 
         degreeModel.setProgram(currentProgramProperty.get());
-        currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> degreeModel.setProgram(newProgram));
+        currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+            degreeModel.setProgram(newProgram);
+        }); 
+        
         topToolBarController.setModel(degreeModel);
 
         setPropertiesForSubcomponents();
@@ -76,17 +81,20 @@ public class MainAppController {
         initializeListenersForSubcomponents();
     }
 
+
     private void setMainControllerForSubcomponents() {
         loadFileController.setMainController(this);
         topToolBarController.setMainController(this);
         mainInstructionsTableController.setMainController(this);
-        debuggerExecutionMenuController.setMainController(this);
+        summaryLineController.setMainController(this);
         chainInstructionTableController.setMainController(this);
+        debuggerExecutionMenuController.setMainController(this);
     }
 
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath, currentProgramProperty);
         mainInstructionsTableController.setProperty(currentProgramProperty);
+        summaryLineController.setProperty(currentProgramProperty);
     }
 
     private void initializeListenersForSubcomponents() {
@@ -95,6 +103,7 @@ public class MainAppController {
 
     private void initializeBindingsForSubcomponents() {
         loadFileController.initializeBindings();
+        summaryLineController.initializeBindings();
     }
 
     public void loadNewFile(Path xmlPath) throws EngineLoadException {
