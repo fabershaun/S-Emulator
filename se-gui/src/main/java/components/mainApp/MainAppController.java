@@ -18,10 +18,16 @@ import javafx.scene.layout.VBox;
 import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.loadFile.LoadFileController;
 import components.topToolBar.TopToolBarController;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import tasks.ExpandProgramTask;
+import tasks.LoadProgramTask;
 
 import java.nio.file.Path;
 import java.util.List;
+
+import static components.loadFile.LoadFileController.handleTaskFailure;
+import static components.loadFile.LoadFileController.showProgressDialog;
 
 public class MainAppController {
 
@@ -106,15 +112,30 @@ public class MainAppController {
         summaryLineController.initializeBindings();
     }
 
-    public void loadNewFile(Path xmlPath) throws EngineLoadException {
-        engine.loadProgram(xmlPath);
-        currentProgramProperty.set(engine.getProgram());
-        degreeModel.setMaxDegree(engine.getMaxDegree());
-        degreeModel.setCurrentDegree(engine.getCurrentDegreeAfterRun());
-    }
+    public void loadNewFile(Path xmlPath, Window ownerWindow) {
+        LoadProgramTask loadProgramTask = new LoadProgramTask(engine, xmlPath);
 
-    public ProgramDTO getCurrentProgram() {
-        return engine.getProgram();
+        Stage progressStage = showProgressDialog(loadProgramTask, ownerWindow);
+
+        loadProgramTask.setOnSucceeded(ev -> {
+            progressStage.close();
+            ProgramDTO loaded = loadProgramTask.getValue();
+            currentProgramProperty.set(loaded);
+            selectedFilePath.set(xmlPath.toAbsolutePath().toString());
+
+            try {
+                degreeModel.setMaxDegree(engine.getMaxDegree());
+            } catch (EngineLoadException e) {
+                throw new RuntimeException(e);
+            }
+
+            degreeModel.setCurrentDegree(engine.getCurrentDegreeAfterRun());
+        });
+
+        loadProgramTask.setOnFailed(ev -> handleTaskFailure(loadProgramTask, progressStage));
+        loadProgramTask.setOnCancelled(ev -> progressStage.close());
+
+        new Thread(loadProgramTask, "loadProgram-thread").start();
     }
 
     public void jumpToDegree(int target) throws EngineLoadException {
@@ -123,21 +144,14 @@ public class MainAppController {
 
         ExpandProgramTask task = new ExpandProgramTask(engine, safeTargetDegree);
 
-        bindTaskToUIComponents(task, () -> {
+        task.setOnSucceeded(ev -> {
             ProgramDTO programByDegree = task.getValue();
             currentProgramProperty.set(programByDegree);
             degreeModel.setMaxDegree(maxDegree);
             degreeModel.setCurrentDegree(safeTargetDegree);
         });
 
-        new Thread(task).start();
-    }
-
-    public void bindTaskToUIComponents(Task<?> task, Runnable onFinish) {
-
-        task.valueProperty().addListener((obs, oldVal, newVal) -> {
-            onFinish.run();
-        });
+        new Thread(task, "expand-thread").start();
     }
 
     public void onInstructionSelected(InstructionDTO selectedInstruction) {
