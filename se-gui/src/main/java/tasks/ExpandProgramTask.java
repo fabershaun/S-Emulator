@@ -2,7 +2,6 @@ package tasks;
 
 import dto.ProgramDTO;
 import engine.Engine;
-import exceptions.EngineLoadException;
 import javafx.concurrent.Task;
 
 /**

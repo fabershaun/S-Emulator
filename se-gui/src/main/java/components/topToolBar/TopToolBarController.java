@@ -22,10 +22,6 @@ public class TopToolBarController {
     @FXML private ComboBox<?> highlightSelectionCB;
     @FXML private ComboBox<?> programFunctionSelectorCB;
 
-    private ObjectProperty<ProgramDTO> currentProgramProperty;
-    private IntegerProperty collapseProperty;
-    private IntegerProperty expandProperty;
-
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
     }
@@ -75,7 +71,6 @@ public class TopToolBarController {
         });
     }
 
-
     private void registerDegreeSelectionHandlers() {
         // Attach the same selection logic to both ComboBoxes
         attachSelectionHandlerToCombo(collapseCB);
@@ -86,12 +81,12 @@ public class TopToolBarController {
         // React to user selection in a unified way
         integerComboBox.valueProperty().addListener((observableValue, previous, chosen) -> {
             if (chosen != null) {
-                attemptJumpToDegreeAndClearSelection(chosen, integerComboBox);
+                attemptJumpToDegreeAndClearSelection(chosen);
             }
         });
     }
 
-    private void attemptJumpToDegreeAndClearSelection(int chosenDegree, ComboBox<Integer> sourceCombo) {
+    private void attemptJumpToDegreeAndClearSelection(int chosenDegree) {
         try {
             mainController.jumpToDegree(chosenDegree);
         } catch (EngineLoadException e) {
