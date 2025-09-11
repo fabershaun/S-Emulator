@@ -5,7 +5,6 @@ import dto.ProgramDTO;
 import exceptions.EngineLoadException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -20,7 +19,6 @@ public class LoadFileController {
 
     private MainAppController mainController;
     private StringProperty selectedFilePathProperty;
-    private ObjectProperty<ProgramDTO> currentProgramProperty;
 
     @FXML private Label pathLabel;
 
@@ -28,9 +26,8 @@ public class LoadFileController {
         this.mainController = mainController;
     }
 
-    public void setProperty(StringProperty selectedFilePathProperty, ObjectProperty<ProgramDTO> currentProgramProperty) {
+    public void setProperty(StringProperty selectedFilePathProperty) {
         this.selectedFilePathProperty = selectedFilePathProperty;
-        this.currentProgramProperty = currentProgramProperty;
     }
 
     public void initializeBindings() {
@@ -38,7 +35,7 @@ public class LoadFileController {
     }
 
     @FXML
-    void openFileButtonAction(ActionEvent event) throws EngineLoadException {
+    void openFileButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select XML File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));

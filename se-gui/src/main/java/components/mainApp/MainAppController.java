@@ -92,13 +92,12 @@ public class MainAppController {
         loadFileController.setMainController(this);
         topToolBarController.setMainController(this);
         mainInstructionsTableController.setMainController(this);
-        summaryLineController.setMainController(this);
         chainInstructionTableController.setMainController(this);
         debuggerExecutionMenuController.setMainController(this);
     }
 
     private void setPropertiesForSubcomponents() {
-        loadFileController.setProperty(selectedFilePath, currentProgramProperty);
+        loadFileController.setProperty(selectedFilePath);
         mainInstructionsTableController.setProperty(currentProgramProperty);
         summaryLineController.setProperty(currentProgramProperty);
     }

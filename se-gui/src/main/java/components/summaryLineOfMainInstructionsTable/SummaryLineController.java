@@ -5,7 +5,6 @@ import dto.InstructionDTO;
 import dto.ProgramDTO;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
@@ -16,20 +15,12 @@ import java.util.List;
 
 public class SummaryLineController {
 
-    private MainAppController mainController;
     private ObjectProperty<ProgramDTO> currentProgramProperty;
 
-    @FXML private Label totalInstructions;
     @FXML private Label amountTotal;
-    @FXML private Label basicInstructions;
     @FXML private Label amountBasic;
-    @FXML private Label syntheticInstructions;
     @FXML private Label amountSynthetic;
 
-
-    public void setMainController(MainAppController mainController) {
-        this.mainController = mainController;
-    }
 
     public void setProperty(ObjectProperty<ProgramDTO> programProperty) {
         this.currentProgramProperty = programProperty;
@@ -42,24 +33,13 @@ public class SummaryLineController {
 
         // Integer bindings that recompute counts whenever currentProgramProperty changes
         IntegerBinding totalCountBinding = Bindings.createIntegerBinding(
-                () -> computeTotalInstructionsCount(currentProgramProperty.get()),
-                currentProgramProperty
-        );
+                () -> computeTotalInstructionsCount(currentProgramProperty.get()), currentProgramProperty);
 
         IntegerBinding basicCountBinding = Bindings.createIntegerBinding(
-                () -> computeBasicInstructionsCount(currentProgramProperty.get()),
-                currentProgramProperty
-        );
+                () -> computeBasicInstructionsCount(currentProgramProperty.get()), currentProgramProperty);
 
         IntegerBinding syntheticCountBinding = Bindings.createIntegerBinding(
-                () -> totalCountBinding.get() - basicCountBinding.get(),
-                totalCountBinding, basicCountBinding
-        );
-
-        // String bindings for labels
-        StringExpression totalTextBinding = Bindings.format("Total: %d", totalCountBinding);
-        StringExpression  basicTextBinding = Bindings.format("Basic: %d", basicCountBinding);
-        StringExpression syntheticTextBinding = Bindings.format("Synthetic: %d", syntheticCountBinding);
+                () -> totalCountBinding.get() - basicCountBinding.get(), totalCountBinding, basicCountBinding);
 
         // Bind labels to the string bindings
         amountTotal.textProperty().bind(totalCountBinding.asString());
