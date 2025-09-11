@@ -21,7 +21,7 @@ public class ExpandProgramTask extends Task<ProgramDTO> {
     }
 
     @Override
-    protected ProgramDTO call() throws EngineLoadException {
+    protected ProgramDTO call() {
         if (targetDegree == 0) {
             return engine.getProgram();
         } else {

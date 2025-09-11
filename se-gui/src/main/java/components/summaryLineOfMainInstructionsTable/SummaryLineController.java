@@ -1,11 +1,9 @@
 package components.summaryLineOfMainInstructionsTable;
 
-import components.mainApp.MainAppController;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

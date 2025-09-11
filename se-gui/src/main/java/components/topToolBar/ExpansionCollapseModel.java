@@ -16,8 +16,8 @@ public class ExpansionCollapseModel {
     private final IntegerProperty currentDegree = new SimpleIntegerProperty(0);
     private final IntegerProperty maxDegree = new SimpleIntegerProperty(0);
 
-    private ObservableList<Integer> collapseOptions = observableArrayList();
-    private ObservableList<Integer> expandOptions = observableArrayList();
+    private final ObservableList<Integer> collapseOptions = observableArrayList();
+    private final ObservableList<Integer> expandOptions = observableArrayList();
 
 
     public ExpansionCollapseModel() {  // Automatic update in any change
@@ -60,18 +60,8 @@ public class ExpansionCollapseModel {
         return rangeListOfOptions;
     }
 
-    public void collapseTo(int degree) {
-        currentDegree.set(Math.max(0, Math.min(degree, maxDegree.get())));
-    }
-
-    public void expandTo(int degree) {
-        currentDegree.set(Math.max(0, Math.min(degree, maxDegree.get())));
-    }
-
     // Read-only exposure
     public ReadOnlyIntegerProperty currentDegreeProperty() { return currentDegree; }
-    public ReadOnlyIntegerProperty maxDegreeProperty()     { return maxDegree; }
-    public ReadOnlyObjectProperty<ProgramDTO> currentProgramProperty() { return currentProgram; }
 
     // External connection point
     public void setProgram(ProgramDTO p) { currentProgram.set(p); }
@@ -80,5 +70,4 @@ public class ExpansionCollapseModel {
 
     public ObservableList<Integer> getCollapseOptions() { return FXCollections.unmodifiableObservableList(collapseOptions); }
     public ObservableList<Integer> getExpandOptions()   { return FXCollections.unmodifiableObservableList(expandOptions); }
-
 }
