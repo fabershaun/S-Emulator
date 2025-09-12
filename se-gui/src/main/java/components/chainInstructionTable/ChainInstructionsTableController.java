@@ -36,8 +36,13 @@ public class ChainInstructionsTableController {
     }
 
     public void fillTable(List<InstructionDTO> instructionChain) {
-        // Replace table content with the given chain
-        instructionsTable.getItems().setAll(instructionChain);
+        if (instructionChain == null || instructionChain.size() <= 1) {
+            instructionsTable.getItems().clear();
+            return;
+        }
+
+        // Replace table content starting from index 1 to the end
+        instructionsTable.getItems().setAll(instructionChain.subList(1, instructionChain.size()));
     }
 
     public void clearHistory() {
