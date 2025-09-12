@@ -1,13 +1,21 @@
 package components.mainInstructionsTable;
 
 import components.mainApp.MainAppController;
+import components.topToolBar.HighlightSelectionModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
+
+import java.util.regex.Pattern;
 
 /**
  * Controller for the main instructions table.
@@ -23,6 +31,7 @@ public class MainInstructionsTableController {
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
 
     private MainAppController mainController;
+    private HighlightSelectionModel highlightModel;
     private ObjectProperty<ProgramDTO> currentProgramProperty;
 
     @FXML
@@ -32,6 +41,10 @@ public class MainInstructionsTableController {
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
+
+        // Load the CSS file
+        String cssPath = getClass().getResource("/components/mainInstructionsTable/mainInstructions.css").toExternalForm();
+        instructionsTable.getStylesheets().add(cssPath);
     }
 
     public void setMainController(MainAppController mainController) {
@@ -40,6 +53,11 @@ public class MainInstructionsTableController {
 
     public void setProperty(ObjectProperty<ProgramDTO> programProperty) {
         this.currentProgramProperty = programProperty;
+    }
+
+    public void setHighlightSelectionModel(HighlightSelectionModel model) {
+        this.highlightModel = model;
+        installMainTableHighlighting();       // configure cell factories
     }
 
     public void initializeListeners() {
@@ -63,6 +81,41 @@ public class MainInstructionsTableController {
             } else {
                 if (mainController != null) {
                     mainController.onInstructionSelected(newItem);
+                }
+            }
+        });
+    }
+
+    // Cell-level highlighting only on the main table
+    private void installMainTableHighlighting() {
+        if (highlightModel == null) return;
+
+        // Refresh table when selection changes
+        highlightModel.selectedHighlightProperty().addListener((obs, oldVal, newVal) -> instructionsTable.refresh());
+
+        instructionsTable.setRowFactory(tv -> new TableRow<InstructionDTO>() {
+            @Override
+            protected void updateItem(InstructionDTO item, boolean empty) {
+                super.updateItem(item, empty);
+
+                // Always clear previous style classes
+                getStyleClass().remove("highlighted-row");
+
+                if (empty || item == null) {
+                    return;
+                }
+
+                String selected = highlightModel.selectedHighlightProperty().get();
+                if (selected != null && !selected.isEmpty()) {
+                    String regex = "\\b" + Pattern.quote(selected) + "\\b";
+
+                    // Check against label or instruction text
+                    boolean matchLabel = item.getLabelStr() != null && item.getLabelStr().matches(".*" + regex + ".*");
+                    boolean matchInstruction = item.getCommand() != null && item.getCommand().matches(".*" + regex + ".*");
+
+                    if (matchLabel || matchInstruction) {
+                        getStyleClass().add("highlighted-row");
+                    }
                 }
             }
         });

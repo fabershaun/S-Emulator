@@ -4,6 +4,7 @@ import components.chainInstructionTable.ChainInstructionsTableController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
+import components.topToolBar.HighlightSelectionModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import engine.Engine;
@@ -51,7 +52,7 @@ public class MainAppController {
     private final StringProperty programOrFunctionProperty = new SimpleStringProperty();
 
     private final ExpansionCollapseModel degreeModel = new ExpansionCollapseModel();
-
+    private final HighlightSelectionModel highlightSelectionModel = new HighlightSelectionModel();
 
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
@@ -77,9 +78,14 @@ public class MainAppController {
         degreeModel.setProgram(currentProgramProperty.get());
         currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
             degreeModel.setProgram(newProgram);
-        }); 
+        });
+
+        highlightSelectionModel.setProgram(currentProgramProperty.get());
+        currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+            highlightSelectionModel.setProgram(newProgram);
+        });
         
-        topToolBarController.setModel(degreeModel);
+        topToolBarController.setModels(degreeModel, highlightSelectionModel);
 
         setPropertiesForSubcomponents();
         initializeBindingsForSubcomponents();
@@ -99,6 +105,8 @@ public class MainAppController {
         loadFileController.setProperty(selectedFilePath);
         mainInstructionsTableController.setProperty(currentProgramProperty);
         summaryLineController.setProperty(currentProgramProperty);
+
+        mainInstructionsTableController.setHighlightSelectionModel(highlightSelectionModel);
     }
 
     private void initializeListenersForSubcomponents() {

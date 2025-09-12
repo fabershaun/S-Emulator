@@ -2,6 +2,7 @@ package components.topToolBar;
 
 import dto.ProgramDTO;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,7 +19,6 @@ public class ExpansionCollapseModel {
 
     private final ObservableList<Integer> collapseOptions = observableArrayList();
     private final ObservableList<Integer> expandOptions = observableArrayList();
-
 
     public ExpansionCollapseModel() {  // Automatic update in any change
         InvalidationListener recalculateDegree = observable -> recalcOptions();
