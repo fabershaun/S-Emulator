@@ -69,20 +69,11 @@ public class DebuggerExecutionMenuController {
     public void initializeListeners() {
         currentProgramProperty.addListener((obs, oldProg, newProgram) -> {
             if (newProgram != null) {
-                List<VariableRow> rows = newProgram.getInputVariables().stream()
-                        .map(varName -> new VariableRow(varName, 0L))
-                        .toList();
-                inputsTableView.getItems().setAll(rows);
+                resetInputTable(newProgram);
                 enterProgramReady();
             } else {
                 inputsTableView.getItems().clear();
                 enterNoProgramLoaded();
-            }
-        });
-
-        runModeToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (currentMode == ApplicationMode.NEW_RUN_PRESSED) {
-                enterNewRunPressed();
             }
         });
 
@@ -165,6 +156,19 @@ public class DebuggerExecutionMenuController {
         inputsTableView.setEditable(true);
         variablesTableView.getItems().clear();
         cyclesNumberLabel.setText(String.valueOf(0));
+        resetInputTable(currentProgramProperty.getValue());
+    }
+
+    private void resetInputTable(ProgramDTO program) {
+        if (program == null) {
+            inputsTableView.getItems().clear();
+            return;
+        }
+
+        List<VariableRow> rows = program.getInputVariables().stream()
+                .map(varName -> new VariableRow(varName, 0L))
+                .toList();
+        inputsTableView.getItems().setAll(rows);
     }
 
     private void enterRunning() {

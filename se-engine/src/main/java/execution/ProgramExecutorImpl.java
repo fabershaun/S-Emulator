@@ -5,6 +5,7 @@ import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
+import variable.VariableType;
 
 import java.io.Serializable;
 import java.util.*;
@@ -85,12 +86,14 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
 
     @Override
     public Map<String, Long> getVariablesToValuesSorted() {
-        Map<String, Long> VariablesToValuesSorted = new LinkedHashMap<>();
+        Map<String, Long> variablesToValuesSorted = new LinkedHashMap<>();
+
+        variablesToValuesSorted.put(VariableType.RESULT.getVariableRepresentation(0), context.getVariableValue(Variable.RESULT));
 
         for (Variable v : program.getInputAndWorkVariablesSortedBySerial()) {
-            VariablesToValuesSorted.put(v.getRepresentation(), context.getVariableValue(v));
+            variablesToValuesSorted.put(v.getRepresentation(), context.getVariableValue(v));
         }
 
-        return VariablesToValuesSorted;
+        return variablesToValuesSorted;
     }
 }
