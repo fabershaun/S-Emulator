@@ -6,14 +6,10 @@ import dto.InstructionDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 
 import java.util.regex.Pattern;
 
@@ -64,9 +60,7 @@ public class MainInstructionsTableController {
         // Listen to program changes and repopulate the table
         currentProgramProperty.addListener((obs, oldProg, newProgram) -> {
             if (newProgram != null) {
-                instructionsTable.getItems().setAll(
-                        newProgram.getInstructions().getProgramInstructionsDtoList()
-                );
+                instructionsTable.getItems().setAll(newProgram.getInstructions().getProgramInstructionsDtoList());
             } else {
                 instructionsTable.getItems().clear();
             }
@@ -86,7 +80,7 @@ public class MainInstructionsTableController {
         });
     }
 
-    // Cell-level highlighting only on the main table
+    // Highlighting lines - only on the main table
     private void installMainTableHighlighting() {
         if (highlightModel == null) return;
 
