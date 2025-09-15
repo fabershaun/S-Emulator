@@ -6,9 +6,9 @@ import java.util.Map;
 public class ProgramExecutorDTO {
     private final ProgramDTO programDTO;
     Map<String, Long> VariablesToValuesSorted;
-    private final long result;
-    private final int totalCycles;
-    private final int degree;
+    private final long result;                      // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private final int totalCycles;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private final int degree;                       // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final List<Long> inputs;
 
     public ProgramExecutorDTO(ProgramDTO programDTO, Map<String, Long> VariablesToValuesSorted, long result, int totalCycles, int degree, List<Long> inputs) {

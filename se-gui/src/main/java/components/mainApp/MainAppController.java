@@ -135,7 +135,7 @@ public class MainAppController {
     private void initializeListenersForSubcomponents() {
         mainInstructionsTableController.initializeListeners();
         debuggerExecutionMenuController.initializeListeners();
-        debuggerExecutionMenuController.initializeListeners();
+        historyMenuController.initializeListeners();
 
     }
 
@@ -212,5 +212,9 @@ public class MainAppController {
         });
         
         new Thread(runTask, "runProgram-thread").start();
+    }
+
+    public List<ProgramExecutorDTO> getHistory() {
+        return engine.getHistoryPerProgram(currentSelectedProgramProperty.get().getProgramName());
     }
 }

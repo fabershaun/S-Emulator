@@ -2,14 +2,14 @@ package dto;
 
 public class InstructionDTO {
     private final String instructionName;
-    private final int instructionNumber;
-    private final int cycleNumber;
-    private final String instructionTypeStr;
-    private final String labelStr;
+    private final int instructionNumber;            // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private final int cycleNumber;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private final String instructionTypeStr;        // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private final String labelStr;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final String referenceLabelStr;
     private final String targetVariableStr;
     private final String sourceVariableStr;
-    private final String command;
+    private final String command;                   // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final InstructionDTO origin;
 
     public InstructionDTO(String instructionName,

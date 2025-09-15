@@ -77,11 +77,11 @@ public class DebuggerExecutionMenuController {
             }
         });
 
-        programAfterExecuteProperty.addListener((obs, oldProg, newProgram) -> {
-            if (newProgram != null) {
-                Map<String, Long> variablesMap = newProgram.getVariablesToValuesSorted();
+        programAfterExecuteProperty.addListener((obs, oldProgEx, newProgramExecutorDTO) -> {
+            if (newProgramExecutorDTO != null) {
+                Map<String, Long> variablesMap = newProgramExecutorDTO.getVariablesToValuesSorted();
                 variablesTableView.getItems().setAll(variablesMap.entrySet());
-                cyclesNumberLabel.setText(String.valueOf(newProgram.getTotalCycles()));
+                cyclesNumberLabel.setText(String.valueOf(newProgramExecutorDTO.getTotalCycles()));
             } else {
                 variablesTableView.getItems().clear();
             }
