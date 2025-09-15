@@ -3,6 +3,7 @@ package engine;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import exceptions.EngineLoadException;
+import program.SubProgramImpl;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -16,7 +17,7 @@ public interface Engine {
     List<ProgramExecutorDTO> getHistoryPerProgram(String programName);   // For gui module
 
     List<ProgramDTO> getSubProgramsOfProgram(String programName);   // For gui module //TODO: return the functions also
-    //void setSubProgram(String subProgramName); // For gui module //TODO: write this function. להוסיף מבנה נתונים - תוכנית פעילה כרגע
+    //void setSubProgram(String subProgramName); // For gui module //TODO: write this program.function. להוסיף מבנה נתונים - תוכנית פעילה כרגע
 
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree() throws EngineLoadException;

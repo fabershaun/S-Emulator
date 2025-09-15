@@ -12,7 +12,7 @@
 //import java.nio.file.Paths;
 //
 ///*
-// .\xjc-run-win.bat -p generatedFromXml -d "..\..\se-engine\src\main\java" S-Emulator-v1.xsd
+// .\xjc-run-win.bat -p generatedFromXmlPart1 -d "..\..\se-engine\src\main\java" S-Emulator-v1.xsd
 // */
 //
 //public class Main {
