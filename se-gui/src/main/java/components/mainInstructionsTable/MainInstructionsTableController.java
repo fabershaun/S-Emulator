@@ -5,14 +5,11 @@ import components.topToolBar.HighlightSelectionModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -89,7 +86,7 @@ public class MainInstructionsTableController {
         // Refresh table when selection changes
         highlightModel.selectedHighlightProperty().addListener((obs, oldVal, newVal) -> instructionsTable.refresh());
 
-        instructionsTable.setRowFactory(tv -> new TableRow<InstructionDTO>() {
+        instructionsTable.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(InstructionDTO item, boolean empty) {
                 super.updateItem(item, empty);

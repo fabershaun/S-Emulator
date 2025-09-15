@@ -119,7 +119,7 @@ public class MainAppController {
         loadFileController.setMainController(this);
         topToolBarController.setMainController(this);
         mainInstructionsTableController.setMainController(this);
-        chainInstructionTableController.setMainController(this);
+        //chainInstructionTableController.setMainController(this);
         debuggerExecutionMenuController.setMainController(this);
         historyMenuController.setMainController(this);
     }

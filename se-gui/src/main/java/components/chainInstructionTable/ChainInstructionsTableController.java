@@ -18,7 +18,6 @@ public class ChainInstructionsTableController {
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
 
-    private MainAppController mainController;
 
     @FXML
     protected void initialize() {
@@ -28,11 +27,6 @@ public class ChainInstructionsTableController {
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
-    }
-
-    public void setMainController(MainAppController mainController) {
-        // Keep pointer for symmetry or future callbacks
-        this.mainController = mainController;
     }
 
     public void fillTable(List<InstructionDTO> instructionChain) {

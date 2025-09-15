@@ -14,17 +14,17 @@ public class VariableRow {
         this.variableValue = new SimpleLongProperty(value);
     }
 
-    public StringProperty variableNameProperty() {
-        return variableName;
-    }
-
-    public LongProperty variableValueProperty() {
-        return variableValue;
-    }
-
-    public String getVariableName(){
-        return variableName.get();
-    }
+//    public StringProperty variableNameProperty() {
+//        return variableName;
+//    }
+//
+//    public LongProperty variableValueProperty() {
+//        return variableValue;
+//    }
+//
+//    public String getVariableName(){
+//        return variableName.get();
+//    }
 
     public long getVariableValue(){
         return variableValue.get();

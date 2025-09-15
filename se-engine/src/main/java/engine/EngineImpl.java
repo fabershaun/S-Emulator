@@ -43,11 +43,6 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public int getCurrentDegreeAfterRun() {
-        return this.currentDegree;
-    }
-
-    @Override
     public void runProgram(int degree, Long... inputs) {
         Program deepCopyOfProgram = program.deepClone();
         deepCopyOfProgram.expandProgram(degree);
@@ -100,7 +95,7 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public List<ProgramExecutorDTO> getHistoryPerProgram(String programName) {
         List<ProgramExecutor> programExecutors = programToExecutionHistory.get(programName);
-        ProgramDTO programDTO = buildProgramDTO(programExecutors.get(0).getProgram());
+        ProgramDTO programDTO = buildProgramDTO(programExecutors.getFirst().getProgram());
 
         List<ProgramExecutorDTO> res = new ArrayList<>();
         for(ProgramExecutor programExecutorItem : programExecutors) {

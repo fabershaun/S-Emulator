@@ -21,8 +21,6 @@ public interface Engine {
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree() throws EngineLoadException;
     void runProgram(int degree, Long... inputs);
-    int getCurrentDegreeAfterRun();
-
 
     // For console module only:
     int getNumberOfInputVariables();

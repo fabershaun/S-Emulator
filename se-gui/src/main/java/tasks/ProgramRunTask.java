@@ -1,6 +1,5 @@
 package tasks;
 
-import components.debuggerExecutionMenu.ApplicationMode;
 import components.debuggerExecutionMenu.RunMode;
 import dto.ProgramExecutorDTO;
 import engine.Engine;

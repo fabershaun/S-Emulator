@@ -1,21 +1,17 @@
 package components.history;
 
 import components.mainApp.MainAppController;
-import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
-
 import java.util.List;
-import java.util.Map;
+
 
 public class HistoryController {
 
