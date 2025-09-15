@@ -99,13 +99,13 @@ public class MainAppController {
     }
 
     private void initializeSubModels() {
-        degreeModel.setProgram(currentLoadedProgramProperty.get());
-        currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+        degreeModel.setProgram(currentSelectedProgramProperty.get());
+        currentSelectedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
             degreeModel.setProgram(newProgram);
         });
 
-        highlightSelectionModel.setProgram(currentLoadedProgramProperty.get());
-        currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+        highlightSelectionModel.setProgram(currentSelectedProgramProperty.get());
+        currentSelectedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
             highlightSelectionModel.setProgram(newProgram);
         });
 
@@ -126,9 +126,9 @@ public class MainAppController {
 
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath);
-        mainInstructionsTableController.setProperty(currentLoadedProgramProperty);
-        summaryLineController.setProperty(currentLoadedProgramProperty);
-        debuggerExecutionMenuController.setProperty(currentLoadedProgramProperty, programAfterExecuteProperty);
+        mainInstructionsTableController.setProperty(currentSelectedProgramProperty);
+        summaryLineController.setProperty(currentSelectedProgramProperty);
+        debuggerExecutionMenuController.setProperty(currentSelectedProgramProperty, programAfterExecuteProperty);
         historyMenuController.setProperty(programAfterExecuteProperty, programOrFunctionProperty);
     }
 
@@ -153,6 +153,7 @@ public class MainAppController {
             progressStage.close();
             ProgramDTO loaded = loadProgramTask.getValue();
             currentLoadedProgramProperty.set(loaded);
+            currentSelectedProgramProperty.set(loaded); // Default choose
             selectedFilePath.set(xmlPath.toAbsolutePath().toString());
             programAfterExecuteProperty.set(null);
 
@@ -179,7 +180,7 @@ public class MainAppController {
 
         expansionTask.setOnSucceeded(ev -> {
             ProgramDTO programByDegree = expansionTask.getValue();
-            currentLoadedProgramProperty.set(programByDegree);
+            currentSelectedProgramProperty.set(programByDegree);
             degreeModel.setMaxDegree(maxDegree);
             degreeModel.setCurrentDegree(safeTargetDegree);
         });
@@ -193,7 +194,7 @@ public class MainAppController {
 
     public void onInstructionSelected(InstructionDTO selectedInstruction) {
         int instructionNumber = selectedInstruction.getInstructionNumber();
-        List<InstructionDTO> selectedInstructionChain = currentLoadedProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
+        List<InstructionDTO> selectedInstructionChain = currentSelectedProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
         chainInstructionTableController.fillTable(selectedInstructionChain);
     }
 

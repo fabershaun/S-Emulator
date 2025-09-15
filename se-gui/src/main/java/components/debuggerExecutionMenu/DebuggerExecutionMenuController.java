@@ -21,7 +21,7 @@ public class DebuggerExecutionMenuController {
 
     private MainAppController mainController;
     private ApplicationMode currentMode = ApplicationMode.NEW_RUN_PRESSED;
-    private ObjectProperty<ProgramDTO> currentProgramProperty;
+    private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
 
     @FXML private Button newRunButton;
@@ -45,7 +45,7 @@ public class DebuggerExecutionMenuController {
     }
 
     public void setProperty(ObjectProperty<ProgramDTO> programProperty, ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty) {
-            this.currentProgramProperty = programProperty;
+            this.currentSelectedProgramProperty = programProperty;
             this.programAfterExecuteProperty = programAfterExecuteProperty;
     }
 
@@ -67,7 +67,7 @@ public class DebuggerExecutionMenuController {
     }
 
     public void initializeListeners() {
-        currentProgramProperty.addListener((obs, oldProg, newProgram) -> {
+        currentSelectedProgramProperty.addListener((obs, oldProg, newProgram) -> {
             if (newProgram != null) {
                 resetInputTable(newProgram);
                 enterProgramReady();
@@ -156,7 +156,7 @@ public class DebuggerExecutionMenuController {
         inputsTableView.setEditable(true);
         variablesTableView.getItems().clear();
         cyclesNumberLabel.setText(String.valueOf(0));
-        resetInputTable(currentProgramProperty.getValue());
+        resetInputTable(currentSelectedProgramProperty.getValue());
     }
 
     private void resetInputTable(ProgramDTO program) {

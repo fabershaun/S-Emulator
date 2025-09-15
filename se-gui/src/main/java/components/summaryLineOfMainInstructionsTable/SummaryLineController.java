@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SummaryLineController {
 
-    private ObjectProperty<ProgramDTO> currentProgramProperty;
+    private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
 
     @FXML private Label amountTotal;
     @FXML private Label amountBasic;
@@ -21,20 +21,20 @@ public class SummaryLineController {
 
 
     public void setProperty(ObjectProperty<ProgramDTO> programProperty) {
-        this.currentProgramProperty = programProperty;
+        this.currentSelectedProgramProperty = programProperty;
     }
 
     public void initializeBindings() {
-        if (currentProgramProperty == null) {
+        if (currentSelectedProgramProperty == null) {
             return;
         }
 
         // Integer bindings that recompute counts whenever currentProgramProperty changes
         IntegerBinding totalCountBinding = Bindings.createIntegerBinding(
-                () -> computeTotalInstructionsCount(currentProgramProperty.get()), currentProgramProperty);
+                () -> computeTotalInstructionsCount(currentSelectedProgramProperty.get()), currentSelectedProgramProperty);
 
         IntegerBinding basicCountBinding = Bindings.createIntegerBinding(
-                () -> computeBasicInstructionsCount(currentProgramProperty.get()), currentProgramProperty);
+                () -> computeBasicInstructionsCount(currentSelectedProgramProperty.get()), currentSelectedProgramProperty);
 
         IntegerBinding syntheticCountBinding = Bindings.createIntegerBinding(
                 () -> totalCountBinding.get() - basicCountBinding.get(), totalCountBinding, basicCountBinding);

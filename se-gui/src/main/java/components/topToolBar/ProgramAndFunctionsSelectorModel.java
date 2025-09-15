@@ -7,11 +7,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import java.util.ArrayList;
 import java.util.List;
-
-import static components.topToolBar.HighlightSelectionModel.EMPTY_CHOICE;
 import static javafx.collections.FXCollections.observableArrayList;
 
 public class ProgramAndFunctionsSelectorModel {

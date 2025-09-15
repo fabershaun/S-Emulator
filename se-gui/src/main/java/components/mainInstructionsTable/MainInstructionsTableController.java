@@ -23,7 +23,7 @@ public class MainInstructionsTableController {
 
     private MainAppController mainController;
     private HighlightSelectionModel highlightModel;
-    private ObjectProperty<ProgramDTO> currentProgramProperty;
+    private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
 
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Number> colIndex;
@@ -50,7 +50,7 @@ public class MainInstructionsTableController {
     }
 
     public void setProperty(ObjectProperty<ProgramDTO> programProperty) {
-        this.currentProgramProperty = programProperty;
+        this.currentSelectedProgramProperty = programProperty;
     }
 
     public void setModels(HighlightSelectionModel model) {
@@ -60,7 +60,7 @@ public class MainInstructionsTableController {
 
     public void initializeListeners() {
         // Listen to program changes and repopulate the table
-        currentProgramProperty.addListener((obs, oldProg, newProgram) -> {
+        currentSelectedProgramProperty.addListener((obs, oldProg, newProgram) -> {
             if (newProgram != null) {
                 instructionsTable.getItems().setAll(newProgram.getInstructions().getProgramInstructionsDtoList());
             } else {
