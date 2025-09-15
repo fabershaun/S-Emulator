@@ -64,10 +64,6 @@ public class HistoryController {
                 historyTable.getItems().clear();
             }
         });
-        // TODO: to add if needed
-//        programOrFunctionProperty.addListener((obs, oldProg, newProgram) -> {
-//
-//        })
     }
 
 }

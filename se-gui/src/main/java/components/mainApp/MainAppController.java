@@ -188,6 +188,7 @@ public class MainAppController {
         new Thread(expansionTask, "expand-thread").start();
     }
 
+    // TODO: consider change to task
     public List<ProgramDTO> getProgramAndFunctionsOfProgramList() {
         return engine.getSubProgramsOfProgram(currentLoadedProgramProperty.get().getProgramName());
     }

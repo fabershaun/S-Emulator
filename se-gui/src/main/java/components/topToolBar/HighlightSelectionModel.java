@@ -33,7 +33,6 @@ public class HighlightSelectionModel {
         recalcOptions();
     }
 
-    // TODO: Consider to change - made by task in the main controller
     private void recalcOptions() {
         List<String> result = new ArrayList<>();
         result.add(EMPTY_CHOICE);

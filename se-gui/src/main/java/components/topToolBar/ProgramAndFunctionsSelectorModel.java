@@ -31,7 +31,6 @@ public class ProgramAndFunctionsSelectorModel {
         recalcOptions();
     }
 
-    // TODO: Consider to change - made by task in the main controller
     private void recalcOptions() {
         List<String> programNames = mainController.getProgramAndFunctionsOfProgramList()
                 .stream()
