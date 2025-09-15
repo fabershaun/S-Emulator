@@ -20,6 +20,7 @@ public class ExpansionCollapseModel {
     private final ObservableList<Integer> collapseOptions = observableArrayList();
     private final ObservableList<Integer> expandOptions = observableArrayList();
 
+
     public ExpansionCollapseModel() {  // Automatic update in any change
         InvalidationListener recalculateDegree = observable -> recalcOptions();
         currentDegree.addListener(recalculateDegree);

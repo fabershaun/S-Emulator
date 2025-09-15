@@ -10,47 +10,93 @@ import javafx.scene.control.ListCell;
 
 import static components.topToolBar.HighlightSelectionModel.EMPTY_CHOICE;
 
-
 public class TopToolBarController {
 
     private MainAppController mainController;
     private ExpansionCollapseModel expansionCollapseModel;
     private HighlightSelectionModel highlightSelectionModel;
+    private ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel;
 
     @FXML private ComboBox<Integer> collapseCB;
     @FXML private Label currentDegreeLabel;
     @FXML private ComboBox<Integer> expandCB;
     @FXML private ComboBox<String> highlightSelectionCB;
-    @FXML private ComboBox<?> programFunctionSelectorCB;
-
+    @FXML private ComboBox<String> programFunctionSelectorCB;
     @FXML
-    public void initialize() {
 
-    }
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
     }
 
-    public void setModels(ExpansionCollapseModel expansionCollapseModel, HighlightSelectionModel highlightSelectionModel) {
-        setExpansionCollapseModel(expansionCollapseModel);
-        setHighlightSelectionModel(highlightSelectionModel);
+    public void setModels(ExpansionCollapseModel expansionCollapseModel, HighlightSelectionModel highlightSelectionModel, ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel) {
+        setupExpansionCollapseModel(expansionCollapseModel);
+        setupHighlightSelection(highlightSelectionModel);
+        setupProgramAndFunctionsSelectorModel(programAndFunctionsSelectorModel);
     }
 
-    public void setExpansionCollapseModel(ExpansionCollapseModel expansionCollapseModel) {
+    public void setupExpansionCollapseModel(ExpansionCollapseModel expansionCollapseModel) {
         this.expansionCollapseModel = expansionCollapseModel;
-        initializeExpansionModelBindings();            // Bind items, label, and disabled states to the model
-        registerDegreeSelectionHandlers();    // Attach unified listeners for both ComboBoxes
+
+        collapseCB.setItems(expansionCollapseModel.getCollapseOptions());
+        expandCB.setItems(expansionCollapseModel.getExpandOptions());
+
+        collapseCB.disableProperty().bind(Bindings.isEmpty(expansionCollapseModel.getCollapseOptions())); // Disable ComboBoxes when there are no options available
+        expandCB.disableProperty().bind(Bindings.isEmpty(expansionCollapseModel.getExpandOptions()));
+        currentDegreeLabel.textProperty().bind(expansionCollapseModel.currentDegreeProperty().asString());
+
+        attachSelectionHandlerToComboBox(collapseCB);
+        attachSelectionHandlerToComboBox(expandCB);
 
         // Use helper method to apply placeholder text
         configureExpandComboBoxDisplay(collapseCB, "Collapse");
         configureExpandComboBoxDisplay(expandCB, "Expand");
     }
 
-    public void setHighlightSelectionModel(HighlightSelectionModel highlightSelectionModel) {
+    public void setupHighlightSelection(HighlightSelectionModel highlightSelectionModel) {
         this.highlightSelectionModel =  highlightSelectionModel;
-        initializeHighlightModelBindings();
 
+        highlightSelectionCB.setItems(highlightSelectionModel.getHighlightOptions());  // Bind items to model-backed option lists
+        highlightSelectionCB.disableProperty().bind(Bindings.isEmpty(highlightSelectionModel.getHighlightOptions()));  // Disable ComboBoxes when there are no options available
+
+        attachHighlightSelectionListener();
+        configureHighlightComboBoxDisplay();
+    }
+
+    public void setupProgramAndFunctionsSelectorModel(ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel) {
+        this.programAndFunctionsSelectorModel = programAndFunctionsSelectorModel;
+
+        programAndFunctionsSelectorModel.setMainController(mainController);
+
+        programFunctionSelectorCB.setItems(programAndFunctionsSelectorModel.getProgramAndFunctionsOptions());
+        programFunctionSelectorCB.disableProperty().bind(Bindings.isNull(programAndFunctionsSelectorModel.currentProgramProperty()));  // Disable ComboBoxes when there are no program loaded
+
+        attachProgramFunctionSelectionListener();
+        configureProgramSelectionComboBoxDisplay();
+    }
+
+    private void attachProgramFunctionSelectionListener() {
+        programFunctionSelectorCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            programAndFunctionsSelectorModel.selectProgramOrFunction(newValue);
+        });
+    }
+
+    private void configureProgramSelectionComboBoxDisplay() {
+        programFunctionSelectorCB.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText("Program \\ Function Selector");
+                } else {
+                    setText(item);
+                }
+            }
+        });
+    }
+
+    private void configureHighlightComboBoxDisplay() {
         highlightSelectionCB.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -63,29 +109,21 @@ public class TopToolBarController {
                 }
             }
         });
+    }
 
+    private void attachHighlightSelectionListener() {
         highlightSelectionCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             boolean clear = newValue == null || EMPTY_CHOICE.equals(newValue);
-            if (clear) {
-                highlightSelectionModel.selectHighlight(null);
-            } else {
-                highlightSelectionModel.selectHighlight(newValue);
-            }
+            highlightSelectionModel.selectHighlight(clear ? null : newValue);
         });
     }
 
-    private void initializeExpansionModelBindings() {
-        // Bind items to model-backed option lists
-        collapseCB.setItems(expansionCollapseModel.getCollapseOptions());
-        expandCB.setItems(expansionCollapseModel.getExpandOptions());
-
-        // Keep the label in sync with the current degree value
-        currentDegreeLabel.textProperty().bind(expansionCollapseModel.currentDegreeProperty().asString());
-
-        // Disable ComboBoxes when there are no options available
-        collapseCB.disableProperty().bind(Bindings.isEmpty(expansionCollapseModel.getCollapseOptions()));
-        expandCB.disableProperty().bind(Bindings.isEmpty(expansionCollapseModel.getExpandOptions()));
-    }
+//    private void initializeExpansionModelBindings() {
+//    }
+//    private void initializeHighlightModelBindings() {
+//    }
+//    private void initializeProgramSelectorModelBindings() {
+//    }
 
     private void configureExpandComboBoxDisplay(ComboBox<Integer> comboBox, String placeholder) {
         comboBox.setButtonCell(new ListCell<>() {
@@ -97,34 +135,16 @@ public class TopToolBarController {
         });
     }
 
-    private void initializeHighlightModelBindings() {
-        // Bind items to model-backed option lists
-        highlightSelectionCB.setItems(highlightSelectionModel.getHighlightOptions());
-
-        // Disable ComboBoxes when there are no options available
-        highlightSelectionCB.disableProperty().bind(Bindings.isEmpty(highlightSelectionModel.getHighlightOptions()));
-    }
-
-    private void registerDegreeSelectionHandlers() {
-        // Attach the same selection logic to both ComboBoxes
-        attachSelectionHandlerToCombo(collapseCB);
-        attachSelectionHandlerToCombo(expandCB);
-    }
-
-    private void attachSelectionHandlerToCombo(ComboBox<Integer> integerComboBox) {
+    private void attachSelectionHandlerToComboBox(ComboBox<Integer> integerComboBox) {
         // React to user selection in a unified way
-        integerComboBox.valueProperty().addListener((observableValue, previous, chosen) -> {
-            if (chosen != null) {
-                attemptJumpToDegreeAndClearSelection(chosen);
+        integerComboBox.valueProperty().addListener((observableValue, previous, selectedDegree) -> {
+            if (selectedDegree != null) {
+                try {
+                    mainController.jumpToDegree(selectedDegree);
+                } catch (EngineLoadException e) {
+                    e.printStackTrace();
+                }
             }
         });
-    }
-
-    private void attemptJumpToDegreeAndClearSelection(int chosenDegree) {
-        try {
-            mainController.jumpToDegree(chosenDegree);
-        } catch (EngineLoadException e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -2,10 +2,12 @@ package components.mainApp;
 
 import components.chainInstructionTable.ChainInstructionsTableController;
 import components.debuggerExecutionMenu.RunMode;
+import components.history.HistoryController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
+import components.topToolBar.ProgramAndFunctionsSelectorModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
@@ -48,14 +50,18 @@ public class MainAppController {
     @FXML private ChainInstructionsTableController chainInstructionTableController;    // must: field name = fx:id + "Controller"
     @FXML private VBox debuggerExecutionMenu;
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
+    @FXML private VBox historyMenu;
+    @FXML private HistoryController historyMenuController;   // must: field name = fx:id + "Controller"
 
     private final StringProperty selectedFilePath = new SimpleStringProperty();
-    private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<ProgramDTO> currentLoadedProgramProperty = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<ProgramDTO> currentSelectedProgramProperty = new SimpleObjectProperty<>(null);
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
     private final StringProperty programOrFunctionProperty = new SimpleStringProperty();
 
     private final ExpansionCollapseModel degreeModel = new ExpansionCollapseModel();
     private final HighlightSelectionModel highlightSelectionModel = new HighlightSelectionModel();
+    private final ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel = new ProgramAndFunctionsSelectorModel();
 
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
@@ -69,7 +75,8 @@ public class MainAppController {
             mainInstructionsTableController != null &&
             summaryLineController != null &&
             chainInstructionTableController != null &&
-            debuggerExecutionMenuController != null
+            debuggerExecutionMenuController != null &&
+            historyMenuController != null
         ) {
             initializeSubComponents();
         }
@@ -79,22 +86,32 @@ public class MainAppController {
         setMainControllerForSubcomponents();
 
         initializeSubModels();
-        topToolBarController.setModels(degreeModel, highlightSelectionModel);
+        setModelsForSubComponents();
 
         setPropertiesForSubcomponents();
         initializeBindingsForSubcomponents();
         initializeListenersForSubcomponents();
     }
 
+    private void setModelsForSubComponents() {
+        topToolBarController.setModels(degreeModel, highlightSelectionModel, programAndFunctionsSelectorModel);
+        mainInstructionsTableController.setModels(highlightSelectionModel);
+    }
+
     private void initializeSubModels() {
-        degreeModel.setProgram(currentProgramProperty.get());
-        currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+        degreeModel.setProgram(currentLoadedProgramProperty.get());
+        currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
             degreeModel.setProgram(newProgram);
         });
 
-        highlightSelectionModel.setProgram(currentProgramProperty.get());
-        currentProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+        highlightSelectionModel.setProgram(currentLoadedProgramProperty.get());
+        currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
             highlightSelectionModel.setProgram(newProgram);
+        });
+
+        programAndFunctionsSelectorModel.setProgram(currentLoadedProgramProperty.get());
+        currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+            programAndFunctionsSelectorModel.setProgram(newProgram);
         });
     }
 
@@ -104,20 +121,22 @@ public class MainAppController {
         mainInstructionsTableController.setMainController(this);
         chainInstructionTableController.setMainController(this);
         debuggerExecutionMenuController.setMainController(this);
+        historyMenuController.setMainController(this);
     }
 
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath);
-        mainInstructionsTableController.setProperty(currentProgramProperty);
-        summaryLineController.setProperty(currentProgramProperty);
-
-        mainInstructionsTableController.setHighlightSelectionModel(highlightSelectionModel);
-        debuggerExecutionMenuController.setProperty(currentProgramProperty, programAfterExecuteProperty);
+        mainInstructionsTableController.setProperty(currentLoadedProgramProperty);
+        summaryLineController.setProperty(currentLoadedProgramProperty);
+        debuggerExecutionMenuController.setProperty(currentLoadedProgramProperty, programAfterExecuteProperty);
+        historyMenuController.setProperty(programAfterExecuteProperty, programOrFunctionProperty);
     }
 
     private void initializeListenersForSubcomponents() {
         mainInstructionsTableController.initializeListeners();
         debuggerExecutionMenuController.initializeListeners();
+        debuggerExecutionMenuController.initializeListeners();
+
     }
 
     private void initializeBindingsForSubcomponents() {
@@ -133,8 +152,9 @@ public class MainAppController {
         loadProgramTask.setOnSucceeded(ev -> {
             progressStage.close();
             ProgramDTO loaded = loadProgramTask.getValue();
-            currentProgramProperty.set(loaded);
+            currentLoadedProgramProperty.set(loaded);
             selectedFilePath.set(xmlPath.toAbsolutePath().toString());
+            programAfterExecuteProperty.set(null);
 
             try {
                 degreeModel.setMaxDegree(engine.getMaxDegree());
@@ -159,7 +179,7 @@ public class MainAppController {
 
         expansionTask.setOnSucceeded(ev -> {
             ProgramDTO programByDegree = expansionTask.getValue();
-            currentProgramProperty.set(programByDegree);
+            currentLoadedProgramProperty.set(programByDegree);
             degreeModel.setMaxDegree(maxDegree);
             degreeModel.setCurrentDegree(safeTargetDegree);
         });
@@ -167,9 +187,13 @@ public class MainAppController {
         new Thread(expansionTask, "expand-thread").start();
     }
 
+    public List<ProgramDTO> getProgramAndFunctionsOfProgramList() {
+        return engine.getSubProgramsOfProgram(currentLoadedProgramProperty.get().getProgramName());
+    }
+
     public void onInstructionSelected(InstructionDTO selectedInstruction) {
         int instructionNumber = selectedInstruction.getInstructionNumber();
-        List<InstructionDTO> selectedInstructionChain = currentProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
+        List<InstructionDTO> selectedInstructionChain = currentLoadedProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
         chainInstructionTableController.fillTable(selectedInstructionChain);
     }
 

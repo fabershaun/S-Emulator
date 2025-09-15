@@ -45,7 +45,7 @@ public class HighlightSelectionModel {
     }
 
     // External connection point
-    public void setProgram(ProgramDTO p) { currentProgram.set(p); }
+    public void setProgram(ProgramDTO programDTO) { currentProgram.set(programDTO); }
 
     public ObservableList<String> getHighlightOptions() { return FXCollections.unmodifiableObservableList(highlightSelectionOptions); }
 

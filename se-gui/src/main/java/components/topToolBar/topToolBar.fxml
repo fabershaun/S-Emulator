@@ -7,15 +7,15 @@
 <?import javafx.scene.layout.VBox?>
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="8.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.topToolBar.TopToolBarController">
-   <ComboBox fx:id="programFunctionSelectorCB" promptText="Program \ Function selector">
+   <ComboBox fx:id="programFunctionSelectorCB" promptText="Program \ Function Selector">
       <HBox.margin>
          <Insets right="7.0" />
       </HBox.margin>
    </ComboBox>
    <ComboBox fx:id="collapseCB" prefWidth="90.0" promptText="Collapse" />
     <VBox alignment="CENTER" prefWidth="90.0">
-        <Label text="Current Degree"/>
-        <Label fx:id="currentDegreeLabel" layoutX="10.0" layoutY="10.0"/>
+        <Label text="Current Degree" />
+        <Label fx:id="currentDegreeLabel" layoutX="10.0" layoutY="10.0" />
     </VBox>
    <ComboBox fx:id="expandCB" prefWidth="90.0" promptText="Expand" />
     <ComboBox fx:id="highlightSelectionCB" prefWidth="150.0" promptText="Highlight Selection">

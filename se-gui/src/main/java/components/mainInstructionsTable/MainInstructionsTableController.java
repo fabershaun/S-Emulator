@@ -5,12 +5,14 @@ import components.topToolBar.HighlightSelectionModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -19,16 +21,16 @@ import java.util.regex.Pattern;
  */
 public class MainInstructionsTableController {
 
+    private MainAppController mainController;
+    private HighlightSelectionModel highlightModel;
+    private ObjectProperty<ProgramDTO> currentProgramProperty;
+
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Number> colIndex;
     @FXML private TableColumn<InstructionDTO, String> colType;
     @FXML private TableColumn<InstructionDTO, String> colLabel;
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
-
-    private MainAppController mainController;
-    private HighlightSelectionModel highlightModel;
-    private ObjectProperty<ProgramDTO> currentProgramProperty;
 
     @FXML
     protected void initialize() {
@@ -51,7 +53,7 @@ public class MainInstructionsTableController {
         this.currentProgramProperty = programProperty;
     }
 
-    public void setHighlightSelectionModel(HighlightSelectionModel model) {
+    public void setModels(HighlightSelectionModel model) {
         this.highlightModel = model;
         installMainTableHighlighting();       // configure cell factories
     }

@@ -12,7 +12,10 @@ public interface Engine {
     ProgramDTO getProgram();
     ProgramDTO getExpandedProgram(int degree);
     ProgramExecutorDTO getProgramAfterRun();
-    List<ProgramExecutorDTO> getHistoryToDisplay();
+    List<ProgramExecutorDTO> getHistoryToDisplay();     // For console module
+    List<ProgramExecutorDTO> getHistoryPerProgram(String programName);   // For gui module
+
+    List<ProgramDTO> getSubProgramsOfProgram(String programName);
 
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree() throws EngineLoadException;

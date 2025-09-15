@@ -15,7 +15,9 @@ import variable.Variable;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
@@ -23,7 +25,7 @@ public class EngineImpl implements Engine, Serializable {
     private ProgramExecutor programExecutor;
     private ExecutionHistory executionHistory;
     private int currentDegree;
-
+    private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -55,6 +57,8 @@ public class EngineImpl implements Engine, Serializable {
         programExecutor.run(degree, inputs);
         this.currentDegree = degree;
         executionHistory.addProgramToHistory(programExecutor);
+
+        programToExecutionHistory.put(program.getName(), executionHistory.getProgramsExecutions());
     }
 
     @Override
@@ -81,23 +85,38 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public List<ProgramExecutorDTO> getHistoryToDisplay() {
+    public List<ProgramExecutorDTO> getHistoryToDisplay() {     // TODO: to change to the method below (delete this one)
         List<ProgramExecutorDTO> res = new ArrayList<>();
+        ProgramDTO programDTO = buildProgramDTO(program);
 
         for(ProgramExecutor programExecutorItem : executionHistory.getProgramsExecutions()) {
+            ProgramExecutorDTO programExecutorDTO = buildProgramExecutorDTO(programDTO, programExecutorItem);
+            res.add(programExecutorDTO);
+        }
 
-            ProgramDTO programDTO = buildProgramDTO(program);
+        return res;
+    }
 
-            ProgramExecutorDTO programExecutorDTO = new ProgramExecutorDTO(programDTO,
-                    programExecutorItem.getVariablesToValuesSorted(),
-                    programExecutorItem.getVariableValue(Variable.RESULT),
-                    programExecutorItem.getTotalCyclesOfProgram(),
-                    programExecutorItem.getRunDegree(),
-                    programExecutorItem.getInputsValuesOfUser()
-            );
+    @Override
+    public List<ProgramExecutorDTO> getHistoryPerProgram(String programName) {
+        List<ProgramExecutor> programExecutors = programToExecutionHistory.get(programName);
+        ProgramDTO programDTO = buildProgramDTO(programExecutors.get(0).getProgram());
+
+        List<ProgramExecutorDTO> res = new ArrayList<>();
+        for(ProgramExecutor programExecutorItem : programExecutors) {
+
+            ProgramExecutorDTO programExecutorDTO = buildProgramExecutorDTO(programDTO, programExecutorItem);
 
             res.add(programExecutorDTO);
         }
+
+        return res;
+    }
+
+    @Override
+    public List<ProgramDTO> getSubProgramsOfProgram(String programName) {      // TODO: write this method
+        List<ProgramDTO> res = new ArrayList<>();
+        res.add(getProgram());
 
         return res;
     }
@@ -128,6 +147,17 @@ public class EngineImpl implements Engine, Serializable {
                 program.getInputVariablesSortedStr(),
                 instructionsDTO,
                 program.getExpandedProgram()
+        );
+    }
+
+    private ProgramExecutorDTO buildProgramExecutorDTO(ProgramDTO programDTO, ProgramExecutor programExecutor) {
+        return new ProgramExecutorDTO(
+                programDTO,
+                programExecutor.getVariablesToValuesSorted(),
+                programExecutor.getVariableValue(Variable.RESULT),
+                programExecutor.getTotalCyclesOfProgram(),
+                programExecutor.getRunDegree(),
+                programExecutor.getInputsValuesOfUser()
         );
     }
 
