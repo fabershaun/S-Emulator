@@ -17,7 +17,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private final String functionName;
     private final String functionArguments;
     private int maxDegree;
-    private Program  function;        // To know the labels and variables that the function used
+    private Program function;        // To know the labels and variables that the function used
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private Map<Variable, Variable> functionToProgramVariable = new HashMap<>();
     private Map<Label, Label> functionToProgramLabel = new HashMap<>();
@@ -71,6 +71,10 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return this.maxDegree;
     }
 
+    public String getFunctionName() {
+        return functionName;
+    }
+
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
         List<Instruction> functionInstructionConverted = convertFunctionData(startNumber);
@@ -102,11 +106,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         for (Label functionLabel : mainProgram.getLabelsInProgram()) {
             Label newLabel = mainProgram.generateUniqueLabel();
             functionToProgramLabel.put(functionLabel, newLabel);
-        }
-
-        for (Variable functionWorkVariable : mainProgram.getWorkVariables()) {
-            Variable newWorkVariable = mainProgram.generateUniqueVariable();
-            functionToProgramLabel.put(functionWorkVariable, newWorkVariable);
         }
     }
 
