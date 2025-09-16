@@ -110,7 +110,7 @@ public class EngineImpl implements Engine, Serializable {
         List<ProgramDTO> result = new ArrayList<>();
 
         if (program.getName().equals(programName) && program instanceof ProgramImpl programImpl) {
-            for (Program subProgram : programImpl.getSubPrograms()) {
+            for (Program subProgram : programImpl.getFunctions()) {
                 result.add(buildProgramDTO(subProgram));
             }
         }

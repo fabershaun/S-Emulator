@@ -37,7 +37,7 @@ final class XmlProgramMapper {
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
                 AbstractProgram functionProgram = mapFunction(sFunction);
-                targetProgram.getSubPrograms().add(functionProgram);
+                targetProgram.getFunctions().add(functionProgram);
             }
         }
 
@@ -66,12 +66,12 @@ final class XmlProgramMapper {
         List<SInstruction> instructions = sInstructions.getSInstruction();
         for (int i = 0; i < instructions.size(); i++) {
             SInstruction sInstruction = instructions.get(i);
-            Instruction mapped = mapSingleInstruction(sInstruction, i + 1);
+            Instruction mapped = mapSingleInstruction(sInstruction, i + 1, targetProgram);
             targetProgram.addInstruction(mapped);
         }
     }
 
-    private static Instruction mapSingleInstruction(SInstruction sInstruction, int ordinal) {
+    private static Instruction mapSingleInstruction(SInstruction sInstruction, int ordinal, Program targetProgram) {
         try {
             String instructionName = toUpperSafe(sInstruction.getName());
             Label instructionLabel = parseLabel(sInstruction.getSLabel(), instructionName, ordinal);
@@ -80,7 +80,7 @@ final class XmlProgramMapper {
                     sInstruction.getSInstructionArguments().getSInstructionArgument() :
                     null;
             Instruction originInstruction = new OriginOfAllInstruction();
-            return createNewInstruction(instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal, originInstruction);
+            return createNewInstruction(instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal, originInstruction, targetProgram);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -92,7 +92,8 @@ final class XmlProgramMapper {
                                                             Variable targetVariable,
                                                             List<SInstructionArgument> sInstructionArguments,
                                                             int ordinal,
-                                                            Instruction originInstruction) {
+                                                            Instruction originInstruction,
+                                                            Program targetProgram) {
         switch (instructionName) {
             case "INCREASE":
                 return new IncreaseInstruction(targetVariable, instructionLabel, originInstruction, ordinal);
@@ -172,7 +173,19 @@ final class XmlProgramMapper {
             }
 
             case "QUOTE": {
+                String functionName = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .get();
 
+                String functionArguments = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .get();
+
+                return new QuoteInstruction(targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments, targetProgram);
             }
 
             default:

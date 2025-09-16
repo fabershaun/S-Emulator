@@ -13,7 +13,7 @@ public class ProgramImpl extends AbstractProgram {
     }
 
 
-    public List<Program> getSubPrograms() {
+    public List<Program> getFunctions() {
         return this.functions;
     }
 

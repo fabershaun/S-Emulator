@@ -5,6 +5,7 @@ import exceptions.EngineLoadException;
 import instruction.Instruction;
 import instruction.LabelReferencesInstruction;
 import instruction.SyntheticInstruction;
+import instruction.synthetic.QuoteInstruction;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
@@ -16,7 +17,7 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SubProgramImpl implements Program, Serializable {
+public class AbstractProgram implements Program, Serializable {
     private final String programName;
     private final List<Instruction> programInstructions;
     private final Set<Variable> inputVariables;
@@ -26,14 +27,10 @@ public class SubProgramImpl implements Program, Serializable {
     private final Set<Label> labelsAddedAfterExtension;  // Need it to keep the order of the labels
     private final Set<Label> referencedLabels;
 
-    //private final List<FunctionImpl> subPrograms;
-    private final List<Program> subPrograms;
-
-
     private int nextLabelNumber = 1;
     private int nextWorkVariableNumber = 1;
 
-    public SubProgramImpl(String name) {
+    public AbstractProgram(String name) {
         this.programName = name;
         this.programInstructions = new ArrayList<>();
         this.labelToInstruction = new HashMap<>();
@@ -42,8 +39,6 @@ public class SubProgramImpl implements Program, Serializable {
         this.labelsInProgram = new ArrayList<>();
         this.labelsAddedAfterExtension = new LinkedHashSet<>();
         this.referencedLabels  = new LinkedHashSet<>();
-
-        this.subPrograms = new ArrayList<>();
     }
 
     @Override
@@ -66,6 +61,11 @@ public class SubProgramImpl implements Program, Serializable {
     public void initialize() {
         initNextLabelNumber();
         initNextWorkVariableNumber();
+
+        programInstructions.stream()
+                .filter(instruction -> instruction instanceof QuoteInstruction)
+                .map(instruction -> (QuoteInstruction) instruction)
+                .forEach(QuoteInstruction::setFunctionForQuoteInstruction);
     }
 
     @Override
