@@ -3,18 +3,18 @@ package program;
 import java.util.*;
 
 
-public class ProgramImpl extends SubProgramImpl {
+public class ProgramImpl extends AbstractProgram {
 
-    private final List<Program> subPrograms;    // maybe need to chane to <SubProgramImpl>
+    private final List<Program> functions;
 
-    public ProgramImpl(String name) {
-        super(name);
-        this.subPrograms = new ArrayList<>();
+    public ProgramImpl(String programOfFunctionName) {
+        super(programOfFunctionName);
+        this.functions = new ArrayList<>();
     }
 
 
     public List<Program> getSubPrograms() {
-        return this.subPrograms;
+        return this.functions;
     }
 
     // TODO: עכשיו לכתוב את המתודה שבונה את רשימת תתי התוכניות

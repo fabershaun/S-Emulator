@@ -1,19 +1,19 @@
 package loader;
 
+import generatedFromXml.*;
 import instruction.AbstractInstruction;
 import instruction.Instruction;
 import instruction.OriginOfAllInstruction;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
+import program.AbstractProgram;
+import program.FunctionImpl;
 import program.Program;
 import program.ProgramImpl;
 import variable.Variable;
 import variable.VariableImpl;
 import variable.VariableType;
-import generatedFromXml.SInstruction;
-import generatedFromXml.SInstructionArgument;
-import generatedFromXml.SProgram;
 import instruction.basic.DecreaseInstruction;
 import instruction.basic.IncreaseInstruction;
 import instruction.basic.JumpNotZeroInstruction;
@@ -31,19 +31,44 @@ final class XmlProgramMapper {
         String programName = safeTrim(sProgram.getName());
         ProgramImpl targetProgram = new ProgramImpl(programName != null ? programName : "Unnamed");
 
-        List<SInstruction> sInstructions = sProgram.getSInstructions().getSInstruction();
+        mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
 
-        if (sInstructions == null || sInstructions.isEmpty()) {
-            return targetProgram;
-        }
-
-        for (int i = 0; i < sInstructions.size(); i++) {
-            SInstruction sInstruction = sInstructions.get(i);
-            Instruction mapped = mapSingleInstruction(sInstruction, i + 1);
-            targetProgram.addInstruction(mapped);
+        // Map functions (sub-programs) if they exist
+        if (sProgram.getSFunctions() != null) {
+            for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
+                AbstractProgram functionProgram = mapFunction(sFunction);
+                targetProgram.getSubPrograms().add(functionProgram);
+            }
         }
 
         return targetProgram;
+    }
+
+    private static AbstractProgram mapFunction(SFunction sFunction) {
+        String functionName = safeTrim(sFunction.getName());
+        String userString = safeTrim(sFunction.getUserString());
+        AbstractProgram functionProgram = new FunctionImpl(
+                functionName != null ? functionName : "UnnamedFunction",
+                userString != null ? userString : "UnnamedUserString"
+        );
+
+        // Map instructions of this function into its program
+        mapInstructionsIntoProgram(sFunction.getSInstructions(), functionProgram);
+
+        return functionProgram;
+    }
+
+    private static void mapInstructionsIntoProgram(SInstructions sInstructions, Program targetProgram) {
+        if (sInstructions == null || sInstructions.getSInstruction() == null) {
+            return; // No instructions to map
+        }
+
+        List<SInstruction> instructions = sInstructions.getSInstruction();
+        for (int i = 0; i < instructions.size(); i++) {
+            SInstruction sInstruction = instructions.get(i);
+            Instruction mapped = mapSingleInstruction(sInstruction, i + 1);
+            targetProgram.addInstruction(mapped);
+        }
     }
 
     private static Instruction mapSingleInstruction(SInstruction sInstruction, int ordinal) {
@@ -144,6 +169,10 @@ final class XmlProgramMapper {
                         .orElseThrow(() -> new IllegalArgumentException("variableName not found"));
 
                 return new JumpEqualVariableInstruction(targetVariable, instructionLabel, sourceVariable, addedLabel, originInstruction, ordinal);
+            }
+
+            case "QUOTE": {
+
             }
 
             default:

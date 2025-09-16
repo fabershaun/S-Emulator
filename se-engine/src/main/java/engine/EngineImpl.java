@@ -10,6 +10,7 @@ import execution.ProgramExecutor;
 import history.ExecutionHistoryImpl;
 import program.Program;
 import loader.XmlProgramLoader;
+import program.ProgramImpl;
 import variable.Variable;
 
 import java.io.*;
@@ -24,7 +25,7 @@ public class EngineImpl implements Engine, Serializable {
     private Program program;
     private ProgramExecutor programExecutor;
     private ExecutionHistory executionHistory;
-    private int currentDegree;
+
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
 
     @Override
@@ -37,7 +38,6 @@ public class EngineImpl implements Engine, Serializable {
         newProgram.validateProgram();
         newProgram.initialize();
 
-        currentDegree = 0;
         program = newProgram;
         executionHistory = new ExecutionHistoryImpl();
     }
@@ -50,7 +50,6 @@ public class EngineImpl implements Engine, Serializable {
         programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
 
         programExecutor.run(degree, inputs);
-        this.currentDegree = degree;
         executionHistory.addProgramToHistory(programExecutor);
 
         programToExecutionHistory.put(program.getName(), executionHistory.getProgramsExecutions());
@@ -99,9 +98,7 @@ public class EngineImpl implements Engine, Serializable {
 
         List<ProgramExecutorDTO> res = new ArrayList<>();
         for(ProgramExecutor programExecutorItem : programExecutors) {
-
             ProgramExecutorDTO programExecutorDTO = buildProgramExecutorDTO(programDTO, programExecutorItem);
-
             res.add(programExecutorDTO);
         }
 
@@ -109,11 +106,16 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public List<ProgramDTO> getSubProgramsOfProgram(String programName) {      // TODO: write this method
-        List<ProgramDTO> res = new ArrayList<>();
-        res.add(getProgram());
+    public List<ProgramDTO> getSubProgramsOfProgram(String programName) {
+        List<ProgramDTO> result = new ArrayList<>();
 
-        return res;
+        if (program.getName().equals(programName) && program instanceof ProgramImpl programImpl) {
+            for (Program subProgram : programImpl.getSubPrograms()) {
+                result.add(buildProgramDTO(subProgram));
+            }
+        }
+
+        return result;
     }
 
     @Override
