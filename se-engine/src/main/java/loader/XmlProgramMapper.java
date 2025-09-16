@@ -66,12 +66,12 @@ final class XmlProgramMapper {
         List<SInstruction> instructions = sInstructions.getSInstruction();
         for (int i = 0; i < instructions.size(); i++) {
             SInstruction sInstruction = instructions.get(i);
-            Instruction mapped = mapSingleInstruction(sInstruction, i + 1, targetProgram);
+            Instruction mapped = mapSingleInstruction(sInstruction, i + 1);
             targetProgram.addInstruction(mapped);
         }
     }
 
-    private static Instruction mapSingleInstruction(SInstruction sInstruction, int ordinal, Program targetProgram) {
+    private static Instruction mapSingleInstruction(SInstruction sInstruction, int ordinal) {
         try {
             String instructionName = toUpperSafe(sInstruction.getName());
             Label instructionLabel = parseLabel(sInstruction.getSLabel(), instructionName, ordinal);
@@ -80,7 +80,7 @@ final class XmlProgramMapper {
                     sInstruction.getSInstructionArguments().getSInstructionArgument() :
                     null;
             Instruction originInstruction = new OriginOfAllInstruction();
-            return createNewInstruction(instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal, originInstruction, targetProgram);
+            return createNewInstruction(instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal, originInstruction);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -92,8 +92,7 @@ final class XmlProgramMapper {
                                                             Variable targetVariable,
                                                             List<SInstructionArgument> sInstructionArguments,
                                                             int ordinal,
-                                                            Instruction originInstruction,
-                                                            Program targetProgram) {
+                                                            Instruction originInstruction) {
         switch (instructionName) {
             case "INCREASE":
                 return new IncreaseInstruction(targetVariable, instructionLabel, originInstruction, ordinal);
@@ -185,7 +184,7 @@ final class XmlProgramMapper {
                         .findFirst()
                         .get();
 
-                return new QuoteInstruction(targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments, targetProgram);
+                return new QuoteInstruction(targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments);
             }
 
             default:

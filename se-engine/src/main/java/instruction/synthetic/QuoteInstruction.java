@@ -9,30 +9,32 @@ import program.ProgramImpl;
 import variable.Variable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuoteInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final String functionName;
     private final String functionArguments;
     private int maxDegree;
     private Program  function;        // To know the labels and variables that the function used
-    private final Program program;    // To know the labels and variables that already exist in program
     private final List<Instruction> innerInstructions = new ArrayList<>();
+    private Map<Variable, Variable> functionToProgramVariable = new HashMap<>();
+    private Map<Label, Label> functionToProgramLabel = new HashMap<>();
 
-    public QuoteInstruction(Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArguments, Program program) {
+    public QuoteInstruction(Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArguments) {
         super(InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
         this.functionName = functionName;
         this.functionArguments = functionArguments;
-        this.program = program;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new QuoteInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, functionName, functionArguments, program);
+        return new QuoteInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, functionName, functionArguments);
     }
 
     public void setFunctionForQuoteInstruction() {
-        if (program instanceof ProgramImpl mainProgram) {
+        if (super.getProgramOfThisInstruction() instanceof ProgramImpl mainProgram) {
             this.function = mainProgram.getFunctions()
                     .stream()
                     .filter(arg -> arg.getName().equalsIgnoreCase(this.functionName))
@@ -71,13 +73,59 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
-        int instructionNumber = startNumber;
-
-
+        List<Instruction> functionInstructionConverted = convertFunctionData(startNumber);
+        innerInstructions.addAll(functionInstructionConverted);
 
 
         this.maxDegree = calculateMaxDegree();
-        return instructionNumber;
+        return startNumber + innerInstructions.size();
+    }
+
+    private List<Instruction> convertFunctionData(int startNumber) {
+        List<Instruction> functionInstructionConverted = new ArrayList<>();
+
+        mapFunctionVariables();
+        mapFunctionLabels();
+
+        // פקודות השמה N
+
+        for (Instruction functionInstruction : function.getInstructionsList()) {
+
+        }
+
+        return functionInstructionConverted;
+    }
+
+    private void mapFunctionLabels() {
+        Program mainProgram = super.getProgramOfThisInstruction();
+
+        for (Label functionLabel : mainProgram.getLabelsInProgram()) {
+            Label newLabel = mainProgram.generateUniqueLabel();
+            functionToProgramLabel.put(functionLabel, newLabel);
+        }
+
+        for (Variable functionWorkVariable : mainProgram.getWorkVariables()) {
+            Variable newWorkVariable = mainProgram.generateUniqueVariable();
+            functionToProgramLabel.put(functionWorkVariable, newWorkVariable);
+        }
+    }
+
+    private void mapFunctionVariables() {
+        Program mainProgram = super.getProgramOfThisInstruction();
+
+        for (Variable functionInputVariable : mainProgram.getInputVariables()) {
+            Variable newWorkVariable = mainProgram.generateUniqueVariable();
+            functionToProgramVariable.put(functionInputVariable, newWorkVariable);
+        }
+
+        for (Variable functionWorkVariable : mainProgram.getWorkVariables()) {
+            Variable newWorkVariable = mainProgram.generateUniqueVariable();
+            functionToProgramVariable.put(functionWorkVariable, newWorkVariable);
+        }
+
+        //Variable newWorkVariable = mainProgram.generateUniqueVariable();
+        //functionVariableToProgramVariable.put( , newWorkVariable);     // TODO: map 'y' of function to program
+
     }
 
     private int calculateMaxDegree() {
