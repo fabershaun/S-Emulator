@@ -36,18 +36,18 @@ final class XmlProgramMapper {
         // Map functions (sub-programs) if they exist
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
-                AbstractProgram functionProgram = mapFunction(sFunction);
-                targetProgram.getFunctions().add(functionProgram);
+                FunctionImpl innerFunction = mapFunction(sFunction);
+                targetProgram.addInnerFunction(innerFunction.getName(), innerFunction);
             }
         }
 
         return targetProgram;
     }
 
-    private static AbstractProgram mapFunction(SFunction sFunction) {
+    private static FunctionImpl mapFunction(SFunction sFunction) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());
-        AbstractProgram functionProgram = new FunctionImpl(
+        FunctionImpl functionProgram = new FunctionImpl(
                 functionName != null ? functionName : "UnnamedFunction",
                 userString != null ? userString : "UnnamedUserString"
         );
@@ -67,6 +67,7 @@ final class XmlProgramMapper {
         for (int i = 0; i < instructions.size(); i++) {
             SInstruction sInstruction = instructions.get(i);
             Instruction mapped = mapSingleInstruction(sInstruction, i + 1);
+            mapped.setProgramOfThisInstruction(targetProgram);
             targetProgram.addInstruction(mapped);
         }
     }

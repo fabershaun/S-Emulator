@@ -7,5 +7,4 @@ public interface Variable extends Serializable {
     String getRepresentation();
     int getNumber();
     Variable RESULT = new VariableImpl(VariableType.RESULT, 0);
-
 }

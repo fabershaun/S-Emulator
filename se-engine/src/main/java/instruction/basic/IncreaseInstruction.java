@@ -9,6 +9,8 @@ import label.Label;
 import label.FixedLabel;
 import variable.Variable;
 
+import java.util.Map;
+
 public class IncreaseInstruction extends AbstractInstruction {
 
     public IncreaseInstruction(Variable variable, Instruction origin, int instructionNumber) {
@@ -44,5 +46,13 @@ public class IncreaseInstruction extends AbstractInstruction {
         command.append(" + 1");
 
         return command.toString();
+    }
+
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+
+        return new IncreaseInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

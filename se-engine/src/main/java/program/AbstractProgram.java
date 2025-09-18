@@ -235,7 +235,7 @@ public class AbstractProgram implements Program, Serializable {
                 List<Instruction> newInstructionsList = new ArrayList<>();
 
                 // initialize
-                instruction.setProgramOfThisInstruction(this);
+                instruction.setProgramOfThisInstruction(this);      // TODO: delete dont need this any more
                 if (instruction instanceof SyntheticInstruction syntheticInstruction) {
                     nextInstructionNumber = syntheticInstruction.setInnerInstructionsAndReturnTheNextOne(nextInstructionNumber);
                     newInstructionsList = instruction.getExtendedInstruction();
@@ -321,5 +321,34 @@ public class AbstractProgram implements Program, Serializable {
         List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
         inputAndWorkVariablesAndTheirValues.addAll(workVariables);
         return inputAndWorkVariablesAndTheirValues;
+    }
+
+    @Override
+    public Variable findVariableByName(String name) {
+        // Search in input variables
+        for (Variable variable : getInputVariables()) {
+            if (variable.getRepresentation().equals(name)) {
+                return variable;
+            }
+        }
+
+        // Search in work variables
+        for (Variable variable : getWorkVariables()) {
+            if (variable.getRepresentation().equals(name)) {
+                return variable;
+            }
+        }
+
+        // Search in result variable (y)
+        if (VariableType.RESULT.getVariableRepresentation(0).equals(name)) {
+            return getResultVariable();
+        }
+
+        throw new IllegalArgumentException("Variable not found in program: " + name);
+    }
+
+    @Override
+    public Variable getResultVariable() {
+        return Variable.RESULT;
     }
 }

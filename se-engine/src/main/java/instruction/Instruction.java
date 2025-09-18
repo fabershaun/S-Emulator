@@ -8,6 +8,7 @@ import variable.Variable;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public interface Instruction extends Serializable {
 
@@ -28,4 +29,6 @@ public interface Instruction extends Serializable {
     void setProgramOfThisInstruction(Program programOfThisInstruction);
     Label execute(ExecutionContext context);
     Instruction createInstructionWithInstructionNumber(int instructionNumber);
+
+    Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap);
 }

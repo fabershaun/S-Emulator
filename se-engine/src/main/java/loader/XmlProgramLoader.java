@@ -2,7 +2,7 @@ package loader;
 
 import exceptions.EngineLoadException;
 import instruction.Instruction;
-import instruction.synthetic.QuoteInstruction;
+import instruction.synthetic.QuoteInstruction1;
 import program.Program;
 import generatedFromXml.SProgram;
 import jakarta.xml.bind.*;
@@ -66,7 +66,7 @@ public class XmlProgramLoader {
 
     private void validateFunctionCalls(Program program, Set<String> definedFunctions, String context) throws EngineLoadException {
         for (Instruction instr : program.getInstructionsList()) {
-            if (instr instanceof QuoteInstruction quoteInstruction) {
+            if (instr instanceof QuoteInstruction1 quoteInstruction) {
                 String calledFunc = quoteInstruction.getFunctionName().toUpperCase(Locale.ROOT); // assuming getter exists
                 if (!definedFunctions.contains(calledFunc)) {
                     throw new EngineLoadException(

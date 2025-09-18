@@ -36,4 +36,7 @@ public interface Program extends Serializable {
     Variable generateUniqueVariable();
     void sortVariableSetByNumber(Set<Variable> variables);
     void addInputVariable(Variable variable);
+
+    Variable findVariableByName(String name);
+    Variable getResultVariable();
 }

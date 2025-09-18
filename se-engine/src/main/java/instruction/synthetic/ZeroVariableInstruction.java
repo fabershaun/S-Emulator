@@ -10,6 +10,7 @@ import variable.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ZeroVariableInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final int MAX_DEGREE = 1;
@@ -66,5 +67,13 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
         innerInstructions.add(new JumpNotZeroInstruction(super.getTargetVariable(), newLabel1, this, instructionNumber++));
 
         return instructionNumber;
+    }
+
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+
+        return new ZeroVariableInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

@@ -1,9 +1,12 @@
 package instruction.synthetic;
 
 import execution.ExecutionContext;
+import execution.ProgramExecutor;
+import execution.ProgramExecutorImpl;
 import instruction.*;
 import label.FixedLabel;
 import label.Label;
+import program.FunctionImpl;
 import program.Program;
 import program.ProgramImpl;
 import variable.Variable;
@@ -15,37 +18,56 @@ import java.util.Map;
 
 public class QuoteInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final String functionName;
-    private final String functionArguments;
-    private int maxDegree;
-    private Program function;        // To know the labels and variables that the function used
-    private final List<Instruction> innerInstructions = new ArrayList<>();
-    private Map<Variable, Variable> functionToProgramVariable = new HashMap<>();
-    private Map<Label, Label> functionToProgramLabel = new HashMap<>();
+    private final String functionArgumentsStrNotTrimmed;
+    private FunctionImpl function;        // To know the labels and variables that the function used
+    private final List<QuoteArgument> quoteArguments =  new ArrayList<>();
 
-    public QuoteInstruction(Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArguments) {
+    private ProgramExecutor programExecutor;
+    private boolean initialized;
+
+    private int currentCyclesNumber;
+    private int maxDegree = 3; // Dynamic    //TODO
+
+    private final List<Instruction> innerInstructions = new ArrayList<>();
+    private final Map<Label, Instruction> labelToInnerInstruction = new HashMap<>();
+    private final Map<Variable, Variable> functionToProgramVariable = new HashMap<>();
+    private final Map<FunctionImpl, Variable> QuoteFunctionToFunctionVariable = new HashMap<>();
+    private final Map<Label, Label> functionToProgramLabel = new HashMap<>();
+
+    public QuoteInstruction(Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArgumentsStrNotTrimmed) {
         super(InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
         this.functionName = functionName;
-        this.functionArguments = functionArguments;
+        this.functionArgumentsStrNotTrimmed = functionArgumentsStrNotTrimmed;
+        this.initialized = false;
+    }
+
+    public void initialize() {
+        extractQuoteArguments();
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new QuoteInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, functionName, functionArguments);
+        return new QuoteInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, functionName, functionArgumentsStrNotTrimmed);
     }
 
-    public void setFunctionForQuoteInstruction() {
-        if (super.getProgramOfThisInstruction() instanceof ProgramImpl mainProgram) {
-            this.function = mainProgram.getFunctions()
-                    .stream()
-                    .filter(arg -> arg.getName().equalsIgnoreCase(this.functionName))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Function not found: " + functionName));
-        }
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable()); // TODO: check
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+
+        return new QuoteInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     @Override
     public Label execute(ExecutionContext context) {
-        return null;
+
+        ProgramExecutor functionExecutor = new ProgramExecutorImpl(function);
+
+        Long[] inputs = new Long[0];
+        functionExecutor.run(0, inputs);
+
+        currentCyclesNumber = InstructionData.QUOTATION.getCycles() + functionExecutor.getTotalCyclesOfProgram();
+        return FixedLabel.EMPTY;
     }
 
     @Override
@@ -56,86 +78,232 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         command.append("(");
         command.append(targetVariableRepresentation);
         command.append(" <- ");
-        command.append(functionArguments);
+        command.append(functionArgumentsStrNotTrimmed);
         command.append(")");
         return command.toString();
     }
 
     @Override
     public List<Instruction> getInnerInstructions() {
-        return innerInstructions;
+        return List.of();
     }
 
     @Override
     public int getMaxDegree() {
-        return this.maxDegree;
-    }
-
-    public String getFunctionName() {
-        return functionName;
+        return this.maxDegree;  // TODO: אולי לחשב כאן את כל הדרגות בצודה דינמאית
     }
 
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
-        List<Instruction> functionInstructionConverted = convertFunctionData(startNumber);
-        innerInstructions.addAll(functionInstructionConverted);
+        List<Instruction> expandedInstructions = convertFunctionData(startNumber);
+        innerInstructions.clear();
+        innerInstructions.addAll(expandedInstructions);
 
-
-        this.maxDegree = calculateMaxDegree();
         return startNumber + innerInstructions.size();
     }
 
+    @Override
+    public int getCycleOfInstruction() {
+        return this.currentCyclesNumber;
+    }
+
+    public void setFunctionForQuoteInstruction() {
+        if (super.getProgramOfThisInstruction() instanceof ProgramImpl mainProgram) {
+            this.function = mainProgram.getFunctionByName(this.functionName);
+        }
+    }
+
     private List<Instruction> convertFunctionData(int startNumber) {
-        List<Instruction> functionInstructionConverted = new ArrayList<>();
+        List<Instruction> expandedInstructions = new ArrayList<>();
 
         mapFunctionVariables();
         mapFunctionLabels();
+        mapFunctionVariableToProgramFunction();
 
-        // פקודות השמה N
+        int instructionNumber = startNumber;
 
-        for (Instruction functionInstruction : function.getInstructionsList()) {
-
+        if (!initialized) {
+            initialize();
+            initialized = true;
         }
 
-        return functionInstructionConverted;
-    }
+        instructionNumber = addParameterInstructions(expandedInstructions, instructionNumber);       // Step 1: assign arguments to function input variables
+        instructionNumber = addClonedFunctionInstructions(expandedInstructions, instructionNumber); // Step 2: clone function instructions with variable/label remapping
+        instructionNumber = addResultAssignment(expandedInstructions, instructionNumber);
 
-    private void mapFunctionLabels() {
-        Program mainProgram = super.getProgramOfThisInstruction();
-
-        for (Label functionLabel : mainProgram.getLabelsInProgram()) {
-            Label newLabel = mainProgram.generateUniqueLabel();
-            functionToProgramLabel.put(functionLabel, newLabel);
+        labelToInnerInstruction.clear();
+        for (Instruction instr : expandedInstructions) {
+            if (instr.getLabel() != null && instr.getLabel() != FixedLabel.EMPTY) {
+                labelToInnerInstruction.put(instr.getLabel(), instr);
+            }
         }
+
+        return expandedInstructions;
     }
 
     private void mapFunctionVariables() {
         Program mainProgram = super.getProgramOfThisInstruction();
 
-        for (Variable functionInputVariable : mainProgram.getInputVariables()) {
+        for (Variable functionInputVariable : function.getInputVariables()) {
             Variable newWorkVariable = mainProgram.generateUniqueVariable();
             functionToProgramVariable.put(functionInputVariable, newWorkVariable);
         }
 
-        for (Variable functionWorkVariable : mainProgram.getWorkVariables()) {
+        for (Variable functionWorkVariable : function.getWorkVariables()) {
             Variable newWorkVariable = mainProgram.generateUniqueVariable();
             functionToProgramVariable.put(functionWorkVariable, newWorkVariable);
         }
 
-        //Variable newWorkVariable = mainProgram.generateUniqueVariable();
-        //functionVariableToProgramVariable.put( , newWorkVariable);     // TODO: map 'y' of function to program
+        // Variable functionResult = Variable.RESULT;
+        Variable functionResult = function.getResultVariable();
+        Variable newWorkVariable = mainProgram.generateUniqueVariable();
+        functionToProgramVariable.put(functionResult , newWorkVariable);
 
     }
 
-    private int calculateMaxDegree() {
-        return innerInstructions.stream()
-                .mapToInt(instruction -> {
-                    if (instruction instanceof SyntheticInstruction synthetic) {
-                        return synthetic.getMaxDegree();
-                    }
-                    return 0; // If basic instruction
-                })
-                .max()
-                .orElse(0);
+    private void mapFunctionLabels() {
+        // Map each function label to a unique label in the caller program
+        for (Label functionLabel : function.getLabelsInProgram()) {
+            Label newLabel = super.getProgramOfThisInstruction().generateUniqueLabel();
+            functionToProgramLabel.put(functionLabel, newLabel);
+        }
+    }
+
+    private void mapFunctionVariableToProgramFunction() {
+        Program mainProgram = super.getProgramOfThisInstruction();
+        for(QuoteArgument quoteArgument : quoteArguments) {
+            if (quoteArgument.getType().equals(QuoteArgument.ArgumentType.FUNCTION)) {
+                Variable newWorkVariable = mainProgram.generateUniqueVariable();
+                QuoteFunctionToFunctionVariable.put(quoteArgument.getFunction(), newWorkVariable);
+            }
+        }
+    }
+
+    private int addParameterInstructions(List<Instruction> targetList, int instructionNumber) {
+        Label originalLabel = getLabel();
+        boolean firstAssignment = true;
+
+        for(QuoteArgument quoteArgument : quoteArguments) {
+            Label labelForThisInstruction = (firstAssignment && (originalLabel != null) && (originalLabel != FixedLabel.EMPTY))
+                    ? originalLabel
+                    : FixedLabel.EMPTY;
+            firstAssignment = false;
+
+            if(quoteArgument.getType().equals(QuoteArgument.ArgumentType.VARIABLE)) {
+                Variable sourceVariable = quoteArgument.getVariable();                      // sourceVariable = original Quote instruction input variable
+                Variable targetVariable = functionToProgramVariable.get(sourceVariable);    // targetVariable = new work variable that we created
+
+                // create assignment: targetVariable <- sourceVariable
+                targetList.add(
+                        new AssignmentInstruction(targetVariable, labelForThisInstruction, sourceVariable, getOriginalInstruction(), instructionNumber++));
+            }
+            else if(quoteArgument.getType().equals(QuoteArgument.ArgumentType.FUNCTION)) {
+                FunctionImpl functionImpl = quoteArgument.getFunction();
+                Variable targetVariable = QuoteFunctionToFunctionVariable.get(functionImpl);    // targetVariable = new work variable that we created
+
+                // create assignment: targetVariable <- functioName
+                targetList.add(
+                        new QuoteInstruction(targetVariable, labelForThisInstruction, getOriginalInstruction(), instructionNumber++, functionImpl.getName(), functionImpl.getUserString()));
+            }
+        }
+
+        return instructionNumber;
+    }
+
+    // Clones function instructions into the caller program with remapped variables and labels
+    private int addClonedFunctionInstructions(List<Instruction> targetList, int instructionNumber) {
+        for (Instruction functionInstruction : function.getInstructionsList()) {
+            Instruction cloned = functionInstruction.remapAndClone(
+                    instructionNumber++,
+                    functionToProgramVariable,
+                    functionToProgramLabel
+            );
+
+            targetList.add(cloned);
+        }
+        return instructionNumber;
+    }
+
+    // Assign function result back to the target of this Quote
+    private int addResultAssignment(List<Instruction> targetList, int instructionNumber) {
+        Variable mappedResult = functionToProgramVariable.get(Variable.RESULT);
+
+        if (mappedResult == null) {
+            throw new IllegalStateException("Function result variable not mapped correctly");
+        }
+
+        Label lastLabel = functionToProgramLabel.getOrDefault(FixedLabel.EXIT,  FixedLabel.EMPTY);
+
+        targetList.add(
+                new AssignmentInstruction(getTargetVariable(), lastLabel, mappedResult, getOriginalInstruction(), instructionNumber++));
+
+        return instructionNumber;
+    }
+
+    private void extractQuoteArguments() {
+        if (functionArgumentsStrNotTrimmed == null || functionArgumentsStrNotTrimmed.trim().isEmpty()) {
+            return;
+        }
+
+        String argsStr = functionArgumentsStrNotTrimmed.trim();
+        if (argsStr.startsWith("(") && argsStr.endsWith(")")) {
+            argsStr = argsStr.substring(1, argsStr.length() - 1).trim();
+        }
+
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int parenDepth = 0;
+
+        for (char c : argsStr.toCharArray()) {
+            if (c == ',' && parenDepth == 0) {
+                tokens.add(current.toString().trim());
+                current.setLength(0);
+            } else {
+                if (c == '(') parenDepth++;
+                if (c == ')') parenDepth--;
+                current.append(c);
+            }
+        }
+
+        if (!current.isEmpty()) {
+            tokens.add(current.toString().trim());
+        }
+
+        for (String token : tokens) {
+            if (token.isEmpty()) continue;
+
+            if (token.contains("(")) {  // If token is a Function:
+                String innerFunctionName = getFunctionName(token);
+                String innerFunctionUserString = "";
+                if (super.getProgramOfThisInstruction() instanceof ProgramImpl mainProgram) {       // TODO: clean this code
+                    innerFunctionUserString = mainProgram.getFunctionByName(innerFunctionName).getUserString();
+                }
+
+                FunctionImpl nestedFunc = new FunctionImpl(innerFunctionName, innerFunctionUserString);
+                quoteArguments.add(QuoteArgument.fromFunction(nestedFunc));
+            }
+            else {    // If token is a Variable:
+                Variable variable = super.getProgramOfThisInstruction().findVariableByName(token);
+                if (variable == null) {
+                    throw new IllegalArgumentException("Variable not found: " + token);
+                }
+                quoteArguments.add(QuoteArgument.fromVariable(variable));
+            }
+        }
+    }
+
+    private String getFunctionName(String token) {
+
+        int indexOfOpenParen = token.indexOf("(");
+        String afterParen = token.substring(indexOfOpenParen + 1).trim();
+
+        int endIndex = afterParen.indexOf(',');
+        int closeIndex = afterParen.indexOf(')');
+
+        if (endIndex == -1 || (closeIndex != -1 && closeIndex < endIndex)) {
+            endIndex = closeIndex;
+        }
+
+        return (endIndex == -1 ? afterParen : afterParen.substring(0, endIndex)).trim();
     }
 }

@@ -9,6 +9,7 @@ import variable.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ConstantAssignmentInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final int MAX_DEGREE = 2;
@@ -74,4 +75,11 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
         return instructionNumber;
     }
 
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+
+        return new ConstantAssignmentInstruction(newTargetVariable, newLabel, this.constantValue, this.getOriginalInstruction(), newInstructionNumber);
+    }
 }

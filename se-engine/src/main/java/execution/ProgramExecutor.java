@@ -9,7 +9,6 @@ import java.util.Map;
 public interface ProgramExecutor {
 
     void run(int runDegree, Long... inputs);
-
     Program getProgram();
     long getVariableValue(Variable variable);
     int getRunDegree();

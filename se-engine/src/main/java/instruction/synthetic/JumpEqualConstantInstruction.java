@@ -11,6 +11,7 @@ import variable.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JumpEqualConstantInstruction extends AbstractInstruction implements LabelReferencesInstruction, SyntheticInstruction {
     private final int MAX_DEGREE = 3;
@@ -92,5 +93,14 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
         innerInstructions.add(new NoOpInstruction(Variable.RESULT, newLabel2, this, instructionNumber++));
 
         return instructionNumber;
+    }
+
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+        Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
+
+        return new JumpEqualConstantInstruction(newTargetVariable, newLabel, this.constantValue, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

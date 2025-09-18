@@ -12,10 +12,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.regex.Pattern;
 
-/**
- * Controller for the main instructions table.
- * Handles program updates and row selection behavior.
- */
 public class MainInstructionsTableController {
 
     private MainAppController mainController;

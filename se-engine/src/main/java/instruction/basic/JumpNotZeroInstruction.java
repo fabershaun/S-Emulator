@@ -6,6 +6,8 @@ import label.Label;
 import variable.Variable;
 import instruction.*;
 
+import java.util.Map;
+
 public class JumpNotZeroInstruction extends AbstractInstruction implements LabelReferencesInstruction {
     private final Label referencesLabel;
 
@@ -47,5 +49,14 @@ public class JumpNotZeroInstruction extends AbstractInstruction implements Label
     @Override
     public Label getReferenceLabel() {
         return referencesLabel;
+    }
+
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+        Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
+
+        return new JumpNotZeroInstruction(newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

@@ -5,17 +5,26 @@ import java.util.*;
 
 public class ProgramImpl extends AbstractProgram {
 
-    private final List<Program> functions;
+    private final Map<String, FunctionImpl> nameToFunction;
 
     public ProgramImpl(String programOfFunctionName) {
         super(programOfFunctionName);
-        this.functions = new ArrayList<>();
+        nameToFunction = new HashMap<>();
     }
 
+    public void addInnerFunction(String functionName, FunctionImpl function) {
+        this.nameToFunction.put(functionName, function);
+    }
 
-    public List<Program> getFunctions() {
-        return this.functions;
+    public FunctionImpl getFunctionByName(String name) {
+        return this.nameToFunction.get(name);
+    }
+
+    public Collection<FunctionImpl> getFunctions() {
+        return nameToFunction.values();
     }
 
     // TODO: עכשיו לכתוב את המתודה שבונה את רשימת תתי התוכניות
+
+
 }

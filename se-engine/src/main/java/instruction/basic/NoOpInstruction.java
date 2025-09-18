@@ -9,6 +9,8 @@ import label.FixedLabel;
 import label.Label;
 import variable.Variable;
 
+import java.util.Map;
+
 public class NoOpInstruction extends AbstractInstruction {
 
     public NoOpInstruction(Variable variable, Instruction origin, int instructionNumber) {
@@ -39,5 +41,13 @@ public class NoOpInstruction extends AbstractInstruction {
         command.append(variableRepresentation);
 
         return command.toString();
+    }
+
+    @Override
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
+        Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+
+        return new NoOpInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }
