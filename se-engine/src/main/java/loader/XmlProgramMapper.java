@@ -180,7 +180,8 @@ final class XmlProgramMapper {
                         .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
                         .map(SInstructionArgument::getValue)
                         .findFirst()
-                        .get();
+                        .get()
+                        .toUpperCase();
 
                 String functionArguments = sInstructionArguments.stream()
                         .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))

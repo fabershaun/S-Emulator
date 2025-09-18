@@ -10,10 +10,7 @@ import program.Program;
 import program.ProgramImpl;
 import variable.Variable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QuoteInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final String functionName;
@@ -40,10 +37,10 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         this.initialized = false;
     }
 
-    public void initialize() {
-        extractQuoteArguments();
-        //this.functionInInstruction = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(this.functionName);
-    }
+//    public void initialize() {
+//        extractQuoteArguments();
+//        //this.functionInInstruction = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(this.functionName);
+//    }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
@@ -95,6 +92,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+        extractQuoteArguments();
         List<Instruction> expandedInstructions = convertFunctionData(startNumber);
         innerInstructions.clear();
         innerInstructions.addAll(expandedInstructions);
@@ -125,19 +123,19 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
         int instructionNumber = startNumber;
 
-        if (!initialized) {
-            initialize();
-            initialized = true;
-        }
+//        if (!initialized) {
+//            initialize();
+//            initialized = true;
+//        }
 
         instructionNumber = addParameterInstructions(expandedInstructions, instructionNumber);       // Step 1: assign arguments to function input variables
         instructionNumber = addClonedFunctionInstructions(expandedInstructions, instructionNumber); // Step 2: clone function instructions with variable/label remapping
-        instructionNumber = addResultAssignment(expandedInstructions, instructionNumber);
+        addResultAssignment(expandedInstructions, instructionNumber);
 
-        labelToInnerInstruction.clear();
-        for (Instruction instr : expandedInstructions) {
-            if (instr.getLabel() != null && instr.getLabel() != FixedLabel.EMPTY) {
-                labelToInnerInstruction.put(instr.getLabel(), instr);
+        //labelToInnerInstruction.clear();    // To reset after each expand
+        for (Instruction instruction : expandedInstructions) {
+            if (instruction.getLabel() != null && instruction.getLabel() != FixedLabel.EMPTY) {
+                labelToInnerInstruction.put(instruction.getLabel(), instruction);
             }
         }
 
@@ -229,7 +227,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     // Assign function result back to the target of this Quote
-    private int addResultAssignment(List<Instruction> targetList, int instructionNumber) {
+    private void addResultAssignment(List<Instruction> targetList, int instructionNumber) {
         Variable mappedResult = mapFunctionToProgramVariable.get(Variable.RESULT);
 
         if (mappedResult == null) {
@@ -239,9 +237,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Label lastLabel = mapFunctionToProgramLabel.getOrDefault(FixedLabel.EXIT,  FixedLabel.EMPTY);
 
         targetList.add(
-                new AssignmentInstruction(getTargetVariable(), lastLabel, mappedResult, getOriginalInstruction(), instructionNumber++));
-
-        return instructionNumber;
+                new AssignmentInstruction(getTargetVariable(), lastLabel, mappedResult, getOriginalInstruction(), instructionNumber));
     }
 
     private void extractQuoteArguments() {
@@ -273,10 +269,11 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             tokens.add(current.toString().trim());
         }
 
+        Set<String> definedFunctions = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionNamesUpperCase();
         for (String token : tokens) {
             if (token.isEmpty()) continue;
 
-            if (token.contains("(")) {  // If token is a Function:
+            if (token.contains("(") || definedFunctions.contains(token.toUpperCase(Locale.ROOT))) {  // If token is a Function:
                 String innerFunctionName = getFunctionName(token);
                 String innerFunctionUserString = "";
 
@@ -284,7 +281,10 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                 quoteArguments.add(QuoteArgument.fromFunction(innerFunction));
             }
             else {    // If token is a Variable:
-                Variable variable = super.getProgramOfThisInstruction().findVariableByName(token);
+                Program function = getFunctionOfThisInstruction();
+                Variable variable = function.findVariableByName(token);
+
+                //Variable variable = getFunctionOfThisInstruction().findVariableByName(token);
                 if (variable == null) {
                     throw new IllegalArgumentException("Variable not found: " + token);
                 }
