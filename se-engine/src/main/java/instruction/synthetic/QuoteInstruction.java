@@ -7,7 +7,6 @@ import instruction.*;
 import label.FixedLabel;
 import label.Label;
 import program.Program;
-import program.ProgramImpl;
 import variable.Variable;
 
 import java.util.*;
@@ -22,7 +21,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private boolean initialized;
 
     private int currentCyclesNumber;
-    private int maxDegree = 3; // Dynamic    //TODO
+    private int maxDegree = 4; // Dynamic    //TODO
 
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Map<Label, Instruction> labelToInnerInstruction = new HashMap<>();
@@ -70,12 +69,13 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     @Override
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
+        String userString = getFunctionOfThisInstruction().getUserString();
         StringBuilder command = new StringBuilder();
 
         command.append("(");
         command.append(targetVariableRepresentation);
         command.append(" <- ");
-        command.append(functionArgumentsStrNotTrimmed);
+        command.append(userString);
         command.append(")");
         return command.toString();
     }
@@ -109,6 +109,10 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 //    public void setFunctionForQuoteInstruction() {
 //        this.functionInInstruction = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(functionInInstruction.getName());
 //    }
+
+    public String getFunctionNameOfQuoteInstruction() {
+        return this.functionName;
+    }
 
     public Program getFunctionOfThisInstruction() {
         return super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(this.functionName);
@@ -200,12 +204,20 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                         new AssignmentInstruction(targetVariable, labelForThisInstruction, sourceVariable, getOriginalInstruction(), instructionNumber++));
             }
             else if(quoteArgument.getType().equals(QuoteArgument.ArgumentType.FUNCTION)) {
-                Program functionImpl = quoteArgument.getFunction();
-                Variable targetVariable = mapQuoteFunctionToFunctionVariable.get(functionImpl);    // targetVariable = new work variable that we created
+                Program functionInArguments = quoteArgument.getFunction();
+                Variable targetVariable = mapQuoteFunctionToFunctionVariable.get(functionInArguments);    // targetVariable = new work variable that we created
+                String newFunctionName = functionInArguments.getName();
+                String newFunctionsArgumentsStr = "";
 
+                List<Instruction> instructions = functionInArguments.getInstructionsList();
+                for(Instruction instruction : instructions) {
+                    if(instruction instanceof QuoteInstruction quoteInstruction && quoteInstruction.getFunctionNameOfQuoteInstruction().equals(newFunctionName)) {
+                        newFunctionsArgumentsStr = quoteInstruction.getFunctionNameOfQuoteInstruction();
+                    }
+                }
                 // create assignment: targetVariable <- functioName
                 targetList.add(
-                        new QuoteInstruction(targetVariable, labelForThisInstruction, getOriginalInstruction(), instructionNumber++, functionImpl.getName(), functionImpl.getUserString()));
+                        new QuoteInstruction(targetVariable, labelForThisInstruction, getOriginalInstruction(), instructionNumber++, newFunctionName, newFunctionsArgumentsStr));
             }
         }
 
@@ -274,7 +286,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             if (token.isEmpty()) continue;
 
             if (token.contains("(") || definedFunctions.contains(token.toUpperCase(Locale.ROOT))) {  // If token is a Function:
-                String innerFunctionName = getFunctionName(token);
+                String innerFunctionName = getFunctionNameFromToken(token);
                 String innerFunctionUserString = "";
 
                 Program innerFunction = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(innerFunctionName);
@@ -293,7 +305,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         }
     }
 
-    private String getFunctionName(String token) {
+    private String getFunctionNameFromToken(String token) {
 
         int indexOfOpenParen = token.indexOf("(");
         String afterParen = token.substring(indexOfOpenParen + 1).trim();
