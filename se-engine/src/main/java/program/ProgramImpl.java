@@ -48,12 +48,12 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public Program deepClone() {
         try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            try (ObjectOutputStream out = new ObjectOutputStream(bos)) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();                        // buffer in memory to hold object bytes
+            try (ObjectOutputStream out = new ObjectOutputStream(bos)) {                    // serialize 'this' into the byte stream
                 out.writeObject(this);
             }
-            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-            try (ObjectInputStream in = new ObjectInputStream(bis)) {
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());         // create input stream from the serialized bytes
+            try (ObjectInputStream in = new ObjectInputStream(bis)) {                       // deserialize back into a new ProgramImpl object
                 return (Program) in.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {
