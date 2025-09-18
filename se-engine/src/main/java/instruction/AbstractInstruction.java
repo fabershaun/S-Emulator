@@ -21,14 +21,15 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
     private final Label label;
     private final Variable targetVariable;
     private final Instruction origin;
-    private Program programOfThisInstruction = null;
+    private Program programOfThisInstruction;
 
 
-    protected AbstractInstruction(InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Instruction origin, int instructionNumber) {
-        this(instructionData, instructionType, targetVariable,FixedLabel.EMPTY, origin, instructionNumber);
+    protected AbstractInstruction(Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Instruction origin, int instructionNumber) {
+        this(programOfThisInstruction, instructionData, instructionType, targetVariable,FixedLabel.EMPTY, origin, instructionNumber);
     }
 
-    protected AbstractInstruction(InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Label label, Instruction origin, int instructionNumber) {
+    protected AbstractInstruction(Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Label label, Instruction origin, int instructionNumber) {
+        this.programOfThisInstruction = programOfThisInstruction;
         this.instructionData = instructionData;
         this.instructionType = instructionType;
         this.targetVariable = targetVariable;
@@ -88,10 +89,10 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
         return programOfThisInstruction;
     }
 
-    @Override
-    public void setProgramOfThisInstruction(Program programOfThisInstruction) {
-        this.programOfThisInstruction = programOfThisInstruction;
-    }
+//    @Override
+//    public void setProgramOfThisInstruction(Program programOfThisInstruction) {
+//        this.programOfThisInstruction = programOfThisInstruction;
+//    }
 
     @Override
     public Instruction getOriginalInstruction() {

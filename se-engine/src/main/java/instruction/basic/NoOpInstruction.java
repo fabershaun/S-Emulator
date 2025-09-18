@@ -7,23 +7,24 @@ import instruction.InstructionData;
 import instruction.InstructionType;
 import label.FixedLabel;
 import label.Label;
+import program.Program;
 import variable.Variable;
 
 import java.util.Map;
 
 public class NoOpInstruction extends AbstractInstruction {
 
-    public NoOpInstruction(Variable variable, Instruction origin, int instructionNumber) {
-        super(InstructionData.NO_OP, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin ,instructionNumber);
+    public NoOpInstruction(Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.NO_OP, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin ,instructionNumber);
     }
 
-    public NoOpInstruction(Variable variable, Label label, Instruction origin, int instructionNumber) {
-        super(InstructionData.NO_OP, InstructionType.BASIC, variable, label,  origin, instructionNumber);
+    public NoOpInstruction(Program programOfThisInstruction, Variable variable, Label label, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.NO_OP, InstructionType.BASIC, variable, label,  origin, instructionNumber);
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new NoOpInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
+        return new NoOpInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -48,6 +49,6 @@ public class NoOpInstruction extends AbstractInstruction {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new NoOpInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new NoOpInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

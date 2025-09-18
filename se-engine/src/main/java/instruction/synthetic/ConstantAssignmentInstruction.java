@@ -5,6 +5,7 @@ import instruction.*;
 import instruction.basic.IncreaseInstruction;
 import label.FixedLabel;
 import label.Label;
+import program.Program;
 import variable.Variable;
 
 import java.util.ArrayList;
@@ -16,19 +17,19 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final long constantValue;
 
-    public ConstantAssignmentInstruction(Variable targetVariable, long constantValue, Instruction origin, int instructionNumber) {
-        super(InstructionData.CONSTANT_ASSIGNMENT, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
+    public ConstantAssignmentInstruction(Program programOfThisInstruction, Variable targetVariable, long constantValue, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.CONSTANT_ASSIGNMENT, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
         this.constantValue = constantValue;
     }
 
-    public ConstantAssignmentInstruction(Variable targetVariable, Label label, long constantValue, Instruction origin, int instructionNumber) {
-        super(InstructionData.CONSTANT_ASSIGNMENT, InstructionType.SYNTHETIC, targetVariable, label, origin, instructionNumber);
+    public ConstantAssignmentInstruction(Program programOfThisInstruction, Variable targetVariable, Label label, long constantValue, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.CONSTANT_ASSIGNMENT, InstructionType.SYNTHETIC, targetVariable, label, origin, instructionNumber);
         this.constantValue = constantValue;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int  instructionNumber) {
-        return new ConstantAssignmentInstruction(getTargetVariable(), getLabel(), constantValue, getOriginalInstruction(), instructionNumber);
+        return new ConstantAssignmentInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), constantValue, getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -66,10 +67,10 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         int instructionNumber = startNumber;
 
-        innerInstructions.add(new ZeroVariableInstruction(super.getTargetVariable(), newLabel1, this, instructionNumber++));
+        innerInstructions.add(new ZeroVariableInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), newLabel1, this, instructionNumber++));
 
         for(int i = 0 ; i < constantValue ; i++) {
-            innerInstructions.add(new IncreaseInstruction(super.getTargetVariable(), this,  instructionNumber++));
+            innerInstructions.add(new IncreaseInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), this,  instructionNumber++));
         }
 
         return instructionNumber;
@@ -80,6 +81,6 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new ConstantAssignmentInstruction(newTargetVariable, newLabel, this.constantValue, this.getOriginalInstruction(), newInstructionNumber);
+        return new ConstantAssignmentInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

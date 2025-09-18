@@ -2,6 +2,7 @@ package instruction;
 
 import execution.ExecutionContext;
 import label.Label;
+import program.Program;
 import variable.Variable;
 
 import java.util.Map;
@@ -10,8 +11,8 @@ import java.util.Map;
 public class OriginOfAllInstruction extends AbstractInstruction {
 
 
-    public OriginOfAllInstruction() {
-        super(InstructionData.ORIGIN, InstructionType.BASIC, Variable.RESULT, null, 0);
+    public OriginOfAllInstruction(Program programOfThisInstruction) {
+        super(programOfThisInstruction, InstructionData.ORIGIN, InstructionType.BASIC, Variable.RESULT, null, 0);
     }
 
     @Override

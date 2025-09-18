@@ -25,8 +25,8 @@ public class QuoteInstruction1 extends AbstractInstruction implements SyntheticI
     private final Map<Label, Label> functionToProgramLabel = new HashMap<>();
 
 
-    public QuoteInstruction1(Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArguments) {
-        super(InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
+    public QuoteInstruction1(Program programOfThisInstruction, Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArguments) {
+        super(programOfThisInstruction, InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
         this.functionName = functionName;
         this.functionArguments = functionArguments;
         currentCyclesNumber = InstructionData.QUOTATION.getCycles();
@@ -34,7 +34,7 @@ public class QuoteInstruction1 extends AbstractInstruction implements SyntheticI
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new QuoteInstruction1(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, functionName, functionArguments);
+        return new QuoteInstruction1(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, functionName, functionArguments);
     }
 
     // already copied
@@ -142,7 +142,7 @@ public class QuoteInstruction1 extends AbstractInstruction implements SyntheticI
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new QuoteInstruction1(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArguments);
+        return new QuoteInstruction1(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArguments);
     }
 
     private List<Instruction> convertFunctionData(int startNumber) {
@@ -190,7 +190,7 @@ public class QuoteInstruction1 extends AbstractInstruction implements SyntheticI
 
             // create assignment: mappedVariable <- callerVariable
             targetList.add(
-                    new AssignmentInstruction(mappedVariable, labelForThisInstruction, callerVariable, this, instructionNumber++));
+                    new AssignmentInstruction(getProgramOfThisInstruction(), mappedVariable, labelForThisInstruction, callerVariable, this, instructionNumber++));
         }
 
         return instructionNumber;
@@ -243,7 +243,7 @@ public class QuoteInstruction1 extends AbstractInstruction implements SyntheticI
 
 
         targetList.add(
-                new AssignmentInstruction(callerTarget, mappedResult, this, instructionNumber++)
+                new AssignmentInstruction(getProgramOfThisInstruction(), callerTarget, mappedResult, this, instructionNumber++)
         );
 
         return instructionNumber;

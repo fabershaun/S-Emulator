@@ -7,18 +7,19 @@ import instruction.InstructionData;
 import instruction.InstructionType;
 import label.Label;
 import label.FixedLabel;
+import program.Program;
 import variable.Variable;
 
 import java.util.Map;
 
 public class IncreaseInstruction extends AbstractInstruction {
 
-    public IncreaseInstruction(Variable variable, Instruction origin, int instructionNumber) {
-        super(InstructionData.INCREASE, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
+    public IncreaseInstruction(Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.INCREASE, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
     }
 
-    public IncreaseInstruction(Variable variable, Label label, Instruction origin, int instructionNumber) {
-        super(InstructionData.INCREASE, InstructionType.BASIC, variable, label, origin,  instructionNumber);
+    public IncreaseInstruction(Program programOfThisInstruction, Variable variable, Label label, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.INCREASE, InstructionType.BASIC, variable, label, origin,  instructionNumber);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class IncreaseInstruction extends AbstractInstruction {
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new IncreaseInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
+        return new IncreaseInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -53,6 +54,6 @@ public class IncreaseInstruction extends AbstractInstruction {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new IncreaseInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new IncreaseInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

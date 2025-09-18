@@ -6,6 +6,7 @@ import instruction.basic.JumpNotZeroInstruction;
 import instruction.basic.NoOpInstruction;
 import label.FixedLabel;
 import label.Label;
+import program.Program;
 import variable.Variable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +17,19 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Label referencesLabel;
 
-    public JumpZeroInstruction(Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
-        super(InstructionData.JUMP_ZERO, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
+    public JumpZeroInstruction(Program programOfThisInstruction, Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.JUMP_ZERO, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
         this.referencesLabel = referencesLabel;
     }
 
-    public JumpZeroInstruction(Variable variable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
-        super(InstructionData.JUMP_ZERO, InstructionType.SYNTHETIC, variable, label, origin, instructionNumber);
+    public JumpZeroInstruction(Program programOfThisInstruction, Variable variable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.JUMP_ZERO, InstructionType.SYNTHETIC, variable, label, origin, instructionNumber);
         this.referencesLabel = referencesLabel;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new JumpZeroInstruction(getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
+        return new JumpZeroInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -72,9 +73,9 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
         Label newLabel2 =  super.getProgramOfThisInstruction().generateUniqueLabel();
         int instructionNumber = startNumber;
 
-        innerInstructions.add(new JumpNotZeroInstruction(super.getTargetVariable(),newLabel1, newLabel2, this, instructionNumber++));
-        innerInstructions.add(new GotoLabelInstruction(super.getTargetVariable(), referencesLabel, this, instructionNumber++));
-        innerInstructions.add(new NoOpInstruction(Variable.RESULT, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), super.getTargetVariable(),newLabel1, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new GotoLabelInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), referencesLabel, this, instructionNumber++));
+        innerInstructions.add(new NoOpInstruction(getProgramOfThisInstruction(), Variable.RESULT, newLabel2, this, instructionNumber++));
 
         return instructionNumber;
     }
@@ -85,6 +86,6 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new JumpZeroInstruction(newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new JumpZeroInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

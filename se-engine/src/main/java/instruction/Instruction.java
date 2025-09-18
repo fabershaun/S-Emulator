@@ -26,7 +26,7 @@ public interface Instruction extends Serializable {
     InstructionDTO getInstructionDTO();
     List<InstructionDTO> getInstructionExtendedList();
 
-    void setProgramOfThisInstruction(Program programOfThisInstruction);
+//    void setProgramOfThisInstruction(Program programOfThisInstruction);
     Label execute(ExecutionContext context);
     Instruction createInstructionWithInstructionNumber(int instructionNumber);
 

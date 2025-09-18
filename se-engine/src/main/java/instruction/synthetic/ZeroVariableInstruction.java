@@ -6,6 +6,7 @@ import instruction.basic.DecreaseInstruction;
 import instruction.basic.JumpNotZeroInstruction;
 import label.FixedLabel;
 import label.Label;
+import program.Program;
 import variable.Variable;
 
 import java.util.ArrayList;
@@ -16,17 +17,17 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
     private final int MAX_DEGREE = 1;
     private final List<Instruction> innerInstructions = new ArrayList<>();;
 
-    public ZeroVariableInstruction(Variable variable, Instruction origin, int instructionNumber) {
-        super(InstructionData.ZERO_VARIABLE, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
+    public ZeroVariableInstruction(Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.ZERO_VARIABLE, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
     }
 
-    public ZeroVariableInstruction(Variable variable, Label label, Instruction origin, int instructionNumber) {
-        super(InstructionData.ZERO_VARIABLE, InstructionType.SYNTHETIC, variable, label, origin, instructionNumber);
+    public ZeroVariableInstruction(Program programOfThisInstruction, Variable variable, Label label, Instruction origin, int instructionNumber) {
+        super(programOfThisInstruction, InstructionData.ZERO_VARIABLE, InstructionType.SYNTHETIC, variable, label, origin, instructionNumber);
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new ZeroVariableInstruction(getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
+        return new ZeroVariableInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -63,8 +64,8 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
         int instructionNumber = startNumber;
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? super.getProgramOfThisInstruction().generateUniqueLabel() : super.getLabel();
 
-        innerInstructions.add(new DecreaseInstruction(super.getTargetVariable(), newLabel1, this,  instructionNumber++));
-        innerInstructions.add(new JumpNotZeroInstruction(super.getTargetVariable(), newLabel1, this, instructionNumber++));
+        innerInstructions.add(new DecreaseInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), newLabel1, this,  instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), newLabel1, this, instructionNumber++));
 
         return instructionNumber;
     }
@@ -74,6 +75,6 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new ZeroVariableInstruction(newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new ZeroVariableInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }
