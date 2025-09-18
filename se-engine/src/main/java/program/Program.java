@@ -14,6 +14,8 @@ import java.util.Set;
 public interface Program extends Serializable {
 
     String getName();
+    String getUserString();
+    FunctionsHolder getFunctionsHolder();
     List<Instruction> getInstructionsList();
     Instruction getInstructionByLabel(Label label);
     Set<Variable> getInputVariables();

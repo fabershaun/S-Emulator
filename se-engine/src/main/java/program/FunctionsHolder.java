@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Functions {
+public class FunctionsHolder {
     private final Map<String, Program> nameToFunction = new HashMap<>();;
 
     public void addFunction(String functionName, Program function) {

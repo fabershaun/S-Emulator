@@ -10,7 +10,6 @@ import execution.ProgramExecutor;
 import history.ExecutionHistoryImpl;
 import program.Program;
 import loader.XmlProgramLoader;
-import program.ProgramImpl;
 import variable.Variable;
 
 import java.io.*;
@@ -109,11 +108,12 @@ public class EngineImpl implements Engine, Serializable {
     public List<ProgramDTO> getSubProgramsOfProgram(String programName) {
         List<ProgramDTO> result = new ArrayList<>();
 
-        if (program.getName().equals(programName) && program instanceof ProgramImpl programImpl) {
-            for (Program subProgram : programImpl.getFunctions()) {
-                result.add(buildProgramDTO(subProgram));
-            }
-        }
+//        if (program.getName().equals(programName) && program instanceof ProgramImpl programImpl) {
+//            for (Program subProgram : programImpl.getFunctions()) {
+//                result.add(buildProgramDTO(subProgram));
+//            }
+//        }
+
 
         return result;
     }

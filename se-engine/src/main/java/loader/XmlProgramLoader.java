@@ -1,12 +1,12 @@
 package loader;
 
+import com.sun.istack.Nullable;
 import exceptions.EngineLoadException;
 import instruction.Instruction;
 import instruction.synthetic.QuoteInstruction1;
 import program.Program;
 import generatedFromXml.SProgram;
 import jakarta.xml.bind.*;
-import program.ProgramImpl;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.FileInputStream;
@@ -40,33 +40,47 @@ public class XmlProgramLoader {
     }
 
     private void validateFunctions(Program program) throws EngineLoadException {
+
         // Collect all defined function names
-        Set<String> definedFunctions = new HashSet<>();
+        Set<String> definedFunctions = new HashSet<>(program.getFunctionsHolder().getFunctions()        // TODO: CHECK IF CORRECT
+                .stream()
+                .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
+                .toList());
 
-        if (program instanceof ProgramImpl progImpl) {
-            definedFunctions.addAll(
-                    progImpl.getFunctions()
-                            .stream()
-                            .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
-                            .toList()
-            );
+        // Validate main program instructions
+        validateFunctionCalls(program, definedFunctions, "Main Program");
 
-            // Validate main program instructions
-            validateFunctionCalls(program, definedFunctions, "Main Program");
-
-            // Validate each sub-function's instructions
-            for (Program function : progImpl.getFunctions()) {
-                function.validateProgram();                     // Validate that there are no undefined label references
-                validateFunctionCalls(function, definedFunctions, "Function: " + function.getName());
-            }
-        } else {
-            validateFunctionCalls(program, definedFunctions, "Program");
+        // Validate each sub-function's instructions
+        for (Program function : program.getFunctionsHolder().getFunctions()) {
+            function.validateProgram();                     // Validate that there are no undefined label references
+            validateFunctionCalls(function, definedFunctions, "Function: " + function.getName());
         }
+
+
+//        if (program instanceof ProgramImpl progImpl) {
+//            definedFunctions.addAll(
+//                    progImpl.getFunctions()
+//                            .stream()
+//                            .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
+//                            .toList()
+//            );
+//
+//            // Validate main program instructions
+//            validateFunctionCalls(program, definedFunctions, "Main Program");
+//
+//            // Validate each sub-function's instructions
+//            for (Program function : progImpl.getFunctions()) {
+//                function.validateProgram();                     // Validate that there are no undefined label references
+//                validateFunctionCalls(function, definedFunctions, "Function: " + function.getName());
+//            }
+//        } else {
+//            validateFunctionCalls(program, definedFunctions, "Program");
+//        }
     }
 
     private void validateFunctionCalls(Program program, Set<String> definedFunctions, String context) throws EngineLoadException {
-        for (Instruction instr : program.getInstructionsList()) {
-            if (instr instanceof QuoteInstruction1 quoteInstruction) {
+        for (Instruction instruction : program.getInstructionsList()) {
+            if (instruction instanceof QuoteInstruction1 quoteInstruction) {
                 String calledFunc = quoteInstruction.getFunctionName().toUpperCase(Locale.ROOT); // assuming getter exists
                 if (!definedFunctions.contains(calledFunc)) {
                     throw new EngineLoadException(

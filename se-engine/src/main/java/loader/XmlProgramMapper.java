@@ -7,8 +7,7 @@ import instruction.OriginOfAllInstruction;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
-import program.AbstractProgram;
-import program.FunctionImpl;
+import program.FunctionsHolder;
 import program.Program;
 import program.ProgramImpl;
 import variable.Variable;
@@ -29,27 +28,31 @@ final class XmlProgramMapper {
 
     static Program map(SProgram sProgram) {
         String programName = safeTrim(sProgram.getName());
-        ProgramImpl targetProgram = new ProgramImpl(programName != null ? programName : "Unnamed");
+        programName = programName != null ? programName : "Unnamed";
+
+        FunctionsHolder functionsHolder = new FunctionsHolder();
+        Program targetProgram = new ProgramImpl(programName, programName, functionsHolder);  // The user string of program is its name
 
         mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
 
         // Map functions (sub-programs) if they exist
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
-                FunctionImpl innerFunction = mapFunction(sFunction);
-                targetProgram.addInnerFunction(innerFunction.getName(), innerFunction);
+                Program innerFunction = mapFunction(sFunction, functionsHolder);
+                functionsHolder.addFunction(innerFunction.getName(), innerFunction);
             }
         }
 
         return targetProgram;
     }
 
-    private static FunctionImpl mapFunction(SFunction sFunction) {
+    private static Program mapFunction(SFunction sFunction, FunctionsHolder functionsHolder) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());
-        FunctionImpl functionProgram = new FunctionImpl(
+        Program functionProgram = new ProgramImpl(
                 functionName != null ? functionName : "UnnamedFunction",
-                userString != null ? userString : "UnnamedUserString"
+                userString != null ? userString : "UnnamedUserString",
+                functionsHolder
         );
 
         // Map instructions of this function into its program

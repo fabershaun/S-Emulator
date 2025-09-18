@@ -1,6 +1,5 @@
 package instruction;
 
-import program.FunctionImpl;
 import program.Program;
 import variable.Variable;
 
@@ -13,10 +12,10 @@ public class QuoteArgument {
 
     private final ArgumentType type;
     private final Variable variable;
-    private final FunctionImpl function;
+    private final Program function;
 
     // Private
-    private QuoteArgument(ArgumentType type, Variable variable, FunctionImpl function) {
+    private QuoteArgument(ArgumentType type, Variable variable, Program function) {
         this.type = type;
         this.variable = variable;
         this.function = function;
@@ -27,7 +26,7 @@ public class QuoteArgument {
         return new QuoteArgument(ArgumentType.VARIABLE, variable, null);
     }
 
-    public static QuoteArgument fromFunction(FunctionImpl function) {
+    public static QuoteArgument fromFunction(Program function) {
         return new QuoteArgument(ArgumentType.FUNCTION, null, function);
     }
 
@@ -43,7 +42,7 @@ public class QuoteArgument {
         return variable;
     }
 
-    public FunctionImpl getFunction() {
+    public Program getFunction() {
         if (type != ArgumentType.FUNCTION) {
             throw new IllegalStateException("Not a function argument");
         }

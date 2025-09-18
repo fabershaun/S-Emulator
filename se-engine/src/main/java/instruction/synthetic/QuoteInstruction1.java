@@ -5,7 +5,6 @@ import instruction.*;
 import label.FixedLabel;
 import label.Label;
 import program.Program;
-import program.ProgramImpl;
 import variable.Variable;
 
 import java.util.ArrayList;
@@ -40,13 +39,13 @@ public class QuoteInstruction1 extends AbstractInstruction implements SyntheticI
 
     // already copied
     public void setFunctionForQuoteInstruction() {
-        if (super.getProgramOfThisInstruction() instanceof ProgramImpl mainProgram) {
-            this.function = mainProgram.getFunctions()
-                    .stream()
-                    .filter(arg -> arg.getName().equalsIgnoreCase(this.functionName))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Function not found: " + functionName));
-        }
+//        if (super.getProgramOfThisInstruction() instanceof ProgramImpl mainProgram) {
+//            this.function = mainProgram.getFunctions()
+//                    .stream()
+//                    .filter(arg -> arg.getName().equalsIgnoreCase(this.functionName))
+//                    .findFirst()
+//                    .orElseThrow(() -> new IllegalArgumentException("Function not found: " + functionName));
+//        }
     }
 
     // DONT USED
