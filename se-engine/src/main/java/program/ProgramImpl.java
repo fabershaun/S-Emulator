@@ -66,10 +66,10 @@ public class ProgramImpl implements Program, Serializable {
         initNextLabelNumber();
         initNextWorkVariableNumber();
 
-//        programInstructions.stream()
-//                .filter(instruction -> instruction instanceof QuoteInstruction)
-//                .map(instruction -> (QuoteInstruction) instruction)
-//                .forEach(QuoteInstruction::setFunctionForQuoteInstruction);
+        programInstructions.stream()
+                .filter(instruction -> instruction instanceof QuoteInstruction)
+                .map(instruction -> (QuoteInstruction) instruction)
+                .forEach(QuoteInstruction::initializeQuoteInstruction);
     }
 
     @Override

@@ -25,4 +25,8 @@ public class FunctionsHolder implements Serializable {
                 .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
                 .collect(Collectors.toSet());
     }
+
+    public String getFunctionUserStringByName(String functionName) {
+        return this.nameToFunction.get(functionName.toUpperCase(Locale.ROOT)).getUserString();
+    }
 }
