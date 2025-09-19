@@ -104,7 +104,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         command.append(" <- ");
         command.append("(");
         command.append(userString);
-        command.append(",");
         command.append(arguments);
         command.append(")");
         return command.toString();
@@ -145,6 +144,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private List<Instruction> convertFunctionData(int startNumber) {
         List<Instruction> expandedInstructions = new ArrayList<>();
 
+//        mapQuoteData();
         mapQuoteFunctionVariables();
         mapQuoteFunctionLabels();
         mapQuoteFunctionVariableToProgramFunction();
@@ -157,6 +157,33 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
         return expandedInstructions;
     }
+
+//    private void mapQuoteData() {
+//        for (QuoteArgument quoteArgument : this.quoteArguments) {
+//            switch (quoteArgument.getType()) {
+//                case VARIABLE -> {
+//                    Variable originalVariable = (Variable) quoteArgument;
+//                    Variable newWorkVariable = getProgramOfThisInstruction().generateUniqueVariable();
+//                    mapFunctionToProgramVariable.put(originalVariable, newWorkVariable);
+//                }
+//                case FUNCTION -> {
+//                    FunctionArgument functionArgument = (FunctionArgument) quoteArgument;
+//                    Program function = functionArgument.getFunction();
+//                    Variable newWorkVariable = getProgramOfThisInstruction().generateUniqueVariable();
+//                    mapQuoteFunctionToFunctionVariable.put(function, newWorkVariable);
+//                    mapFunctionLabels(function);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void mapFunctionLabels(Program function) {
+//        // Map each function label to a unique label in the caller program
+//        for (Label functionLabel : getFunctionOfThisInstruction().getLabelsInProgram()) {
+//            Label newLabel = super.getProgramOfThisInstruction().generateUniqueLabel();
+//            mapFunctionToProgramLabel.put(functionLabel, newLabel);
+//        }
+//    }
 
     private void mapQuoteFunctionVariables() {
         Program mainProgram = super.getProgramOfThisInstruction();
@@ -186,12 +213,10 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             if (quoteArgument instanceof FunctionArgument functionArgument) {
                 Variable newWorkVariable = super.getProgramOfThisInstruction().generateUniqueVariable();
                 mapQuoteFunctionToFunctionVariable.put(functionArgument.getFunction(), newWorkVariable);
-
             }
         }
     }
 
-    // todo: fix!  quoteArguments
     private int addParameterInstructions(List<Instruction> targetList, int instructionNumber) {
         Label originalLabel = getLabel();
         boolean firstAssignment = true;
@@ -229,45 +254,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
         return instructionNumber;
     }
-
-//    private int addParameterInstructions(List<Instruction> targetList, int instructionNumber) {
-//        Label originalLabel = getLabel();
-//        boolean firstAssignment = true;
-//
-//        for(QuoteArgument quoteArgument : quoteArguments) {
-//            Label labelForThisInstruction = (firstAssignment && (originalLabel != null) && (originalLabel != FixedLabel.EMPTY))
-//                    ? originalLabel
-//                    : FixedLabel.EMPTY;
-//            firstAssignment = false;
-//
-//            if(quoteArgument.getType().equals(QuoteArgument.ArgumentType.VARIABLE)) {
-//                Variable sourceVariable = quoteArgument.getVariable();                      // sourceVariable = original Quote instruction input variable
-//                Variable targetVariable = mapFunctionToProgramVariable.get(sourceVariable);    // targetVariable = new work variable that we created
-//
-//                // create assignment: targetVariable <- sourceVariable
-//                targetList.add(
-//                        new AssignmentInstruction(getProgramOfThisInstruction(), targetVariable, labelForThisInstruction, sourceVariable, getOriginalInstruction(), instructionNumber++));
-//            }
-//            else if(quoteArgument.getType().equals(QuoteArgument.ArgumentType.FUNCTION)) {
-//                Program functionInArguments = quoteArgument.getFunction();
-//                Variable targetVariable = mapQuoteFunctionToFunctionVariable.get(functionInArguments);    // targetVariable = new work variable that we created
-//
-//                // todo: fix!
-//                String newFunctionName = functionInArguments.getName();
-//                String newFunctionsArgumentsStr = "";
-//                for(Instruction instruction : functionInArguments.getInstructionsList()) {
-//                    if(instruction instanceof QuoteInstruction quoteInstruction && quoteInstruction.getQuoteFunctionName().equals(newFunctionName)) {
-//                        newFunctionsArgumentsStr = quoteInstruction.getQuoteFunctionName();
-//                    }
-//                }
-//                // create assignment: targetVariable <- functioName
-//                targetList.add(
-//                        new QuoteInstruction(getProgramOfThisInstruction(), targetVariable, labelForThisInstruction, getOriginalInstruction(), instructionNumber++, newFunctionName, newFunctionsArgumentsStr));
-//            }
-//        }
-//
-//        return instructionNumber;
-//    }
 
     // Clone function instructions with remapped variables and labels
     private int addClonedFunctionInstructions(List<Instruction> targetList, int instructionNumber) {
@@ -344,21 +330,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return tokens;
     }
 
-//    private String getFunctionNameFromToken(String token) {
-//
-//        int indexOfOpenParen = token.indexOf("(");
-//        String afterParen = token.substring(indexOfOpenParen + 1).trim();
-//
-//        int endIndex = afterParen.indexOf(',');
-//        int closeIndex = afterParen.indexOf(')');
-//
-//        if (endIndex == -1 || (closeIndex != -1 && closeIndex < endIndex)) {
-//            endIndex = closeIndex;
-//        }
-//
-//        return (endIndex == -1 ? afterParen : afterParen.substring(0, endIndex)).trim();
-//    }
-
     private String replaceFunctionsWithUserStringsStrict() {
         if (functionArgumentsStrNotTrimmed == null || functionArgumentsStrNotTrimmed.isBlank()) {
             return "";
@@ -405,9 +376,9 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             }
         }
 
+        result.insert(0,",");
         return result.toString();
     }
-
 
     private boolean checkIfFunction(String current) {
         Program function = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(current);

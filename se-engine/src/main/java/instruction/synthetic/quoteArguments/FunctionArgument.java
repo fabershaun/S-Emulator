@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FunctionArgument extends QuoteArgument {
-    private final String rawFunctionString;
+    private final String rawFunctionStr;
     private final Program parentProgram;
     private Program function;
     private final List<QuoteArgument> arguments = new ArrayList<>();
-    private String rawArgumentsString;
+    private String rawInnerArgumentsString;
 
     public FunctionArgument(Program parentProgram, String functionStrNotTrimmed) {
         if (parentProgram == null) {
@@ -22,7 +22,7 @@ public class FunctionArgument extends QuoteArgument {
         }
 
         this.parentProgram = parentProgram;
-        this.rawFunctionString = functionStrNotTrimmed.trim();
+        this.rawFunctionStr = functionStrNotTrimmed.trim();
         extractFunctionDataFromStr();
     }
 
@@ -40,11 +40,11 @@ public class FunctionArgument extends QuoteArgument {
     }
 
     private List<String> splitDataToStrList() {
-        if (rawFunctionString == null || rawFunctionString.trim().isEmpty()) {
+        if (rawFunctionStr == null || rawFunctionStr.trim().isEmpty()) {
             throw new IllegalArgumentException("In FunctionArgument class: functionStrNotTrimmed is null or empty");
         }
 
-        String functionStrTrimmed = rawFunctionString.trim();
+        String functionStrTrimmed = rawFunctionStr.trim();
         if(!functionStrTrimmed.startsWith("(") || !functionStrTrimmed.endsWith(")")) {
             throw new IllegalArgumentException("In FunctionArgument class: functionStrNotTrimmed is invalid format");
         }
@@ -85,7 +85,7 @@ public class FunctionArgument extends QuoteArgument {
     }
 
     private void setRawArgumentsString() {
-        this.rawArgumentsString = this.arguments.stream()
+        this.rawInnerArgumentsString = this.arguments.stream()
                 .map(QuoteArgument::getArgumentStr)
                 .collect(Collectors.joining(","));
     }
@@ -105,6 +105,6 @@ public class FunctionArgument extends QuoteArgument {
 
     @Override
     public String getArgumentStr() {
-        return this.rawArgumentsString;
+        return this.rawInnerArgumentsString;
     }
 }
