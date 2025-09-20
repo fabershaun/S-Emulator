@@ -12,19 +12,19 @@ import java.util.Map;
 public class JumpNotZeroInstruction extends AbstractInstruction implements LabelReferencesInstruction {
     private final Label referencesLabel;
 
-    public JumpNotZeroInstruction(Program programOfThisInstruction, Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.JUMP_NOT_ZERO, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
+    public JumpNotZeroInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.JUMP_NOT_ZERO, InstructionType.BASIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
         this.referencesLabel = referencesLabel;
     }
 
-    public JumpNotZeroInstruction(Program programOfThisInstruction, Variable variable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.JUMP_NOT_ZERO, InstructionType.BASIC, variable, label,  origin, instructionNumber);
+    public JumpNotZeroInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.JUMP_NOT_ZERO, InstructionType.BASIC, variable, label,  origin, instructionNumber);
         this.referencesLabel = referencesLabel;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new JumpNotZeroInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
+        return new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -58,6 +58,6 @@ public class JumpNotZeroInstruction extends AbstractInstruction implements Label
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new JumpNotZeroInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

@@ -11,8 +11,8 @@ import java.util.Map;
 public class OriginOfAllInstruction extends AbstractInstruction {
 
 
-    public OriginOfAllInstruction(Program programOfThisInstruction) {
-        super(programOfThisInstruction, InstructionData.ORIGIN, InstructionType.BASIC, Variable.RESULT, null, 0);
+    public OriginOfAllInstruction(Program mainProgram, Program programOfThisInstruction) {
+        super(mainProgram, programOfThisInstruction, InstructionData.ORIGIN, InstructionType.BASIC, Variable.RESULT, null, 0);
     }
 
     @Override

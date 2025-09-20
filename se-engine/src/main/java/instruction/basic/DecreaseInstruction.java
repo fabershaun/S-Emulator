@@ -14,17 +14,17 @@ import java.util.Map;
 
 public class DecreaseInstruction extends AbstractInstruction {
 
-    public DecreaseInstruction(Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.DECREASE, InstructionType.BASIC, variable, FixedLabel.EMPTY, origin, instructionNumber);
+    public DecreaseInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.DECREASE, InstructionType.BASIC, variable, FixedLabel.EMPTY, origin, instructionNumber);
     }
 
-    public DecreaseInstruction(Program programOfThisInstruction, Variable variable, Label label, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.DECREASE, InstructionType.BASIC, variable, label, origin,  instructionNumber);
+    public DecreaseInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Label label, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.DECREASE, InstructionType.BASIC, variable, label, origin,  instructionNumber);
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new DecreaseInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
+        return new DecreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -56,6 +56,6 @@ public class DecreaseInstruction extends AbstractInstruction {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new DecreaseInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new DecreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

@@ -19,6 +19,8 @@ public interface Instruction extends Serializable {
     Variable getTargetVariable();
     Variable getSourceVariable();
     int getInstructionNumber();
+    Program getProgramOfThisInstruction();
+    Program getMainProgram();
     String getCommand();
     List<Instruction> getExtendedInstruction();
     int getCycleOfInstruction();

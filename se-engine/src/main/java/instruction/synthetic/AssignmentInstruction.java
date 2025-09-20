@@ -20,19 +20,19 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Variable sourceVariable;
 
-    public AssignmentInstruction(Program programOfThisInstruction, Variable targetVariable, Variable sourceVariable, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.ASSIGNMENT, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
+    public AssignmentInstruction(Program mainProgram, Program programOfThisInstruction, Variable targetVariable, Variable sourceVariable, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.ASSIGNMENT, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
         this.sourceVariable = sourceVariable;
     }
 
-    public AssignmentInstruction(Program programOfThisInstruction, Variable targetVariable, Label label, Variable sourceVariable, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.ASSIGNMENT, InstructionType.SYNTHETIC, targetVariable, label, origin, instructionNumber);
+    public AssignmentInstruction(Program mainProgram, Program programOfThisInstruction, Variable targetVariable, Label label, Variable sourceVariable, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.ASSIGNMENT, InstructionType.SYNTHETIC, targetVariable, label, origin, instructionNumber);
         this.sourceVariable = sourceVariable;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new AssignmentInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), sourceVariable, getOriginalInstruction(), instructionNumber);
+        return new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), sourceVariable, getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -80,19 +80,19 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
         Label newLabel4 =  super.getProgramOfThisInstruction().generateUniqueLabel();
         int instructionNumber = startNumber;
 
-        innerInstructions.add(new ZeroVariableInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), newLabel1,this, instructionNumber++));
-        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), sourceVariable, newLabel2, this, instructionNumber++));
-        innerInstructions.add(new GotoLabelInstruction(getProgramOfThisInstruction(), workVariable1, newLabel4, this, instructionNumber++));
-        innerInstructions.add(new DecreaseInstruction(getProgramOfThisInstruction(), sourceVariable, newLabel2, this, instructionNumber++));
-        innerInstructions.add(new IncreaseInstruction(getProgramOfThisInstruction(), workVariable1, this, instructionNumber++));
-        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), sourceVariable, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new ZeroVariableInstruction(getMainProgram(), getProgramOfThisInstruction(), super.getTargetVariable(), newLabel1,this, instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), sourceVariable, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new GotoLabelInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel4, this, instructionNumber++));
+        innerInstructions.add(new DecreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), sourceVariable, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new IncreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, this, instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), sourceVariable, newLabel2, this, instructionNumber++));
 
-        innerInstructions.add(new DecreaseInstruction(getProgramOfThisInstruction(), workVariable1, newLabel3, this, instructionNumber++));
-        innerInstructions.add(new IncreaseInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), this, instructionNumber++));
-        innerInstructions.add(new IncreaseInstruction(getProgramOfThisInstruction(), sourceVariable, this, instructionNumber++));
-        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), workVariable1, newLabel3, this, instructionNumber++));
+        innerInstructions.add(new DecreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel3, this, instructionNumber++));
+        innerInstructions.add(new IncreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), super.getTargetVariable(), this, instructionNumber++));
+        innerInstructions.add(new IncreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), sourceVariable, this, instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel3, this, instructionNumber++));
 
-        innerInstructions.add(new NoOpInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), newLabel4, this, instructionNumber++));
+        innerInstructions.add(new NoOpInstruction(getMainProgram(), getProgramOfThisInstruction(), super.getTargetVariable(), newLabel4, this, instructionNumber++));
 
         return instructionNumber;
     }
@@ -103,6 +103,6 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
         Variable newSourceVariable = variableMap.getOrDefault(this.getSourceVariable(), this.getSourceVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new AssignmentInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, this.getOriginalInstruction(), newInstructionNumber);
+        return new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

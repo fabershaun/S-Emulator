@@ -83,7 +83,7 @@ final class XmlProgramMapper {
             List<SInstructionArgument> sInstructionArguments = (sInstruction.getSInstructionArguments() != null) ?
                     sInstruction.getSInstructionArguments().getSInstructionArgument() :
                     null;
-            Instruction originInstruction = new OriginOfAllInstruction(targetProgram);
+            Instruction originInstruction = new OriginOfAllInstruction(targetProgram, targetProgram);
             return createNewInstruction(targetProgram, instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal, originInstruction);
         }
         catch (Exception e) {
@@ -100,44 +100,44 @@ final class XmlProgramMapper {
                                                             Instruction originInstruction) {
         switch (instructionName) {
             case "INCREASE":
-                return new IncreaseInstruction(targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
+                return new IncreaseInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
 
             case "DECREASE":
-                return new DecreaseInstruction(targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
+                return new DecreaseInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
 
             case "JUMP_NOT_ZERO": {
                 String targetLabel = sInstructionArguments.getFirst().getValue();
                 Label addedLabel = parseLabel(targetLabel, instructionName, ordinal);
-                return new JumpNotZeroInstruction(targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
+                return new JumpNotZeroInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
             }
 
             case "NEUTRAL":
-                return new NoOpInstruction(targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
+                return new NoOpInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
 
             case "ZERO_VARIABLE":
-                return new ZeroVariableInstruction(targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
+                return new ZeroVariableInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
 
             case "GOTO_LABEL": {
                 String targetLabel = sInstructionArguments.getFirst().getValue();
                 Label addedLabel = parseLabel(targetLabel, instructionName, ordinal);
-                return new GotoLabelInstruction(targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
+                return new GotoLabelInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
             }
 
             case "ASSIGNMENT": {
                 String sourceVariableStr = sInstructionArguments.getFirst().getValue();
                 Variable sourceVariable = parseVariable(sourceVariableStr, instructionName, ordinal);
-                return new AssignmentInstruction(targetProgram, targetVariable, instructionLabel, sourceVariable, originInstruction, ordinal);
+                return new AssignmentInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, sourceVariable, originInstruction, ordinal);
             }
 
             case "CONSTANT_ASSIGNMENT": {
                 int constantValue = Integer.parseInt(sInstructionArguments.getFirst().getValue());
-                return new ConstantAssignmentInstruction(targetProgram, targetVariable, instructionLabel, constantValue, originInstruction, ordinal);
+                return new ConstantAssignmentInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, constantValue, originInstruction, ordinal);
             }
 
             case "JUMP_ZERO": {
                 String targetLabel = sInstructionArguments.getFirst().getValue();
                 Label addedLabel = parseLabel(targetLabel, instructionName, ordinal);
-                return new JumpZeroInstruction(targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
+                return new JumpZeroInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
             }
 
             case "JUMP_EQUAL_CONSTANT": {
@@ -155,7 +155,7 @@ final class XmlProgramMapper {
                                 .findFirst()
                                 .get());
 
-                return new JumpEqualConstantInstruction(targetProgram, targetVariable, instructionLabel, constantValue, addedLabel, originInstruction, ordinal);
+                return new JumpEqualConstantInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, constantValue, addedLabel, originInstruction, ordinal);
             }
 
             case "JUMP_EQUAL_VARIABLE": {
@@ -173,7 +173,7 @@ final class XmlProgramMapper {
                         .map(labelStr -> parseVariable(labelStr, instructionName, ordinal))
                         .orElseThrow(() -> new IllegalArgumentException("variableName not found"));
 
-                return new JumpEqualVariableInstruction(targetProgram, targetVariable, instructionLabel, sourceVariable, addedLabel, originInstruction, ordinal);
+                return new JumpEqualVariableInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, sourceVariable, addedLabel, originInstruction, ordinal);
             }
 
             case "QUOTE": {

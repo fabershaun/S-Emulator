@@ -22,14 +22,12 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private final List<QuoteArgument> quoteArguments =  new ArrayList<>();
     private int currentCyclesNumber;
     private int maxDegree = 4; // Dynamic
-    private final Program mainProgramOfThisInstruction;
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Map<Variable, Variable> mapFunctionToProgramVariable = new LinkedHashMap<>();
     private final Map<Label, Label> mapFunctionToProgramLabel = new HashMap<>();
 
-    public QuoteInstruction(Program mainProgramOfThisInstruction, Program programOfThisInstruction, Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArgumentsStrNotTrimmed) {
-        super(programOfThisInstruction, InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, label, origin, instructionNumber);
-        this.mainProgramOfThisInstruction = mainProgramOfThisInstruction;
+    public QuoteInstruction(Program mainProgram, Program programOfThisInstruction, Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArgumentsStrNotTrimmed) {
+        super(mainProgram, programOfThisInstruction, InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, label, origin, instructionNumber);
         this.functionName = functionName;
         this.functionArgumentsStrNotTrimmed = functionArgumentsStrNotTrimmed;
     }
@@ -40,7 +38,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new QuoteInstruction(this.mainProgramOfThisInstruction, getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
+        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     @Override
@@ -186,11 +184,11 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private void mapQuoteFunctionVariables() {
 
         Variable functionResult = getFunctionOfThisInstruction().getResultVariable();
-        Variable newWorkVariable = this.mainProgramOfThisInstruction.generateUniqueVariable();
+        Variable newWorkVariable = getMainProgram().generateUniqueVariable();
         mapFunctionToProgramVariable.put(functionResult , newWorkVariable);
 
         for (Variable functionInputVariable : getFunctionOfThisInstruction().getInputVariables()) {
-            newWorkVariable = this.mainProgramOfThisInstruction.generateUniqueVariable();
+            newWorkVariable = getMainProgram().generateUniqueVariable();
             mapFunctionToProgramVariable.put(functionInputVariable, newWorkVariable);
         }
     }
@@ -198,7 +196,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private void mapQuoteFunctionLabels() {
         // Map each function label to a unique label in the caller program
         for (Label functionLabel : getFunctionOfThisInstruction().getLabelsInProgram()) {
-            Label newLabel = this.mainProgramOfThisInstruction.generateUniqueLabel();
+            Label newLabel = getMainProgram().generateUniqueLabel();
             mapFunctionToProgramLabel.put(functionLabel, newLabel);
         }
     }
@@ -225,7 +223,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
                     // create assignment: targetVariable <- sourceVariable
                     targetList.add(
-                            new AssignmentInstruction(getProgramOfThisInstruction(), workVariable, labelForThisInstruction, argumentVariable, this.getOriginalInstruction(), instructionNumber++));
+                            new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, argumentVariable, this.getOriginalInstruction(), instructionNumber++));
                 }
 
                 case FUNCTION -> {
@@ -235,7 +233,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
                     // create quote instruction: targetVariable <- (functionName, functionArguments...)
                     targetList.add(
-                            new QuoteInstruction(this.mainProgramOfThisInstruction, getProgramOfThisInstruction(), workVariable, labelForThisInstruction, this.getOriginalInstruction(), instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
+                            new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, this.getOriginalInstruction(), instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
                 }
             }
         }
@@ -262,7 +260,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable()); // TODO: check
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new QuoteInstruction(this.mainProgramOfThisInstruction, getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
+        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     // Assign function result back to the target of this Quote
@@ -276,7 +274,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Label lastLabel = mapFunctionToProgramLabel.getOrDefault(FixedLabel.EXIT,  FixedLabel.EMPTY);
 
         targetList.add(
-                new AssignmentInstruction(getProgramOfThisInstruction(), getTargetVariable(), lastLabel, mappedResult, this.getOriginalInstruction(), instructionNumber));
+                new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), lastLabel, mappedResult, this.getOriginalInstruction(), instructionNumber));
     }
 
     private void extractQuoteArguments() {

@@ -20,22 +20,22 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
     private final Label referencelabel;
     private final long constantValue;
 
-    public JumpEqualConstantInstruction(Program programOfThisInstruction, Variable targetVariable, long constantValue, Label referencelabel, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.JUMP_EQUAL_CONSTANT, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
+    public JumpEqualConstantInstruction(Program mainProgram, Program programOfThisInstruction, Variable targetVariable, long constantValue, Label referencelabel, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.JUMP_EQUAL_CONSTANT, InstructionType.SYNTHETIC ,targetVariable, FixedLabel.EMPTY, origin, instructionNumber);
         this.constantValue = constantValue;
         this.referencelabel = referencelabel;
 
     }
 
-    public JumpEqualConstantInstruction(Program programOfThisInstruction, Variable targetVariable, Label label, long constantValue, Label referencelabel, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.JUMP_EQUAL_CONSTANT, InstructionType.SYNTHETIC, targetVariable, label, origin, instructionNumber);
+    public JumpEqualConstantInstruction(Program mainProgram, Program programOfThisInstruction, Variable targetVariable, Label label, long constantValue, Label referencelabel, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.JUMP_EQUAL_CONSTANT, InstructionType.SYNTHETIC, targetVariable, label, origin, instructionNumber);
         this.constantValue = constantValue;
         this.referencelabel = referencelabel;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new JumpEqualConstantInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), constantValue, referencelabel, getOriginalInstruction(), instructionNumber);
+        return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), constantValue, referencelabel, getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -82,16 +82,16 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
         Label newLabel2 = super.getProgramOfThisInstruction().generateUniqueLabel();
         int instructionNumber = startNumber;
 
-        innerInstructions.add(new AssignmentInstruction(getProgramOfThisInstruction(), workVariable1, newLabel1 ,super.getTargetVariable(), this, instructionNumber++));
+        innerInstructions.add(new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel1 ,super.getTargetVariable(), this, instructionNumber++));
 
         for(int i = 0 ; i < constantValue ; i++) {
-            innerInstructions.add(new JumpZeroInstruction(getProgramOfThisInstruction(), workVariable1, newLabel2, this, instructionNumber++));
-            innerInstructions.add(new DecreaseInstruction(getProgramOfThisInstruction(), workVariable1, this, instructionNumber++));
+            innerInstructions.add(new JumpZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel2, this, instructionNumber++));
+            innerInstructions.add(new DecreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, this, instructionNumber++));
         }
 
-        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), workVariable1, newLabel2, this, instructionNumber++));
-        innerInstructions.add(new GotoLabelInstruction(getProgramOfThisInstruction(), super.getTargetVariable(), referencelabel, this, instructionNumber++));
-        innerInstructions.add(new NoOpInstruction(getProgramOfThisInstruction(), Variable.RESULT, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel2, this, instructionNumber++));
+        innerInstructions.add(new GotoLabelInstruction(getMainProgram(), getProgramOfThisInstruction(), super.getTargetVariable(), referencelabel, this, instructionNumber++));
+        innerInstructions.add(new NoOpInstruction(getMainProgram(), getProgramOfThisInstruction(), Variable.RESULT, newLabel2, this, instructionNumber++));
 
         return instructionNumber;
     }
@@ -102,6 +102,6 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new JumpEqualConstantInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }

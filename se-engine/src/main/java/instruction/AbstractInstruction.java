@@ -21,14 +21,16 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
     private final Label label;
     private final Variable targetVariable;
     private final Instruction origin;
-    private Program programOfThisInstruction;
+    private final Program programOfThisInstruction;
+    private final Program mainProgram;
 
 
-    protected AbstractInstruction(Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Instruction origin, int instructionNumber) {
-        this(programOfThisInstruction, instructionData, instructionType, targetVariable,FixedLabel.EMPTY, origin, instructionNumber);
+    protected AbstractInstruction(Program mainProgram, Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Instruction origin, int instructionNumber) {
+        this(mainProgram, programOfThisInstruction, instructionData, instructionType, targetVariable,FixedLabel.EMPTY, origin, instructionNumber);
     }
 
-    protected AbstractInstruction(Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Label label, Instruction origin, int instructionNumber) {
+    protected AbstractInstruction(Program mainProgram, Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Label label, Instruction origin, int instructionNumber) {
+        this.mainProgram = mainProgram;
         this.programOfThisInstruction = programOfThisInstruction;
         this.instructionData = instructionData;
         this.instructionType = instructionType;
@@ -85,14 +87,15 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
         return List.of(this);   // Basic instruction -> keep as it is
     }
 
+    @Override
     public Program getProgramOfThisInstruction() {
         return programOfThisInstruction;
     }
 
-//    @Override
-//    public void setProgramOfThisInstruction(Program programOfThisInstruction) {
-//        this.programOfThisInstruction = programOfThisInstruction;
-//    }
+    @Override
+    public Program getMainProgram() {
+        return this.mainProgram;
+    }
 
     @Override
     public Instruction getOriginalInstruction() {

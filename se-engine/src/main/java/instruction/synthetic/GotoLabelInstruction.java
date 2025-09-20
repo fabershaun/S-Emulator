@@ -18,19 +18,19 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Label referencesLabel;
 
-    public GotoLabelInstruction(Program programOfThisInstruction, Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.GOTO_LABEL, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
+    public GotoLabelInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Label referencesLabel, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.GOTO_LABEL, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
         this.referencesLabel = referencesLabel;
     }
 
-    public GotoLabelInstruction(Program programOfThisInstruction, Variable variable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
-        super(programOfThisInstruction, InstructionData.GOTO_LABEL, InstructionType.SYNTHETIC, variable, label, origin, instructionNumber);
+    public GotoLabelInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Label label, Label referencesLabel, Instruction origin, int instructionNumber) {
+        super(mainProgram, programOfThisInstruction, InstructionData.GOTO_LABEL, InstructionType.SYNTHETIC, variable, label, origin, instructionNumber);
         this.referencesLabel = referencesLabel;
     }
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new GotoLabelInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
+        return new GotoLabelInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), referencesLabel, getOriginalInstruction(), instructionNumber);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         int instructionNumber = startNumber;
 
-        innerInstructions.add(new IncreaseInstruction(getProgramOfThisInstruction(), workVariable1, newLabel1, this, instructionNumber++));
-        innerInstructions.add(new JumpNotZeroInstruction(getProgramOfThisInstruction(), workVariable1, this.referencesLabel, this,  instructionNumber++));
+        innerInstructions.add(new IncreaseInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel1, this, instructionNumber++));
+        innerInstructions.add(new JumpNotZeroInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, this.referencesLabel, this,  instructionNumber++));
 
         return instructionNumber;
     }
@@ -82,6 +82,6 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new GotoLabelInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new GotoLabelInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
     }
 }
