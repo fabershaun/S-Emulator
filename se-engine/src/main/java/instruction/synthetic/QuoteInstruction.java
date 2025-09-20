@@ -11,8 +11,10 @@ import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
-
 import java.util.*;
+
+import static java.lang.Math.max;
+
 
 public class QuoteInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final String functionName;
@@ -114,9 +116,34 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return innerInstructions;
     }
 
+    // todo: check if right
     @Override
     public int getMaxDegree() {
-        return this.maxDegree;  // TODO: אולי לחשב כאן את כל הדרגות בצודה דינמאית
+        return helperGetMaxDegree(getFunctionOfThisInstruction(), quoteArguments);
+    }
+
+    // Recursive function
+    private int helperGetMaxDegree(Program innerFunction, List<QuoteArgument> innerQuoteArguments) {
+        int maxDegreeOfQuoteFunction = innerFunction.calculateProgramMaxDegree();    // Calculate inner quote's function degree
+        int maxDegreeOfQuoteFunctionArguments = calculateDegreeOfQuoteFunctionArguments(innerQuoteArguments); // Calculate inner quote's function's arguments degree
+
+        return maxDegreeOfQuoteFunction + maxDegreeOfQuoteFunctionArguments;
+    }
+
+    // Recursive function
+    private int calculateDegreeOfQuoteFunctionArguments(List<QuoteArgument> innerQuoteArguments) {
+        int degree = 0;
+        int maxDegreeOfQuoteFunctionArguments = 0;
+
+        for(QuoteArgument quoteArgument : innerQuoteArguments) {
+            if(quoteArgument instanceof FunctionArgument innerFunctionArgument) {
+                Program innerFunction = innerFunctionArgument.getFunction();
+                degree = helperGetMaxDegree(innerFunction, innerFunctionArgument.getArguments());
+                maxDegreeOfQuoteFunctionArguments = max(maxDegreeOfQuoteFunctionArguments, degree);
+            }
+        }
+
+        return maxDegreeOfQuoteFunctionArguments;
     }
 
     @Override
