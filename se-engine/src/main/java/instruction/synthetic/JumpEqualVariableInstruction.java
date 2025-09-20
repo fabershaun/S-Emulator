@@ -112,6 +112,6 @@ public class JumpEqualVariableInstruction extends AbstractInstruction implements
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new JumpEqualVariableInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new JumpEqualVariableInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, newReferenceLabel, this, newInstructionNumber);
     }
 }

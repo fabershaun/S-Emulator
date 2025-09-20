@@ -223,7 +223,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
                     // create assignment: targetVariable <- sourceVariable
                     targetList.add(
-                            new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, argumentVariable, this.getOriginalInstruction(), instructionNumber++));
+                            new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, argumentVariable, this, instructionNumber++));
                 }
 
                 case FUNCTION -> {
@@ -233,7 +233,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
                     // create quote instruction: targetVariable <- (functionName, functionArguments...)
                     targetList.add(
-                            new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, this.getOriginalInstruction(), instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
+                            new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, this, instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
                 }
             }
         }
@@ -247,7 +247,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             Instruction cloned = functionInstruction.remapAndClone(
                     instructionNumber++,
                     mapFunctionToProgramVariable,
-                    mapFunctionToProgramLabel       //הפונקציה הזאת היא הבעיה לכפילות של התוויות
+                    mapFunctionToProgramLabel
             );
 
             targetList.add(cloned);
@@ -260,7 +260,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable()); // TODO: check
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
+        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this, newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     // Assign function result back to the target of this Quote
@@ -274,7 +274,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Label lastLabel = mapFunctionToProgramLabel.getOrDefault(FixedLabel.EXIT,  FixedLabel.EMPTY);
 
         targetList.add(
-                new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), lastLabel, mappedResult, this.getOriginalInstruction(), instructionNumber));
+                new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), lastLabel, mappedResult, this, instructionNumber));
     }
 
     private void extractQuoteArguments() {

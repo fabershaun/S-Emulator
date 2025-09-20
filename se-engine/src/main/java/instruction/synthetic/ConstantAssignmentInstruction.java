@@ -81,6 +81,6 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new ConstantAssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, this.getOriginalInstruction(), newInstructionNumber);
+        return new ConstantAssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, this, newInstructionNumber);
     }
 }

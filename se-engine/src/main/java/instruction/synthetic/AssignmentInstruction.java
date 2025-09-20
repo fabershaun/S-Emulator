@@ -103,6 +103,6 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
         Variable newSourceVariable = variableMap.getOrDefault(this.getSourceVariable(), this.getSourceVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, this.getOriginalInstruction(), newInstructionNumber);
+        return new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, this, newInstructionNumber);
     }
 }

@@ -102,6 +102,6 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, newReferenceLabel, this.getOriginalInstruction(), newInstructionNumber);
+        return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, newReferenceLabel, this, newInstructionNumber);
     }
 }

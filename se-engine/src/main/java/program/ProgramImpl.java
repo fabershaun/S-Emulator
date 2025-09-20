@@ -17,6 +17,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.max;
+
 public class ProgramImpl implements Program, Serializable {
     private final String programName;
     private final String userString;
@@ -231,7 +233,7 @@ public class ProgramImpl implements Program, Serializable {
 
         for (Instruction instruction : programInstructions) {
             if(instruction instanceof SyntheticInstruction syntheticInstruction) {
-                maxDegree = Math.max(maxDegree, syntheticInstruction.getMaxDegree());
+                maxDegree = max(maxDegree, syntheticInstruction.getMaxDegree());
             }
         }
 
@@ -281,6 +283,7 @@ public class ProgramImpl implements Program, Serializable {
 
     @Override
     public Label generateUniqueLabel() {
+        nextLabelNumber = max(nextLabelNumber, labelsInProgram.size() + 1);
         Label uniqueLabel = new LabelImpl(nextLabelNumber++);
 
         if (labelsAddedAfterExtension.contains(uniqueLabel)) {
