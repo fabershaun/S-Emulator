@@ -28,12 +28,12 @@ public interface Program extends Serializable {
     List<List<InstructionDTO>> getExpandedProgram();
     List<InstructionDTO> getInstructionDtoList();
 
+    void initialize();
     Program deepClone();
     void addInstruction(Instruction instruction);
     void validateProgram() throws EngineLoadException;
     int calculateProgramMaxDegree();
     void expandProgram(int degree);
-    void initialize();
     Label generateUniqueLabel();
     Variable generateUniqueVariable();
     void sortVariableSetByNumber(Set<Variable> variables);

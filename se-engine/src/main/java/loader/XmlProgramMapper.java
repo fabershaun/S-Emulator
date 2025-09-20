@@ -190,7 +190,7 @@ final class XmlProgramMapper {
                         .findFirst()
                         .get();
 
-                return new QuoteInstruction(targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments);
+                return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments);
             }
 
             default:

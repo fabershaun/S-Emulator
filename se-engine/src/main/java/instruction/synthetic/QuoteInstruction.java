@@ -22,14 +22,14 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private final List<QuoteArgument> quoteArguments =  new ArrayList<>();
     private int currentCyclesNumber;
     private int maxDegree = 4; // Dynamic
-
+    private final Program mainProgramOfThisInstruction;
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Map<Variable, Variable> mapFunctionToProgramVariable = new LinkedHashMap<>();
     private final Map<Label, Label> mapFunctionToProgramLabel = new HashMap<>();
-    //private final Map<Program, Variable> mapQuoteFunctionToFunctionVariable = new HashMap<>();
 
-    public QuoteInstruction(Program programOfThisInstruction, Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArgumentsStrNotTrimmed) {
+    public QuoteInstruction(Program mainProgramOfThisInstruction, Program programOfThisInstruction, Variable targetVariable, Label label, Instruction origin, int instructionNumber, String functionName, String functionArgumentsStrNotTrimmed) {
         super(programOfThisInstruction, InstructionData.QUOTATION, InstructionType.SYNTHETIC ,targetVariable, label, origin, instructionNumber);
+        this.mainProgramOfThisInstruction = mainProgramOfThisInstruction;
         this.functionName = functionName;
         this.functionArgumentsStrNotTrimmed = functionArgumentsStrNotTrimmed;
     }
@@ -40,7 +40,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return new QuoteInstruction(getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
+        return new QuoteInstruction(this.mainProgramOfThisInstruction, getProgramOfThisInstruction(), getTargetVariable(), getLabel(), getOriginalInstruction(), instructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     @Override
@@ -171,13 +171,11 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private List<Instruction> convertFunctionData(int startNumber) {
         List<Instruction> expandedInstructions = new ArrayList<>();
 
-//        mapQuoteData();
         mapQuoteFunctionVariables();
         mapQuoteFunctionLabels();
-//        mapQuoteFunctionVariableToProgramFunction();
 
         int instructionNumber = startNumber;
-
+        initializeQuoteInstruction();
         instructionNumber = addParameterInstructions(expandedInstructions, instructionNumber);       // Step 1: assign arguments to function input variables
         instructionNumber = addClonedFunctionInstructions(expandedInstructions, instructionNumber); // Step 2: clone function instructions with variable/label remapping
         addResultAssignment(expandedInstructions, instructionNumber);
@@ -185,137 +183,59 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return expandedInstructions;
     }
 
-//    private void mapQuoteData() {
-//        for (QuoteArgument quoteArgument : this.quoteArguments) {
-//            switch (quoteArgument.getType()) {
-//                case VARIABLE -> {
-//                    Variable originalVariable = (Variable) quoteArgument;
-//                    Variable newWorkVariable = getProgramOfThisInstruction().generateUniqueVariable();
-//                    mapFunctionToProgramVariable.put(originalVariable, newWorkVariable);
-//                }
-//                case FUNCTION -> {
-//                    FunctionArgument functionArgument = (FunctionArgument) quoteArgument;
-//                    Program function = functionArgument.getFunction();
-//                    Variable newWorkVariable = getProgramOfThisInstruction().generateUniqueVariable();
-//                    mapQuoteFunctionToFunctionVariable.put(function, newWorkVariable);
-//                    mapFunctionLabels(function);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void mapFunctionLabels(Program function) {
-//        // Map each function label to a unique label in the caller program
-//        for (Label functionLabel : getFunctionOfThisInstruction().getLabelsInProgram()) {
-//            Label newLabel = super.getProgramOfThisInstruction().generateUniqueLabel();
-//            mapFunctionToProgramLabel.put(functionLabel, newLabel);
-//        }
-//    }
-
-    // todo: sort
     private void mapQuoteFunctionVariables() {
-        Program mainProgram = super.getProgramOfThisInstruction();
-
-        for (Variable functionInputVariable : getFunctionOfThisInstruction().getInputVariables()) {
-            Variable newWorkVariable = mainProgram.generateUniqueVariable();
-            mapFunctionToProgramVariable.put(functionInputVariable, newWorkVariable);
-        }
 
         Variable functionResult = getFunctionOfThisInstruction().getResultVariable();
-        Variable newWorkVariable = mainProgram.generateUniqueVariable();
+        Variable newWorkVariable = this.mainProgramOfThisInstruction.generateUniqueVariable();
         mapFunctionToProgramVariable.put(functionResult , newWorkVariable);
 
+        for (Variable functionInputVariable : getFunctionOfThisInstruction().getInputVariables()) {
+            newWorkVariable = this.mainProgramOfThisInstruction.generateUniqueVariable();
+            mapFunctionToProgramVariable.put(functionInputVariable, newWorkVariable);
+        }
     }
 
     private void mapQuoteFunctionLabels() {
         // Map each function label to a unique label in the caller program
         for (Label functionLabel : getFunctionOfThisInstruction().getLabelsInProgram()) {
-            Label newLabel = super.getProgramOfThisInstruction().generateUniqueLabel();
+            Label newLabel = this.mainProgramOfThisInstruction.generateUniqueLabel();
             mapFunctionToProgramLabel.put(functionLabel, newLabel);
         }
     }
-
-//    private void mapQuoteFunctionVariableToProgramFunction() {
-//
-//        for(QuoteArgument quoteArgument : quoteArguments) {
-//            if (quoteArgument instanceof FunctionArgument functionArgument) {
-//                Variable newWorkVariable = super.getProgramOfThisInstruction().generateUniqueVariable();
-//                mapQuoteFunctionToFunctionVariable.put(functionArgument.getFunction(), newWorkVariable);
-//            }
-//        }
-//    }
-
-//    private int addParameterInstructions(List<Instruction> targetList, int instructionNumber) {
-//        Label originalLabel = getLabel();
-//        boolean firstAssignment = true;
-//
-//        for(QuoteArgument quoteArgument : quoteArguments) {
-//            Label labelForThisInstruction = (firstAssignment && (originalLabel != null) && (originalLabel != FixedLabel.EMPTY))
-//                    ? originalLabel
-//                    : FixedLabel.EMPTY;
-//            firstAssignment = false;
-//
-//            switch (quoteArgument.getType()) {
-//                case VARIABLE -> {
-//                    VariableArgument variableArgument = (VariableArgument) quoteArgument;
-//                    Variable sourceVariable = variableArgument.getVariable();                      // sourceVariable = original Quote instruction input variable
-//                    Variable targetVariable = mapFunctionToProgramVariable.get(sourceVariable);    // targetVariable = new work variable that we created
-//
-//                    // create assignment: targetVariable <- sourceVariable
-//                    targetList.add(
-//                            new AssignmentInstruction(getProgramOfThisInstruction(), targetVariable, labelForThisInstruction, sourceVariable, getOriginalInstruction(), instructionNumber++));
-//                }
-//
-//                case FUNCTION -> {
-//                    FunctionArgument functionArgument = (FunctionArgument) quoteArgument;
-//                    Program functionInArguments = functionArgument.getFunction();
-//                    Variable targetVariable = mapQuoteFunctionToFunctionVariable.get(functionInArguments);    // targetVariable = new work variable that we created
-//                    String innerFunctionName = functionArgument.getFunction().getName();
-//                    String innerFunctionArgumentsStr = functionArgument.getArgumentStr();
-//
-//                    // create quote instruction: targetVariable <- (functionName, functionArguments...)
-//                    targetList.add(
-//                            new QuoteInstruction(getProgramOfThisInstruction(), targetVariable, labelForThisInstruction, getOriginalInstruction(), instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
-//                    }
-//            }
-//        }
-//
-//        return instructionNumber;
-//    }
 
     private int addParameterInstructions(List<Instruction> targetList, int instructionNumber) {
         Label originalLabel = getLabel();
         boolean firstAssignment = true;
 
-//        for(QuoteArgument quoteArgument : quoteArguments) {
         int i = 0;
-        for (Map.Entry<Variable, Variable> entry : mapFunctionToProgramVariable.entrySet()) {
+        for (Variable inputVariableInFunction : getFunctionOfThisInstruction().getInputVariables()) {
 
-            Label labelForThisInstruction = (firstAssignment && (originalLabel != null) && (originalLabel != FixedLabel.EMPTY))
+            Label labelForThisInstruction = (firstAssignment && (originalLabel != null) && (originalLabel != FixedLabel.EMPTY))     // To put the first label
                     ? originalLabel
                     : FixedLabel.EMPTY;
             firstAssignment = false;
 
             QuoteArgument quoteArgument = quoteArguments.get(i);
-            Variable workVariable = entry.getKey();
+            Variable workVariable = mapFunctionToProgramVariable.get(inputVariableInFunction);
 
             switch (quoteArgument.getType()) {
                 case VARIABLE -> {
                     VariableArgument variableArgument = (VariableArgument) quoteArgument;
-                    Variable inputVariable = variableArgument.getVariable();
+                    Variable argumentVariable = variableArgument.getVariable();
 
                     // create assignment: targetVariable <- sourceVariable
                     targetList.add(
-                            new AssignmentInstruction(getProgramOfThisInstruction(), workVariable, labelForThisInstruction, inputVariable, getOriginalInstruction(), instructionNumber++));
+                            new AssignmentInstruction(getProgramOfThisInstruction(), workVariable, labelForThisInstruction, argumentVariable, this.getOriginalInstruction(), instructionNumber++));
                 }
 
                 case FUNCTION -> {
                     FunctionArgument functionArgument = (FunctionArgument) quoteArgument;
-
+                    String innerFunctionName = functionArgument.getFunction().getName();
+                    String innerFunctionArgumentsStr = functionArgument.getArgumentStr();
 
                     // create quote instruction: targetVariable <- (functionName, functionArguments...)
                     targetList.add(
-                            new QuoteInstruction(getProgramOfThisInstruction(), workVariable, labelForThisInstruction, getOriginalInstruction(), instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
+                            new QuoteInstruction(this.mainProgramOfThisInstruction, getProgramOfThisInstruction(), workVariable, labelForThisInstruction, this.getOriginalInstruction(), instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
                 }
             }
         }
@@ -329,7 +249,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             Instruction cloned = functionInstruction.remapAndClone(
                     instructionNumber++,
                     mapFunctionToProgramVariable,
-                    mapFunctionToProgramLabel
+                    mapFunctionToProgramLabel       //הפונקציה הזאת היא הבעיה לכפילות של התוויות
             );
 
             targetList.add(cloned);
@@ -342,7 +262,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable()); // TODO: check
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new QuoteInstruction(getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
+        return new QuoteInstruction(this.mainProgramOfThisInstruction, getProgramOfThisInstruction(), newTargetVariable, newLabel, this.getOriginalInstruction(), newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     // Assign function result back to the target of this Quote
@@ -356,7 +276,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Label lastLabel = mapFunctionToProgramLabel.getOrDefault(FixedLabel.EXIT,  FixedLabel.EMPTY);
 
         targetList.add(
-                new AssignmentInstruction(getProgramOfThisInstruction(), getTargetVariable(), lastLabel, mappedResult, getOriginalInstruction(), instructionNumber));
+                new AssignmentInstruction(getProgramOfThisInstruction(), getTargetVariable(), lastLabel, mappedResult, this.getOriginalInstruction(), instructionNumber));
     }
 
     private void extractQuoteArguments() {

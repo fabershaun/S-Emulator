@@ -249,7 +249,6 @@ public class ProgramImpl implements Program, Serializable {
                 List<Instruction> newInstructionsList = new ArrayList<>();
 
                 // initialize
-//                instruction.setProgramOfThisInstruction(this);      // TODO: delete dont need this any more
                 if (instruction instanceof SyntheticInstruction syntheticInstruction) {
                     nextInstructionNumber = syntheticInstruction.setInnerInstructionsAndReturnTheNextOne(nextInstructionNumber);
                     newInstructionsList = instruction.getExtendedInstruction();
