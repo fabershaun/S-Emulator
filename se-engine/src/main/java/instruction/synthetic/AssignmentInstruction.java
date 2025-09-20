@@ -75,9 +75,9 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
         Variable workVariable1 = super.getProgramOfThisInstruction().generateUniqueVariable();
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
-        Label newLabel2 =  super.getProgramOfThisInstruction().generateUniqueLabel();
-        Label newLabel3 =  super.getProgramOfThisInstruction().generateUniqueLabel();
-        Label newLabel4 =  super.getProgramOfThisInstruction().generateUniqueLabel();
+        Label newLabel2 =  super.getMainProgram().generateUniqueLabel();
+        Label newLabel3 =  super.getMainProgram().generateUniqueLabel();
+        Label newLabel4 =  super.getMainProgram().generateUniqueLabel();
         int instructionNumber = startNumber;
 
         innerInstructions.add(new ZeroVariableInstruction(getMainProgram(), getProgramOfThisInstruction(), super.getTargetVariable(), newLabel1,this, instructionNumber++));

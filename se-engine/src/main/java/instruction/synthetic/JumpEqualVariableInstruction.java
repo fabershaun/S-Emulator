@@ -84,12 +84,12 @@ public class JumpEqualVariableInstruction extends AbstractInstruction implements
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
         int instructionNumber = startNumber;
-        Variable workVariable1 = super.getProgramOfThisInstruction().generateUniqueVariable();
-        Variable workVariable2 = super.getProgramOfThisInstruction().generateUniqueVariable();
+        Variable workVariable1 = super.getMainProgram().generateUniqueVariable();
+        Variable workVariable2 = super.getMainProgram().generateUniqueVariable();
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
-        Label newLabel2 = super.getProgramOfThisInstruction().generateUniqueLabel();
-        Label newLabel3 = super.getProgramOfThisInstruction().generateUniqueLabel();
-        Label newLabel4 = super.getProgramOfThisInstruction().generateUniqueLabel();
+        Label newLabel2 = super.getMainProgram().generateUniqueLabel();
+        Label newLabel3 = super.getMainProgram().generateUniqueLabel();
+        Label newLabel4 = super.getMainProgram().generateUniqueLabel();
 
         innerInstructions.add(new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel1, super.getTargetVariable(), this, instructionNumber++));
         innerInstructions.add(new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable2,sourceVariable, this, instructionNumber++));

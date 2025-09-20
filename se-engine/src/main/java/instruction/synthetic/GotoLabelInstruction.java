@@ -66,7 +66,7 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
 
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
-        Variable workVariable1 = super.getProgramOfThisInstruction().generateUniqueVariable();
+        Variable workVariable1 = super.getMainProgram().generateUniqueVariable();
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         int instructionNumber = startNumber;
 

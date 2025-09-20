@@ -77,9 +77,9 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
 
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
-        Variable workVariable1 = super.getProgramOfThisInstruction().generateUniqueVariable();
+        Variable workVariable1 = super.getMainProgram().generateUniqueVariable();
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
-        Label newLabel2 = super.getProgramOfThisInstruction().generateUniqueLabel();
+        Label newLabel2 = super.getMainProgram().generateUniqueLabel();
         int instructionNumber = startNumber;
 
         innerInstructions.add(new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable1, newLabel1 ,super.getTargetVariable(), this, instructionNumber++));
