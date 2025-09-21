@@ -32,5 +32,6 @@ public interface Instruction extends Serializable {
     Label execute(ExecutionContext context);
     Instruction createInstructionWithInstructionNumber(int instructionNumber);
 
-    Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin);
+    Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin, Program mainProgram);
+    void setMainProgram(Program mainProgram);
 }

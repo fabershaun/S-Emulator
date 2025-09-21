@@ -22,7 +22,7 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
     private final Variable targetVariable;
     private final Instruction origin;
     private final Program programOfThisInstruction;
-    private final Program mainProgram;
+    private Program mainProgram;
 
 
     protected AbstractInstruction(Program mainProgram, Program programOfThisInstruction, InstructionData instructionData, InstructionType instructionType, Variable targetVariable, Instruction origin, int instructionNumber) {
@@ -148,5 +148,10 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
         chain.add(current);
         chain.addAll(ancestors);
         return chain;
+    }
+
+    @Override
+    public void setMainProgram(Program mainProgram) {
+        this.mainProgram = mainProgram;
     }
 }

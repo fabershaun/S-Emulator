@@ -355,7 +355,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                     instructionNumber++,
                     mapFunctionToProgramVariable,
                     mapFunctionToProgramLabel,
-                    this
+                    this,
+                    getMainProgram()
             );
 
             targetList.add(cloned);
@@ -364,8 +365,9 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     @Override
-    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin) {
-        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable()); // TODO: check
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin, Program mainProgram) {
+        setMainProgram(mainProgram);
+        Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
         return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, origin, newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
