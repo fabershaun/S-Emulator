@@ -8,19 +8,21 @@ import java.util.stream.Collectors;
 
 public class FunctionArgument extends QuoteArgument {
     private final String rawFunctionStr;
+    private final Program mainProgram;
     private final Program parentProgram;
     private Program function;
     private final List<QuoteArgument> arguments = new ArrayList<>();
     private String rawInnerArgumentsString;
 
-    public FunctionArgument(Program parentProgram, String functionStrNotTrimmed) {
-        if (parentProgram == null) {
+    public FunctionArgument(Program mainProgram, Program parentProgram, String functionStrNotTrimmed) {
+        if (parentProgram == null && mainProgram == null) {
             throw new IllegalArgumentException("Program cannot be null");
         }
         if (functionStrNotTrimmed == null || functionStrNotTrimmed.trim().isEmpty()) {
             throw new IllegalArgumentException("Function data cannot be null or empty");
         }
 
+        this.mainProgram = mainProgram;
         this.parentProgram = parentProgram;
         this.rawFunctionStr = functionStrNotTrimmed.trim();
         extractFunctionDataFromStr();
@@ -77,9 +79,9 @@ public class FunctionArgument extends QuoteArgument {
         for(int i = 1; i < functionData.size(); i++) {  // Skip function name that in index 0
             String argumentStr = functionData.get(i);
             if (argumentStr.startsWith("(") && argumentStr.endsWith(")")) {
-                arguments.add(new FunctionArgument(parentProgram, argumentStr));
+                arguments.add(new FunctionArgument(mainProgram, parentProgram, argumentStr));
             } else {
-                arguments.add(new VariableArgument(parentProgram, argumentStr));
+                arguments.add(new VariableArgument(mainProgram, parentProgram, argumentStr));
             }
         }
     }

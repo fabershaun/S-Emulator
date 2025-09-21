@@ -22,6 +22,7 @@ public interface Program extends Serializable {
     Set<Variable> getWorkVariables();
     List<Variable> getInputAndWorkVariablesSortedBySerial();
     List<Label> getLabelsInProgram();
+    Set<Label> getReferenceLabelsInProgram();
     Map<Label, Instruction> getLabelToInstruction();
     List<String> getOrderedLabelsExitLastStr();
     List<String> getInputVariablesSortedStr();

@@ -77,10 +77,10 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
     }
 
     @Override
-    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin) {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new ConstantAssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, this, newInstructionNumber);
+        return new ConstantAssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, origin, newInstructionNumber);
     }
 }

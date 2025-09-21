@@ -71,10 +71,10 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
     }
 
     @Override
-    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin) {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new ZeroVariableInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this, newInstructionNumber);
+        return new ZeroVariableInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, origin, newInstructionNumber);
     }
 }

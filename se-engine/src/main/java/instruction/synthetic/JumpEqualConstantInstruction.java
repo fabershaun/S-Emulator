@@ -97,11 +97,11 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
     }
 
     @Override
-    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin) {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
         Label newReferenceLabel = labelMap.getOrDefault(this.getReferenceLabel(), this.getReferenceLabel());
 
-        return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, newReferenceLabel, this, newInstructionNumber);
+        return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this.constantValue, newReferenceLabel, origin, newInstructionNumber);
     }
 }

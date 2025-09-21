@@ -11,6 +11,8 @@ import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
+import variable.VariableType;
+
 import java.util.*;
 
 import static java.lang.Math.max;
@@ -21,7 +23,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private final String functionArgumentsStrNotTrimmed;
     private final List<QuoteArgument> quoteArguments =  new ArrayList<>();
     private int currentCyclesNumber;
-    private int maxDegree = 4; // Dynamic
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Map<Variable, Variable> mapFunctionToProgramVariable = new LinkedHashMap<>();
     private final Map<Label, Label> mapFunctionToProgramLabel = new HashMap<>();
@@ -44,17 +45,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     @Override
     public Label execute(ExecutionContext context) {
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
-
-        List<Long> inputs = new ArrayList<>();
-        for (QuoteArgument quoteArgument : this.quoteArguments) {
-            switch (quoteArgument.getType()) {
-                case VARIABLE -> inputs.add(quoteArgument.getValue());
-                case FUNCTION -> {
-                    long functionResult = calculateFunctionResult(quoteArgument);
-                    inputs.add(functionResult);
-                }
-            }
-        }
+        initializeQuoteInstruction();
+        List<Long> inputs = getInputs(quoteArguments, context);
 
         // Run
         functionExecutor.run(0, inputs.toArray(Long[]::new));
@@ -68,22 +60,37 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return FixedLabel.EMPTY;
     }
 
-    // Recursive function: the goal is to reach to a functions that hold only variable arguments
-    private long calculateFunctionResult(QuoteArgument quoteArgument) {
-        FunctionArgument innerFunction = (FunctionArgument) quoteArgument;
+    private List<Long> getInputs(List<QuoteArgument> innerQuoteArgumentsList, ExecutionContext context) {
         List<Long> inputs = new ArrayList<>();
 
-        for(QuoteArgument quoteFunctionArgument : innerFunction.getArguments()) {
+        for(QuoteArgument quoteFunctionArgument : innerQuoteArgumentsList) {
             switch (quoteFunctionArgument.getType()) {
                 case FUNCTION -> {
-                    long functionResult = calculateFunctionResult(quoteFunctionArgument);
+                    FunctionArgument functionArgument = (FunctionArgument) quoteFunctionArgument;
+                    long functionResult = calculateFunctionResult(functionArgument, context);
                     inputs.add(functionResult);
                 }
-                case VARIABLE -> inputs.add(quoteFunctionArgument.getValue());
+                case VARIABLE -> {
+                    VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
+                    long inputValue = 0;
+                    if (innerVariableArgument.getVariable().getType().equals(VariableType.INPUT)) {
+                        inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's input variable
+                    } else if (innerVariableArgument.getVariable().getType().equals(VariableType.WORK)) {
+                        inputValue = innerVariableArgument.getValue();  // If it's work variable
+                    }
+                    inputs.add(inputValue);
+                }
             }
         }
 
+        return inputs;
+    }
+
+    // Recursive function: the goal is to reach to a functions that hold only variable arguments
+    private long calculateFunctionResult(FunctionArgument innerFunction, ExecutionContext context) {
+
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction.getFunction());
+        List<Long> inputs = getInputs(innerFunction.getArguments(), context);
 
         // Run
         functionExecutor.run(0, inputs.toArray(Long[]::new));
@@ -92,6 +99,94 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Variable resultVariable = innerFunction.getFunction().getResultVariable();
         return functionExecutor.getVariableValue(resultVariable);
     }
+
+
+//    @Override
+//    public Label execute(ExecutionContext context) {
+//        ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
+//
+//        List<Long> inputs = new ArrayList<>();
+//        inputs = getInputs(quoteArguments, context);
+//
+//        for (QuoteArgument quoteArgument : this.quoteArguments) {
+//            switch (quoteArgument.getType()) {
+//                case VARIABLE -> inputs.add(quoteArgument.getValue());
+//                case FUNCTION -> {
+//                    long functionResult = calculateFunctionResult(quoteArgument, context);
+//                    inputs.add(functionResult);
+//                }
+//            }
+//        }
+//
+//        // Run
+//        functionExecutor.run(0, inputs.toArray(Long[]::new));
+//
+//        // Update value in parent program
+//        Variable resultVariable = this.getFunctionOfThisInstruction().getResultVariable();
+//        long quoteFunctionResult = functionExecutor.getVariableValue(resultVariable);
+//        context.updateVariable(getTargetVariable(), quoteFunctionResult);
+//
+//        currentCyclesNumber = InstructionData.QUOTATION.getCycles() + functionExecutor.getTotalCyclesOfProgram();
+//        return FixedLabel.EMPTY;
+//    }
+//
+//    private List<Long> getInputs(List<QuoteArgument> innerQuoteArgumentsList, ExecutionContext context) {
+//        List<Long> inputs = new ArrayList<>();
+//
+//        for(QuoteArgument quoteFunctionArgument : innerQuoteArgumentsList) {
+//            switch (quoteFunctionArgument.getType()) {
+//                case FUNCTION -> {
+//                    long functionResult = calculateFunctionResult(quoteFunctionArgument, context);
+//                    inputs.add(functionResult);
+//                }
+//                case VARIABLE -> {
+//                    VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
+//                    long inputValue = 0;
+//                    if (innerVariableArgument.getVariable().getType().equals(VariableType.INPUT)) {
+//                        inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's input variable
+//                    } else if (innerVariableArgument.getVariable().getType().equals(VariableType.WORK)) {
+//                        inputValue = innerVariableArgument.getValue();  // If it's work variable
+//                    }
+//                    inputs.add(inputValue);
+//                }
+//            }
+//        }
+//
+//        return inputs;
+//    }
+//
+//    // Recursive function: the goal is to reach to a functions that hold only variable arguments
+//    private long calculateFunctionResult(List<Long> inputs, FunctionArgument innerFunction) {
+//
+//        FunctionArgument innerFunction = (FunctionArgument) quoteArgument;
+//        for(QuoteArgument quoteFunctionArgument : innerFunction.getArguments()) {
+//            switch (quoteFunctionArgument.getType()) {
+//                case FUNCTION -> {
+//                    long functionResult = calculateFunctionResult(quoteFunctionArgument, context);
+//                    inputs.add(functionResult);
+//                }
+//                case VARIABLE -> {
+//                    VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
+//                    long inputValue = 0;
+//                    if (innerVariableArgument.getVariable().getType().equals(VariableType.INPUT)) {
+//                        inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's input variable
+//                    } else if (innerVariableArgument.getVariable().getType().equals(VariableType.WORK)) {
+//                        inputValue = innerVariableArgument.getValue();  // If it's work variable
+//                    }
+//                    inputs.add(inputValue);
+//                }
+//            }
+//        }
+//
+//        ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction.getFunction());
+//
+//        // Run
+//        functionExecutor.run(0, inputs.toArray(Long[]::new));
+//
+//        // Return function result
+//        Variable resultVariable = innerFunction.getFunction().getResultVariable();
+//        return functionExecutor.getVariableValue(resultVariable);
+//    }
 
     @Override
     public String getCommand() {
@@ -192,11 +287,20 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             newWorkVariable = getMainProgram().generateUniqueVariable();
             mapFunctionToProgramVariable.put(functionInputVariable, newWorkVariable);
         }
+
+        for (Variable functionWorkVariable : getFunctionOfThisInstruction().getWorkVariables()) {
+            newWorkVariable = getMainProgram().generateUniqueVariable();
+            mapFunctionToProgramVariable.put(functionWorkVariable, newWorkVariable);
+        }
     }
 
     private void mapQuoteFunctionLabels() {
+        Set<Label> labelsInFunction = new HashSet<>();
+        labelsInFunction.addAll(getFunctionOfThisInstruction().getLabelsInProgram());
+        labelsInFunction.addAll(getFunctionOfThisInstruction().getReferenceLabelsInProgram());
+
         // Map each function label to a unique label in the caller program
-        for (Label functionLabel : getFunctionOfThisInstruction().getLabelsInProgram()) {
+        for (Label functionLabel : labelsInFunction) {              // To include Exit if exist
             Label newLabel = getMainProgram().generateUniqueLabel();
             mapFunctionToProgramLabel.put(functionLabel, newLabel);
         }
@@ -206,7 +310,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         Label originalLabel = getLabel();
         boolean firstAssignment = true;
 
-        int i = 0;
+        int indexOfQuoteArgumentList = 0;
         for (Variable inputVariableInFunction : getFunctionOfThisInstruction().getInputVariables()) {
 
             Label labelForThisInstruction = (firstAssignment && (originalLabel != null) && (originalLabel != FixedLabel.EMPTY))     // To put the first label
@@ -214,7 +318,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                     : FixedLabel.EMPTY;
             firstAssignment = false;
 
-            QuoteArgument quoteArgument = quoteArguments.get(i);
+            QuoteArgument quoteArgument = quoteArguments.get(indexOfQuoteArgumentList);
             Variable workVariable = mapFunctionToProgramVariable.get(inputVariableInFunction);
 
             switch (quoteArgument.getType()) {
@@ -237,6 +341,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                             new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), workVariable, labelForThisInstruction, this, instructionNumber++, innerFunctionName, innerFunctionArgumentsStr));
                 }
             }
+
+            indexOfQuoteArgumentList++;
         }
 
         return instructionNumber;
@@ -248,7 +354,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
             Instruction cloned = functionInstruction.remapAndClone(
                     instructionNumber++,
                     mapFunctionToProgramVariable,
-                    mapFunctionToProgramLabel
+                    mapFunctionToProgramLabel,
+                    this
             );
 
             targetList.add(cloned);
@@ -257,11 +364,11 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     @Override
-    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin) {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable()); // TODO: check
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, this, newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
+        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, origin, newInstructionNumber, this.functionName, this.functionArgumentsStrNotTrimmed);
     }
 
     // Assign function result back to the target of this Quote
@@ -279,12 +386,13 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     private void extractQuoteArguments() {
+        quoteArguments.clear();
         List<String> argumentsStr = extractQuoteArgumentsToStrList();
         for(String argumentStr : argumentsStr) {
             if(argumentStr.startsWith("(") && argumentStr.endsWith(")")) {
-                quoteArguments.add(new FunctionArgument(getFunctionOfThisInstruction(), argumentStr));  // If function
+                quoteArguments.add(new FunctionArgument(getMainProgram(), getFunctionOfThisInstruction(), argumentStr));  // If function
             } else {
-                quoteArguments.add(new VariableArgument(getFunctionOfThisInstruction(), argumentStr));  // If variable
+                quoteArguments.add(new VariableArgument(getMainProgram(), getFunctionOfThisInstruction(), argumentStr));  // If variable
             }
         }
     }

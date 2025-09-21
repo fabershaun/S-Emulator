@@ -223,6 +223,11 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
+    public Set<Label> getReferenceLabelsInProgram() {
+        return this.referencedLabels;
+    }
+
+    @Override
     public Map<Label, Instruction> getLabelToInstruction() {
         return labelToInstruction;
     }

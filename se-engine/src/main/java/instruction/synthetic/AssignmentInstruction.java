@@ -98,11 +98,11 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
     }
 
     @Override
-    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap) {
+    public Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin) {
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Variable newSourceVariable = variableMap.getOrDefault(this.getSourceVariable(), this.getSourceVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
 
-        return new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, this, newInstructionNumber);
+        return new AssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newSourceVariable, origin, newInstructionNumber);
     }
 }

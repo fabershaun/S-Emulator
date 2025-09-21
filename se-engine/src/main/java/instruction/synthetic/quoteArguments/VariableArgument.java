@@ -1,5 +1,7 @@
 package instruction.synthetic.quoteArguments;
 
+import execution.ExecutionContext;
+import execution.ProgramExecutor;
 import program.Program;
 import variable.Variable;
 
@@ -7,7 +9,7 @@ public class VariableArgument extends QuoteArgument {
     private final Variable variable;
     private final String variableStr;
 
-    public VariableArgument(Program parentProgram, String variableStr) {
+    public VariableArgument(Program mainProgram, Program parentProgram, String variableStr) {
         if (parentProgram == null) {
             throw new IllegalArgumentException("Program cannot be null");
         }
@@ -17,6 +19,12 @@ public class VariableArgument extends QuoteArgument {
 
         // Try to find the variable by name
         Variable foundVariable = parentProgram.findVariableByName(variableStr.trim());
+
+        if (variableStr.startsWith("x")) {
+            if (!mainProgram.getInputVariables().contains(foundVariable)) {
+                mainProgram.addInputVariable(foundVariable);
+            }
+        }
 
         if (foundVariable == null) {
             throw new IllegalArgumentException(
@@ -40,5 +48,9 @@ public class VariableArgument extends QuoteArgument {
     @Override
     public String getArgumentStr() {
         return this.variableStr;
+    }
+
+    public long getInputValueFromContext(ExecutionContext context) {
+        return context.getVariableValue(this.variable);
     }
 }
