@@ -163,7 +163,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     public Program getFunctionOfThisInstruction() {
-        return super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(this.functionName);
+        return super.getMainProgram().getFunctionsHolder().getFunctionByName(this.functionName);
     }
 
     private List<Instruction> convertFunctionData(int startNumber) {
@@ -172,10 +172,11 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         mapQuoteFunctionVariables();
         mapQuoteFunctionLabels();
 
-        int instructionNumber = startNumber;
         initializeQuoteInstruction();
+
+        int instructionNumber = startNumber;
         instructionNumber = addParameterInstructions(expandedInstructions, instructionNumber);       // Step 1: assign arguments to function input variables
-        instructionNumber = addClonedFunctionInstructions(expandedInstructions, instructionNumber); // Step 2: clone function instructions with variable/label remapping
+        instructionNumber = addClonedFunctionInstructions(expandedInstructions, instructionNumber);  // Step 2: clone function instructions with variable/label remapping
         addResultAssignment(expandedInstructions, instructionNumber);
 
         return expandedInstructions;
@@ -330,7 +331,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                 if (!current.isEmpty()) {
                     String token = current.toString().trim();
                     if (checkIfFunction(token)) {
-                        String userString = super.getProgramOfThisInstruction()
+                        String userString = super.getMainProgram()
                                 .getFunctionsHolder()
                                 .getFunctionByName(token)
                                 .getUserString();
@@ -352,7 +353,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         if (!current.isEmpty()) {
             String token = current.toString().trim();
             if (checkIfFunction(token)) {
-                String userString = super.getProgramOfThisInstruction()
+                String userString = super.getMainProgram()
                         .getFunctionsHolder()
                         .getFunctionByName(token)
                         .getUserString();
@@ -367,7 +368,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     private boolean checkIfFunction(String current) {
-        Program function = super.getProgramOfThisInstruction().getFunctionsHolder().getFunctionByName(current);
+        Program function = super.getMainProgram().getFunctionsHolder().getFunctionByName(current);
         return function != null;
     }
 }

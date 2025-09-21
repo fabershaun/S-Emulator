@@ -309,6 +309,7 @@ public class ProgramImpl implements Program, Serializable {
 
     @Override
     public Variable generateUniqueVariable() {
+        nextWorkVariableNumber = max(nextWorkVariableNumber, workVariables.size() + 1);
         Variable v = new VariableImpl(VariableType.WORK, nextWorkVariableNumber++);
         workVariables.add(v);
         return v;
