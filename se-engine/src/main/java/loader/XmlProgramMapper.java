@@ -193,6 +193,29 @@ final class XmlProgramMapper {
                 return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments);
             }
 
+            case "JUMP_EQUAL_FUNCTION": {
+                Label addedLabel = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("JEFunctionLabel"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .map(labelStr -> parseLabel(labelStr, instructionName, ordinal))
+                        .orElseThrow(() -> new IllegalArgumentException("JEFunctionLabel not found"));
+
+                String functionArguments = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .get();
+
+                String functionName = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .get()
+                        .toUpperCase();
+
+                return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, functionName, functionArguments, originInstruction, ordinal);
+            }
             default:
                 throw new IllegalArgumentException(
                         "Unknown instruction name at position " + ordinal + ": " + instructionName

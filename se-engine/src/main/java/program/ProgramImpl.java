@@ -347,6 +347,7 @@ public class ProgramImpl implements Program, Serializable {
 
     @Override
     public Variable findVariableByName(String name) {
+
         // Search in input variables
         for (Variable variable : getInputVariables()) {
             if (variable.getRepresentation().equals(name)) {
