@@ -11,6 +11,7 @@ public class ProgramExecutorDTO {
     private final int degree;                       // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final List<Long> inputs;
 
+
     public ProgramExecutorDTO(ProgramDTO programDTO, Map<String, Long> VariablesToValuesSorted, long result, int totalCycles, int degree, List<Long> inputs) {
         this.programDTO = programDTO;
         this.VariablesToValuesSorted = VariablesToValuesSorted;

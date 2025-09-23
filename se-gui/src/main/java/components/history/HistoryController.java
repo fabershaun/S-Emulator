@@ -17,7 +17,7 @@ public class HistoryController {
 
     private MainAppController mainController;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
-    private StringProperty programOrFunctionProperty;
+    private StringProperty programSelectorProperty;
 
     @FXML private TableView<ProgramExecutorDTO> historyTable;
     @FXML private TableColumn<ProgramExecutorDTO, Number> colCycles;
@@ -42,7 +42,7 @@ public class HistoryController {
 
     public void setProperty(ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty, StringProperty programOrFunctionProperty) {
         this.programAfterExecuteProperty = programAfterExecuteProperty;
-        this.programOrFunctionProperty = programOrFunctionProperty;
+        this.programSelectorProperty = programOrFunctionProperty;
     }
 
     public void initializeListeners() {
@@ -56,7 +56,8 @@ public class HistoryController {
             }
         });
 
-        programOrFunctionProperty.addListener((obs, oldProgName, newProgramSelected) -> {
+        // After program select -> update history table
+        programSelectorProperty.addListener((obs, oldProgName, newProgramSelected) -> {
             if (newProgramSelected != null) {
                 List<ProgramExecutorDTO> historyPerProgram = mainController.getHistory();
                 historyTable.getItems().setAll(historyPerProgram);
@@ -64,6 +65,24 @@ public class HistoryController {
                 historyTable.getItems().clear();
             }
         });
+
+        // Listen to row selection and notify the main controller
+        historyTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newHistoryRowSelected) -> {
+            if (newHistoryRowSelected == null) {
+                if (mainController != null) {
+                    mainController.onHistoryDeselected();
+                }
+            } else {
+                if (mainController != null) {
+                    int rowIndex = historyTable.getSelectionModel().getSelectedIndex() + 1;
+                    mainController.onHistorySelected(newHistoryRowSelected, rowIndex);
+                }
+            }
+        });
     }
 
+    public void clearHistory() {
+        // Clear the table content
+        historyTable.getItems().clear();
+    }
 }

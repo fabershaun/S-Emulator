@@ -1,6 +1,5 @@
 package components.chainInstructionTable;
 
-import components.mainApp.MainAppController;
 import dto.InstructionDTO;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -39,7 +38,7 @@ public class ChainInstructionsTableController {
         instructionsTable.getItems().setAll(instructionChain.subList(1, instructionChain.size()));
     }
 
-    public void clearHistory() {
+    public void clearChainTable() {
         // Clear the table content
         instructionsTable.getItems().clear();
     }
