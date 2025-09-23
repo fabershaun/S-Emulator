@@ -26,6 +26,7 @@ public interface Program extends Serializable {
     Map<Label, Instruction> getLabelToInstruction();
     List<String> getOrderedLabelsExitLastStr();
     List<String> getInputVariablesSortedStr();
+    List<String> getWorkVariablesSortedStr();
     List<List<InstructionDTO>> getExpandedProgram();
     List<InstructionDTO> getInstructionDtoList();
 

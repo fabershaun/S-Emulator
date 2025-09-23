@@ -203,6 +203,14 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
+    public List<String> getWorkVariablesSortedStr() {
+        return workVariables.stream()
+                .sorted(Comparator.comparingInt(Variable::getNumber))
+                .map(Variable::getRepresentation)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<InstructionDTO> getInstructionDtoList() {
         List<InstructionDTO> instructionDTOList = new ArrayList<>();
 

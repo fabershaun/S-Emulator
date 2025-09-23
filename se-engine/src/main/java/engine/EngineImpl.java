@@ -142,6 +142,7 @@ public class EngineImpl implements Engine, Serializable {
                 program.getName(),
                 program.getOrderedLabelsExitLastStr(),
                 program.getInputVariablesSortedStr(),
+                program.getWorkVariablesSortedStr(),
                 instructionsDTO,
                 program.getExpandedProgram()
         );
