@@ -124,4 +124,5 @@ public class HistoryController {
         mainController.prepareForNewRun(degree, inputs);
     }
 
+    public void clearHistory() { historyTable.getItems().clear(); }
 }

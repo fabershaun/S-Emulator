@@ -46,7 +46,7 @@ public class LoadProgramTask extends Task<ProgramDTO> {
         // Step 4: finish
         updateProgress(100, 100);
         updateMessage("Done");
-        return engine.getProgram();
+        return engine.getMainProgram();
     }
 
     @Override

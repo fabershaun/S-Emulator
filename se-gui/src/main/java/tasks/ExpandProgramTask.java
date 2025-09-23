@@ -12,19 +12,21 @@ import javafx.concurrent.Task;
 public class ExpandProgramTask extends Task<ProgramDTO> {
 
     private final Engine engine;
+    private final String programToExpandName;
     private final int targetDegree;
 
-    public ExpandProgramTask(Engine engine, int targetDegree) {
+    public ExpandProgramTask(String programToExpandName, Engine engine, int targetDegree) {
         this.engine = engine;
+        this.programToExpandName = programToExpandName;
         this.targetDegree = targetDegree;
     }
 
     @Override
     protected ProgramDTO call() {
         if (targetDegree == 0) {
-            return engine.getProgram();
+            return engine.getMainProgram();
         } else {
-            return engine.getExpandedProgram(targetDegree);
+            return engine.getExpandedProgram(programToExpandName, targetDegree);
         }
     }
 

@@ -18,7 +18,7 @@ public class Display implements MenuActionable {
     public void startAction(Scanner scanner, Engine engine) {
 
         printTitle("Display Program");
-        ProgramDTO programDTO = engine.getProgram();
+        ProgramDTO programDTO = engine.getMainProgram();
         displayProgram(programDTO);
     }
 

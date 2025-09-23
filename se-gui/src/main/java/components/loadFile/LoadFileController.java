@@ -41,7 +41,6 @@ public class LoadFileController {
         if (file == null) return;
 
         mainController.loadNewFile(file.toPath(), pathLabel.getScene().getWindow());
-        // TODO: להוסיף בדיקות במנוע - לבדוק אם אין הפניה לפונקציה שאני מוגדרת במסגרת הקובץ / הפונקציות שבקובץ
     }
 
     public static Stage showProgressDialog(javafx.concurrent.Task<?> task, javafx.stage.Window owner) {
@@ -81,10 +80,10 @@ public class LoadFileController {
 
         if (taskException instanceof exceptions.EngineLoadException) {
             msg = taskException.getMessage();
-        } else if (taskException != null && taskException.getCause() instanceof exceptions.EngineLoadException) {
-            msg = taskException.getCause().getMessage();
+        } else if (taskException != null) {
+            msg = taskException.getMessage() != null ? taskException.getMessage() : taskException.toString();
         } else {
-            msg = "Unexpected error";
+            msg = "Unknown  error";
         }
 
         showEngineError(msg);

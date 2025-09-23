@@ -9,21 +9,20 @@ import java.util.List;
 
 public interface Engine {
 
-    ProgramDTO getProgram();
-    ProgramDTO getExpandedProgram(int degree);
-    ProgramExecutorDTO getProgramAfterRun();
+    ProgramDTO getMainProgram();
+    ProgramDTO getProgramByUserString(String userString);
+    ProgramDTO getExpandedProgram(String programName, int degree);
+    ProgramExecutorDTO getProgramAfterRun(String programName);
     List<ProgramExecutorDTO> getHistoryToDisplay();     // For console module
     List<ProgramExecutorDTO> getHistoryPerProgram(String programName);   // For gui module
 
-    List<ProgramDTO> getAllPrograms(String programName);   // For gui module
-    //void setSubProgram(String subProgramName); // For gui module //TODO: write this program.function. להוסיף מבנה נתונים - תוכנית פעילה כרגע
+    List<ProgramDTO> getAllPrograms();   // For gui module
 
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree() throws EngineLoadException;
-    void runProgram(int degree, Long... inputs);
+    void runProgram(String programName, int degree, Long... inputs);
 
     // For console module only:
-    int getNumberOfInputVariables();
     void saveState(Path path) throws EngineLoadException;
     void loadState(Path path) throws EngineLoadException;
 }

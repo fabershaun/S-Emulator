@@ -39,7 +39,7 @@ final class XmlProgramMapper {
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
                 Program innerFunction = mapFunction(sFunction, functionsHolder);
-                functionsHolder.addFunction(innerFunction.getName(), innerFunction);
+                functionsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
             }
         }
 

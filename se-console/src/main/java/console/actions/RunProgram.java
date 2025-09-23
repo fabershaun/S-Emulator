@@ -24,19 +24,20 @@ public class RunProgram implements MenuActionable {
 
         printTitle("Run Loaded Program");
 
+        String programName = engine.getMainProgram().getProgramName(); // Added because gui module
         int degree = getMaxDegree();
 
         displayInputVariables();
         Long[] inputs = getInputs();
 
-        engine.runProgram(degree, inputs);
+        engine.runProgram(programName, degree, inputs);
 
-        ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun();
+        ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun(programName);
         displayProgramAfterRun(programExecutorDTO);
     }
 
     private void displayInputVariables() {
-        List<String> variablesInputInProgram = engine.getProgram().getInputVariables();
+        List<String> variablesInputInProgram = engine.getMainProgram().getInputVariables();
 
         String displayInputVariables = String.format(
                 "Inputs: %s", String.join(", ", variablesInputInProgram)
@@ -48,7 +49,7 @@ public class RunProgram implements MenuActionable {
     private Long[] getInputs() {
         Long[] inputs = new Long[0];
 
-        if (engine.getNumberOfInputVariables() != 0) {
+        if (!engine.getMainProgram().getInputVariables().isEmpty()) {
             System.out.print("Please enter inputs values separated by commas: ");
             inputs = Validator.getValidateProgramInputValues(scanner);
         }

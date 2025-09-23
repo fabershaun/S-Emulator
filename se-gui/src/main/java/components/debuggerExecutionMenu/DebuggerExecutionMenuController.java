@@ -32,10 +32,10 @@ public class DebuggerExecutionMenuController {
     @FXML private Button stopButton;
     @FXML private Button playButton;
     @FXML private Label cyclesNumberLabel;
-    @FXML private TableView<VariableRow> inputsTableView;
+    @FXML private TableView<VariableRow> inputsTable;
     @FXML private TableColumn<VariableRow, String> colInputs;
     @FXML private TableColumn<VariableRow, Long> colInputsValue;
-    @FXML private TableView<Map.Entry<String, Long>> variablesTableView;
+    @FXML private TableView<Map.Entry<String, Long>> variablesTable;
     @FXML private TableColumn<Map.Entry<String, Long>, String> colVariables;
     @FXML private TableColumn<Map.Entry<String, Long>, Long> colVariablesValue;
 
@@ -71,7 +71,7 @@ public class DebuggerExecutionMenuController {
                 resetInputTable(newProgram);
                 enterProgramReady();
             } else {
-                inputsTableView.getItems().clear();
+                inputsTable.getItems().clear();
                 enterNoProgramLoaded();
             }
         });
@@ -79,10 +79,10 @@ public class DebuggerExecutionMenuController {
         programAfterExecuteProperty.addListener((obs, oldProgEx, newProgramExecutorDTO) -> {
             if (newProgramExecutorDTO != null) {
                 Map<String, Long> variablesMap = newProgramExecutorDTO.getVariablesToValuesSorted();
-                variablesTableView.getItems().setAll(variablesMap.entrySet());
+                variablesTable.getItems().setAll(variablesMap.entrySet());
                 cyclesNumberLabel.setText(String.valueOf(newProgramExecutorDTO.getTotalCycles()));
             } else {
-                variablesTableView.getItems().clear();
+                variablesTable.getItems().clear();
             }
         });
     }
@@ -134,7 +134,7 @@ public class DebuggerExecutionMenuController {
         setPlayEnabled(false);
         setModeSelectionEnabled(false);
         setDebugControlsEnabled(false);
-        inputsTableView.setEditable(false);
+        inputsTable.setEditable(false);
     }
 
     private void enterProgramReady() {
@@ -143,7 +143,7 @@ public class DebuggerExecutionMenuController {
         setPlayEnabled(false);
         setModeSelectionEnabled(true);
         setDebugControlsEnabled(false);
-        inputsTableView.setEditable(false);
+        inputsTable.setEditable(false);
     }
 
     private void enterNewRunPressed() {
@@ -152,28 +152,28 @@ public class DebuggerExecutionMenuController {
         setModeSelectionEnabled(true);
         setPlayEnabled(true);
         setDebugControlsEnabled(false);
-        inputsTableView.setEditable(true);
-        variablesTableView.getItems().clear();
+        inputsTable.setEditable(true);
+        variablesTable.getItems().clear();
         cyclesNumberLabel.setText(String.valueOf(0));
         resetInputTable(currentSelectedProgramProperty.getValue());
     }
 
     private void resetInputTable(ProgramDTO program) {
         if (program == null) {
-            inputsTableView.getItems().clear();
+            inputsTable.getItems().clear();
             return;
         }
 
         List<VariableRow> rows = program.getInputVariables().stream()
                 .map(varName -> new VariableRow(varName, 0L))
                 .toList();
-        inputsTableView.getItems().setAll(rows);
+        inputsTable.getItems().setAll(rows);
     }
 
     public void prepareForNewRun(List<Long> inputs) {
         enterNewRunPressed(); // Like newRun was pressed
 
-        List<VariableRow> inputTableRows = inputsTableView.getItems();      // Update inputs
+        List<VariableRow> inputTableRows = inputsTable.getItems();      // Update inputs
         for (int i = 0; i < inputTableRows.size() && i < inputs.size(); i++) {
             inputTableRows.get(i).setVariableValue(inputs.get(i));
         }
@@ -185,7 +185,7 @@ public class DebuggerExecutionMenuController {
         setModeSelectionEnabled(true);
         setPlayEnabled(false);
         setDebugControlsEnabled(false);
-        inputsTableView.setEditable(false);
+        inputsTable.setEditable(false);
     }
 
     private void enterDebugging() {
@@ -194,7 +194,7 @@ public class DebuggerExecutionMenuController {
         setModeSelectionEnabled(true);
         setPlayEnabled(false);
         setDebugControlsEnabled(true);
-        inputsTableView.setEditable(false);
+        inputsTable.setEditable(false);
     }
 
 
@@ -229,7 +229,7 @@ public class DebuggerExecutionMenuController {
     // todo
     @FXML
     private void onPlay() {
-        List<Long> inputValues = inputsTableView.getItems()
+        List<Long> inputValues = inputsTable.getItems()
                 .stream()
                 .map(VariableRow::getVariableValue) // take the user input values
                 .toList();
@@ -257,5 +257,8 @@ public class DebuggerExecutionMenuController {
     private void onStepOver() {
         // פעולה של Step Over
     }
+
+    public void clearInputs() { inputsTable.getItems().clear(); }
+
 }
 

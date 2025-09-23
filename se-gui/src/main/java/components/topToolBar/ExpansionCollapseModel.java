@@ -25,7 +25,8 @@ public class ExpansionCollapseModel {
         currentDegree.addListener(recalculateDegree);
         maxDegree.addListener(recalculateDegree);
         currentProgram.addListener(
-                (observableValue, oldProgram, newProgram) -> handleProgramChanged(newProgram)
+                (observableValue, oldProgram, newProgram) ->
+                        handleProgramChanged(newProgram)
         );
     }
 
@@ -64,7 +65,7 @@ public class ExpansionCollapseModel {
     public ReadOnlyIntegerProperty currentDegreeProperty() { return currentDegree; }
 
     // External connection point
-    public void setProgram(ProgramDTO p) { currentProgram.set(p); }
+    public void setProgram(ProgramDTO programDTO) { currentProgram.set(programDTO); }
     public void setMaxDegree(int max) { maxDegree.set(max); }
     public void setCurrentDegree(int cur) { currentDegree.set(cur); }
 

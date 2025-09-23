@@ -14,15 +14,11 @@ import variable.Variable;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
-    private Program program;
-    private ProgramExecutor programExecutor;
+    private Program mainProgram;
     private ExecutionHistory executionHistory;
 
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
@@ -37,36 +33,61 @@ public class EngineImpl implements Engine, Serializable {
         newProgram.validateProgram();
         newProgram.initialize();
 
-        program = newProgram;
+        mainProgram = newProgram;
         executionHistory = new ExecutionHistoryImpl();
     }
 
     @Override
-    public void runProgram(int degree, Long... inputs) {
+    public void runProgram(String programName, int degree, Long... inputs) {
+        Program program = getProgramByName(programName);
+
         Program deepCopyOfProgram = program.deepClone();
         deepCopyOfProgram.expandProgram(degree);
 
-        programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
+        ProgramExecutor programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
 
         programExecutor.run(degree, inputs);
         executionHistory.addProgramToHistory(programExecutor);
 
-        programToExecutionHistory.put(program.getName(), executionHistory.getProgramsExecutions());
+        programToExecutionHistory.put(mainProgram.getName(), executionHistory.getProgramsExecutions());
+    }
+
+    private Program getProgramByName(String programName) {
+        if (mainProgram.getName().equals(programName)) {
+            return mainProgram;
+        }
+        Program resProgram = mainProgram.getFunctionsHolder().getFunctionByName(programName);
+
+        if (resProgram == null) {
+            throw new IllegalStateException("Program " + programName + " does not exist");
+        }
+
+        return resProgram;
     }
 
     @Override
-    public int getNumberOfInputVariables() {
-        return program.getInputVariables().size();
+    public ProgramDTO getProgramByUserString(String userString) {
+        if (mainProgram.getUserString().equals(userString)) {
+            return buildProgramDTO(mainProgram);
+        }
+        Program resProgram = mainProgram.getFunctionsHolder().getFunctionByUserString(userString);
+
+        if (resProgram == null) {
+            throw new IllegalStateException("Program " + userString + " does not exist");
+        }
+
+        return buildProgramDTO(resProgram);
     }
 
     @Override
-    public ProgramDTO getProgram() {
-        return buildProgramDTO(program);
+    public ProgramDTO getMainProgram() {
+        return buildProgramDTO(mainProgram);
     }
 
     @Override
-    public ProgramExecutorDTO getProgramAfterRun() {
-        ProgramDTO programDTO = buildProgramDTO(programExecutor.getProgram());
+    public ProgramExecutorDTO getProgramAfterRun(String programName) {
+        ProgramDTO programDTO = buildProgramDTO(getProgramByName(programName));
+        ProgramExecutor programExecutor = programToExecutionHistory.get(programName).getLast();
 
         return new ProgramExecutorDTO(programDTO,
                 programExecutor.getVariablesToValuesSorted(),
@@ -81,7 +102,7 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public List<ProgramExecutorDTO> getHistoryToDisplay() {
         List<ProgramExecutorDTO> res = new ArrayList<>();
-        ProgramDTO programDTO = buildProgramDTO(program);
+        ProgramDTO programDTO = buildProgramDTO(mainProgram);
 
         for(ProgramExecutor programExecutorItem : executionHistory.getProgramsExecutions()) {
             ProgramExecutorDTO programExecutorDTO = buildProgramExecutorDTO(programDTO, programExecutorItem);
@@ -106,12 +127,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public List<ProgramDTO> getAllPrograms(String programName) {
+    public List<ProgramDTO> getAllPrograms() {
         List<ProgramDTO> result = new ArrayList<>();
 
-        result.add(buildProgramDTO(program));   // Add the main program
+        result.add(buildProgramDTO(mainProgram));   // Add the main program
 
-        for(Program function : program.getFunctionsHolder().getFunctions()) {
+        for(Program function : mainProgram.getFunctionsHolder().getFunctions()) {
             result.add(buildProgramDTO(function));      // Add all the functions
         }
 
@@ -120,15 +141,17 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public int getMaxDegree() throws EngineLoadException {
-        if(program == null) {
+        if(mainProgram == null) {
             throw new EngineLoadException("Program not loaded before asking for max degree");
         }
 
-        return program.calculateProgramMaxDegree();
+        return mainProgram.calculateProgramMaxDegree();
     }
 
     @Override
-    public ProgramDTO getExpandedProgram(int degree) {
+    public ProgramDTO getExpandedProgram(String programName, int degree) {
+        Program program = getProgramByName(programName);
+
         Program deepCopyOfProgram = program.deepClone();
         deepCopyOfProgram.expandProgram(degree);
 
@@ -175,9 +198,9 @@ public class EngineImpl implements Engine, Serializable {
             EngineImpl loaded = EngineIO.load(path);
 
             this.xmlPath = loaded.xmlPath;
-            this.program = loaded.program;
-            this.programExecutor = loaded.programExecutor;
+            this.mainProgram = loaded.mainProgram;
             this.executionHistory = loaded.executionHistory;
+
         } catch (IOException | ClassNotFoundException e) {
             throw new EngineLoadException("Failed to load engine state: " + e.getMessage(), e);
         }

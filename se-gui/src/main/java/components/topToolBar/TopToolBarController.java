@@ -21,7 +21,7 @@ public class TopToolBarController {
     @FXML private Label currentDegreeLabel;
     @FXML private ComboBox<Integer> expandCB;
     @FXML private ComboBox<String> highlightSelectionCB;
-    @FXML private ComboBox<String> programFunctionSelectorCB;
+    @FXML private ComboBox<String> programSelectorCB;
     @FXML
 
 
@@ -68,27 +68,27 @@ public class TopToolBarController {
 
         programSelectorModel.setMainController(mainController);
 
-        programFunctionSelectorCB.setItems(programSelectorModel.getProgramAndFunctionsOptions());
-        programFunctionSelectorCB.disableProperty().bind(Bindings.isNull(programSelectorModel.currentProgramProperty()));  // Disable ComboBoxes when there are no program loaded
+        programSelectorCB.setItems(programSelectorModel.getProgramAndFunctionsOptions());
+        programSelectorCB.disableProperty().bind(Bindings.isEmpty(programSelectorModel.getProgramAndFunctionsOptions()));  // Disable ComboBoxes when there are no program loaded
 
         attachProgramFunctionSelectionListener();
         configureProgramSelectionComboBoxDisplay();
     }
 
     private void attachProgramFunctionSelectionListener() {
-        programFunctionSelectorCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            programSelectorModel.selectProgramOrFunction(newValue);
+        programSelectorCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            programSelectorModel.setSelectedProgram(newValue);
         });
     }
 
     private void configureProgramSelectionComboBoxDisplay() {
-        programFunctionSelectorCB.setButtonCell(new ListCell<>() {
+        programSelectorCB.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
 
                 if (empty || item == null) {
-                    setText("Program \\ Function Selector");
+                    setText("Program Selector");
                 } else {
                     setText(item);
                 }
@@ -117,13 +117,6 @@ public class TopToolBarController {
             highlightSelectionModel.selectHighlight(clear ? null : newValue);
         });
     }
-
-//    private void initializeExpansionModelBindings() {
-//    }
-//    private void initializeHighlightModelBindings() {
-//    }
-//    private void initializeProgramSelectorModelBindings() {
-//    }
 
     private void configureExpandComboBoxDisplay(ComboBox<Integer> comboBox, String placeholder) {
         comboBox.setButtonCell(new ListCell<>() {

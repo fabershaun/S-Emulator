@@ -2,7 +2,9 @@ package components.mainInstructionsTable;
 
 import components.mainApp.MainAppController;
 import components.topToolBar.HighlightSelectionModel;
+import components.topToolBar.ProgramSelectorModel;
 import dto.InstructionDTO;
+import dto.InstructionsDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
@@ -10,12 +12,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainInstructionsTableController {
 
     private MainAppController mainController;
     private HighlightSelectionModel highlightModel;
+    private ProgramSelectorModel programSelectorModel;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
 
     @FXML private TableView<InstructionDTO> instructionsTable;
@@ -46,8 +51,9 @@ public class MainInstructionsTableController {
         this.currentSelectedProgramProperty = programProperty;
     }
 
-    public void setModels(HighlightSelectionModel model) {
+    public void setModels(HighlightSelectionModel model, ProgramSelectorModel  programSelectorModel) {
         this.highlightModel = model;
+        this.programSelectorModel = programSelectorModel;
         installMainTableHighlighting();       // configure cell factories
     }
 
@@ -71,6 +77,16 @@ public class MainInstructionsTableController {
                 if (mainController != null) {
                     mainController.onInstructionSelected(newItem);
                 }
+            }
+        });
+
+
+        programSelectorModel.selectedUserStringProperty().addListener((observableValue, oldProgram, newProgramName) -> {
+            if (newProgramName != null) {
+                instructionsTable.getItems().clear();
+                ProgramDTO chosenProgram = mainController.getChosenProgramByUserString(newProgramName);
+                instructionsTable.getItems().setAll(chosenProgram.getInstructions().getProgramInstructionsDtoList());
+
             }
         });
     }
@@ -108,5 +124,9 @@ public class MainInstructionsTableController {
                 }
             }
         });
+    }
+
+    public void fillTable(InstructionsDTO instructions) {
+        instructionsTable.getItems().setAll(instructions.getProgramInstructionsDtoList());
     }
 }

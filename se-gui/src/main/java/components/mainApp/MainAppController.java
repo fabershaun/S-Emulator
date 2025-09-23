@@ -54,8 +54,8 @@ public class MainAppController {
     @FXML private HistoryController historyMenuController;   // must: field name = fx:id + "Controller"
 
     private final StringProperty selectedFilePath = new SimpleStringProperty();
-    private final ObjectProperty<ProgramDTO> currentLoadedProgramProperty = new SimpleObjectProperty<>(null);
-    private final ObjectProperty<ProgramDTO> currentSelectedProgramProperty = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<ProgramDTO> mainProgramLoadedProperty = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>(null);
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
     private final StringProperty programOrFunctionProperty = new SimpleStringProperty();
 
@@ -79,7 +79,21 @@ public class MainAppController {
             historyMenuController != null
         ) {
             initializeSubComponents();
+            initializeListeners();
         }
+    }
+
+    private void initializeListeners() {
+        selectedProgramProperty.addListener((obs, oldProg, newProg) -> {
+            if (newProg != null) {
+                degreeModel.setCurrentDegree(0);
+                highlightSelectionModel.clearSelection();
+                mainInstructionsTableController.fillTable(newProg.getInstructions());
+                debuggerExecutionMenuController.clearInputs();
+                historyMenuController.clearHistory();
+                chainInstructionTableController.clearChainTable();
+            }
+        });
     }
 
     private void initializeSubComponents() {
@@ -95,23 +109,23 @@ public class MainAppController {
 
     private void setModelsForSubComponents() {
         topToolBarController.setModels(degreeModel, highlightSelectionModel, programSelectorModel);
-        mainInstructionsTableController.setModels(highlightSelectionModel);
+        mainInstructionsTableController.setModels(highlightSelectionModel, programSelectorModel);
     }
 
     private void initializeSubModels() {
-        degreeModel.setProgram(currentSelectedProgramProperty.get());
-        currentSelectedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
-            degreeModel.setProgram(newProgram);
-        });
+        degreeModel.setProgram(selectedProgramProperty.get());
+        highlightSelectionModel.setProgram(selectedProgramProperty.get());
 
-        highlightSelectionModel.setProgram(currentSelectedProgramProperty.get());
-        currentSelectedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+        selectedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
+            degreeModel.setProgram(newProgram);
             highlightSelectionModel.setProgram(newProgram);
         });
 
-        programSelectorModel.setProgram(currentLoadedProgramProperty.get());
-        currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
-            programSelectorModel.setProgram(newProgram);
+        programSelectorModel.setMainProgram(mainProgramLoadedProperty.get());
+        programSelectorModel.setSelectedProgram(selectedProgramProperty.get());
+
+        mainProgramLoadedProperty.addListener((observableValue, oldProgram, newProgram) -> {
+            programSelectorModel.setMainProgram(newProgram);
         });
     }
 
@@ -119,16 +133,15 @@ public class MainAppController {
         loadFileController.setMainController(this);
         topToolBarController.setMainController(this);
         mainInstructionsTableController.setMainController(this);
-        //chainInstructionTableController.setMainController(this);
         debuggerExecutionMenuController.setMainController(this);
         historyMenuController.setMainController(this);
     }
 
     private void setPropertiesForSubcomponents() {
         loadFileController.setProperty(selectedFilePath);
-        mainInstructionsTableController.setProperty(currentSelectedProgramProperty);
-        summaryLineController.setProperty(currentSelectedProgramProperty);
-        debuggerExecutionMenuController.setProperty(currentSelectedProgramProperty, programAfterExecuteProperty);
+        mainInstructionsTableController.setProperty(selectedProgramProperty);
+        summaryLineController.setProperty(selectedProgramProperty);
+        debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty);
         historyMenuController.setProperty(programAfterExecuteProperty, programOrFunctionProperty);
     }
 
@@ -136,7 +149,6 @@ public class MainAppController {
         mainInstructionsTableController.initializeListeners();
         debuggerExecutionMenuController.initializeListeners();
         historyMenuController.initializeListeners();
-
     }
 
     private void initializeBindingsForSubcomponents() {
@@ -152,11 +164,10 @@ public class MainAppController {
         loadProgramTask.setOnSucceeded(ev -> {
             progressStage.close();
             ProgramDTO loaded = loadProgramTask.getValue();
-            currentLoadedProgramProperty.set(loaded);
-            currentSelectedProgramProperty.set(loaded); // Default choose
+            mainProgramLoadedProperty.set(loaded);
+            selectedProgramProperty.set(loaded); // Default choose // todo: fix this line and line above
             selectedFilePath.set(xmlPath.toAbsolutePath().toString());
             programAfterExecuteProperty.set(null);
-
             try {
                 degreeModel.setMaxDegree(engine.getMaxDegree());
             } catch (EngineLoadException e) {
@@ -175,12 +186,12 @@ public class MainAppController {
     public void jumpToDegree(int target) throws EngineLoadException {
         int maxDegree = engine.getMaxDegree();
         int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));          // Clamp the requested degree to a valid range [0, maxDegree]
-
-        ExpandProgramTask expansionTask = new ExpandProgramTask(engine, safeTargetDegree);
+        String activeProgramName = getActiveProgramName();
+        ExpandProgramTask expansionTask = new ExpandProgramTask(activeProgramName, engine, safeTargetDegree);
 
         expansionTask.setOnSucceeded(ev -> {
             ProgramDTO programByDegree = expansionTask.getValue();
-            currentSelectedProgramProperty.set(programByDegree);
+            selectedProgramProperty.set(programByDegree);
             degreeModel.setMaxDegree(maxDegree);
             degreeModel.setCurrentDegree(safeTargetDegree);
         });
@@ -188,15 +199,14 @@ public class MainAppController {
         new Thread(expansionTask, "expand-thread").start();
     }
 
-    // TODO: consider change to task
     public List<ProgramDTO> getAllPrograms() {
-        String mainProgramName = currentLoadedProgramProperty.get().getProgramName();
-        return engine.getAllPrograms(mainProgramName);
+        String mainProgramName = mainProgramLoadedProperty.get().getProgramName();
+        return engine.getAllPrograms();
     }
 
     public void onInstructionSelected(InstructionDTO selectedInstruction) {
         int instructionNumber = selectedInstruction.getInstructionNumber();
-        List<InstructionDTO> selectedInstructionChain = currentSelectedProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
+        List<InstructionDTO> selectedInstructionChain = selectedProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
         chainInstructionTableController.fillTable(selectedInstructionChain);
     }
 
@@ -206,23 +216,38 @@ public class MainAppController {
 
     public void runProgram(List<Long> inputs) {
         int degree = degreeModel.currentDegreeProperty().get();
+        String activeProgramName = getActiveProgramName();
 
-        ProgramRunTask runTask = new ProgramRunTask(engine, RunMode.RUNNING, degree, inputs.toArray(new Long[0]));
+        ProgramRunTask runTask = new ProgramRunTask(activeProgramName, engine, RunMode.RUNNING, degree, inputs.toArray(new Long[0]));
 
         runTask.setOnSucceeded(ev -> {
             programAfterExecuteProperty.set(runTask.getValue());
         });
-        
+
         new Thread(runTask, "runProgram-thread").start();
     }
 
+    private String getActiveProgramName() {
+        String chosenProgramName = programSelectorModel.getSelectedUserString();
+
+        if (chosenProgramName == null) {
+            chosenProgramName = engine.getMainProgram().getProgramName();
+        }
+
+        return chosenProgramName;
+    }
+
     public List<ProgramExecutorDTO> getHistory() {
-        return engine.getHistoryPerProgram(currentSelectedProgramProperty.get().getProgramName());
+        return engine.getHistoryPerProgram(selectedProgramProperty.get().getProgramName());
     }
 
     // When re-run was pressed
     public void prepareForNewRun(int newDegree, List<Long> inputs) {
         degreeModel.setCurrentDegree(newDegree);
         debuggerExecutionMenuController.prepareForNewRun(inputs);
+    }
+
+    public ProgramDTO getChosenProgramByUserString(String userString) {
+        return engine.getProgramByUserString(userString);
     }
 }
