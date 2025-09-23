@@ -19,9 +19,9 @@ import java.util.*;
 public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
     private Program mainProgram;
-    private ExecutionHistory executionHistory;
-
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
+    //private ExecutionHistory executionHistory;
+
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -34,7 +34,7 @@ public class EngineImpl implements Engine, Serializable {
         newProgram.initialize();
 
         mainProgram = newProgram;
-        executionHistory = new ExecutionHistoryImpl();
+        //executionHistory = new ExecutionHistoryImpl();
     }
 
     @Override
@@ -47,9 +47,9 @@ public class EngineImpl implements Engine, Serializable {
         ProgramExecutor programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
 
         programExecutor.run(degree, inputs);
-        executionHistory.addProgramToHistory(programExecutor);
 
-        programToExecutionHistory.put(mainProgram.getName(), executionHistory.getProgramsExecutions());
+        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());
+        executionHistory.add(programExecutor);
     }
 
     private Program getProgramByName(String programName) {
@@ -98,23 +98,14 @@ public class EngineImpl implements Engine, Serializable {
         );
     }
 
-    // TODO: to change to the method below (delete this one)
-    @Override
-    public List<ProgramExecutorDTO> getHistoryToDisplay() {
-        List<ProgramExecutorDTO> res = new ArrayList<>();
-        ProgramDTO programDTO = buildProgramDTO(mainProgram);
-
-        for(ProgramExecutor programExecutorItem : executionHistory.getProgramsExecutions()) {
-            ProgramExecutorDTO programExecutorDTO = buildProgramExecutorDTO(programDTO, programExecutorItem);
-            res.add(programExecutorDTO);
-        }
-
-        return res;
-    }
-
     @Override
     public List<ProgramExecutorDTO> getHistoryPerProgram(String programName) {
         List<ProgramExecutor> programExecutors = programToExecutionHistory.get(programName);
+
+        if (programExecutors == null || programExecutors.isEmpty()) {
+            return List.of();
+        }
+
         ProgramDTO programDTO = buildProgramDTO(programExecutors.getFirst().getProgram());
 
         List<ProgramExecutorDTO> res = new ArrayList<>();
@@ -140,12 +131,10 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public int getMaxDegree() throws EngineLoadException {
-        if(mainProgram == null) {
-            throw new EngineLoadException("Program not loaded before asking for max degree");
-        }
+    public int getMaxDegree(String programName) {
+        Program program = getProgramByName(programName);
 
-        return mainProgram.calculateProgramMaxDegree();
+        return program.calculateProgramMaxDegree();
     }
 
     @Override
@@ -199,7 +188,7 @@ public class EngineImpl implements Engine, Serializable {
 
             this.xmlPath = loaded.xmlPath;
             this.mainProgram = loaded.mainProgram;
-            this.executionHistory = loaded.executionHistory;
+            //this.executionHistory = loaded.executionHistory;
 
         } catch (IOException | ClassNotFoundException e) {
             throw new EngineLoadException("Failed to load engine state: " + e.getMessage(), e);

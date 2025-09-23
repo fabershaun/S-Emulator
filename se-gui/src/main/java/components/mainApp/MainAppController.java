@@ -57,7 +57,6 @@ public class MainAppController {
     private final ObjectProperty<ProgramDTO> mainProgramLoadedProperty = new SimpleObjectProperty<>(null);
     private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>(null);
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
-    private final StringProperty programOrFunctionProperty = new SimpleStringProperty();
 
     private final ExpansionCollapseModel degreeModel = new ExpansionCollapseModel();
     private final HighlightSelectionModel highlightSelectionModel = new HighlightSelectionModel();
@@ -84,14 +83,24 @@ public class MainAppController {
     }
 
     private void initializeListeners() {
-        selectedProgramProperty.addListener((obs, oldProg, newProg) -> {
-            if (newProg != null) {
-                degreeModel.setCurrentDegree(0);
+        programSelectorModel.selectedUserStringProperty().addListener((obs, oldVal, newSelectedUserString) -> {
+            if (newSelectedUserString != null) {
+                ProgramDTO selectedProgram = engine.getProgramByUserString(newSelectedUserString);
+
+                selectedProgramProperty.set(selectedProgram);
                 highlightSelectionModel.clearSelection();
+                debuggerExecutionMenuController.enterNewRunPressed();
+                historyMenuController.fillHistoryTable(getHistory());
+                degreeModel.setCurrentDegree(0);
+                degreeModel.setMaxDegree(engine.getMaxDegree(selectedProgram.getProgramName()));
+            } else {
+                selectedProgramProperty.set(null);
+            }
+        });
+
+        selectedProgramProperty.addListener((obs, oldProg, newProg) -> { // todo: remove
+            if (newProg != null) {
                 mainInstructionsTableController.fillTable(newProg.getInstructions());
-                debuggerExecutionMenuController.clearInputs();
-                historyMenuController.clearHistory();
-                chainInstructionTableController.clearChainTable();
             }
         });
     }
@@ -142,7 +151,7 @@ public class MainAppController {
         mainInstructionsTableController.setProperty(selectedProgramProperty);
         summaryLineController.setProperty(selectedProgramProperty);
         debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty);
-        historyMenuController.setProperty(programAfterExecuteProperty, programOrFunctionProperty);
+        historyMenuController.setProperty(programAfterExecuteProperty);
     }
 
     private void initializeListenersForSubcomponents() {
@@ -168,12 +177,7 @@ public class MainAppController {
             selectedProgramProperty.set(loaded); // Default choose // todo: fix this line and line above
             selectedFilePath.set(xmlPath.toAbsolutePath().toString());
             programAfterExecuteProperty.set(null);
-            try {
-                degreeModel.setMaxDegree(engine.getMaxDegree());
-            } catch (EngineLoadException e) {
-                throw new RuntimeException(e);
-            }
-
+            degreeModel.setMaxDegree(engine.getMaxDegree(selectedProgramProperty.get().getProgramName()));
             degreeModel.setCurrentDegree(0);
         });
 
@@ -183,8 +187,8 @@ public class MainAppController {
         new Thread(loadProgramTask, "loadProgram-thread").start();
     }
 
-    public void jumpToDegree(int target) throws EngineLoadException {
-        int maxDegree = engine.getMaxDegree();
+    public void jumpToDegree(int target) {
+        int maxDegree = engine.getMaxDegree(selectedProgramProperty.get().getProgramName());
         int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));          // Clamp the requested degree to a valid range [0, maxDegree]
         String activeProgramName = getActiveProgramName();
         ExpandProgramTask expansionTask = new ExpandProgramTask(activeProgramName, engine, safeTargetDegree);
@@ -228,7 +232,8 @@ public class MainAppController {
     }
 
     private String getActiveProgramName() {
-        String chosenProgramName = programSelectorModel.getSelectedUserString();
+        String chosenUserString = programSelectorModel.getSelectedUserString();
+        String chosenProgramName = engine.getProgramByUserString(chosenUserString).getProgramName();
 
         if (chosenProgramName == null) {
             chosenProgramName = engine.getMainProgram().getProgramName();

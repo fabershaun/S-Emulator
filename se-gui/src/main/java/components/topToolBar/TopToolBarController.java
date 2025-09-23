@@ -22,7 +22,6 @@ public class TopToolBarController {
     @FXML private ComboBox<Integer> expandCB;
     @FXML private ComboBox<String> highlightSelectionCB;
     @FXML private ComboBox<String> programSelectorCB;
-    @FXML
 
 
     public void setMainController(MainAppController mainController) {
@@ -132,11 +131,7 @@ public class TopToolBarController {
         // React to user selection in a unified way
         integerComboBox.valueProperty().addListener((observableValue, previous, selectedDegree) -> {
             if (selectedDegree != null) {
-                try {
-                    mainController.jumpToDegree(selectedDegree);
-                } catch (EngineLoadException e) {
-                    e.printStackTrace();
-                }
+                mainController.jumpToDegree(selectedDegree);
             }
         });
     }

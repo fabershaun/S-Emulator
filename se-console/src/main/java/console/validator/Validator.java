@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class Validator {
 
-    public static int getValidateDegree(Scanner scanner, Engine engine) throws EngineLoadException {
+    public static int getValidateDegree(Scanner scanner, Engine engine, String programName) {
         String input = scanner.nextLine();
 
         if (input.isEmpty()) {
@@ -23,14 +23,14 @@ public class Validator {
         try {
             int degree = Integer.parseInt(input.trim());
 
-            if (degree < 0 || degree > engine.getMaxDegree()) {
-                throw new IllegalArgumentException("Degree must be between 0 and " + (engine.getMaxDegree()));
+            if (degree < 0 || degree > engine.getMaxDegree(programName)) {
+                throw new IllegalArgumentException("Degree must be between 0 and " + (engine.getMaxDegree(programName)));
             }
 
             return degree;
 
-        } catch (NumberFormatException | EngineLoadException e) {
-            throw new IllegalArgumentException("Invalid input. Please enter a number between 0 and " + (engine.getMaxDegree()));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid input. Please enter a number between 0 and " + (engine.getMaxDegree(programName)));
         }
     }
 

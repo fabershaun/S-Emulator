@@ -25,7 +25,7 @@ public class RunProgram implements MenuActionable {
         printTitle("Run Loaded Program");
 
         String programName = engine.getMainProgram().getProgramName(); // Added because gui module
-        int degree = getMaxDegree();
+        int degree = getMaxDegree(programName);
 
         displayInputVariables();
         Long[] inputs = getInputs();
@@ -57,15 +57,15 @@ public class RunProgram implements MenuActionable {
         return inputs;
     }
 
-    private int getMaxDegree() throws EngineLoadException {
+    private int getMaxDegree(String programName) {
         int degree = 0;
 
-        if (engine.getMaxDegree() == 0 ) {
+        if (engine.getMaxDegree(programName) == 0 ) {
             System.out.println("The program must run on degree zero because its maximum degree is already 0");
         } else {
-            System.out.println("Max degree of loaded program: " + engine.getMaxDegree());
+            System.out.println("Max degree of loaded program: " + engine.getMaxDegree(programName));
             System.out.print("Please enter degree for this run: ");
-            degree = Validator.getValidateDegree(scanner, engine);
+            degree = Validator.getValidateDegree(scanner, engine, programName);
         }
 
         return degree;

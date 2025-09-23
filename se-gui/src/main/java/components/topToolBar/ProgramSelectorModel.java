@@ -63,6 +63,10 @@ public class ProgramSelectorModel {
     public ObjectProperty<String> selectedUserStringProperty() { return selectedUserString; }
 
     public String getSelectedUserString() {
+        if (selectedUserString.get() == null) {
+            return mainProgramLoadedProperty.get().getProgramUserString();
+        }
+
         return selectedUserString.get();
     }
 

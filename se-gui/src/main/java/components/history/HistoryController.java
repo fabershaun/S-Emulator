@@ -24,7 +24,6 @@ public class HistoryController {
 
     private MainAppController mainController;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
-    private StringProperty programSelectorProperty;
 
     private ProgramExecutorDTO selectedHistoryRow;
     private int selectedRowIndex;
@@ -54,9 +53,8 @@ public class HistoryController {
         this.mainController = mainController;
     }
 
-    public void setProperty(ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty, StringProperty programOrFunctionProperty) {
+    public void setProperty(ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty) {
         this.programAfterExecuteProperty = programAfterExecuteProperty;
-        this.programSelectorProperty = programOrFunctionProperty;
     }
 
     public void initializeListeners() {
@@ -71,14 +69,14 @@ public class HistoryController {
         });
 
         // After program select -> update history table
-        programSelectorProperty.addListener((obs, oldProgName, newProgramSelected) -> {
-            if (newProgramSelected != null) {
-                List<ProgramExecutorDTO> historyPerProgram = mainController.getHistory();
-                historyTable.getItems().setAll(historyPerProgram);
-            } else {
-                historyTable.getItems().clear();
-            }
-        });
+//        programSelectorProperty.addListener((obs, oldProgName, newProgramSelected) -> {
+//            if (newProgramSelected != null) {
+//                List<ProgramExecutorDTO> historyPerProgram = mainController.getHistory();
+//                historyTable.getItems().setAll(historyPerProgram);
+//            } else {
+//                historyTable.getItems().clear();
+//            }
+//        });
 
         // Listen to row selection and notify the main controller
         historyTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newHistoryRowSelected) -> {
@@ -93,6 +91,15 @@ public class HistoryController {
                 this.selectedRowIndex = historyTable.getSelectionModel().getSelectedIndex() + 1;
             }
         });
+    }
+
+    public void fillHistoryTable(List<ProgramExecutorDTO> historyOfProgramList) {
+        if(historyOfProgramList.isEmpty()) {
+            historyTable.getItems().clear();
+        } else {
+            historyTable.getItems().setAll(historyOfProgramList);
+        }
+
     }
 
     public void onShowStatus() {

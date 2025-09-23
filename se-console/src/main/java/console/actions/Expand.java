@@ -17,17 +17,17 @@ public class Expand implements MenuActionable {
     @Override
     public void startAction(Scanner scanner, Engine engine) throws EngineLoadException {
         printTitle("Present Expand Program");
+        String programName = engine.getMainProgram().getProgramName(); // Added because gui module
 
-        if (engine.getMaxDegree() == 0) {
+        if (engine.getMaxDegree(programName) == 0) {
             System.out.println("The program cannot be expand because its maximum degree is already 0");
             return;
         }
 
-        System.out.println("Max degree of loaded program: " + engine.getMaxDegree());
+        System.out.println("Max degree of loaded program: " + engine.getMaxDegree(programName));
 
         System.out.print("Please enter degree for this run: ");
-        int degree = Validator.getValidateDegree(scanner, engine);
-        String programName = engine.getMainProgram().getProgramName();
+        int degree = Validator.getValidateDegree(scanner, engine, programName);
 
         ProgramDTO programDTO = engine.getExpandedProgram(programName, degree);
 
