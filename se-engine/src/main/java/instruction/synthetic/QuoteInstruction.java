@@ -33,7 +33,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         this.functionArgumentsStrNotTrimmed = functionArgumentsStrNotTrimmed;
     }
 
-    public void initializeQuoteInstruction() {
+    public void initializeInstruction() {
         extractQuoteArguments();
     }
 
@@ -45,7 +45,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     @Override
     public Label execute(ExecutionContext context) {
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
-        initializeQuoteInstruction();
+        initializeInstruction();
         List<Long> inputs = getInputs(quoteArguments, context);
 
         // Run
@@ -56,7 +56,9 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         long quoteFunctionResult = functionExecutor.getVariableValue(resultVariable);
         context.updateVariable(getTargetVariable(), quoteFunctionResult);
 
+        // Update cycles number
         currentCyclesNumber = InstructionData.QUOTATION.getCycles() + functionExecutor.getTotalCyclesOfProgram();
+
         return FixedLabel.EMPTY;
     }
 
@@ -121,35 +123,50 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return innerInstructions;
     }
 
-    // todo: check if right
     @Override
     public int getMaxDegree() {
-        return helperGetMaxDegree(getFunctionOfThisInstruction(), quoteArguments);
-    }
 
-    // Recursive function
-    private int helperGetMaxDegree(Program innerFunction, List<QuoteArgument> innerQuoteArguments) {
-        int maxDegreeOfQuoteFunction = innerFunction.calculateProgramMaxDegree();    // Calculate inner quote's function degree
-        int maxDegreeOfQuoteFunctionArguments = calculateDegreeOfQuoteFunctionArguments(innerQuoteArguments); // Calculate inner quote's function's arguments degree
-
-        return maxDegreeOfQuoteFunction + maxDegreeOfQuoteFunctionArguments;
-    }
-
-    // Recursive function
-    private int calculateDegreeOfQuoteFunctionArguments(List<QuoteArgument> innerQuoteArguments) {
-        int degree = 0;
-        int maxDegreeOfQuoteFunctionArguments = 0;
-
-        for(QuoteArgument quoteArgument : innerQuoteArguments) {
-            if(quoteArgument instanceof FunctionArgument innerFunctionArgument) {
-                Program innerFunction = innerFunctionArgument.getFunction();
-                degree = helperGetMaxDegree(innerFunction, innerFunctionArgument.getArguments());
-                maxDegreeOfQuoteFunctionArguments = max(maxDegreeOfQuoteFunctionArguments, degree);
+        int maxDegree = 0;
+        this.setInnerInstructionsAndReturnTheNextOne(0);
+        for(Instruction instruction : this.innerInstructions) {
+            if(instruction instanceof SyntheticInstruction syntheticInstruction) {
+                maxDegree = max(maxDegree, syntheticInstruction.getMaxDegree());
             }
+
         }
 
-        return maxDegreeOfQuoteFunctionArguments;
+        return maxDegree + 1;
     }
+
+    // todo: check if right
+//    @Override
+//    public int getMaxDegree() {
+//        return helperGetMaxDegree(getFunctionOfThisInstruction(), quoteArguments);
+//    }
+//
+//    // Recursive function
+//    private int helperGetMaxDegree(Program innerFunction, List<QuoteArgument> innerQuoteArguments) {
+//        int maxDegreeOfQuoteFunction = innerFunction.calculateProgramMaxDegree();    // Calculate inner quote's function degree
+//        int maxDegreeOfQuoteFunctionArguments = calculateDegreeOfQuoteFunctionArguments(innerQuoteArguments); // Calculate inner quote's function's arguments degree
+//
+//        return maxDegreeOfQuoteFunction + maxDegreeOfQuoteFunctionArguments;
+//    }
+//
+//    // Recursive function
+//    private int calculateDegreeOfQuoteFunctionArguments(List<QuoteArgument> innerQuoteArguments) {
+//        int degree = 0;
+//        int maxDegreeOfQuoteFunctionArguments = 0;
+//
+//        for(QuoteArgument quoteArgument : innerQuoteArguments) {
+//            if(quoteArgument instanceof FunctionArgument innerFunctionArgument) {
+//                Program innerFunction = innerFunctionArgument.getFunction();
+//                degree = helperGetMaxDegree(innerFunction, innerFunctionArgument.getArguments());
+//                maxDegreeOfQuoteFunctionArguments = max(maxDegreeOfQuoteFunctionArguments, degree);
+//            }
+//        }
+//
+//        return maxDegreeOfQuoteFunctionArguments;
+//    }
 
     @Override
     public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
@@ -179,7 +196,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         mapQuoteFunctionVariables();
         mapQuoteFunctionLabels();
 
-        initializeQuoteInstruction();
+        initializeInstruction();
 
         int instructionNumber = startNumber;
         instructionNumber = addParameterInstructions(expandedInstructions, instructionNumber);       // Step 1: assign arguments to function input variables

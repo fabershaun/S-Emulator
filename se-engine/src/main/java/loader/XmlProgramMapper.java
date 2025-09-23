@@ -84,7 +84,8 @@ final class XmlProgramMapper {
                     sInstruction.getSInstructionArguments().getSInstructionArgument() :
                     null;
             Instruction originInstruction = new OriginOfAllInstruction(targetProgram, targetProgram);
-            return createNewInstruction(targetProgram, instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal, originInstruction);
+            return createNewInstruction(targetProgram, instructionName, instructionLabel, targetVariable, sInstructionArguments, ordinal,
+                    originInstruction);
         }
         catch (Exception e) {
             throw new RuntimeException(e);

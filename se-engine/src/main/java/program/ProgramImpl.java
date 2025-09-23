@@ -5,6 +5,7 @@ import exceptions.EngineLoadException;
 import instruction.Instruction;
 import instruction.LabelReferencesInstruction;
 import instruction.SyntheticInstruction;
+import instruction.synthetic.JumpEqualFunctionInstruction;
 import instruction.synthetic.QuoteInstruction;
 import label.FixedLabel;
 import label.Label;
@@ -68,10 +69,19 @@ public class ProgramImpl implements Program, Serializable {
         initNextLabelNumber();
         initNextWorkVariableNumber();
 
-        programInstructions.stream()
-                .filter(instruction -> instruction instanceof QuoteInstruction)
-                .map(instruction -> (QuoteInstruction) instruction)
-                .forEach(QuoteInstruction::initializeQuoteInstruction);
+//        programInstructions.stream()
+//                .filter(instruction -> instruction instanceof QuoteInstruction)
+//                .map(instruction -> (QuoteInstruction) instruction)
+//                .forEach(QuoteInstruction::initializeInstruction);
+
+
+        programInstructions.forEach(instruction -> {
+            if (instruction instanceof QuoteInstruction quoteInstruction) {
+                quoteInstruction.initializeInstruction();
+            } else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
+                jumpEqualFunctionInstruction.initializeInstruction();
+            }
+        });
     }
 
     @Override
@@ -367,7 +377,7 @@ public class ProgramImpl implements Program, Serializable {
             return getResultVariable();
         }
 
-        throw new IllegalArgumentException("Variable not found in program: " + name);
+        return null;
     }
 
     @Override

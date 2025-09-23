@@ -4,6 +4,8 @@ import execution.ExecutionContext;
 import execution.ProgramExecutor;
 import program.Program;
 import variable.Variable;
+import variable.VariableImpl;
+import variable.VariableType;
 
 public class VariableArgument extends QuoteArgument {
     private final Variable variable;
@@ -17,20 +19,28 @@ public class VariableArgument extends QuoteArgument {
             throw new IllegalArgumentException("Variable name cannot be null or empty");
         }
 
+
         // Try to find the variable by name
         Variable foundVariable = parentProgram.findVariableByName(variableStr.trim());
 
-        if (variableStr.startsWith("x")) {
+        // Create variable
+        if (foundVariable == null) {
+            if (variableStr.startsWith("x")) {
+                int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'x'
+                foundVariable = new VariableImpl(VariableType.INPUT, number);
+            } else if (variableStr.startsWith("z")) {
+                int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'z'
+                foundVariable = new VariableImpl(VariableType.WORK, number);
+            }
+        }
+
+        if (foundVariable.getType().equals(VariableType.INPUT)) {
             if (!mainProgram.getInputVariables().contains(foundVariable)) {
                 mainProgram.addInputVariable(foundVariable);
             }
         }
 
-        if (foundVariable == null) {
-            throw new IllegalArgumentException(
-                    "Variable '" + variableStr + "' not found in program '" + parentProgram.getName() + "'"
-            );
-        }
+
 
         this.variable = foundVariable;
         this.variableStr = variableStr;
