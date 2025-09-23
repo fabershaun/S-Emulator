@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 
-<TableView fx:id="instructionsTable" prefHeight="235.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.chainInstructionTable.ChainInstructionsTableController">
+<TableView fx:id="instructionsTable" maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.chainInstructionTable.ChainInstructionsTableController">
     <columns>
         <TableColumn fx:id="colIndex" prefWidth="50" style="-fx-alignment: CENTER;" text="#" />
         <TableColumn fx:id="colType" prefWidth="50" style="-fx-alignment: CENTER;" text="B\S" />

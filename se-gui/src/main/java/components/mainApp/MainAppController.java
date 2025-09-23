@@ -219,6 +219,7 @@ public class MainAppController {
         return engine.getHistoryPerProgram(currentSelectedProgramProperty.get().getProgramName());
     }
 
+    // When re-run was pressed
     public void prepareForNewRun(int newDegree, List<Long> inputs) {
         degreeModel.setCurrentDegree(newDegree);
         debuggerExecutionMenuController.prepareForNewRun(inputs);
