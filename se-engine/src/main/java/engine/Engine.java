@@ -15,7 +15,7 @@ public interface Engine {
     List<ProgramExecutorDTO> getHistoryToDisplay();     // For console module
     List<ProgramExecutorDTO> getHistoryPerProgram(String programName);   // For gui module
 
-    List<ProgramDTO> getSubProgramsOfProgram(String programName);   // For gui module //TODO: return the functions also
+    List<ProgramDTO> getAllPrograms(String programName);   // For gui module
     //void setSubProgram(String subProgramName); // For gui module //TODO: write this program.function. להוסיף מבנה נתונים - תוכנית פעילה כרגע
 
     void loadProgram(Path path) throws EngineLoadException;

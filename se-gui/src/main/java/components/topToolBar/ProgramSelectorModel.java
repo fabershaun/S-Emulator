@@ -10,14 +10,14 @@ import javafx.collections.ObservableList;
 import java.util.List;
 import static javafx.collections.FXCollections.observableArrayList;
 
-public class ProgramAndFunctionsSelectorModel {
+public class ProgramSelectorModel {
 
     private MainAppController mainController;
     private final ObjectProperty<ProgramDTO> currentProgram = new SimpleObjectProperty<>();
     private final ObservableList<String> programsAndFunctionsNameOptions = observableArrayList();
     private final ObjectProperty<String> selectedProgramOrFunctionName = new SimpleObjectProperty<>();
 
-    public ProgramAndFunctionsSelectorModel() {  // Automatic update in any change
+    public ProgramSelectorModel() {  // Automatic update in any change
         currentProgram.addListener(
                 (observableValue, oldProgram, newProgram) -> handleProgramChanged(newProgram)
         );
@@ -32,12 +32,12 @@ public class ProgramAndFunctionsSelectorModel {
     }
 
     private void recalcOptions() {
-        List<String> programNames = mainController.getProgramAndFunctionsOfProgramList()
+        List<String> programsUserString = mainController.getAllPrograms()
                 .stream()
-                .map(ProgramDTO::getProgramName) // extract programName from each ProgramDTO
+                .map(ProgramDTO::getProgramUserString) // extract programName from each ProgramDTO
                 .toList();
 
-        programsAndFunctionsNameOptions.setAll(programNames);
+        programsAndFunctionsNameOptions.setAll(programsUserString);
         selectedProgramOrFunctionName.set(null);
     }
 

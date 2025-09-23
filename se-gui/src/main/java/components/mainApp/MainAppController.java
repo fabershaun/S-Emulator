@@ -7,7 +7,7 @@ import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
-import components.topToolBar.ProgramAndFunctionsSelectorModel;
+import components.topToolBar.ProgramSelectorModel;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
@@ -61,7 +61,7 @@ public class MainAppController {
 
     private final ExpansionCollapseModel degreeModel = new ExpansionCollapseModel();
     private final HighlightSelectionModel highlightSelectionModel = new HighlightSelectionModel();
-    private final ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel = new ProgramAndFunctionsSelectorModel();
+    private final ProgramSelectorModel programSelectorModel = new ProgramSelectorModel();
 
     public void setEngine(EngineImpl engine) {
         this.engine = engine;
@@ -94,7 +94,7 @@ public class MainAppController {
     }
 
     private void setModelsForSubComponents() {
-        topToolBarController.setModels(degreeModel, highlightSelectionModel, programAndFunctionsSelectorModel);
+        topToolBarController.setModels(degreeModel, highlightSelectionModel, programSelectorModel);
         mainInstructionsTableController.setModels(highlightSelectionModel);
     }
 
@@ -109,9 +109,9 @@ public class MainAppController {
             highlightSelectionModel.setProgram(newProgram);
         });
 
-        programAndFunctionsSelectorModel.setProgram(currentLoadedProgramProperty.get());
+        programSelectorModel.setProgram(currentLoadedProgramProperty.get());
         currentLoadedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> {
-            programAndFunctionsSelectorModel.setProgram(newProgram);
+            programSelectorModel.setProgram(newProgram);
         });
     }
 
@@ -189,8 +189,9 @@ public class MainAppController {
     }
 
     // TODO: consider change to task
-    public List<ProgramDTO> getProgramAndFunctionsOfProgramList() {
-        return engine.getSubProgramsOfProgram(currentLoadedProgramProperty.get().getProgramName());
+    public List<ProgramDTO> getAllPrograms() {
+        String mainProgramName = currentLoadedProgramProperty.get().getProgramName();
+        return engine.getAllPrograms(mainProgramName);
     }
 
     public void onInstructionSelected(InstructionDTO selectedInstruction) {

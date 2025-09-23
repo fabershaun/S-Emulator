@@ -77,8 +77,9 @@ public class EngineImpl implements Engine, Serializable {
         );
     }
 
+    // TODO: to change to the method below (delete this one)
     @Override
-    public List<ProgramExecutorDTO> getHistoryToDisplay() {     // TODO: to change to the method below (delete this one)
+    public List<ProgramExecutorDTO> getHistoryToDisplay() {
         List<ProgramExecutorDTO> res = new ArrayList<>();
         ProgramDTO programDTO = buildProgramDTO(program);
 
@@ -105,16 +106,14 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public List<ProgramDTO> getSubProgramsOfProgram(String programName) {
+    public List<ProgramDTO> getAllPrograms(String programName) {
         List<ProgramDTO> result = new ArrayList<>();
 
+        result.add(buildProgramDTO(program));   // Add the main program
 
-//        if (program.getName().equals(programName) && program instanceof ProgramImpl programImpl) {
-//            for (Program subProgram : programImpl.getFunctions()) {
-//                result.add(buildProgramDTO(subProgram));
-//            }
-//        }
-
+        for(Program function : program.getFunctionsHolder().getFunctions()) {
+            result.add(buildProgramDTO(function));      // Add all the functions
+        }
 
         return result;
     }
@@ -141,6 +140,7 @@ public class EngineImpl implements Engine, Serializable {
 
         return new ProgramDTO(
                 program.getName(),
+                program.getUserString(),
                 program.getOrderedLabelsExitLastStr(),
                 program.getInputVariablesSortedStr(),
                 program.getWorkVariablesSortedStr(),

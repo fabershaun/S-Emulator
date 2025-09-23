@@ -15,7 +15,7 @@ public class TopToolBarController {
     private MainAppController mainController;
     private ExpansionCollapseModel expansionCollapseModel;
     private HighlightSelectionModel highlightSelectionModel;
-    private ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel;
+    private ProgramSelectorModel programSelectorModel;
 
     @FXML private ComboBox<Integer> collapseCB;
     @FXML private Label currentDegreeLabel;
@@ -29,10 +29,10 @@ public class TopToolBarController {
         this.mainController = mainController;
     }
 
-    public void setModels(ExpansionCollapseModel expansionCollapseModel, HighlightSelectionModel highlightSelectionModel, ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel) {
+    public void setModels(ExpansionCollapseModel expansionCollapseModel, HighlightSelectionModel highlightSelectionModel, ProgramSelectorModel programSelectorModel) {
         setupExpansionCollapseModel(expansionCollapseModel);
         setupHighlightSelection(highlightSelectionModel);
-        setupProgramAndFunctionsSelectorModel(programAndFunctionsSelectorModel);
+        setupProgramAndFunctionsSelectorModel(programSelectorModel);
     }
 
     public void setupExpansionCollapseModel(ExpansionCollapseModel expansionCollapseModel) {
@@ -63,13 +63,13 @@ public class TopToolBarController {
         configureHighlightComboBoxDisplay();
     }
 
-    public void setupProgramAndFunctionsSelectorModel(ProgramAndFunctionsSelectorModel programAndFunctionsSelectorModel) {
-        this.programAndFunctionsSelectorModel = programAndFunctionsSelectorModel;
+    public void setupProgramAndFunctionsSelectorModel(ProgramSelectorModel programSelectorModel) {
+        this.programSelectorModel = programSelectorModel;
 
-        programAndFunctionsSelectorModel.setMainController(mainController);
+        programSelectorModel.setMainController(mainController);
 
-        programFunctionSelectorCB.setItems(programAndFunctionsSelectorModel.getProgramAndFunctionsOptions());
-        programFunctionSelectorCB.disableProperty().bind(Bindings.isNull(programAndFunctionsSelectorModel.currentProgramProperty()));  // Disable ComboBoxes when there are no program loaded
+        programFunctionSelectorCB.setItems(programSelectorModel.getProgramAndFunctionsOptions());
+        programFunctionSelectorCB.disableProperty().bind(Bindings.isNull(programSelectorModel.currentProgramProperty()));  // Disable ComboBoxes when there are no program loaded
 
         attachProgramFunctionSelectionListener();
         configureProgramSelectionComboBoxDisplay();
@@ -77,7 +77,7 @@ public class TopToolBarController {
 
     private void attachProgramFunctionSelectionListener() {
         programFunctionSelectorCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            programAndFunctionsSelectorModel.selectProgramOrFunction(newValue);
+            programSelectorModel.selectProgramOrFunction(newValue);
         });
     }
 

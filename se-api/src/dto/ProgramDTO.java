@@ -4,6 +4,7 @@ import java.util.List;
 
 public class ProgramDTO {
     private final String programName;
+    private final String userString;
     private final List<String> labelsStr;
     private final List<String> inputVariables;
     private final List<String> workVariables;
@@ -12,6 +13,7 @@ public class ProgramDTO {
 
     public ProgramDTO(
             String programName,
+            String userString,
             List<String> labelsStr,
             List<String> inputVariables,
             List<String> workVariables,
@@ -19,6 +21,7 @@ public class ProgramDTO {
             List<List<InstructionDTO>> expandedProgram
     ) {
         this.programName = programName;
+        this.userString = userString;
         this.labelsStr = labelsStr;
         this.inputVariables = inputVariables;
         this.workVariables = workVariables;
@@ -30,6 +33,9 @@ public class ProgramDTO {
         return programName;
     }
 
+    public String getProgramUserString() {
+        return userString;
+    }
     public List<String> getLabelsStr() {
         return labelsStr;
     }
