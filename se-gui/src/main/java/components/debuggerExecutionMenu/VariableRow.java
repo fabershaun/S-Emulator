@@ -14,13 +14,13 @@ public class VariableRow {
         this.variableValue = new SimpleLongProperty(value);
     }
 
-//    public StringProperty variableNameProperty() {
-//        return variableName;
-//    }
-//
-//    public LongProperty variableValueProperty() {
-//        return variableValue;
-//    }
+    public StringProperty variableNameProperty() {   // To update UI when value change. need it
+        return variableName;
+    }
+
+    public LongProperty variableValueProperty() {   // To update UI when value change. need it
+        return variableValue;
+    }
 
     public String getVariableName(){
         return variableName.get();

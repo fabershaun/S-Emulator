@@ -3,7 +3,6 @@ package components.mainApp;
 import components.chainInstructionTable.ChainInstructionsTableController;
 import components.debuggerExecutionMenu.RunMode;
 import components.history.HistoryController;
-import components.history.historyRowPopUp.HistoryRowPopUpController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
@@ -17,9 +16,6 @@ import engine.EngineImpl;
 import exceptions.EngineLoadException;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -32,7 +28,6 @@ import tasks.ExpandProgramTask;
 import tasks.LoadProgramTask;
 import tasks.ProgramRunTask;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -224,30 +219,8 @@ public class MainAppController {
         return engine.getHistoryPerProgram(currentSelectedProgramProperty.get().getProgramName());
     }
 
-    public void onHistorySelected(ProgramExecutorDTO selectedHistoryRow, int runNumber) {
-        try {
-            // Load the FXML for the popup
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/components/history/historyRowPopUp/historyRowPopUp.fxml"));
-            Parent root = loader.load();
-
-            // Get controller and set data
-            HistoryRowPopUpController controller = loader.getController();
-            controller.setDataToHistoryRowPopUp(selectedHistoryRow.getVariablesToValuesSorted());
-
-            // Create new stage for popup
-            Stage popupStage = new Stage();
-            popupStage.setTitle("Run " + runNumber + ": Variables State");
-            popupStage.setScene(new Scene(root, 300, 300)); // width fixed, height default
-            popupStage.setResizable(true); // allow user to resize
-            popupStage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void onHistoryDeselected() {
-        historyMenuController.clearHistory();
+    public void prepareForNewRun(int newDegree, List<Long> inputs) {
+        degreeModel.setCurrentDegree(newDegree);
+        debuggerExecutionMenuController.prepareForNewRun(inputs);
     }
 }

@@ -170,6 +170,15 @@ public class DebuggerExecutionMenuController {
         inputsTableView.getItems().setAll(rows);
     }
 
+    public void prepareForNewRun(List<Long> inputs) {
+        enterNewRunPressed(); // Like newRun was pressed
+
+        List<VariableRow> inputTableRows = inputsTableView.getItems();      // Update inputs
+        for (int i = 0; i < inputTableRows.size() && i < inputs.size(); i++) {
+            inputTableRows.get(i).setVariableValue(inputs.get(i));
+        }
+    }
+
     private void enterRunning() {
         currentMode = ApplicationMode.RUN;
         setNewRunEnabled(true);
@@ -217,6 +226,7 @@ public class DebuggerExecutionMenuController {
         enterNewRunPressed();
     }
 
+    // todo
     @FXML
     private void onPlay() {
         List<Long> inputValues = inputsTableView.getItems()
@@ -229,7 +239,7 @@ public class DebuggerExecutionMenuController {
             mainController.runProgram(inputValues);
         } else if (debugRadio.isSelected()) {
             enterDebugging();
-            // כאן להתחיל Debug
+            // todo: כאן להתחיל Debug
         }
     }
 
