@@ -83,7 +83,7 @@ public class DebuggerExecutionMenuController {
             if (newProgramExecutorDTO != null) {
                 Map<String, Long> variablesMap = newProgramExecutorDTO.getVariablesToValuesSorted();
                 variablesTable.getItems().setAll(variablesMap.entrySet());
-                cyclesNumberLabel.setText(String.valueOf(newProgramExecutorDTO.getTotalCycles()));
+                cyclesNumberLabel.setText(String.valueOf(newProgramExecutorDTO.getCycles()));
             } else {
                 variablesTable.getItems().clear();
             }
@@ -282,8 +282,8 @@ public class DebuggerExecutionMenuController {
     }
 
     private void updateControllerAfterStep(DebugDTO debugStep) {
-        variablesTable.getItems().setAll(debugStep.getVariablesToValuesSorted().entrySet());
-        cyclesNumberLabel.setText(String.valueOf(debugStep.getCurrentCycles()));
+        variablesTable.getItems().setAll(debugStep.getDebugProgramExecutorDTO().getVariablesToValuesSorted().entrySet());
+        cyclesNumberLabel.setText(String.valueOf(debugStep.getDebugProgramExecutorDTO().getCycles()));
     }
 }
 

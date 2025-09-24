@@ -191,7 +191,7 @@ public class EngineImpl implements Engine, Serializable {
         Program deepCopyOfProgram = program.deepClone();
         deepCopyOfProgram.expandProgram(degree);
 
-        this.debug = new DebugImpl(deepCopyOfProgram, inputs);
+        this.debug = new DebugImpl(deepCopyOfProgram, degree, inputs);
     }
 
     @Override

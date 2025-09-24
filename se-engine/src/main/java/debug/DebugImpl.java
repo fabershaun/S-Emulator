@@ -1,6 +1,7 @@
 package debug;
 
 import dto.DebugDTO;
+import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import execution.ExecutionContext;
 import execution.ExecutionContextImpl;
@@ -10,18 +11,16 @@ import instruction.Instruction;
 import label.FixedLabel;
 import label.Label;
 import program.Program;
-import variable.Variable;
-import variable.VariableType;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
+import static engine.EngineImpl.buildProgramDTO;
+import static engine.EngineImpl.buildProgramExecutorDTO;
 
 public class DebugImpl implements Debug {
 
     private final ProgramExecutor programExecutor;
-
     private final Program program;
     private final ExecutionContext context = new ExecutionContextImpl();
     private final List<Instruction> instructions;
@@ -32,14 +31,15 @@ public class DebugImpl implements Debug {
     private final List<DebugDTO> stepsHistory = new ArrayList<>();
     private int historyPointer = -1;
 
-    public DebugImpl(Program program, List<Long> inputs) {
+    public DebugImpl(Program program, int degree, List<Long> inputs) {
         this.program = program;
         this.instructions = program.getInstructionsList();
         context.initializeVariables(program, inputs.toArray(new Long[0]));
 
         this.programExecutor = new ProgramExecutorImpl(program);
+        this.programExecutor.setInputsValues(inputs);
+        this.programExecutor.setRunDegree(degree);
     }
-
 
     @Override
     public DebugDTO resume() {
@@ -59,6 +59,7 @@ public class DebugImpl implements Debug {
                 Instruction currentInstruction = instructions.get(currentInstructionIndex);
                 nextInstructionLabel = currentInstruction.execute(context);
                 currentCycles +=  currentInstruction.getCycleOfInstruction();
+                updateProgramExecutorData();
                 stepsHistory.add(buildDebugDTO());
                 historyPointer++;
             } else {
@@ -86,7 +87,7 @@ public class DebugImpl implements Debug {
         if (historyPointer < 0) {    // Before start
             currentInstructionIndex = -1;
             currentCycles = 0;
-            return new DebugDTO(new ProgramExecutorDTO(this.program), Map.of(), currentInstructionIndex, currentCycles, hasMoreInstructions());
+            return new DebugDTO(getDebugProgramExecutor(), getCurrentInstructionIndex(), hasMoreInstructions());
         }
 
         currentInstructionIndex = stepsHistory.get(historyPointer).getInstructionNumber();
@@ -96,9 +97,7 @@ public class DebugImpl implements Debug {
     private DebugDTO buildDebugDTO() {
         return new DebugDTO(
                 getDebugProgramExecutor(),
-                getVariablesToValuesSorted(),
                 getCurrentInstructionIndex(),
-                getCurrentCycles(),
                 hasMoreInstructionsNotIncludingLast()
         );
     }
@@ -122,32 +121,14 @@ public class DebugImpl implements Debug {
 
     @Override
     public ProgramExecutorDTO getDebugProgramExecutor() {
-        return programExecutor;
-    }
-
-    @Override
-    public Map<String, Long> getVariablesToValuesSorted() {
-        Map<String, Long> variablesToValuesSorted = new LinkedHashMap<>();
-
-        variablesToValuesSorted.put(VariableType.RESULT.getVariableRepresentation(0), context.getVariableValue(Variable.RESULT));
-
-        for (Variable variable : program.getInputAndWorkVariablesSortedBySerial()) {
-            variablesToValuesSorted.put(variable.getRepresentation(), context.getVariableValue(variable));
-        }
-
-        return variablesToValuesSorted;
+        ProgramDTO programDTO = buildProgramDTO(this.program);
+        return buildProgramExecutorDTO(programDTO, this.programExecutor);
     }
 
     @Override
     public int getCurrentInstructionIndex() {
         return currentInstructionIndex;
     }
-
-    @Override
-    public int getCurrentCycles() {
-        return currentCycles;
-    }
-
 
     private void updateProgramExecutorData() {
         this.programExecutor.setExecutionContext(context);

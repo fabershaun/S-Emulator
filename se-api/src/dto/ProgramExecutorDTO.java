@@ -33,7 +33,7 @@ public class ProgramExecutorDTO {
         return result;
     }
 
-    public int getTotalCycles() {
+    public int getCycles() {
         return totalCycles;
     }
 

@@ -81,7 +81,7 @@ public class RunProgram implements MenuActionable {
 
         displayVariablesSorted(programExecutorDTO);
 
-        System.out.printf("Cycles: %d%n%n", programExecutorDTO.getTotalCycles());
+        System.out.printf("Cycles: %d%n%n", programExecutorDTO.getCycles());
     }
 
     private void displayVariablesSorted(ProgramExecutorDTO programExecutorDTO) {
