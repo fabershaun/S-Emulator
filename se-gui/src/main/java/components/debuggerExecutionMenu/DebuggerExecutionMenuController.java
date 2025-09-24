@@ -137,7 +137,7 @@ public class DebuggerExecutionMenuController {
         inputsTable.setEditable(false);
     }
 
-    private void enterProgramReady() {
+    public void enterProgramReady() {
         currentMode = ApplicationMode.PROGRAM_READY;
         setNewRunEnabled(true);
         setPlayEnabled(false);
@@ -146,7 +146,7 @@ public class DebuggerExecutionMenuController {
         inputsTable.setEditable(false);
     }
 
-    public void enterNewRunPressed() {
+    private void enterNewRunPressed() {
         currentMode = ApplicationMode.NEW_RUN_PRESSED;
         setNewRunEnabled(true);
         setModeSelectionEnabled(true);

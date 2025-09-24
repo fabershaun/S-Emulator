@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
+import static components.mainApp.MainAppController.handleTaskFailure;
+
 
 public class LoadFileController {
 
@@ -73,27 +75,16 @@ public class LoadFileController {
 
 
     // Handle task failure
-    public static void handleTaskFailure(javafx.concurrent.Task<?> task, javafx.stage.Stage progressStage) {
+    public static void handleLoadTaskFailure(javafx.concurrent.Task<?> task, javafx.stage.Stage progressStage) {
         progressStage.close();
-        Throwable taskException = task.getException();
-        String msg;
-
-        if (taskException instanceof exceptions.EngineLoadException) {
-            msg = taskException.getMessage();
-        } else if (taskException != null) {
-            msg = taskException.getMessage() != null ? taskException.getMessage() : taskException.toString();
-        } else {
-            msg = "Unknown  error";
-        }
-
-        showEngineError(msg);
+        handleTaskFailure(task, "Load failed");
     }
 
-    public static void showEngineError(String engineMsg) {
+    public static void showEngineError(String title, String engineMsg) {
         javafx.scene.control.Alert alert =
                 new Alert(Alert.AlertType.NONE, engineMsg, ButtonType.CLOSE);
 
-        alert.setTitle("Load failed");
+        alert.setTitle(title);
         alert.setHeaderText(null);   // no header
         alert.setGraphic(null);      // no icon
         alert.initModality(javafx.stage.Modality.APPLICATION_MODAL);

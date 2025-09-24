@@ -13,7 +13,6 @@ import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
-import exceptions.EngineLoadException;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
@@ -31,8 +30,7 @@ import tasks.ProgramRunTask;
 import java.nio.file.Path;
 import java.util.List;
 
-import static components.loadFile.LoadFileController.handleTaskFailure;
-import static components.loadFile.LoadFileController.showProgressDialog;
+import static components.loadFile.LoadFileController.*;
 
 public class MainAppController {
 
@@ -85,11 +83,11 @@ public class MainAppController {
     private void initializeListeners() {
         programSelectorModel.selectedUserStringProperty().addListener((obs, oldVal, newSelectedUserString) -> {
             if (newSelectedUserString != null) {
-                ProgramDTO selectedProgram = engine.getProgramByUserString(newSelectedUserString);
+                ProgramDTO selectedProgram = engine.getProgramDTOByUserString(newSelectedUserString);
 
                 selectedProgramProperty.set(selectedProgram);
                 highlightSelectionModel.clearSelection();
-                debuggerExecutionMenuController.enterNewRunPressed();
+                debuggerExecutionMenuController.enterProgramReady();
                 historyMenuController.fillHistoryTable(getHistory());
                 degreeModel.setCurrentDegree(0);
                 degreeModel.setMaxDegree(engine.getMaxDegree(selectedProgram.getProgramName()));
@@ -173,15 +171,16 @@ public class MainAppController {
         loadProgramTask.setOnSucceeded(ev -> {
             progressStage.close();
             ProgramDTO loaded = loadProgramTask.getValue();
+
             mainProgramLoadedProperty.set(loaded);
-            selectedProgramProperty.set(loaded); // Default choose // todo: fix this line and line above
+            selectedProgramProperty.set(loaded); // Default choose
             selectedFilePath.set(xmlPath.toAbsolutePath().toString());
             programAfterExecuteProperty.set(null);
             degreeModel.setMaxDegree(engine.getMaxDegree(selectedProgramProperty.get().getProgramName()));
             degreeModel.setCurrentDegree(0);
         });
 
-        loadProgramTask.setOnFailed(ev -> handleTaskFailure(loadProgramTask, progressStage));
+        loadProgramTask.setOnFailed(ev -> handleLoadTaskFailure(loadProgramTask, progressStage));
         loadProgramTask.setOnCancelled(ev -> progressStage.close());
 
         new Thread(loadProgramTask, "loadProgram-thread").start();
@@ -199,6 +198,8 @@ public class MainAppController {
             degreeModel.setMaxDegree(maxDegree);
             degreeModel.setCurrentDegree(safeTargetDegree);
         });
+
+        expansionTask.setOnFailed(ev -> handleTaskFailure(expansionTask, "Expand failed"));
 
         new Thread(expansionTask, "expand-thread").start();
     }
@@ -228,12 +229,14 @@ public class MainAppController {
             programAfterExecuteProperty.set(runTask.getValue());
         });
 
+        runTask.setOnFailed(ev -> handleTaskFailure(runTask, "Run Failed"));
+
         new Thread(runTask, "runProgram-thread").start();
     }
 
     private String getActiveProgramName() {
         String chosenUserString = programSelectorModel.getSelectedUserString();
-        String chosenProgramName = engine.getProgramByUserString(chosenUserString).getProgramName();
+        String chosenProgramName = engine.getProgramDTOByUserString(chosenUserString).getProgramName();
 
         if (chosenProgramName == null) {
             chosenProgramName = engine.getMainProgram().getProgramName();
@@ -253,6 +256,22 @@ public class MainAppController {
     }
 
     public ProgramDTO getChosenProgramByUserString(String userString) {
-        return engine.getProgramByUserString(userString);
+        return engine.getProgramDTOByUserString(userString);
+    }
+
+    // TODO
+    public static void handleTaskFailure(javafx.concurrent.Task<?> task, String title) {
+        Throwable taskException = task.getException();
+        String msg;
+
+        if (taskException instanceof exceptions.EngineLoadException) {
+            msg = taskException.getMessage();
+        } else if (taskException != null) {
+            msg = taskException.getMessage() != null ? taskException.getMessage() : taskException.toString();
+        } else {
+            msg = "Unknown  error";
+        }
+
+        showEngineError(msg, title);
     }
 }

@@ -24,7 +24,7 @@ public class ExpandProgramTask extends Task<ProgramDTO> {
     @Override
     protected ProgramDTO call() {
         if (targetDegree == 0) {
-            return engine.getMainProgram();
+            return engine.getProgramDTOByName(programToExpandName);
         } else {
             return engine.getExpandedProgram(programToExpandName, targetDegree);
         }

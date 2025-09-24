@@ -5,9 +5,7 @@ import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import exceptions.EngineLoadException;
 import execution.ProgramExecutorImpl;
-import history.ExecutionHistory;
 import execution.ProgramExecutor;
-import history.ExecutionHistoryImpl;
 import program.Program;
 import loader.XmlProgramLoader;
 import variable.Variable;
@@ -20,8 +18,6 @@ public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
     private Program mainProgram;
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
-    //private ExecutionHistory executionHistory;
-
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -66,7 +62,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramDTO getProgramByUserString(String userString) {
+    public ProgramDTO getProgramDTOByName(String programName) {
+        return  buildProgramDTO(getProgramByName(programName));
+    }
+
+    @Override
+    public ProgramDTO getProgramDTOByUserString(String userString) {
         if (mainProgram.getUserString().equals(userString)) {
             return buildProgramDTO(mainProgram);
         }

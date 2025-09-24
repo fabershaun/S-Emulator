@@ -10,12 +10,12 @@ import java.util.List;
 public interface Engine {
 
     ProgramDTO getMainProgram();
-    ProgramDTO getProgramByUserString(String userString);
+    ProgramDTO getProgramDTOByName(String programName);
+    ProgramDTO getProgramDTOByUserString(String userString);
     ProgramDTO getExpandedProgram(String programName, int degree);
     ProgramExecutorDTO getProgramAfterRun(String programName);
-    List<ProgramExecutorDTO> getHistoryPerProgram(String programName);   // For gui module
-
-    List<ProgramDTO> getAllPrograms();   // For gui module
+    List<ProgramExecutorDTO> getHistoryPerProgram(String programName);
+    List<ProgramDTO> getAllPrograms();
 
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree(String programName);
