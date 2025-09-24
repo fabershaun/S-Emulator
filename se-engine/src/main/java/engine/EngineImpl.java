@@ -178,10 +178,13 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void startDebugMode(String programName, List<Long> inputs) {
+    public void initializeDebugger(String programName, int degree, List<Long> inputs) {
         Program program = getProgramByName(programName);
 
-        this.debug = new DebugImpl(program, inputs);
+        Program deepCopyOfProgram = program.deepClone();
+        deepCopyOfProgram.expandProgram(degree);
+
+        this.debug = new DebugImpl(deepCopyOfProgram, inputs);
     }
 
     @Override

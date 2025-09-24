@@ -1,8 +1,9 @@
 package components.topToolBar;
 
 import components.mainApp.MainAppController;
-import exceptions.EngineLoadException;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -16,12 +17,15 @@ public class TopToolBarController {
     private ExpansionCollapseModel expansionCollapseModel;
     private HighlightSelectionModel highlightSelectionModel;
     private ProgramSelectorModel programSelectorModel;
+    private final BooleanProperty lockExpandCollapseCB = new SimpleBooleanProperty(false);
+    private final BooleanProperty lockHighlightCB = new SimpleBooleanProperty(false);
+    private final BooleanProperty lockProgramSelectorCB = new SimpleBooleanProperty(false);
 
+    @FXML private ComboBox<String> programSelectorCB;
     @FXML private ComboBox<Integer> collapseCB;
     @FXML private Label currentDegreeLabel;
     @FXML private ComboBox<Integer> expandCB;
     @FXML private ComboBox<String> highlightSelectionCB;
-    @FXML private ComboBox<String> programSelectorCB;
 
 
     public void setMainController(MainAppController mainController) {
@@ -40,8 +44,20 @@ public class TopToolBarController {
         collapseCB.setItems(expansionCollapseModel.getCollapseOptions());
         expandCB.setItems(expansionCollapseModel.getExpandOptions());
 
-        collapseCB.disableProperty().bind(Bindings.isEmpty(expansionCollapseModel.getCollapseOptions())); // Disable ComboBoxes when there are no options available
-        expandCB.disableProperty().bind(Bindings.isEmpty(expansionCollapseModel.getExpandOptions()));
+        collapseCB.disableProperty().bind(
+                Bindings.or(
+                        Bindings.isEmpty(expansionCollapseModel.getCollapseOptions()),
+                        lockExpandCollapseCB
+                )
+        );
+
+        expandCB.disableProperty().bind(
+                Bindings.or(
+                        Bindings.isEmpty(expansionCollapseModel.getExpandOptions()),
+                        lockExpandCollapseCB
+                )
+        );
+
         currentDegreeLabel.textProperty().bind(expansionCollapseModel.currentDegreeProperty().asString());
 
         attachSelectionHandlerToComboBox(collapseCB);
@@ -56,7 +72,12 @@ public class TopToolBarController {
         this.highlightSelectionModel =  highlightSelectionModel;
 
         highlightSelectionCB.setItems(highlightSelectionModel.getHighlightOptions());  // Bind items to model-backed option lists
-        highlightSelectionCB.disableProperty().bind(Bindings.isEmpty(highlightSelectionModel.getHighlightOptions()));  // Disable ComboBoxes when there are no options available
+        highlightSelectionCB.disableProperty().bind(
+                Bindings.or(
+                        Bindings.isEmpty(highlightSelectionModel.getHighlightOptions()),  // Disable ComboBoxes when there are no options available
+                        lockHighlightCB
+                )
+        );
 
         attachHighlightSelectionListener();
         configureHighlightComboBoxDisplay();
@@ -68,7 +89,12 @@ public class TopToolBarController {
         programSelectorModel.setMainController(mainController);
 
         programSelectorCB.setItems(programSelectorModel.getProgramAndFunctionsOptions());
-        programSelectorCB.disableProperty().bind(Bindings.isEmpty(programSelectorModel.getProgramAndFunctionsOptions()));  // Disable ComboBoxes when there are no program loaded
+        programSelectorCB.disableProperty().bind(
+                Bindings.or(
+                        Bindings.isEmpty(programSelectorModel.getProgramAndFunctionsOptions()),
+                        lockProgramSelectorCB
+                )
+        );
 
         attachProgramFunctionSelectionListener();
         configureProgramSelectionComboBoxDisplay();
@@ -134,5 +160,11 @@ public class TopToolBarController {
                 mainController.jumpToDegree(selectedDegree);
             }
         });
+    }
+
+    public void setComponentsDisabled(Boolean enabled) {
+        lockProgramSelectorCB.set(enabled);
+        lockExpandCollapseCB.set(enabled);
+        lockHighlightCB.set(enabled);
     }
 }

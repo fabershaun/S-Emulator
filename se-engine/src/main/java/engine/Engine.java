@@ -22,7 +22,7 @@ public interface Engine {
     int getMaxDegree(String programName);
     void runProgram(String programName, int degree, Long... inputs);
 
-    void startDebugMode(String programName, List<Long> inputs);
+    void initializeDebugger(String programName, int degree, List<Long> inputs);
     DebugDTO getProgramAfterStepOver();
     DebugDTO getProgramAfterResume();
     DebugDTO getProgramAfterStepBack();

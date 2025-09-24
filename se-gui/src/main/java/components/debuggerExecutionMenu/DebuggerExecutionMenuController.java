@@ -1,6 +1,7 @@
 package components.debuggerExecutionMenu;
 
 import components.mainApp.MainAppController;
+import dto.DebugDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import javafx.beans.property.ObjectProperty;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 public class DebuggerExecutionMenuController {
 
+    private DebugDTO currentDebugStep;
     private MainAppController mainController;
     private ApplicationMode currentMode = ApplicationMode.NEW_RUN_PRESSED;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
@@ -27,9 +29,10 @@ public class DebuggerExecutionMenuController {
     @FXML private RadioButton runRadio;
     @FXML private RadioButton debugRadio;
     @FXML private ToggleGroup runModeToggleGroup;
-    @FXML private Button resumeButton;
-    @FXML private Button stepOverButton;
     @FXML private Button stopButton;
+    @FXML private Button resumeButton;
+    @FXML private Button stepBackButton;
+    @FXML private Button stepOverButton;
     @FXML private Button playButton;
     @FXML private Label cyclesNumberLabel;
     @FXML private TableView<VariableRow> inputsTable;
@@ -182,7 +185,7 @@ public class DebuggerExecutionMenuController {
     private void enterRunning() {
         currentMode = ApplicationMode.RUN;
         setNewRunEnabled(true);
-        setModeSelectionEnabled(true);
+        setModeSelectionEnabled(false);
         setPlayEnabled(false);
         setDebugControlsEnabled(false);
         inputsTable.setEditable(false);
@@ -191,31 +194,29 @@ public class DebuggerExecutionMenuController {
     private void enterDebugging() {
         currentMode = ApplicationMode.DEBUG;
         setNewRunEnabled(true);
-        setModeSelectionEnabled(true);
+        setModeSelectionEnabled(false);
         setPlayEnabled(false);
         setDebugControlsEnabled(true);
+        stepBackButton.setDisable(true); // Specific to shot down
+        stopButton.setDisable(true);     // Specific to shot down
         inputsTable.setEditable(false);
     }
 
-
-    // Enable/disable Play button
     private void setPlayEnabled(boolean enabled) {
         playButton.setDisable(!enabled);
     }
 
-    // Enable/disable Debug controls (Resume, Stop, StepOver)
     private void setDebugControlsEnabled(boolean enabled) {
-        resumeButton.setDisable(!enabled);
         stopButton.setDisable(!enabled);
+        resumeButton.setDisable(!enabled);
+        stepBackButton.setDisable(!enabled);
         stepOverButton.setDisable(!enabled);
     }
 
-    // Enable/disable New Run
     private void setNewRunEnabled(boolean enabled) {
         newRunButton.setDisable(!enabled);
     }
 
-    // Enable/disable Run/Debug radio buttons
     private void setModeSelectionEnabled(boolean enabled) {
         runRadio.setDisable(!enabled);
         debugRadio.setDisable(!enabled);
@@ -226,7 +227,6 @@ public class DebuggerExecutionMenuController {
         enterNewRunPressed();
     }
 
-    // todo
     @FXML
     private void onPlay() {
         List<Long> inputValues = inputsTable.getItems()
@@ -238,27 +238,52 @@ public class DebuggerExecutionMenuController {
             enterRunning();
             mainController.runProgram(inputValues);
         } else if (debugRadio.isSelected()) {
+            mainController.initializeDebugger(inputValues); // Important
             enterDebugging();
-            // todo: כאן להתחיל Debug
         }
     }
 
     @FXML
     private void onResume() {
-        // פעולה של Resume
+        currentDebugStep = mainController.debugResume();
+        updateControllerAfterStep(currentDebugStep);
+        onStop();
     }
 
     @FXML
     private void onStop() {
-        // פעולה של Stop
+        setDebugControlsEnabled(false);
+        updateControllerAfterStep(currentDebugStep);
+        mainController.finishDebug(currentDebugStep);
     }
 
     @FXML
     private void onStepOver() {
-        // פעולה של Step Over
+        currentDebugStep = mainController.debugStepOver();
+        updateControllerAfterStep(currentDebugStep);
+
+        if (!currentDebugStep.hasMoreInstructions()) { // When reached the last instruction, shout down all debug buttons
+            onStop();
+        } else {
+            stepBackButton.setDisable(false);
+            stopButton.setDisable(false);
+        }
     }
 
-    public void clearInputs() { inputsTable.getItems().clear(); }
+    @FXML
+    private void onStepBack() {
+        currentDebugStep = mainController.debugStepBack();
+        updateControllerAfterStep(currentDebugStep);
 
+        if (currentDebugStep.getInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
+            stepBackButton.setDisable(true);
+        }
+
+    }
+
+    private void updateControllerAfterStep(DebugDTO debugStep) {
+        variablesTable.getItems().setAll(debugStep.getVariablesToValuesSorted().entrySet());
+        cyclesNumberLabel.setText(String.valueOf(debugStep.getCurrentCycles()));
+    }
 }
 

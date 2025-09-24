@@ -13,7 +13,6 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainInstructionsTableController {
@@ -54,7 +53,7 @@ public class MainInstructionsTableController {
     public void setModels(HighlightSelectionModel model, ProgramSelectorModel  programSelectorModel) {
         this.highlightModel = model;
         this.programSelectorModel = programSelectorModel;
-        installMainTableHighlighting();       // configure cell factories
+        highlightSelectionOnMainTable();       // configure cell factories
     }
 
     public void initializeListeners() {
@@ -92,7 +91,7 @@ public class MainInstructionsTableController {
     }
 
     // Highlighting lines - only on the main table
-    private void installMainTableHighlighting() {
+    private void highlightSelectionOnMainTable() {
         if (highlightModel == null) return;
 
         // Refresh table when selection changes
@@ -124,6 +123,14 @@ public class MainInstructionsTableController {
                 }
             }
         });
+    }
+    
+    public void highlightLineDebugMode(int rowIndex) {
+        instructionsTable.getSelectionModel().select(rowIndex);
+    }
+
+    public void turnOffHighlighting() {
+        instructionsTable.getSelectionModel().clearSelection();
     }
 
     public void fillTable(InstructionsDTO instructions) {

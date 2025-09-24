@@ -68,16 +68,6 @@ public class HistoryController {
             }
         });
 
-        // After program select -> update history table
-//        programSelectorProperty.addListener((obs, oldProgName, newProgramSelected) -> {
-//            if (newProgramSelected != null) {
-//                List<ProgramExecutorDTO> historyPerProgram = mainController.getHistory();
-//                historyTable.getItems().setAll(historyPerProgram);
-//            } else {
-//                historyTable.getItems().clear();
-//            }
-//        });
-
         // Listen to row selection and notify the main controller
         historyTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newHistoryRowSelected) -> {
             if (newHistoryRowSelected == null) {    // No selected

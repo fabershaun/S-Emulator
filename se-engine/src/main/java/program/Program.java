@@ -23,7 +23,7 @@ public interface Program extends Serializable {
     List<Variable> getInputAndWorkVariablesSortedBySerial();
     List<Label> getLabelsInProgram();
     Set<Label> getReferenceLabelsInProgram();
-    Map<Label, Instruction> getLabelToInstruction();
+    Map<Label, Instruction> getLabelToInstruction();  // Instructions start counting from 1
     List<String> getOrderedLabelsExitLastStr();
     List<String> getInputVariablesSortedStr();
     List<String> getWorkVariablesSortedStr();

@@ -9,9 +9,8 @@ public interface Debug {
     DebugDTO stepOver();
     DebugDTO stepBack();
 
-    boolean hasMoreInstructions();
+    boolean hasMoreInstructionsNotIncludingLast();
     Map<String, Long> getVariablesToValuesSorted();
-    long getResult();
     int getCurrentInstructionIndex();
     int getCurrentCycles();
 }

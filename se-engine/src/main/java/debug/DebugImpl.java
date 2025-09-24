@@ -67,15 +67,18 @@ public class DebugImpl implements Debug {
         } else if (nextInstructionLabel.equals(FixedLabel.EXIT)) {
             currentInstructionIndex = instructions.size(); // Finish
         } else {
-            currentInstructionIndex = program.getLabelToInstruction().get(nextInstructionLabel).getInstructionNumber(); // Jump to instruction by label
+            currentInstructionIndex = program.getLabelToInstruction().get(nextInstructionLabel).getInstructionNumber() - 1; // Jump to instruction by label   // Instructions start counting from 1
         }
     }
 
     @Override
     public DebugDTO stepBack() {
-        --historyPointer;
-        if (historyPointer < 0) {
-            throw new IllegalArgumentException("Step back in debug failed. Cannot step back before the first instruction");
+        historyPointer--;
+
+        if (historyPointer < 0) {    // Before start
+            currentInstructionIndex = -1;
+            currentCycles = 0;
+            return new DebugDTO(Map.of(), currentInstructionIndex, currentCycles, hasMoreInstructions());
         }
 
         currentInstructionIndex = stepsHistory.get(historyPointer).getInstructionNumber();
@@ -85,20 +88,27 @@ public class DebugImpl implements Debug {
     private DebugDTO buildDebugDTO() {
         return new DebugDTO(
                 getVariablesToValuesSorted(),
-                getResult(),
                 getCurrentInstructionIndex(),
                 getCurrentCycles(),
-                hasMoreInstructions()
+                hasMoreInstructionsNotIncludingLast()
         );
     }
 
-    @Override
-    public boolean hasMoreInstructions() {
+    private boolean hasMoreInstructions() {
+        if (currentInstructionIndex < 0) {  // Didnt start yet (value = -1) -> return true
+            return !instructions.isEmpty();
+        }
+
         if (currentInstructionIndex >= instructions.size()) {
             return false;
-        } else {
-            return !instructions.get(currentInstructionIndex).getLabel().equals(FixedLabel.EXIT);   // If label is not 'EXIT' than true
         }
+
+        return !instructions.get(currentInstructionIndex).getLabel().equals(FixedLabel.EXIT);   // If label is not 'EXIT' than true
+    }
+
+    @Override
+    public boolean hasMoreInstructionsNotIncludingLast() {
+        return hasMoreInstructions() && currentInstructionIndex < instructions.size() - 1;
     }
 
     @Override
@@ -112,11 +122,6 @@ public class DebugImpl implements Debug {
         }
 
         return variablesToValuesSorted;
-    }
-
-    @Override
-    public long getResult() {
-        return context.getVariableValue(Variable.RESULT);
     }
 
     @Override

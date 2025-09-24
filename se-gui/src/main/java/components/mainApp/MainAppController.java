@@ -8,6 +8,7 @@ import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
 import components.topToolBar.ProgramSelectorModel;
+import dto.DebugDTO;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
@@ -259,7 +260,42 @@ public class MainAppController {
         return engine.getProgramDTOByUserString(userString);
     }
 
-    // TODO
+    public void initializeDebugger(List<Long> inputValues) {
+        engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues);
+    }
+
+    public DebugDTO debugResume() {
+        DebugDTO debugStep = engine.getProgramAfterResume();
+        finishDebug(debugStep);
+
+        return  debugStep;
+    }
+
+    public DebugDTO debugStepOver() {
+        DebugDTO debugStep = engine.getProgramAfterStepOver();
+        updateControllerAfterDebugStep(debugStep);
+
+        return debugStep;
+    }
+
+    public DebugDTO debugStepBack() {
+        DebugDTO debugStep = engine.getProgramAfterStepBack();
+        updateControllerAfterDebugStep(debugStep);
+
+        return debugStep;
+    }
+
+    private void updateControllerAfterDebugStep(DebugDTO debugStep) {
+        mainInstructionsTableController.highlightLineDebugMode(debugStep.getInstructionNumber());  // Highlight line on table instructions
+        topToolBarController.setComponentsDisabled(true);
+    }
+
+    public void finishDebug(DebugDTO debugStep) {
+        // להוסיף תוצאה כשורה אחרונה בטבלת ההיסטוריה
+        mainInstructionsTableController.turnOffHighlighting();
+        topToolBarController.setComponentsDisabled(false);
+    }
+
     public static void handleTaskFailure(javafx.concurrent.Task<?> task, String title) {
         Throwable taskException = task.getException();
         String msg;
