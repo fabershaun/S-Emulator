@@ -48,8 +48,15 @@ public class EngineImpl implements Engine, Serializable {
 
         programExecutor.run(degree, inputs);
 
-        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());
+        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
         executionHistory.add(programExecutor);
+    }
+
+    @Override
+    public void addRunToHistory(String programName) {
+        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
+ // todo: complete
+       // executionHistory.add(programExecutor);
     }
 
     private Program getProgramByName(String programName) {
@@ -152,7 +159,7 @@ public class EngineImpl implements Engine, Serializable {
         return buildProgramDTO(deepCopyOfProgram);
     }
 
-    private ProgramDTO buildProgramDTO(Program program) {
+    public static ProgramDTO buildProgramDTO(Program program) {
         InstructionsDTO instructionsDTO = new InstructionsDTO(program.getInstructionDtoList());
 
         return new ProgramDTO(
@@ -166,7 +173,7 @@ public class EngineImpl implements Engine, Serializable {
         );
     }
 
-    private ProgramExecutorDTO buildProgramExecutorDTO(ProgramDTO programDTO, ProgramExecutor programExecutor) {
+    public static ProgramExecutorDTO buildProgramExecutorDTO(ProgramDTO programDTO, ProgramExecutor programExecutor) {
         return new ProgramExecutorDTO(
                 programDTO,
                 programExecutor.getVariablesToValuesSorted(),

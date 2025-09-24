@@ -1,5 +1,6 @@
 package execution;
 
+import debug.Debug;
 import instruction.Instruction;
 import label.FixedLabel;
 import label.Label;
@@ -13,7 +14,7 @@ import java.util.*;
 public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
 
     private final Program program;
-    private final ExecutionContext context;
+    private ExecutionContext context;
     private List<Long> inputsValues;
     private int runDegree = 0;
     private int totalCycles = 0;
@@ -95,5 +96,25 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         }
 
         return variablesToValuesSorted;
+    }
+
+    @Override
+    public void setRunDegree(int runDegree) {
+        this.runDegree = runDegree;
+    }
+
+    @Override
+    public void setTotalCycles(int totalCycles) {
+        this.totalCycles = totalCycles;
+    }
+
+    @Override
+    public void setExecutionContext(ExecutionContext executionContext) {
+        this.context = executionContext;
+    }
+
+    @Override
+    public void setInputsValues(List<Long> inputsValues) {
+        this.inputsValues = inputsValues;
     }
 }

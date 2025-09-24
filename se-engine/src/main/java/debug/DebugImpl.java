@@ -1,8 +1,11 @@
 package debug;
 
 import dto.DebugDTO;
+import dto.ProgramExecutorDTO;
 import execution.ExecutionContext;
 import execution.ExecutionContextImpl;
+import execution.ProgramExecutor;
+import execution.ProgramExecutorImpl;
 import instruction.Instruction;
 import label.FixedLabel;
 import label.Label;
@@ -16,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 public class DebugImpl implements Debug {
+
+    private final ProgramExecutor programExecutor;
+
     private final Program program;
     private final ExecutionContext context = new ExecutionContextImpl();
     private final List<Instruction> instructions;
@@ -30,6 +36,8 @@ public class DebugImpl implements Debug {
         this.program = program;
         this.instructions = program.getInstructionsList();
         context.initializeVariables(program, inputs.toArray(new Long[0]));
+
+        this.programExecutor = new ProgramExecutorImpl(program);
     }
 
 
@@ -78,7 +86,7 @@ public class DebugImpl implements Debug {
         if (historyPointer < 0) {    // Before start
             currentInstructionIndex = -1;
             currentCycles = 0;
-            return new DebugDTO(Map.of(), currentInstructionIndex, currentCycles, hasMoreInstructions());
+            return new DebugDTO(new ProgramExecutorDTO(this.program), Map.of(), currentInstructionIndex, currentCycles, hasMoreInstructions());
         }
 
         currentInstructionIndex = stepsHistory.get(historyPointer).getInstructionNumber();
@@ -87,6 +95,7 @@ public class DebugImpl implements Debug {
 
     private DebugDTO buildDebugDTO() {
         return new DebugDTO(
+                getDebugProgramExecutor(),
                 getVariablesToValuesSorted(),
                 getCurrentInstructionIndex(),
                 getCurrentCycles(),
@@ -112,6 +121,11 @@ public class DebugImpl implements Debug {
     }
 
     @Override
+    public ProgramExecutorDTO getDebugProgramExecutor() {
+        return programExecutor;
+    }
+
+    @Override
     public Map<String, Long> getVariablesToValuesSorted() {
         Map<String, Long> variablesToValuesSorted = new LinkedHashMap<>();
 
@@ -132,5 +146,11 @@ public class DebugImpl implements Debug {
     @Override
     public int getCurrentCycles() {
         return currentCycles;
+    }
+
+
+    private void updateProgramExecutorData() {
+        this.programExecutor.setExecutionContext(context);
+        this.programExecutor.setTotalCycles(currentCycles);
     }
 }
