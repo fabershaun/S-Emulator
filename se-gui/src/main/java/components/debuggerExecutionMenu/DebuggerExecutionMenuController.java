@@ -160,6 +160,7 @@ public class DebuggerExecutionMenuController {
         cyclesNumberLabel.setText(String.valueOf(0));
         resetInputTable(currentSelectedProgramProperty.getValue());
         mainController.clearHistorySelection();
+        mainController.lockHistoryButtons(false);
     }
 
     private void resetInputTable(ProgramDTO program) {
@@ -201,6 +202,7 @@ public class DebuggerExecutionMenuController {
         stepBackButton.setDisable(true); // Specific to shot down
         stopButton.setDisable(true);     // Specific to shot down
         inputsTable.setEditable(false);
+        mainController.lockHistoryButtons(true);
     }
 
     private void setPlayEnabled(boolean enabled) {

@@ -321,4 +321,8 @@ public class MainAppController {
     public void clearHistorySelection() {
         historyMenuController.clearHistoryTableRowSelection();
     }
+
+    public void lockHistoryButtons(Boolean disable) {
+        historyMenuController.setHistoryButtonsDisabled(disable);
+    }
 }
