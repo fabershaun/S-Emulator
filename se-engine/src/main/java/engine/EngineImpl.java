@@ -1,5 +1,8 @@
 package engine;
 
+import debug.Debug;
+import debug.DebugImpl;
+import dto.DebugDTO;
 import dto.InstructionsDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
@@ -18,6 +21,7 @@ public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
     private Program mainProgram;
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
+    private Debug debug;
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -171,6 +175,28 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser()
         );
+    }
+
+    @Override
+    public void startDebugMode(String programName, List<Long> inputs) {
+        Program program = getProgramByName(programName);
+
+        this.debug = new DebugImpl(program, inputs);
+    }
+
+    @Override
+    public DebugDTO getProgramAfterStepOver() {
+        return debug.stepOver();
+    }
+
+    @Override
+    public DebugDTO getProgramAfterResume() {
+        return debug.resume();
+    }
+
+    @Override
+    public DebugDTO getProgramAfterResume() {
+        return debug.stepBack();
     }
 
     @Override

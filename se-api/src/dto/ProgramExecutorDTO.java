@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ProgramExecutorDTO {
     private final ProgramDTO programDTO;
-    Map<String, Long> VariablesToValuesSorted;
+    private final Map<String, Long> VariablesToValuesSorted;
     private final long result;                      // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final int totalCycles;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final int degree;                       // Do not change name (name needed in gui module: package components.mainInstructionsTable)

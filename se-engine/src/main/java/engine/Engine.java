@@ -1,5 +1,6 @@
 package engine;
 
+import dto.DebugDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import exceptions.EngineLoadException;
@@ -20,6 +21,12 @@ public interface Engine {
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree(String programName);
     void runProgram(String programName, int degree, Long... inputs);
+
+    void startDebugMode(String programName, List<Long> inputs);
+    DebugDTO getProgramAfterStepOver();
+    DebugDTO getProgramAfterResume();
+    DebugDTO getProgramAfterStepBack();
+
 
     // For console module only:
     void saveState(Path path) throws EngineLoadException;
