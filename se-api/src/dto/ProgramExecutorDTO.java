@@ -29,17 +29,9 @@ public class ProgramExecutorDTO {
         return VariablesToValuesSorted;
     }
 
-    public long getResult() {
-        return result;
-    }
-
-    public int getCycles() {
-        return totalCycles;
-    }
-
-    public int getDegree() {
-        return degree;
-    }
+    public long getResult() { return result; }              // Don't change name - name convention in javafx - in history table component
+    public int getTotalCycles() { return totalCycles; }     // Don't change name - name convention in javafx - in history table component
+    public int getDegree() { return degree; }               // Don't change name - name convention in javafx - in history table component
 
     public List<Long> getInputsValuesOfUser() {
         return inputs;

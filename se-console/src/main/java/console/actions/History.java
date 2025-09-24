@@ -40,7 +40,7 @@ public class History implements MenuActionable {
 
             System.out.println("Inputs values: " + inputsDisplay);
             System.out.println("Result: " + programExecutorDTO.getResult());
-            System.out.println("Cycles: " + programExecutorDTO.getCycles());
+            System.out.println("Cycles: " + programExecutorDTO.getTotalCycles());
             System.out.println();
 
             i++;

@@ -5,7 +5,6 @@ import components.mainApp.MainAppController;
 import dto.ProgramExecutorDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,14 +26,15 @@ public class HistoryController {
 
     private ProgramExecutorDTO selectedHistoryRow;
     private int selectedRowIndex;
+    private boolean lockHistoryButton = false;
 
     @FXML private TableView<ProgramExecutorDTO> historyTable;
     @FXML private TableColumn<ProgramExecutorDTO, Number> colCycles;
     @FXML private TableColumn<ProgramExecutorDTO, Number> colDegree;
     @FXML private TableColumn<ProgramExecutorDTO, Number> colResult;
     @FXML private TableColumn<ProgramExecutorDTO, Number> colRunNumber;
-    @FXML private Button reRunButton;
     @FXML private Button showStatusButton;
+    @FXML private Button reRunButton;
 
 
     @FXML
@@ -74,7 +74,7 @@ public class HistoryController {
                 reRunButton.setDisable(true);
                 showStatusButton.setDisable(true);
                 this.selectedHistoryRow = null;
-            } else {       // A row selected
+            } else if (!lockHistoryButton) {       // A row selected and buttons aren't locked
                 reRunButton.setDisable(false);
                 showStatusButton.setDisable(false);
                 this.selectedHistoryRow = newHistoryRowSelected;
@@ -109,7 +109,7 @@ public class HistoryController {
             popupStage.setScene(new Scene(root, 300, 300)); // width fixed, height default
             popupStage.setResizable(true); // allow user to resize
             popupStage.show();
-
+            clearHistoryTableRowSelection();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,7 +119,14 @@ public class HistoryController {
         int degree = selectedHistoryRow.getDegree();
         List<Long> inputs = selectedHistoryRow.getInputsValuesOfUser();
         mainController.prepareForNewRun(degree, inputs);
+        clearHistoryTableRowSelection();
     }
 
-    public void clearHistory() { historyTable.getItems().clear(); }
+    public void setHistoryButtonsDisabled(boolean disable) {
+        this.lockHistoryButton = disable;
+    }
+
+    public void clearHistoryTableRowSelection() {
+        historyTable.getSelectionModel().clearSelection();
+    }
 }

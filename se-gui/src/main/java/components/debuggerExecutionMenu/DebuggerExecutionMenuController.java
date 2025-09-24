@@ -83,7 +83,7 @@ public class DebuggerExecutionMenuController {
             if (newProgramExecutorDTO != null) {
                 Map<String, Long> variablesMap = newProgramExecutorDTO.getVariablesToValuesSorted();
                 variablesTable.getItems().setAll(variablesMap.entrySet());
-                cyclesNumberLabel.setText(String.valueOf(newProgramExecutorDTO.getCycles()));
+                cyclesNumberLabel.setText(String.valueOf(newProgramExecutorDTO.getTotalCycles()));
             } else {
                 variablesTable.getItems().clear();
             }
@@ -136,7 +136,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(false);
         setPlayEnabled(false);
         setModeSelectionEnabled(false);
-        setDebugControlsEnabled(false);
+        setDebugControlsDisabled(false);
         inputsTable.setEditable(false);
     }
 
@@ -145,7 +145,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setPlayEnabled(false);
         setModeSelectionEnabled(true);
-        setDebugControlsEnabled(false);
+        setDebugControlsDisabled(false);
         inputsTable.setEditable(false);
     }
 
@@ -154,11 +154,12 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setModeSelectionEnabled(true);
         setPlayEnabled(true);
-        setDebugControlsEnabled(false);
+        setDebugControlsDisabled(false);
         inputsTable.setEditable(true);
         variablesTable.getItems().clear();
         cyclesNumberLabel.setText(String.valueOf(0));
         resetInputTable(currentSelectedProgramProperty.getValue());
+        mainController.clearHistorySelection();
     }
 
     private void resetInputTable(ProgramDTO program) {
@@ -187,7 +188,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setModeSelectionEnabled(false);
         setPlayEnabled(false);
-        setDebugControlsEnabled(false);
+        setDebugControlsDisabled(false);
         inputsTable.setEditable(false);
     }
 
@@ -196,7 +197,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setModeSelectionEnabled(false);
         setPlayEnabled(false);
-        setDebugControlsEnabled(true);
+        setDebugControlsDisabled(true);
         stepBackButton.setDisable(true); // Specific to shot down
         stopButton.setDisable(true);     // Specific to shot down
         inputsTable.setEditable(false);
@@ -206,11 +207,11 @@ public class DebuggerExecutionMenuController {
         playButton.setDisable(!enabled);
     }
 
-    private void setDebugControlsEnabled(boolean enabled) {
-        stopButton.setDisable(!enabled);
-        resumeButton.setDisable(!enabled);
-        stepBackButton.setDisable(!enabled);
-        stepOverButton.setDisable(!enabled);
+    private void setDebugControlsDisabled(boolean disable) {
+        stopButton.setDisable(!disable);
+        resumeButton.setDisable(!disable);
+        stepBackButton.setDisable(!disable);
+        stepOverButton.setDisable(!disable);
     }
 
     private void setNewRunEnabled(boolean enabled) {
@@ -247,13 +248,18 @@ public class DebuggerExecutionMenuController {
     private void onResume() {
         currentDebugStep = mainController.debugResume();
         updateControllerAfterStep(currentDebugStep);
-        onStop();
+        stopDebug();
     }
 
     @FXML
     private void onStop() {
-        setDebugControlsEnabled(false);
+        mainController.debugStop();
         updateControllerAfterStep(currentDebugStep);
+        stopDebug();
+    }
+
+    private void stopDebug() {
+        setDebugControlsDisabled(false);
         mainController.finishDebug(currentDebugStep);
     }
 
@@ -263,7 +269,7 @@ public class DebuggerExecutionMenuController {
         updateControllerAfterStep(currentDebugStep);
 
         if (!currentDebugStep.hasMoreInstructions()) { // When reached the last instruction, shout down all debug buttons
-            onStop();
+            stopDebug();
         } else {
             stepBackButton.setDisable(false);
             stopButton.setDisable(false);
@@ -278,12 +284,11 @@ public class DebuggerExecutionMenuController {
         if (currentDebugStep.getInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
             stepBackButton.setDisable(true);
         }
-
     }
 
     private void updateControllerAfterStep(DebugDTO debugStep) {
         variablesTable.getItems().setAll(debugStep.getDebugProgramExecutorDTO().getVariablesToValuesSorted().entrySet());
-        cyclesNumberLabel.setText(String.valueOf(debugStep.getDebugProgramExecutorDTO().getCycles()));
+        cyclesNumberLabel.setText(String.valueOf(debugStep.getDebugProgramExecutorDTO().getTotalCycles()));
     }
 }
 

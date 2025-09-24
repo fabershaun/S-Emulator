@@ -21,12 +21,12 @@ public interface Engine {
     void loadProgram(Path path) throws EngineLoadException;
     int getMaxDegree(String programName);
     void runProgram(String programName, int degree, Long... inputs);
-    void addRunToHistory(String programName, ProgramExecutorDTO programExecutorDTO);
 
     void initializeDebugger(String programName, int degree, List<Long> inputs);
     DebugDTO getProgramAfterStepOver();
     DebugDTO getProgramAfterResume();
     DebugDTO getProgramAfterStepBack();
+    void stopDebugPress();
 
     // For console module only:
     void saveState(Path path) throws EngineLoadException;

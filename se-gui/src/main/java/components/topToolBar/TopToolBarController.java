@@ -162,9 +162,9 @@ public class TopToolBarController {
         });
     }
 
-    public void setComponentsDisabled(Boolean enabled) {
-        lockProgramSelectorCB.set(enabled);
-        lockExpandCollapseCB.set(enabled);
-        lockHighlightCB.set(enabled);
+    public void setComponentsDisabled(Boolean disable) {
+        lockProgramSelectorCB.set(disable);
+        lockExpandCollapseCB.set(disable);
+        lockHighlightCB.set(disable);
     }
 }

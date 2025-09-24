@@ -87,16 +87,21 @@ public class DebugImpl implements Debug {
         if (historyPointer < 0) {    // Before start
             currentInstructionIndex = -1;
             currentCycles = 0;
-            return new DebugDTO(getDebugProgramExecutor(), getCurrentInstructionIndex(), hasMoreInstructions());
+            return new DebugDTO(getDebugProgramExecutorDTO(), getCurrentInstructionIndex(), hasMoreInstructions());
         }
 
         currentInstructionIndex = stepsHistory.get(historyPointer).getInstructionNumber();
         return stepsHistory.get(historyPointer);
     }
 
+    @Override
+    public DebugDTO stop() {
+        return stepsHistory.get(historyPointer);
+    }
+
     private DebugDTO buildDebugDTO() {
         return new DebugDTO(
-                getDebugProgramExecutor(),
+                getDebugProgramExecutorDTO(),
                 getCurrentInstructionIndex(),
                 hasMoreInstructionsNotIncludingLast()
         );
@@ -120,9 +125,14 @@ public class DebugImpl implements Debug {
     }
 
     @Override
-    public ProgramExecutorDTO getDebugProgramExecutor() {
+    public ProgramExecutorDTO getDebugProgramExecutorDTO() {
         ProgramDTO programDTO = buildProgramDTO(this.program);
         return buildProgramExecutorDTO(programDTO, this.programExecutor);
+    }
+
+    @Override
+    public ProgramExecutor getDebugProgramExecutor() {
+        return programExecutor;
     }
 
     @Override

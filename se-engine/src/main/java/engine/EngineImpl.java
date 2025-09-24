@@ -52,15 +52,6 @@ public class EngineImpl implements Engine, Serializable {
         executionHistory.add(programExecutor);
     }
 
-    @Override
-    public void addRunToHistory(String programName, ProgramExecutorDTO programExecutorDTO) {
-        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
-
-        Program program = getProgramByName(programName);
-        ProgramExecutor programExecutor = ProgramExecutor.convertDTOToProgramExecutor(programExecutorDTO, program);
-        executionHistory.add(programExecutor);
-    }
-
     private Program getProgramByName(String programName) {
         if (mainProgram.getName().equals(programName)) {
             return mainProgram;
@@ -198,17 +189,38 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public DebugDTO getProgramAfterStepOver() {
-        return debug.stepOver();
+        DebugDTO debugDTO = debug.stepOver();
+
+        if (!debugDTO.hasMoreInstructions()) {  // Add debug program executor to history map
+            addDebugResultToHistoryMap(debugDTO);
+        }
+
+        return debugDTO;
+    }
+
+    private void addDebugResultToHistoryMap(DebugDTO debugDTO) {
+        String programName = debugDTO.getDebugProgramExecutorDTO().getProgramDTO().getProgramName();
+        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
+        executionHistory.add(debug.getDebugProgramExecutor());
     }
 
     @Override
     public DebugDTO getProgramAfterResume() {
-        return debug.resume();
+        DebugDTO debugDTO =  debug.resume();
+        addDebugResultToHistoryMap(debugDTO);
+
+        return debugDTO;
     }
 
     @Override
     public DebugDTO getProgramAfterStepBack() {
         return debug.stepBack();
+    }
+
+    @Override
+    public void stopDebugPress() {
+        DebugDTO debugDTO =  debug.stop();
+        addDebugResultToHistoryMap(debugDTO);
     }
 
     @Override

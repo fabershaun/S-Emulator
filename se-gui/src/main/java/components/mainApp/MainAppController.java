@@ -264,6 +264,9 @@ public class MainAppController {
         engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues);
     }
 
+    public void debugStop() {
+        engine.stopDebugPress();
+    }
     public DebugDTO debugResume() {
         DebugDTO debugStep = engine.getProgramAfterResume();
         finishDebug(debugStep);
@@ -288,15 +291,16 @@ public class MainAppController {
     private void updateControllerAfterDebugStep(DebugDTO debugStep) {
         mainInstructionsTableController.highlightLineDebugMode(debugStep.getInstructionNumber());  // Highlight line on table instructions
         topToolBarController.setComponentsDisabled(true);
+        historyMenuController.setHistoryButtonsDisabled(true);
     }
 
     public void finishDebug(DebugDTO debugStep) {
         String programName = getActiveProgramName();
-        engine.addRunToHistory(programName, debugStep.getDebugProgramExecutorDTO());
         programAfterExecuteProperty.set(debugStep.getDebugProgramExecutorDTO());
 
         mainInstructionsTableController.turnOffHighlighting();
         topToolBarController.setComponentsDisabled(false);
+        historyMenuController.setHistoryButtonsDisabled(false);
     }
 
     public static void handleTaskFailure(javafx.concurrent.Task<?> task, String title) {
@@ -312,5 +316,9 @@ public class MainAppController {
         }
 
         showEngineError(msg, title);
+    }
+
+    public void clearHistorySelection() {
+        historyMenuController.clearHistoryTableRowSelection();
     }
 }
