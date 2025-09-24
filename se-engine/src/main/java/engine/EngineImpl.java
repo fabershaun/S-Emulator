@@ -53,10 +53,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void addRunToHistory(String programName) {
+    public void addRunToHistory(String programName, ProgramExecutorDTO programExecutorDTO) {
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
- // todo: complete
-       // executionHistory.add(programExecutor);
+
+        Program program = getProgramByName(programName);
+        ProgramExecutor programExecutor = ProgramExecutor.convertDTOToProgramExecutor(programExecutorDTO, program);
+        executionHistory.add(programExecutor);
     }
 
     private Program getProgramByName(String programName) {

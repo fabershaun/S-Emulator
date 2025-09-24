@@ -291,7 +291,10 @@ public class MainAppController {
     }
 
     public void finishDebug(DebugDTO debugStep) {
-        // להוסיף תוצאה כשורה אחרונה בטבלת ההיסטוריה
+        String programName = getActiveProgramName();
+        engine.addRunToHistory(programName, debugStep.getDebugProgramExecutorDTO());
+        programAfterExecuteProperty.set(debugStep.getDebugProgramExecutorDTO());
+
         mainInstructionsTableController.turnOffHighlighting();
         topToolBarController.setComponentsDisabled(false);
     }
