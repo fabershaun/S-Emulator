@@ -195,7 +195,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public DebugDTO getProgramAfterResume() {
+    public DebugDTO getProgramAfterStepBack() {
         return debug.stepBack();
     }
 
