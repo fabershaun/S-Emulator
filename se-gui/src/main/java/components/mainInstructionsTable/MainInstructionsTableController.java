@@ -151,6 +151,7 @@ public class MainInstructionsTableController {
     public void highlightLineDebugMode(int rowIndex) {
         if (rowIndex >= 0 && rowIndex < instructionsTable.getItems().size()) {
             instructionsTable.getSelectionModel().select(rowIndex);
+            instructionsTable.scrollTo(rowIndex);
         }
     }
 

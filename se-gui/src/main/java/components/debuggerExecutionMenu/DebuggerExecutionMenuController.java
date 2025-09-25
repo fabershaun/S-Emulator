@@ -294,6 +294,22 @@ public class DebuggerExecutionMenuController {
     private void updateControllerAfterStep(DebugDTO debugStep) {
         variablesTable.getItems().setAll(debugStep.getDebugProgramExecutorDTO().getVariablesToValuesSorted().entrySet());
         cyclesNumberLabel.setText(String.valueOf(debugStep.getDebugProgramExecutorDTO().getTotalCycles()));
+        highlightTargetVariable(debugStep.getTargetVariable());
+    }
+
+    private void highlightTargetVariable(String variableName) {
+        if (variableName == null) {
+            return;
+        }
+
+        for (int i = 0; i < variablesTable.getItems().size(); i++) {
+            Map.Entry<String, Long> entry = variablesTable.getItems().get(i);
+            if (entry.getKey().equals(variableName)) {
+                variablesTable.getSelectionModel().select(i);
+                variablesTable.scrollTo(i);
+                break;
+            }
+        }
     }
 }
 

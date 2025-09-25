@@ -1,6 +1,7 @@
 package debug;
 
 import dto.DebugDTO;
+import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import engine.EngineImpl;
@@ -28,6 +29,8 @@ public class DebugImpl implements Debug {
     private final ExecutionContext initializeContext = new ExecutionContextImpl();
     private final List<Instruction> instructions;
     private final List<Long> inputs;
+
+    private String targetVariable;
 
     private int currentInstructionIndex = 0;
     private int nextInstructionIndex = 0;
@@ -86,6 +89,7 @@ public class DebugImpl implements Debug {
                 Instruction currentInstruction = instructions.get(currentInstructionIndex);
                 Label nextInstructionLabel = currentInstruction.execute(context);
                 currentCycles +=  currentInstruction.getCycleOfInstruction();
+                targetVariable = currentInstruction.getTargetVariable().getRepresentation();
 
                 updateProgramExecutorData();
                 updateNextInstructionIndexToNextIndex(nextInstructionLabel);
@@ -123,7 +127,7 @@ public class DebugImpl implements Debug {
             nextInstructionIndex = 0;
             ProgramExecutorDTO initializedProgramExecutor = buildProgramExecutorDTO(initializeProgramExecutor);
 
-            return new DebugDTO(initializedProgramExecutor, getCurrentInstructionIndex(), getNextInstructionIndex(), hasMoreInstructions());
+            return new DebugDTO(initializedProgramExecutor, getCurrentInstructionIndex(), getNextInstructionIndex(), hasMoreInstructions(), null);
         }
 
         DebugDTO dto = stepsHistory.get(historyPointer);
@@ -142,7 +146,8 @@ public class DebugImpl implements Debug {
                 buildProgramExecutorDTO(this.programExecutor),
                 getCurrentInstructionIndex(),
                 getNextInstructionIndex(),
-                hasMoreInstructions()
+                hasMoreInstructions(),
+                getTargetVariableOfCurrentInstruction()
         );
     }
 
@@ -179,5 +184,9 @@ public class DebugImpl implements Debug {
     private void updateProgramExecutorData() {
         this.programExecutor.setExecutionContext(context);
         this.programExecutor.setTotalCycles(currentCycles);
+    }
+
+    private String getTargetVariableOfCurrentInstruction() {    // If don't have target variable return null
+        return targetVariable;
     }
 }
