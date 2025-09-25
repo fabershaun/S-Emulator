@@ -4,6 +4,8 @@ import generatedFromXml.*;
 import instruction.AbstractInstruction;
 import instruction.Instruction;
 import instruction.OriginOfAllInstruction;
+import instruction.synthetic.quoteArguments.FunctionArgument;
+import instruction.synthetic.quoteArguments.VariableArgument;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
@@ -19,8 +21,9 @@ import instruction.basic.JumpNotZeroInstruction;
 import instruction.basic.NoOpInstruction;
 import instruction.synthetic.*;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 final class XmlProgramMapper {
 
@@ -70,7 +73,6 @@ final class XmlProgramMapper {
         for (int i = 0; i < instructions.size(); i++) {
             SInstruction sInstruction = instructions.get(i);
             Instruction mapped = mapSingleInstruction(targetProgram, sInstruction, i + 1);
-            //mapped.setProgramOfThisInstruction(targetProgram);
             targetProgram.addInstruction(mapped);
         }
     }
@@ -191,6 +193,9 @@ final class XmlProgramMapper {
                         .findFirst()
                         .get();
 
+                Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
+                targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction);
+
                 return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments);
             }
 
@@ -217,12 +222,86 @@ final class XmlProgramMapper {
 
                 return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, functionName, functionArguments, originInstruction, ordinal);
             }
+
             default:
                 throw new IllegalArgumentException(
                         "Unknown instruction name at position " + ordinal + ": " + instructionName
                 );
         }
     }
+
+    private static Set<Variable> extractXVariablesIntoSet(Set<Variable> seenInputVariable, String functionArguments) {
+        Pattern pattern = Pattern.compile("x(\\d+)");
+        Matcher matcher = pattern.matcher(functionArguments);
+
+        while (matcher.find()) {
+            int number = Integer.parseInt(matcher.group(1));
+            Variable newVariable = new VariableImpl(VariableType.INPUT, number);
+
+            seenInputVariable.add(newVariable);
+        }
+
+        return seenInputVariable;
+    }
+
+//    private static Set<Variable> extractInnerVariablesFromFunctionArgumentsString(Set<Variable> seenInputVariable, String functionArguments) {
+//        return helper(seenInputVariable, functionArguments);
+//    }
+//
+//    private static Set<Variable> helper(Set<Variable> seenInputVariable, String functionArguments) {
+//        List<String> argumentsStr = extractQuoteArgumentsToStrList(functionArguments);
+//
+//        for(String argumentStr : argumentsStr) {
+//            if(argumentStr.startsWith("(") && argumentStr.endsWith(")")) {  // Inner function
+//                seenInputVariable.addAll(helper(seenInputVariable, argumentStr));
+//            } else {    // reached to a variable
+//
+//                String variableStr = argumentStr;
+//                Variable newVariable;
+//                if (variableStr.startsWith("x")) {
+//                    int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'x'
+//                    newVariable = new VariableImpl(VariableType.INPUT, number);
+//
+//                    if (!seenInputVariable.contains(newVariable)) {
+//                        seenInputVariable.add(newVariable);
+//                    }
+//                } else if  (variableStr.startsWith("z")) {
+//                    continue; // don't create a new variable
+//                } else {
+//                    throw new IllegalArgumentException("In XmlProgramMapper: invalid variable argument: " + argumentStr);
+//                }
+//            }
+//        }
+//        return seenInputVariable;
+//    }
+//
+//    private static List<String> extractQuoteArgumentsToStrList(String functionArguments) {
+//        if (functionArguments == null || functionArguments.trim().isEmpty()) {
+//            return List.of();
+//        }
+//
+//        String argumentsStr = functionArguments.trim();
+//        List<String> tokens = new ArrayList<>();
+//        StringBuilder current = new StringBuilder();
+//        int parenthesesDepth = 0;
+//
+//        for (char c : argumentsStr.toCharArray()) {
+//            if (c == ',' && parenthesesDepth == 0) {
+//                tokens.add(current.toString().trim());
+//                current.setLength(0);
+//            } else {
+//                if (c == '(') parenthesesDepth++;
+//                if (c == ')') parenthesesDepth--;
+//                current.append(c);
+//            }
+//        }
+//
+//        if (!current.isEmpty()) {                   // To add the last part or to add the argument if there were no parentheses in the original string
+//            tokens.add(current.toString().trim());
+//        }
+//
+//        return tokens;
+//    }
 
     private static Label parseLabel(String raw, String where, int ordinal) {
         String trimmed = safeTrim(raw);

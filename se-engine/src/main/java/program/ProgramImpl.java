@@ -142,6 +142,16 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
+    public void bucketVariableByFunctionInstruction(Set<Variable> variablesList) {
+        for (Variable variable : variablesList) {
+            switch (variable.getType()) {
+                case INPUT -> inputVariables.add(variable);
+                case WORK  -> workVariables.add(variable);
+            }
+        }
+    }
+
+    @Override
     public List<Instruction> getInstructionsList() {
         return this.programInstructions;
     }

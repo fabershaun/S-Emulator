@@ -32,6 +32,7 @@ public interface Program extends Serializable {
 
     void initialize();
     Program deepClone();
+    void bucketVariableByFunctionInstruction(Set<Variable> variablesList);
     void addInstruction(Instruction instruction);
     void validateProgram() throws EngineLoadException;
     int calculateProgramMaxDegree();

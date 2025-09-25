@@ -68,6 +68,7 @@
 					
 	</S-Instructions>
 	<S-Functions>
+
 		<S-Function name="Minus" user-string="-">
 			<S-Instructions>
 				<S-Instruction type="synthetic" name="ASSIGNMENT">
