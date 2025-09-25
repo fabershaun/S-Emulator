@@ -330,12 +330,13 @@ public class MainAppController {
         historyMenuController.clearHistoryTableRowSelection();
     }
 
-    public void lockHistoryButtons(Boolean disable) {
+    public void disableHistoryAndToolBarComponents(Boolean disable) {
         historyMenuController.setHistoryButtonsDisabled(disable);
+        topToolBarController.setComponentsDisabled(disable);
     }
 
     public void EnterDebugMode() {
         mainInstructionsTableController.highlightLineDebugMode(0);  // Highlight the first line on table instructions
-        lockHistoryButtons(true);
+        disableHistoryAndToolBarComponents(true);
     }
 }

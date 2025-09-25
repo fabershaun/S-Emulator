@@ -160,7 +160,7 @@ public class DebuggerExecutionMenuController {
         cyclesNumberLabel.setText(String.valueOf(0));
         resetInputTable(currentSelectedProgramProperty.getValue());
         mainController.clearHistorySelection();
-        mainController.lockHistoryButtons(false);
+        mainController.disableHistoryAndToolBarComponents(false);
     }
 
     private void resetInputTable(ProgramDTO program) {
