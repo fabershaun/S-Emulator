@@ -5,7 +5,6 @@ import exceptions.EngineLoadException;
 import instruction.Instruction;
 import instruction.LabelReferencesInstruction;
 import instruction.SyntheticInstruction;
-import instruction.synthetic.JumpEqualFunctionInstruction;
 import instruction.synthetic.QuoteInstruction;
 import label.FixedLabel;
 import label.Label;
@@ -75,13 +74,13 @@ public class ProgramImpl implements Program, Serializable {
 //                .forEach(QuoteInstruction::initializeInstruction);
 
 
-        programInstructions.forEach(instruction -> {
-            if (instruction instanceof QuoteInstruction quoteInstruction) {
-                quoteInstruction.initializeInstruction();
-            } else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
-                jumpEqualFunctionInstruction.initializeInstruction();
-            }
-        });
+//        programInstructions.forEach(instruction -> {
+//            if (instruction instanceof QuoteInstruction quoteInstruction) {
+//                quoteInstruction.initializeInstruction();
+//            } else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
+//                jumpEqualFunctionInstruction.initializeInstruction();
+//            }
+//        });
     }
 
     @Override

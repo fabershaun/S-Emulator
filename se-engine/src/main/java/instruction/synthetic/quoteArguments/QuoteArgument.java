@@ -7,8 +7,6 @@ public abstract class QuoteArgument implements Serializable {
 
     public abstract ArgumentType getType();
 
-    public abstract String getArgumentStr();
-
     public long getValue() {
         return this.value;
     }

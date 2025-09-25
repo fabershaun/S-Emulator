@@ -5,6 +5,7 @@ import instruction.AbstractInstruction;
 import instruction.Instruction;
 import instruction.OriginOfAllInstruction;
 import instruction.synthetic.quoteArguments.FunctionArgument;
+import instruction.synthetic.quoteArguments.QuoteArgument;
 import instruction.synthetic.quoteArguments.VariableArgument;
 import label.FixedLabel;
 import label.Label;
@@ -194,40 +195,116 @@ final class XmlProgramMapper {
                         .get();
 
                 Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
-                targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction);
+                targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction); // To add inner input variable (that inside inner quote instruction) to the program
+                List<QuoteArgument> quoteArguments = extractFunctionArguments(functionArguments);
 
-                return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, functionArguments);
+                return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, quoteArguments);
             }
 
-            case "JUMP_EQUAL_FUNCTION": {
-                Label addedLabel = sInstructionArguments.stream()
-                        .filter(arg -> arg.getName().equalsIgnoreCase("JEFunctionLabel"))
-                        .map(SInstructionArgument::getValue)
-                        .findFirst()
-                        .map(labelStr -> parseLabel(labelStr, instructionName, ordinal))
-                        .orElseThrow(() -> new IllegalArgumentException("JEFunctionLabel not found"));
-
-                String functionArguments = sInstructionArguments.stream()
-                        .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))
-                        .map(SInstructionArgument::getValue)
-                        .findFirst()
-                        .get();
-
-                String functionName = sInstructionArguments.stream()
-                        .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
-                        .map(SInstructionArgument::getValue)
-                        .findFirst()
-                        .get()
-                        .toUpperCase();
-
-                return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, functionName, functionArguments, originInstruction, ordinal);
-            }
+            //            case "JUMP_EQUAL_FUNCTION": {
+//                Label addedLabel = sInstructionArguments.stream()
+//                        .filter(arg -> arg.getName().equalsIgnoreCase("JEFunctionLabel"))
+//                        .map(SInstructionArgument::getValue)
+//                        .findFirst()
+//                        .map(labelStr -> parseLabel(labelStr, instructionName, ordinal))
+//                        .orElseThrow(() -> new IllegalArgumentException("JEFunctionLabel not found"));
+//
+//                String functionArguments = sInstructionArguments.stream()
+//                        .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))
+//                        .map(SInstructionArgument::getValue)
+//                        .findFirst()
+//                        .get();
+//
+//                String functionName = sInstructionArguments.stream()
+//                        .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
+//                        .map(SInstructionArgument::getValue)
+//                        .findFirst()
+//                        .get()
+//                        .toUpperCase();
+//
+//                return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, functionName, functionArguments, originInstruction, ordinal);
+//            }
 
             default:
                 throw new IllegalArgumentException(
                         "Unknown instruction name at position " + ordinal + ": " + instructionName
                 );
         }
+    }
+
+    private static List<QuoteArgument> extractFunctionArguments(String functionArguments) {
+        if (functionArguments == null || functionArguments.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<QuoteArgument> quoteArguments = new ArrayList<>();
+        List<String> argumentsStrList = extractQuoteArgumentsToStrList(functionArguments);
+
+        for (String argumentStr : argumentsStrList) {
+            if (argumentStr.startsWith("(") && argumentStr.endsWith(")")) {
+                int indexOfFirstComma = findFirstTopLevelComma(argumentStr);
+                String functionName;
+                String innerFunctionArgumentsStr;
+
+                if (indexOfFirstComma != -1) {
+                    functionName = argumentStr.substring(1, indexOfFirstComma);
+                    innerFunctionArgumentsStr = argumentStr.substring(indexOfFirstComma + 1, argumentStr.length() - 1);
+                } else {
+                    // פונקציה בלי ארגומנטים
+                    functionName = argumentStr.substring(1, argumentStr.length() - 1);
+                    innerFunctionArgumentsStr = "";
+                }
+
+                List<QuoteArgument> innerArguments = extractFunctionArguments(innerFunctionArgumentsStr);
+                quoteArguments.add(new FunctionArgument(functionName, innerArguments));
+            } else {
+                quoteArguments.add(new VariableArgument(argumentStr));
+            }
+        }
+
+        return quoteArguments;
+    }
+
+
+    private static List<String> extractQuoteArgumentsToStrList(String functionArguments) {
+        if (functionArguments == null || functionArguments.trim().isEmpty()) {
+            return List.of();
+        }
+
+        String argumentsStr = functionArguments.trim();
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int parenthesesDepth = 0;
+
+        for (char c : argumentsStr.toCharArray()) {
+            if (c == ',' && parenthesesDepth == 0) {
+                tokens.add(current.toString().trim());
+                current.setLength(0);
+            } else {
+                if (c == '(') parenthesesDepth++;
+                if (c == ')') parenthesesDepth--;
+                current.append(c);
+            }
+        }
+
+        if (!current.isEmpty()) {                   // To add the last part or to add the argument if there were no parentheses in the original string
+            tokens.add(current.toString().trim());
+        }
+
+        return tokens;
+    }
+
+    private static int findFirstTopLevelComma(String str) {
+        int depth = 0;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '(') depth++;
+            else if (c == ')') depth--;
+            else if (c == ',' && depth == 1) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static Set<Variable> extractXVariablesIntoSet(Set<Variable> seenInputVariable, String functionArguments) {

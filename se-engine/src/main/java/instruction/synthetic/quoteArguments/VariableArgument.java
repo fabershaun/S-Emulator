@@ -11,39 +11,24 @@ public class VariableArgument extends QuoteArgument {
     private final Variable variable;
     private final String variableStr;
 
-    public VariableArgument(Program mainProgram, Program parentProgram, String variableStr) {
-        if (parentProgram == null) {
-            throw new IllegalArgumentException("Program cannot be null");
-        }
-        if (variableStr == null || variableStr.trim().isEmpty()) {
-            throw new IllegalArgumentException("Variable name cannot be null or empty");
-        }
+    public VariableArgument(Variable variable) {
+        this.variable = variable;
+        this.variableStr = variable.getRepresentation();
+    }
 
-
-        // Try to find the variable by name
-        Variable foundVariable = parentProgram.findVariableByName(variableStr.trim());
+    public VariableArgument(String variableStr) {
+        this.variableStr = variableStr;
 
         // Create variable
-        if (foundVariable == null) {
-            if (variableStr.startsWith("x")) {
-                int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'x'
-                foundVariable = new VariableImpl(VariableType.INPUT, number);
-            } else if (variableStr.startsWith("z")) {
-                int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'z'
-                foundVariable = new VariableImpl(VariableType.WORK, number);
-            }
+        if (variableStr.startsWith("x")) {
+            int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'x'
+            this.variable = new VariableImpl(VariableType.INPUT, number);
+        } else if (variableStr.startsWith("z")) {
+            int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'z'
+            this.variable = new VariableImpl(VariableType.WORK, number);
+        } else {
+            throw new IllegalArgumentException("In VariableArgument constructor: variableStr must start with x or z");
         }
-
-        if (foundVariable.getType().equals(VariableType.INPUT)) {
-            if (!mainProgram.getInputVariables().contains(foundVariable)) {
-                mainProgram.addInputVariable(foundVariable);
-            }
-        }
-
-
-
-        this.variable = foundVariable;
-        this.variableStr = variableStr;
     }
 
     @Override
@@ -55,8 +40,7 @@ public class VariableArgument extends QuoteArgument {
         return this.variable;
     }
 
-    @Override
-    public String getArgumentStr() {
+    public String getVariableStr() {
         return this.variableStr;
     }
 
