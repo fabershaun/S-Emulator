@@ -11,32 +11,36 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FunctionInstructionUtils {
-    public static String buildCommandArgumentsStrict(List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping) {
+    public static String buildCommandArguments(List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping) {
 
         return arguments.stream()
-                .map(argument -> buildSingleArgumentStrict(argument, variableMapping))
+                .map(argument -> buildSingleArgument(argument, variableMapping))
                 .collect(Collectors.joining(","));
     }
 
-    private static String buildSingleArgumentStrict(QuoteArgument argument, Map<Variable, Variable> variableMapping) {
+    private static String buildSingleArgument(QuoteArgument argument, Map<Variable, Variable> variableMapping) {
 
         return switch (argument) {
             case VariableArgument variableArgument -> {
                 Variable innerVariable = variableArgument.getVariable();
                 Variable mappedVariable = variableMapping.get(innerVariable);
 
-                if (mappedVariable == null) {
-                    throw new IllegalArgumentException(
-                            "Variable not found in mapping: " + innerVariable.getRepresentation()
-                    );
-                }
+//                if (mappedVariable == null) {
+//                    throw new IllegalArgumentException(
+//                            "In FunctionInstructionUtils: Variable not found in mapping: " + innerVariable.getRepresentation()
+//                    );
+//                }
+//                yield mappedVariable.getRepresentation();
 
-                yield mappedVariable.getRepresentation();
+                yield (mappedVariable != null)
+                        ? mappedVariable.getRepresentation()
+                        : innerVariable.getRepresentation();
+
             }
 
             case FunctionArgument functionArgument -> {
                 String innerArgumentsAsString = functionArgument.getArguments().stream()
-                        .map(innerArgument -> buildSingleArgumentStrict(innerArgument, variableMapping))
+                        .map(innerArgument -> buildSingleArgument(innerArgument, variableMapping))
                         .collect(Collectors.joining(","));
                 yield "(" + functionArgument.getFunctionName()
                         + (innerArgumentsAsString.isEmpty() ? "" : "," + innerArgumentsAsString)
@@ -44,7 +48,7 @@ public class FunctionInstructionUtils {
             }
 
             default -> throw new IllegalStateException(
-                    "Unsupported QuoteArgument type: " + argument.getClass()
+                    "In FunctionInstructionUtils: Unsupported QuoteArgument type: " + argument.getClass()
             );
         };
     }

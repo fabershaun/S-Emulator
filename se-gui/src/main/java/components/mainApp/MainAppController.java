@@ -323,7 +323,7 @@ public class MainAppController {
             msg = "Unknown  error";
         }
 
-        showEngineError(msg, title);
+        showEngineError(title, msg);
     }
 
     public void clearHistorySelection() {

@@ -16,7 +16,7 @@ import variable.VariableType;
 import java.util.*;
 
 
-import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.buildCommandArgumentsStrict;
+import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.buildCommandArguments;
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.mapFunctionArgumentsToNewList;
 import static java.lang.Math.max;
 
@@ -106,7 +106,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String userString = getFunctionOfThisInstruction().getUserString();
-        String arguments = buildCommandArgumentsStrict(quoteArguments, variableMapping);
+        String arguments = buildCommandArguments(quoteArguments, variableMapping);
 
         StringBuilder command = new StringBuilder();
         command.append(targetVariableRepresentation);
