@@ -1,5 +1,8 @@
 package dto;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 public class InstructionDTO {
     private final String instructionName;
     private final int instructionNumber;            // Do not change name (name needed in gui module: package components.mainInstructionsTable)
@@ -11,6 +14,8 @@ public class InstructionDTO {
     private final String sourceVariableStr;
     private final String command;                   // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final InstructionDTO origin;
+
+    private boolean breakpoint;                     // Do not change name (name needed in gui module: package components.mainInstructionsTable)
 
     public InstructionDTO(String instructionName,
                           int instructionNumber,
@@ -74,6 +79,14 @@ public class InstructionDTO {
     public InstructionDTO getOrigin() {
         return origin;
     }
+
+    public boolean isBreakpoint() {
+        return breakpoint;
+    }   // Used for break point
+
+    public void setBreakpoint(boolean breakpoint) {
+        this.breakpoint = breakpoint;
+    }   // Used for break point
 }
 
 

@@ -42,12 +42,19 @@ public class DebugImpl implements Debug {
     }
 
     @Override
-    public DebugDTO resume() {
+    public DebugDTO resume(List<Boolean> breakPoints) {
+
         while (hasMoreInstructions()) {
+            int indexBP = currentInstructionIndex;
+
+            if (indexBP >= 0 && indexBP < breakPoints.size() && breakPoints.get(indexBP)) {   // Break point is ON in this instruction line
+                return stop();  // return the value before enter the line
+            }
+
             stepOver();
         }
 
-        return stepsHistory.get(historyPointer);
+        return stop();
     }
 
     @Override

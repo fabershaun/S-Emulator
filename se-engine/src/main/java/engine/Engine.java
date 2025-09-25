@@ -24,7 +24,7 @@ public interface Engine {
 
     void initializeDebugger(String programName, int degree, List<Long> inputs);
     DebugDTO getProgramAfterStepOver();
-    DebugDTO getProgramAfterResume();
+    DebugDTO getProgramAfterResume(List<Boolean> breakPoints);
     DebugDTO getProgramAfterStepBack();
     void stopDebugPress();
 

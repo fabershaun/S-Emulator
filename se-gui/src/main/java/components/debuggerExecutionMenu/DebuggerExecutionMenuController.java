@@ -247,17 +247,20 @@ public class DebuggerExecutionMenuController {
     }
 
     @FXML
-    private void onResume() {
-        currentDebugStep = mainController.debugResume();
+    private void onStop() {
+        mainController.debugStop();
         updateControllerAfterStep(currentDebugStep);
         stopDebug();
     }
 
     @FXML
-    private void onStop() {
-        mainController.debugStop();
+    private void onResume() {
+        currentDebugStep = mainController.debugResume();
         updateControllerAfterStep(currentDebugStep);
-        stopDebug();
+
+        if (!currentDebugStep.hasMoreInstructions()) {    // Finish only when there are no more instructions
+            stopDebug();
+        }
     }
 
     private void stopDebug() {

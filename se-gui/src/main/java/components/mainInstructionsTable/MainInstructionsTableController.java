@@ -8,11 +8,9 @@ import dto.InstructionsDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainInstructionsTableController {
@@ -28,9 +26,34 @@ public class MainInstructionsTableController {
     @FXML private TableColumn<InstructionDTO, String> colLabel;
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
+    @FXML private TableColumn<InstructionDTO, Boolean> colBreakPoint;
 
     @FXML
     protected void initialize() {
+        colBreakPoint.setCellValueFactory(new PropertyValueFactory<>("breakpoint"));
+        colBreakPoint.setCellFactory(col -> new TableCell<InstructionDTO, Boolean>() {
+            private final CheckBox checkBox = new CheckBox();
+            {
+                checkBox.setOnAction(event -> {
+                    InstructionDTO rowItem = getTableView().getItems().get(getIndex());
+                    if (rowItem != null) {
+                        rowItem.setBreakpoint(checkBox.isSelected());
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    InstructionDTO rowItem = getTableView().getItems().get(getIndex());
+                    checkBox.setSelected(rowItem.isBreakpoint());
+                    setGraphic(checkBox);
+                }
+            }
+        });
+
         colIndex.setCellValueFactory(new PropertyValueFactory<>("instructionNumber"));
         colType.setCellValueFactory(new PropertyValueFactory<>("instructionTypeStr"));
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
@@ -135,5 +158,11 @@ public class MainInstructionsTableController {
 
     public void fillTable(InstructionsDTO instructions) {
         instructionsTable.getItems().setAll(instructions.getProgramInstructionsDtoList());
+    }
+
+    public List<Boolean> getBreakPoints() {
+        return instructionsTable.getItems().stream()
+                .map(InstructionDTO::isBreakpoint)
+                .toList();
     }
 }

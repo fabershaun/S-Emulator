@@ -205,8 +205,8 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public DebugDTO getProgramAfterResume() {
-        DebugDTO debugDTO =  debug.resume();
+    public DebugDTO getProgramAfterResume(List<Boolean> breakPoints) {
+        DebugDTO debugDTO =  debug.resume(breakPoints);
         addDebugResultToHistoryMap(debugDTO);
 
         return debugDTO;

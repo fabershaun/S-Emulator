@@ -267,9 +267,14 @@ public class MainAppController {
     public void debugStop() {
         engine.stopDebugPress();
     }
+
     public DebugDTO debugResume() {
-        DebugDTO debugStep = engine.getProgramAfterResume();
-        finishDebug(debugStep);
+        List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
+        DebugDTO debugStep = engine.getProgramAfterResume(breakPoints);
+
+        if (debugStep.hasMoreInstructions()) {   // If not finish -> update UI controllers
+            updateControllerAfterDebugStep(debugStep);
+        }
 
         return  debugStep;
     }
