@@ -189,7 +189,7 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public DebugDTO getProgramAfterStepOver() {
-        DebugDTO debugDTO = debug.stepOver();
+        DebugDTO debugDTO = debug.stepOver();    // Step Over
 
         if (!debugDTO.hasMoreInstructions()) {  // Add debug program executor to history map
             addDebugResultToHistoryMap(debugDTO);
@@ -198,16 +198,13 @@ public class EngineImpl implements Engine, Serializable {
         return debugDTO;
     }
 
-    private void addDebugResultToHistoryMap(DebugDTO debugDTO) {
-        String programName = debugDTO.getDebugProgramExecutorDTO().getProgramDTO().getProgramName();
-        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
-        executionHistory.add(debug.getDebugProgramExecutor());
-    }
-
     @Override
     public DebugDTO getProgramAfterResume(List<Boolean> breakPoints) {
-        DebugDTO debugDTO =  debug.resume(breakPoints);
-        addDebugResultToHistoryMap(debugDTO);
+        DebugDTO debugDTO = debug.resume(breakPoints);  // Resume
+
+        if (!debugDTO.hasMoreInstructions()) {      // Add to history
+            addDebugResultToHistoryMap(debugDTO);
+        }
 
         return debugDTO;
     }
@@ -221,6 +218,12 @@ public class EngineImpl implements Engine, Serializable {
     public void stopDebugPress() {
         DebugDTO debugDTO =  debug.stop();
         addDebugResultToHistoryMap(debugDTO);
+    }
+
+    private void addDebugResultToHistoryMap(DebugDTO debugDTO) {
+        String programName = debugDTO.getDebugProgramExecutorDTO().getProgramDTO().getProgramName();
+        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
+        executionHistory.add(debug.getDebugProgramExecutor());
     }
 
     @Override

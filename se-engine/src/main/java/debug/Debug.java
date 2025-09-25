@@ -13,10 +13,11 @@ public interface Debug {
     DebugDTO stepBack();
     DebugDTO stop();
 
-    boolean hasMoreInstructionsNotIncludingLast();
+    boolean hasMoreInstructions();
 
-    ProgramExecutorDTO getDebugProgramExecutorDTO();
+    ProgramExecutorDTO buildProgramExecutorDTO(ProgramExecutor programExecutor);
     ProgramExecutor getDebugProgramExecutor();
     int getCurrentInstructionIndex();
+    int getNextInstructionIndex();
 
 }

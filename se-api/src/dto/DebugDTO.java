@@ -1,14 +1,12 @@
 package dto;
 
-import java.util.Map;
-
 public class DebugDTO {
 
     private final ProgramExecutorDTO debugProgramExecutorDTO;
     private final int instructionNumber;
     private final boolean hasMoreInstructions;
 
-    public DebugDTO(ProgramExecutorDTO debugProgramExecutorDTO, int instructionNumber, boolean hasMoreInstructions) {
+    public DebugDTO(ProgramExecutorDTO debugProgramExecutorDTO, int instructionNumber, int nextInstructionNumber, boolean hasMoreInstructions) {
         this.debugProgramExecutorDTO = debugProgramExecutorDTO;
         this.instructionNumber = instructionNumber;
         this.hasMoreInstructions = hasMoreInstructions;
@@ -18,7 +16,11 @@ public class DebugDTO {
         return debugProgramExecutorDTO;
     }
 
-    public int getInstructionNumber() {
+    public int getCurrentInstructionNumber() {
+        return instructionNumber;
+    }
+
+    public int getNextInstructionNumber() {
         return instructionNumber;
     }
 

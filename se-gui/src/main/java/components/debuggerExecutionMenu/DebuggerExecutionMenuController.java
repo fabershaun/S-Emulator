@@ -202,7 +202,7 @@ public class DebuggerExecutionMenuController {
         stepBackButton.setDisable(true); // Specific to shot down
         stopButton.setDisable(true);     // Specific to shot down
         inputsTable.setEditable(false);
-        mainController.lockHistoryButtons(true);
+        mainController.EnterDebugMode();
     }
 
     private void setPlayEnabled(boolean enabled) {
@@ -286,7 +286,7 @@ public class DebuggerExecutionMenuController {
         currentDebugStep = mainController.debugStepBack();
         updateControllerAfterStep(currentDebugStep);
 
-        if (currentDebugStep.getInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
+        if (currentDebugStep.getCurrentInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
             stepBackButton.setDisable(true);
         }
     }

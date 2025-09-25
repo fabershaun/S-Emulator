@@ -270,9 +270,10 @@ public class MainAppController {
 
     public DebugDTO debugResume() {
         List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
+
         DebugDTO debugStep = engine.getProgramAfterResume(breakPoints);
 
-        if (debugStep.hasMoreInstructions()) {   // If not finish -> update UI controllers
+        if (debugStep.hasMoreInstructions()) {   // If not finish -> update UI controllers (stoped at break point)
             updateControllerAfterDebugStep(debugStep);
         }
 
@@ -294,13 +295,15 @@ public class MainAppController {
     }
 
     private void updateControllerAfterDebugStep(DebugDTO debugStep) {
-        mainInstructionsTableController.highlightLineDebugMode(debugStep.getInstructionNumber());  // Highlight line on table instructions
+        mainInstructionsTableController.highlightLineDebugMode(debugStep.getNextInstructionNumber());  // Highlight line on table instructions
         topToolBarController.setComponentsDisabled(true);
         historyMenuController.setHistoryButtonsDisabled(true);
+
+//        InstructionDTO instructionDTOonTable = mainInstructionsTable.getItems().get(debugStep.getNextInstructionNumber());
+//        onInstructionSelected(instructionDTOonTable);
     }
 
     public void finishDebug(DebugDTO debugStep) {
-        String programName = getActiveProgramName();
         programAfterExecuteProperty.set(debugStep.getDebugProgramExecutorDTO());
 
         mainInstructionsTableController.turnOffHighlighting();
@@ -329,5 +332,10 @@ public class MainAppController {
 
     public void lockHistoryButtons(Boolean disable) {
         historyMenuController.setHistoryButtonsDisabled(disable);
+    }
+
+    public void EnterDebugMode() {
+        mainInstructionsTableController.highlightLineDebugMode(0);  // Highlight the first line on table instructions
+        lockHistoryButtons(true);
     }
 }

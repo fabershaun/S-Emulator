@@ -149,7 +149,9 @@ public class MainInstructionsTableController {
     }
     
     public void highlightLineDebugMode(int rowIndex) {
-        instructionsTable.getSelectionModel().select(rowIndex);
+        if (rowIndex >= 0 && rowIndex < instructionsTable.getItems().size()) {
+            instructionsTable.getSelectionModel().select(rowIndex);
+        }
     }
 
     public void turnOffHighlighting() {

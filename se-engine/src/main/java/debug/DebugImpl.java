@@ -3,6 +3,7 @@ package debug;
 import dto.DebugDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
+import engine.EngineImpl;
 import execution.ExecutionContext;
 import execution.ExecutionContextImpl;
 import execution.ProgramExecutor;
@@ -16,38 +17,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static engine.EngineImpl.buildProgramDTO;
-import static engine.EngineImpl.buildProgramExecutorDTO;
 
 public class DebugImpl implements Debug {
 
     private final ProgramExecutor programExecutor;
+    private final ProgramExecutor initializeProgramExecutor;
     private final Program program;
-    private final ExecutionContext context = new ExecutionContextImpl();
-    private final List<Instruction> instructions;
 
-    private Label nextInstructionLabel = FixedLabel.EMPTY;
-    private int currentInstructionIndex = -1;
+    private final ExecutionContext context = new ExecutionContextImpl();
+    private final ExecutionContext initializeContext = new ExecutionContextImpl();
+    private final List<Instruction> instructions;
+    private final List<Long> inputs;
+
+    private int currentInstructionIndex = 0;
+    private int nextInstructionIndex = 0;
     private int currentCycles = 0;
     private final List<DebugDTO> stepsHistory = new ArrayList<>();
     private int historyPointer = -1;
+    private boolean justStoppedOnBreakpoint = false;
 
     public DebugImpl(Program program, int degree, List<Long> inputs) {
         this.program = program;
         this.instructions = program.getInstructionsList();
+        this.inputs = inputs;
         context.initializeVariables(program, inputs.toArray(new Long[0]));
+        initializeContext.initializeVariables(program, inputs.toArray(new Long[0]));
 
         this.programExecutor = new ProgramExecutorImpl(program);
         this.programExecutor.setInputsValues(inputs);
         this.programExecutor.setRunDegree(degree);
+
+        this.initializeProgramExecutor = new ProgramExecutorImpl(program);
+        this.initializeProgramExecutor.setInputsValues(inputs);
+        this.initializeProgramExecutor.setRunDegree(degree);
+        this.initializeProgramExecutor.setExecutionContext(initializeContext);
+        this.initializeProgramExecutor.setTotalCycles(currentCycles);
     }
 
     @Override
     public DebugDTO resume(List<Boolean> breakPoints) {
 
+        if (justStoppedOnBreakpoint) {
+            justStoppedOnBreakpoint = false;
+            stepOver();
+        }
+
         while (hasMoreInstructions()) {
             int indexBP = currentInstructionIndex;
 
             if (indexBP >= 0 && indexBP < breakPoints.size() && breakPoints.get(indexBP)) {   // Break point is ON in this instruction line
+                justStoppedOnBreakpoint = true;
                 return stop();  // return the value before enter the line
             }
 
@@ -59,31 +78,39 @@ public class DebugImpl implements Debug {
 
     @Override
     public DebugDTO stepOver() {
-        updateCurrentInstructionIndex();
 
         if(hasMoreInstructions()) {
-            if(historyPointer == stepsHistory.size() - 1) {
+            if(historyPointer > stepsHistory.size() - 1) {
+                throw new IllegalArgumentException("In DebugImpl: historyPointer is out of range. (historyPointer and currentInstructionIndex aren't synchronized");
+            } else if(historyPointer == stepsHistory.size() - 1) {
                 Instruction currentInstruction = instructions.get(currentInstructionIndex);
-                nextInstructionLabel = currentInstruction.execute(context);
+                Label nextInstructionLabel = currentInstruction.execute(context);
                 currentCycles +=  currentInstruction.getCycleOfInstruction();
+
                 updateProgramExecutorData();
+                updateNextInstructionIndexToNextIndex(nextInstructionLabel);
+                currentInstructionIndex = nextInstructionIndex;
+
                 stepsHistory.add(buildDebugDTO());
+                ++historyPointer;
+            } else {    // When historyPointer is less then the list size
                 historyPointer++;
-            } else {
-                return stepsHistory.get(++historyPointer);
+                DebugDTO dto = stepsHistory.get(historyPointer);
+                currentInstructionIndex = dto.getCurrentInstructionNumber();
+                nextInstructionIndex = dto.getNextInstructionNumber();
             }
         }
 
         return stepsHistory.get(historyPointer);
     }
 
-    private void updateCurrentInstructionIndex() {
+    private void updateNextInstructionIndexToNextIndex(Label nextInstructionLabel) {
         if (nextInstructionLabel.equals(FixedLabel.EMPTY)) {
-            currentInstructionIndex++;  // Step Over
+            nextInstructionIndex++;  // Step Over
         } else if (nextInstructionLabel.equals(FixedLabel.EXIT)) {
-            currentInstructionIndex = instructions.size(); // Finish
+            nextInstructionIndex = instructions.size(); // Finish
         } else {
-            currentInstructionIndex = program.getLabelToInstruction().get(nextInstructionLabel).getInstructionNumber() - 1; // Jump to instruction by label   // Instructions start counting from 1
+            nextInstructionIndex = program.getLabelToInstruction().get(nextInstructionLabel).getInstructionNumber() - 1; // Jump to instruction by label   // Instructions start counting from 1
         }
     }
 
@@ -92,13 +119,17 @@ public class DebugImpl implements Debug {
         historyPointer--;
 
         if (historyPointer < 0) {    // Before start
-            currentInstructionIndex = -1;
-            currentCycles = 0;
-            return new DebugDTO(getDebugProgramExecutorDTO(), getCurrentInstructionIndex(), hasMoreInstructions());
+            currentInstructionIndex = 0;
+            nextInstructionIndex = 0;
+            ProgramExecutorDTO initializedProgramExecutor = buildProgramExecutorDTO(initializeProgramExecutor);
+
+            return new DebugDTO(initializedProgramExecutor, getCurrentInstructionIndex(), getNextInstructionIndex(), hasMoreInstructions());
         }
 
-        currentInstructionIndex = stepsHistory.get(historyPointer).getInstructionNumber();
-        return stepsHistory.get(historyPointer);
+        DebugDTO dto = stepsHistory.get(historyPointer);
+        currentInstructionIndex = dto.getCurrentInstructionNumber();
+        nextInstructionIndex = dto.getNextInstructionNumber();
+        return dto;
     }
 
     @Override
@@ -108,17 +139,15 @@ public class DebugImpl implements Debug {
 
     private DebugDTO buildDebugDTO() {
         return new DebugDTO(
-                getDebugProgramExecutorDTO(),
+                buildProgramExecutorDTO(this.programExecutor),
                 getCurrentInstructionIndex(),
-                hasMoreInstructionsNotIncludingLast()
+                getNextInstructionIndex(),
+                hasMoreInstructions()
         );
     }
 
-    private boolean hasMoreInstructions() {
-        if (currentInstructionIndex < 0) {  // Didnt start yet (value = -1) -> return true
-            return !instructions.isEmpty();
-        }
-
+    @Override
+    public boolean hasMoreInstructions() {
         if (currentInstructionIndex >= instructions.size()) {
             return false;
         }
@@ -127,14 +156,9 @@ public class DebugImpl implements Debug {
     }
 
     @Override
-    public boolean hasMoreInstructionsNotIncludingLast() {
-        return hasMoreInstructions() && currentInstructionIndex < instructions.size() - 1;
-    }
-
-    @Override
-    public ProgramExecutorDTO getDebugProgramExecutorDTO() {
+    public ProgramExecutorDTO buildProgramExecutorDTO(ProgramExecutor programExecutor) {
         ProgramDTO programDTO = buildProgramDTO(this.program);
-        return buildProgramExecutorDTO(programDTO, this.programExecutor);
+        return EngineImpl.buildProgramExecutorDTO(programDTO, programExecutor);
     }
 
     @Override
@@ -144,7 +168,12 @@ public class DebugImpl implements Debug {
 
     @Override
     public int getCurrentInstructionIndex() {
-        return currentInstructionIndex;
+        return currentInstructionIndex; // Return the index after the update
+    }
+
+    @Override
+    public int getNextInstructionIndex() {
+        return nextInstructionIndex; // Return the index after the update
     }
 
     private void updateProgramExecutorData() {
