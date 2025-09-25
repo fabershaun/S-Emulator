@@ -11,9 +11,12 @@ import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
+import variable.VariableImpl;
 import variable.VariableType;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
 
@@ -263,6 +266,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                 case FUNCTION -> {
                     FunctionArgument functionArgument = (FunctionArgument) quoteArgument;
                     String innerFunctionName = functionArgument.getFunction().getName();
+                    // todo: לתקן את זה, מחזיק את המשתנים המקוריים ולא את המשתנים שמופו
+//                    String innerFunctionArgumentsStr = fixFunctionArgument(functionArgument.getArgumentStr());
                     String innerFunctionArgumentsStr = functionArgument.getArgumentStr();
 
                     // create quote instruction: targetVariable <- (functionName, functionArguments...)
@@ -276,6 +281,33 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
         return instructionNumber;
     }
+//    private String fixFunctionArgument(String argumentStr) {
+//        if (argumentStr == null || argumentStr.isBlank()) {
+//            return argumentStr;
+//        }
+//
+//        // regex שמחפש X ואחריו ספרות
+//        Pattern pattern = Pattern.compile("X(\\d+)", Pattern.CASE_INSENSITIVE);
+//        Matcher matcher = pattern.matcher(argumentStr);
+//
+//        StringBuffer sb = new StringBuffer();
+//        while (matcher.find()) {
+//            int number = Integer.parseInt(matcher.group(1));
+//            Variable key = new VariableImpl(VariableType.INPUT, number);
+//
+//            Variable mappedVar = mapFunctionToProgramVariable.get(key);
+//            if (mappedVar != null) {
+//                // נחליף את הטקסט בערך מהמילון (אפשר להחליף ב־toString או בשם)
+//                matcher.appendReplacement(sb, mappedVar.toString());
+//            } else {
+//                // לא נמצא במפה – נשאיר כמו שהוא
+//                matcher.appendReplacement(sb, matcher.group(0));
+//            }
+//        }
+//        matcher.appendTail(sb);
+//
+//        return sb.toString();
+//    }
 
     // Clone function instructions with remapped variables and labels
     private int addClonedFunctionInstructions(List<Instruction> targetList, int instructionNumber) {
