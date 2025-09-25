@@ -63,6 +63,7 @@ public class ExpansionCollapseModel {
 
     // Read-only exposure
     public ReadOnlyIntegerProperty currentDegreeProperty() { return currentDegree; }
+    public ReadOnlyIntegerProperty maxDegreeProperty() { return maxDegree; }
 
     // External connection point
     public void setProgram(ProgramDTO programDTO) { currentProgram.set(programDTO); }

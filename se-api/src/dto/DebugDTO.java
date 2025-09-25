@@ -3,12 +3,14 @@ package dto;
 public class DebugDTO {
 
     private final ProgramExecutorDTO debugProgramExecutorDTO;
-    private final int instructionNumber;
+    private final int currentInstructionNumber;
+    private final int nextInstructionNumber;
     private final boolean hasMoreInstructions;
 
     public DebugDTO(ProgramExecutorDTO debugProgramExecutorDTO, int instructionNumber, int nextInstructionNumber, boolean hasMoreInstructions) {
         this.debugProgramExecutorDTO = debugProgramExecutorDTO;
-        this.instructionNumber = instructionNumber;
+        this.currentInstructionNumber = instructionNumber;
+        this.nextInstructionNumber = nextInstructionNumber;
         this.hasMoreInstructions = hasMoreInstructions;
     }
 
@@ -17,11 +19,11 @@ public class DebugDTO {
     }
 
     public int getCurrentInstructionNumber() {
-        return instructionNumber;
+        return currentInstructionNumber;
     }
 
     public int getNextInstructionNumber() {
-        return instructionNumber;
+        return nextInstructionNumber;
     }
 
     public boolean hasMoreInstructions() {

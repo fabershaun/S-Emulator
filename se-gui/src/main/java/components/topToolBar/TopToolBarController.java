@@ -58,7 +58,13 @@ public class TopToolBarController {
                 )
         );
 
-        currentDegreeLabel.textProperty().bind(expansionCollapseModel.currentDegreeProperty().asString());
+        currentDegreeLabel.textProperty().bind(
+                Bindings.concat(
+                        expansionCollapseModel.currentDegreeProperty().asString(),
+                        " / ",
+                        expansionCollapseModel.maxDegreeProperty().asString()
+                )
+        );
 
         attachSelectionHandlerToComboBox(collapseCB);
         attachSelectionHandlerToComboBox(expandCB);
