@@ -13,6 +13,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static components.debuggerExecutionMenu.DebuggerExecutionMenuController.scrollToCenter;
+
 public class MainInstructionsTableController {
 
     private MainAppController mainController;
@@ -151,7 +153,7 @@ public class MainInstructionsTableController {
     public void highlightLineDebugMode(int rowIndex) {
         if (rowIndex >= 0 && rowIndex < instructionsTable.getItems().size()) {
             instructionsTable.getSelectionModel().select(rowIndex);
-            instructionsTable.scrollTo(rowIndex);
+            scrollToCenter(instructionsTable, rowIndex);
         }
     }
 
