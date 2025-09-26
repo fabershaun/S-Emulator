@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class GotoLabelInstruction extends AbstractInstruction implements LabelReferencesInstruction, SyntheticInstruction {
-    private final int MAX_DEGREE = 1;
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Label referencesLabel;
 
@@ -60,12 +59,7 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
     }
 
     @Override
-    public int getMaxDegree() {
-        return MAX_DEGREE;
-    }
-
-    @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         Variable workVariable1 = super.getMainProgram().generateUniqueVariable();
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         int instructionNumber = startNumber;

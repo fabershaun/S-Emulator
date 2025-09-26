@@ -68,7 +68,7 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
     }
 
     @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         Label newLabel2 =  super.getMainProgram().generateUniqueLabel();
         int instructionNumber = startNumber;

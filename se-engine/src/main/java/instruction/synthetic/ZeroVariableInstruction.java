@@ -60,7 +60,7 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
     }
 
     @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         int instructionNumber = startNumber;
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? super.getMainProgram().generateUniqueLabel() : super.getLabel();
 

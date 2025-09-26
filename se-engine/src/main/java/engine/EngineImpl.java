@@ -20,9 +20,9 @@ import java.util.*;
 public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
     private Program mainProgram;
-    private Program expandedProgram;
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private Debug debug;
+    private Map<String, Map<Integer, Program>> nameAndDegreeToProgram;
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -35,18 +35,15 @@ public class EngineImpl implements Engine, Serializable {
         newProgram.initialize();
 
         mainProgram = newProgram;
-        //executionHistory = new ExecutionHistoryImpl();
+
+        calculateExpansionForAllPrograms(); // Initialize expansion
     }
 
     @Override
     public void runProgram(String programName, int degree, Long... inputs) {
-        Program program = getProgramByName(programName);
 
-        Program deepCopyOfProgram = program.deepClone();
-        deepCopyOfProgram.expandProgram(degree);
-
-        ProgramExecutor programExecutor = new ProgramExecutorImpl(deepCopyOfProgram);
-
+        Program workingProgram = getExpandedProgram(programName, degree);
+        ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram);
         programExecutor.run(degree, inputs);
 
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
@@ -138,32 +135,42 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public int getMaxDegree(String programName) {
-        Program program = getProgramByName(programName);
-
-        return program.calculateProgramMaxDegree();
+        return this.nameAndDegreeToProgram.get(programName).size();  // The size of the map is the max degree
     }
 
     @Override
-    public ProgramDTO getExpandedProgram(String programName) {
+    public ProgramDTO getExpandedProgramDTO(String programName, int degree) {
+        return buildProgramDTO(getExpandedProgram(programName, degree));
+    }
+
+    private Program getExpandedProgram(String programName, int degree) {
+        Map<Integer, Program> degreeMap = this.nameAndDegreeToProgram.get(programName);
+        if (degreeMap == null) {
+            throw new IllegalArgumentException("Program not found: " + programName);
+        }
+
+        Program expandedProgram = degreeMap.get(degree);
         if (expandedProgram == null) {
-            throw new IllegalArgumentException("In EngineImpl: try to call getExpandedProgram() before expandedProgram(String programName, int degree).");
+            throw new IllegalArgumentException("Degree " + degree + " not found for program: " + programName);
         }
 
-        if (!expandedProgram.getName().equals(programName)) {
-            throw new IllegalArgumentException("In EngineImpl: try to return the wrong expanded program. (call getExpandedProgram() before expandedProgram(String programName, int degree)).");
-        }
-
-        return buildProgramDTO(this.expandedProgram);
+        return expandedProgram;
     }
 
     @Override
-    public void expandProgramAndSetMember(String programName, int degree) {
-        Program program = getProgramByName(programName);
+    public void calculateExpansionForAllPrograms() {
+        this.nameAndDegreeToProgram.put(
+                mainProgram.getName(),
+                mainProgram.calculateDegreeToProgram()
+        );
 
-        Program deepCopyOfProgram = program.deepClone();
-        deepCopyOfProgram.expandProgram(degree);
-
-        this.expandedProgram = deepCopyOfProgram;
+        List<Program> functions = mainProgram.getFunctionsHolder().getFunctions().stream().toList();
+        for (Program function : functions) {
+            this.nameAndDegreeToProgram.put(
+                    function.getName(),
+                    function.calculateDegreeToProgram()
+            );
+        }
     }
 
     public static ProgramDTO buildProgramDTO(Program program) {

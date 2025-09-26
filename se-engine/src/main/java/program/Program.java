@@ -32,16 +32,16 @@ public interface Program extends Serializable {
 
     void initialize();
     Program deepClone();
+    void updateVariableAndLabel(Instruction instruction);
     void bucketVariableByFunctionInstruction(Set<Variable> variablesList);
     void addInstruction(Instruction instruction);
     void validateProgram() throws EngineLoadException;
-    int calculateProgramMaxDegree();
-    void expandProgram(int degree);
+
     Label generateUniqueLabel();
     Variable generateUniqueVariable();
     void sortVariableSetByNumber(Set<Variable> variables);
     void addInputVariable(Variable variable);
 
-    Variable findVariableByName(String name);
+    Map<Integer, Program> calculateDegreeToProgram();
     Variable getResultVariable();
 }

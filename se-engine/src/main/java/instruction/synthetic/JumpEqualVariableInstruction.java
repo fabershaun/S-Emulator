@@ -82,7 +82,7 @@ public class JumpEqualVariableInstruction extends AbstractInstruction implements
     }
 
     @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         int instructionNumber = startNumber;
         Variable workVariable1 = super.getMainProgram().generateUniqueVariable();
         Variable workVariable2 = super.getMainProgram().generateUniqueVariable();

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 public class JumpEqualConstantInstruction extends AbstractInstruction implements LabelReferencesInstruction, SyntheticInstruction {
-    private final int MAX_DEGREE = 3;
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Label referencelabel;
     private final long constantValue;
@@ -71,12 +70,7 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
     }
 
     @Override
-    public int getMaxDegree() {
-        return MAX_DEGREE;
-    }
-
-    @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         Variable workVariable1 = super.getMainProgram().generateUniqueVariable();
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         Label newLabel2 = super.getMainProgram().generateUniqueLabel();

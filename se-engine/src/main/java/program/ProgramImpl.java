@@ -5,7 +5,6 @@ import exceptions.EngineLoadException;
 import instruction.Instruction;
 import instruction.LabelReferencesInstruction;
 import instruction.SyntheticInstruction;
-import instruction.synthetic.QuoteInstruction;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
@@ -46,6 +45,85 @@ public class ProgramImpl implements Program, Serializable {
         this.labelsAddedAfterExtension = new LinkedHashSet<>();
         this.referencedLabels  = new LinkedHashSet<>();
     }
+
+    @Override
+    public  Map<Integer, Program> calculateDegreeToProgram() {
+        Map<Integer, Program>  degreeToProgram = new HashMap<>();
+        boolean canExpandMore = true;
+        int degree = 0;
+
+        Program workingProgram = this.deepClone();
+        degreeToProgram.put(degree, workingProgram.deepClone());
+
+        while (canExpandMore)  {
+            degree++;
+            canExpandMore = false;
+            int nextInstructionNumber = 1;
+
+            for (ListIterator<Instruction> iterator = workingProgram.getInstructionsList().listIterator(); iterator.hasNext(); ) {  // Run on working program
+                Instruction instruction = iterator.next();
+                Label originalLabel = instruction.getLabel();
+                List<Instruction> newInstructionsList = new ArrayList<>();
+
+                // initialize
+                if (instruction instanceof SyntheticInstruction syntheticInstruction) {
+                    nextInstructionNumber = syntheticInstruction.expandInstruction(nextInstructionNumber);
+                    newInstructionsList = instruction.getExtendedInstruction();
+                    canExpandMore = true;
+                } else {
+                    Instruction cloneInstruction = instruction.createInstructionWithInstructionNumber(nextInstructionNumber);
+                    newInstructionsList.add(cloneInstruction);
+                    nextInstructionNumber++;
+                }
+
+                iterator.remove();                                   // Remove the old instruction
+                workingProgram.getLabelToInstruction().remove(originalLabel);       // Remove the label from the map because we will add it again in line 239
+                workingProgram.getLabelsInProgram().remove(originalLabel);          // Remove the label from the map because we will add it again in line 239
+
+                for (Instruction extendedInstruction : newInstructionsList) {
+                    workingProgram.updateVariableAndLabel(extendedInstruction);
+                    iterator.add(extendedInstruction);          // Add the extended (inner) instruction to the list
+                }
+            }
+
+            degreeToProgram.put(degree, workingProgram.deepClone());
+        }
+
+        return degreeToProgram;
+    }
+
+//    @Override
+//    public void expandProgram(int degree) {
+//        for (int i = 0 ; i < degree ; i++) {
+//            int nextInstructionNumber = 1;
+//
+//            for (ListIterator<Instruction> iterator = getInstructionsList().listIterator(); iterator.hasNext(); ) {
+//                Instruction instruction = iterator.next();
+//                Label originalLabel = instruction.getLabel();
+//                List<Instruction> newInstructionsList = new ArrayList<>();
+//
+//                // initialize
+//                if (instruction instanceof SyntheticInstruction syntheticInstruction) {
+//                    nextInstructionNumber = syntheticInstruction.setInnerInstructionsAndReturnTheNextOne(nextInstructionNumber);
+//                    newInstructionsList = instruction.getExtendedInstruction();
+//                }
+//                else {
+//                    Instruction cloneInstruction = instruction.createInstructionWithInstructionNumber(nextInstructionNumber);
+//                    newInstructionsList.add(cloneInstruction);
+//                    nextInstructionNumber++;
+//                }
+//
+//                iterator.remove();                                   // Remove the old instruction
+//                getLabelToInstruction().remove(originalLabel);       // Remove the label from the map because we will add it again in line 239
+//                getLabelsInProgram().remove(originalLabel);          // Remove the label from the map because we will add it again in line 239
+//
+//                for (Instruction extendedInstruction : newInstructionsList) {
+//                    updateVariableAndLabel(extendedInstruction);
+//                    iterator.add(extendedInstruction);          // Add the extended (inner) instruction to the list
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public Program deepClone() {
@@ -90,7 +168,8 @@ public class ProgramImpl implements Program, Serializable {
         programInstructions.add(instruction);
     }
 
-    private void updateVariableAndLabel(Instruction instruction) {
+    @Override
+    public void updateVariableAndLabel(Instruction instruction) {
         Label currentLabel = instruction.getLabel();
 
         bucketLabel(instruction, currentLabel);
@@ -245,51 +324,6 @@ public class ProgramImpl implements Program, Serializable {
         return labelToInstruction;
     }
 
-    @Override
-    public int calculateProgramMaxDegree() {
-        int maxDegree = 0;
-
-        for (Instruction instruction : programInstructions) {
-            if(instruction instanceof SyntheticInstruction syntheticInstruction) {
-                maxDegree = max(maxDegree, syntheticInstruction.getMaxDegree());
-            }
-        }
-
-        return maxDegree;
-    }
-
-    @Override
-    public void expandProgram(int degree) {
-        for (int i = 0 ; i < degree ; i++) {
-            int nextInstructionNumber = 1;
-
-            for (ListIterator<Instruction> iterator = getInstructionsList().listIterator(); iterator.hasNext(); ) {
-                Instruction instruction = iterator.next();
-                Label originalLabel = instruction.getLabel();
-                List<Instruction> newInstructionsList = new ArrayList<>();
-
-                // initialize
-                if (instruction instanceof SyntheticInstruction syntheticInstruction) {
-                    nextInstructionNumber = syntheticInstruction.setInnerInstructionsAndReturnTheNextOne(nextInstructionNumber);
-                    newInstructionsList = instruction.getExtendedInstruction();
-                }
-                else {
-                    Instruction cloneInstruction = instruction.createInstructionWithInstructionNumber(nextInstructionNumber);
-                    newInstructionsList.add(cloneInstruction);
-                    nextInstructionNumber++;
-                }
-
-                iterator.remove();                                   // Remove the old instruction
-                getLabelToInstruction().remove(originalLabel);       // Remove the label from the map because we will add it again in line 239
-                getLabelsInProgram().remove(originalLabel);          // Remove the label from the map because we will add it again in line 239
-
-                for (Instruction extendedInstruction : newInstructionsList) {
-                    updateVariableAndLabel(extendedInstruction);
-                    iterator.add(extendedInstruction);          // Add the extended (inner) instruction to the list
-                }
-            }
-        }
-    }
 
     private void initNextLabelNumber() {
         nextLabelNumber = labelsInProgram.stream()
@@ -356,31 +390,6 @@ public class ProgramImpl implements Program, Serializable {
         List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
         inputAndWorkVariablesAndTheirValues.addAll(workVariables);
         return inputAndWorkVariablesAndTheirValues;
-    }
-
-    @Override
-    public Variable findVariableByName(String name) {
-
-        // Search in input variables
-        for (Variable variable : getInputVariables()) {
-            if (variable.getRepresentation().equals(name)) {
-                return variable;
-            }
-        }
-
-        // Search in work variables
-        for (Variable variable : getWorkVariables()) {
-            if (variable.getRepresentation().equals(name)) {
-                return variable;
-            }
-        }
-
-        // Search in result variable (y)
-        if (VariableType.RESULT.getVariableRepresentation(0).equals(name)) {
-            return getResultVariable();
-        }
-
-        return null;
     }
 
     @Override

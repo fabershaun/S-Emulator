@@ -4,8 +4,6 @@ import java.util.List;
 
 public interface SyntheticInstruction {
     List<Instruction> getInnerInstructions();
-    int getMaxDegree();
-
-    int setInnerInstructionsAndReturnTheNextOne(int startNumber);
+    int expandInstruction(int startNumber); // And return the next instruction number
 }
 

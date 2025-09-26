@@ -13,14 +13,14 @@ public interface Engine {
     ProgramDTO getMainProgram();
     ProgramDTO getProgramDTOByName(String programName);
     ProgramDTO getProgramDTOByUserString(String userString);
-    ProgramDTO getExpandedProgram(String programName);
+    ProgramDTO getExpandedProgramDTO(String programName, int degree);
     ProgramExecutorDTO getProgramAfterRun(String programName);
     List<ProgramExecutorDTO> getHistoryPerProgram(String programName);
     List<ProgramDTO> getAllPrograms();
-
-    void loadProgram(Path path) throws EngineLoadException;
-    void expandProgramAndSetMember(String programName, int degree);
     int getMaxDegree(String programName);
+
+    void calculateExpansionForAllPrograms();
+    void loadProgram(Path path) throws EngineLoadException;
     void runProgram(String programName, int degree, Long... inputs);
 
     void initializeDebugger(String programName, int degree, List<Long> inputs);
@@ -32,5 +32,6 @@ public interface Engine {
     // For console module only:
     void saveState(Path path) throws EngineLoadException;
     void loadState(Path path) throws EngineLoadException;
+
 }
 

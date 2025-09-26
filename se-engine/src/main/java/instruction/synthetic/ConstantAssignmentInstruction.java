@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ConstantAssignmentInstruction extends AbstractInstruction implements SyntheticInstruction {
-    private final int MAX_DEGREE = 2;
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final long constantValue;
 
@@ -57,13 +56,7 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
     }
 
     @Override
-    public int getMaxDegree() {
-        return MAX_DEGREE;
-    }
-
-
-    @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         Label newLabel1 = (super.getLabel() == FixedLabel.EMPTY) ? FixedLabel.EMPTY : super.getLabel();
         int instructionNumber = startNumber;
 

@@ -81,45 +81,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return innerInstructions;
     }
 
-//    @Override
-//    public int getMaxDegree() {
-//
-//        return 13;
-
-
-    // todo: check if right
     @Override
-    public int getMaxDegree() {
-        return helperGetMaxDegree(getFunctionOfThisInstruction(), quoteArguments);
-    }
-
-    // Recursive function
-    private int helperGetMaxDegree(Program innerFunction, List<QuoteArgument> innerQuoteArguments) {
-        int maxDegreeOfQuoteFunction = innerFunction.calculateProgramMaxDegree();    // Calculate inner quote's function degree
-        int maxDegreeOfQuoteFunctionArguments = calculateDegreeOfQuoteFunctionArguments(innerQuoteArguments); // Calculate inner quote's function's arguments degree
-
-        return maxDegreeOfQuoteFunction + maxDegreeOfQuoteFunctionArguments;
-    }
-
-    // Recursive function
-    private int calculateDegreeOfQuoteFunctionArguments(List<QuoteArgument> innerQuoteArguments) {
-        int degree = 0;
-        int maxDegreeOfQuoteFunctionArguments = 0;
-
-        for(QuoteArgument quoteArgument : innerQuoteArguments) {
-            if(quoteArgument instanceof FunctionArgument innerFunctionArgument) {
-                String innerFunctionName = innerFunctionArgument.getFunctionName();
-                Program innerFunction = getMainProgram().getFunctionsHolder().getFunctionByName(innerFunctionName);
-                degree = helperGetMaxDegree(innerFunction, innerFunctionArgument.getArguments());
-                maxDegreeOfQuoteFunctionArguments = max(maxDegreeOfQuoteFunctionArguments, degree);
-            }
-        }
-
-        return maxDegreeOfQuoteFunctionArguments;
-    }
-
-    @Override
-    public int setInnerInstructionsAndReturnTheNextOne(int startNumber) {
+    public int expandInstruction(int startNumber) {
         List<Instruction> expandedInstructions = convertFunctionData(startNumber);
         innerInstructions.clear();
         innerInstructions.addAll(expandedInstructions);

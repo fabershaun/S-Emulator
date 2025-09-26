@@ -26,8 +26,7 @@ public class ExpandProgramTask extends Task<ProgramDTO> {
         if (targetDegree == 0) {
             return engine.getProgramDTOByName(ProgramName);
         } else {
-            engine.expandProgramAndSetMember(ProgramName, targetDegree);
-            return engine.getExpandedProgram(ProgramName);
+            return engine.getExpandedProgramDTO(ProgramName, targetDegree);
         }
     }
 
