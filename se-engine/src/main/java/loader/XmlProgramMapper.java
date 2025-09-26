@@ -201,29 +201,33 @@ final class XmlProgramMapper {
                 return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, quoteArguments);
             }
 
-            //            case "JUMP_EQUAL_FUNCTION": {
-//                Label addedLabel = sInstructionArguments.stream()
-//                        .filter(arg -> arg.getName().equalsIgnoreCase("JEFunctionLabel"))
-//                        .map(SInstructionArgument::getValue)
-//                        .findFirst()
-//                        .map(labelStr -> parseLabel(labelStr, instructionName, ordinal))
-//                        .orElseThrow(() -> new IllegalArgumentException("JEFunctionLabel not found"));
-//
-//                String functionArguments = sInstructionArguments.stream()
-//                        .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))
-//                        .map(SInstructionArgument::getValue)
-//                        .findFirst()
-//                        .get();
-//
-//                String functionName = sInstructionArguments.stream()
-//                        .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
-//                        .map(SInstructionArgument::getValue)
-//                        .findFirst()
-//                        .get()
-//                        .toUpperCase();
-//
-//                return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, functionName, functionArguments, originInstruction, ordinal);
-//            }
+            case "JUMP_EQUAL_FUNCTION": {
+                Label addedLabel = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("JEFunctionLabel"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .map(labelStr -> parseLabel(labelStr, instructionName, ordinal))
+                        .orElseThrow(() -> new IllegalArgumentException("JEFunctionLabel not found"));
+
+                String functionArguments = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("functionArguments"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .get();
+
+                String functionName = sInstructionArguments.stream()
+                        .filter(arg -> arg.getName().equalsIgnoreCase("functionName"))
+                        .map(SInstructionArgument::getValue)
+                        .findFirst()
+                        .get()
+                        .toUpperCase();
+
+                Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
+                targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction); // To add inner input variable (that inside inner quote instruction) to the program
+                List<QuoteArgument> quoteArguments = extractFunctionArguments(functionArguments);
+
+                return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal, functionName, quoteArguments);
+            }
 
             default:
                 throw new IllegalArgumentException(
@@ -320,65 +324,6 @@ final class XmlProgramMapper {
 
         return seenInputVariable;
     }
-
-//    private static Set<Variable> extractInnerVariablesFromFunctionArgumentsString(Set<Variable> seenInputVariable, String functionArguments) {
-//        return helper(seenInputVariable, functionArguments);
-//    }
-//
-//    private static Set<Variable> helper(Set<Variable> seenInputVariable, String functionArguments) {
-//        List<String> argumentsStr = extractQuoteArgumentsToStrList(functionArguments);
-//
-//        for(String argumentStr : argumentsStr) {
-//            if(argumentStr.startsWith("(") && argumentStr.endsWith(")")) {  // Inner function
-//                seenInputVariable.addAll(helper(seenInputVariable, argumentStr));
-//            } else {    // reached to a variable
-//
-//                String variableStr = argumentStr;
-//                Variable newVariable;
-//                if (variableStr.startsWith("x")) {
-//                    int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'x'
-//                    newVariable = new VariableImpl(VariableType.INPUT, number);
-//
-//                    if (!seenInputVariable.contains(newVariable)) {
-//                        seenInputVariable.add(newVariable);
-//                    }
-//                } else if  (variableStr.startsWith("z")) {
-//                    continue; // don't create a new variable
-//                } else {
-//                    throw new IllegalArgumentException("In XmlProgramMapper: invalid variable argument: " + argumentStr);
-//                }
-//            }
-//        }
-//        return seenInputVariable;
-//    }
-//
-//    private static List<String> extractQuoteArgumentsToStrList(String functionArguments) {
-//        if (functionArguments == null || functionArguments.trim().isEmpty()) {
-//            return List.of();
-//        }
-//
-//        String argumentsStr = functionArguments.trim();
-//        List<String> tokens = new ArrayList<>();
-//        StringBuilder current = new StringBuilder();
-//        int parenthesesDepth = 0;
-//
-//        for (char c : argumentsStr.toCharArray()) {
-//            if (c == ',' && parenthesesDepth == 0) {
-//                tokens.add(current.toString().trim());
-//                current.setLength(0);
-//            } else {
-//                if (c == '(') parenthesesDepth++;
-//                if (c == ')') parenthesesDepth--;
-//                current.append(c);
-//            }
-//        }
-//
-//        if (!current.isEmpty()) {                   // To add the last part or to add the argument if there were no parentheses in the original string
-//            tokens.add(current.toString().trim());
-//        }
-//
-//        return tokens;
-//    }
 
     private static Label parseLabel(String raw, String where, int ordinal) {
         String trimmed = safeTrim(raw);

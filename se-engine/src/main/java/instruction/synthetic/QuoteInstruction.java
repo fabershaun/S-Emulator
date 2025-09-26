@@ -15,8 +15,7 @@ import variable.Variable;
 import java.util.*;
 
 
-import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.buildCommandArguments;
-import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.mapFunctionArgumentsToNewList;
+import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.*;
 import static java.lang.Math.max;
 
 
@@ -43,7 +42,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     @Override
     public Label execute(ExecutionContext context) {
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
-        List<Long> inputs = getInputs(quoteArguments, context);
+        List<Long> inputs = getInputs(quoteArguments, context, getMainProgram());
 
         // Run
         functionExecutor.run(0, inputs.toArray(Long[]::new));
@@ -59,44 +58,44 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return FixedLabel.EMPTY;
     }
 
-    private List<Long> getInputs(List<QuoteArgument> innerQuoteArgumentsList, ExecutionContext context) {
-        List<Long> inputs = new ArrayList<>();
-
-        for(QuoteArgument quoteFunctionArgument : innerQuoteArgumentsList) {
-            switch (quoteFunctionArgument.getType()) {
-                case FUNCTION -> {
-                    FunctionArgument functionArgument = (FunctionArgument) quoteFunctionArgument;
-                    long functionResult = calculateFunctionResult(functionArgument, context);
-                    inputs.add(functionResult);
-                }
-                case VARIABLE -> {
-                    VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
-                    long inputValue = 0;
-                    inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's INPUT variable
-
-                    inputs.add(inputValue);
-                }
-            }
-        }
-
-        return inputs;
-    }
-
-    // Recursive function: the goal is to reach to a functions that hold only variable arguments
-    private long calculateFunctionResult(FunctionArgument innerFunctionArgument, ExecutionContext context) {
-        String innerFunctionName = innerFunctionArgument.getFunctionName();
-        Program innerFunction = getMainProgram().getFunctionsHolder().getFunctionByName(innerFunctionName);
-
-        ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
-        List<Long> inputs = getInputs(innerFunctionArgument.getArguments(), context);
-
-        // Run
-        functionExecutor.run(0, inputs.toArray(Long[]::new));
-
-        // Return function result
-        Variable resultVariable = innerFunction.getResultVariable();
-        return functionExecutor.getVariableValue(resultVariable);
-    }
+//    private List<Long> getInputs(List<QuoteArgument> innerQuoteArgumentsList, ExecutionContext context) {
+//        List<Long> inputs = new ArrayList<>();
+//
+//        for(QuoteArgument quoteFunctionArgument : innerQuoteArgumentsList) {
+//            switch (quoteFunctionArgument.getType()) {
+//                case FUNCTION -> {
+//                    FunctionArgument functionArgument = (FunctionArgument) quoteFunctionArgument;
+//                    long functionResult = calculateFunctionResult(functionArgument, context);
+//                    inputs.add(functionResult);
+//                }
+//                case VARIABLE -> {
+//                    VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
+//                    long inputValue = 0;
+//                    inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's INPUT variable
+//
+//                    inputs.add(inputValue);
+//                }
+//            }
+//        }
+//
+//        return inputs;
+//    }
+//
+//    // Recursive function: the goal is to reach to a functions that hold only variable arguments
+//    private long calculateFunctionResult(FunctionArgument innerFunctionArgument, ExecutionContext context) {
+//        String innerFunctionName = innerFunctionArgument.getFunctionName();
+//        Program innerFunction = getMainProgram().getFunctionsHolder().getFunctionByName(innerFunctionName);
+//
+//        ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
+//        List<Long> inputs = getInputs(innerFunctionArgument.getArguments(), context);
+//
+//        // Run
+//        functionExecutor.run(0, inputs.toArray(Long[]::new));
+//
+//        // Return function result
+//        Variable resultVariable = innerFunction.getResultVariable();
+//        return functionExecutor.getVariableValue(resultVariable);
+//    }
 
     @Override
     public String getCommand() {
