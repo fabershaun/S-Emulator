@@ -146,4 +146,8 @@ public class HistoryController {
         }
         return historyRows;
     }
+
+    public void updateHistoryTableManual() {
+        historyTable.getItems().setAll(mainController.getHistory());
+    }
 }

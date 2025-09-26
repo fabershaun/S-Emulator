@@ -308,13 +308,10 @@ public class MainAppController {
         mainInstructionsTableController.highlightLineDebugMode(debugStep.getNextInstructionNumber());  // Highlight line on table instructions
         topToolBarController.setComponentsDisabled(true);
         historyMenuController.setHistoryButtonsDisabled(true);
-
-//        InstructionDTO instructionDTOonTable = mainInstructionsTable.getItems().get(debugStep.getNextInstructionNumber());
-//        onInstructionSelected(instructionDTOonTable);
     }
 
     public void finishDebug(DebugDTO debugStep) {
-        //programAfterExecuteProperty.set(debugStep.getDebugProgramExecutorDTO());  TODO: check what is less
+        historyMenuController.updateHistoryTableManual();   // Manual update
 
         mainInstructionsTableController.turnOffHighlighting();
         topToolBarController.setComponentsDisabled(false);
