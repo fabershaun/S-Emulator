@@ -19,7 +19,7 @@ public interface Engine {
     List<ProgramDTO> getAllPrograms();
 
     void loadProgram(Path path) throws EngineLoadException;
-    void expandedProgram(String programName, int degree);
+    void expandProgramAndSetMember(String programName, int degree);
     int getMaxDegree(String programName);
     void runProgram(String programName, int degree, Long... inputs);
 

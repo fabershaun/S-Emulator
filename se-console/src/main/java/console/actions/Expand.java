@@ -29,7 +29,7 @@ public class Expand implements MenuActionable {
         System.out.print("Please enter degree for this run: ");
         int degree = Validator.getValidateDegree(scanner, engine, programName);
 
-        engine.expandedProgram(programName, degree);
+        engine.expandProgramAndSetMember(programName, degree);
         ProgramDTO programDTO = engine.getExpandedProgram(programName);
 
         displayExpandedProgram(programDTO);

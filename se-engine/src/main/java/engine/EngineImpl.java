@@ -157,7 +157,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void expandedProgram(String programName, int degree) {
+    public void expandProgramAndSetMember(String programName, int degree) {
         Program program = getProgramByName(programName);
 
         Program deepCopyOfProgram = program.deepClone();
