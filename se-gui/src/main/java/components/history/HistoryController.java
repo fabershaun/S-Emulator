@@ -2,6 +2,7 @@ package components.history;
 
 import components.history.historyRowPopUp.HistoryRowPopUpController;
 import components.mainApp.MainAppController;
+import dto.HistoryRowDTO;
 import dto.ProgramExecutorDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -16,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,15 +26,15 @@ public class HistoryController {
     private MainAppController mainController;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
 
-    private ProgramExecutorDTO selectedHistoryRow;
+    private HistoryRowDTO selectedHistoryRow;
     private int selectedRowIndex;
     private boolean lockHistoryButton = false;
 
-    @FXML private TableView<ProgramExecutorDTO> historyTable;
-    @FXML private TableColumn<ProgramExecutorDTO, Number> colCycles;
-    @FXML private TableColumn<ProgramExecutorDTO, Number> colDegree;
-    @FXML private TableColumn<ProgramExecutorDTO, Number> colResult;
-    @FXML private TableColumn<ProgramExecutorDTO, Number> colRunNumber;
+    @FXML private TableView<HistoryRowDTO> historyTable;
+    @FXML private TableColumn<HistoryRowDTO, Number> colCycles;
+    @FXML private TableColumn<HistoryRowDTO, Number> colDegree;
+    @FXML private TableColumn<HistoryRowDTO, Number> colResult;
+    @FXML private TableColumn<HistoryRowDTO, Number> colRunNumber;
     @FXML private Button showStatusButton;
     @FXML private Button reRunButton;
 
@@ -61,8 +63,7 @@ public class HistoryController {
         // After new run -> update history table
         programAfterExecuteProperty.addListener((obs, oldProgEx, newProgramExecutorDTO) -> {
             if (newProgramExecutorDTO != null) {
-                List<ProgramExecutorDTO> historyPerProgram = mainController.getHistory();
-                historyTable.getItems().setAll(historyPerProgram);
+                historyTable.getItems().setAll(mainController.getHistory());
             } else {
                 historyTable.getItems().clear();
             }
@@ -83,7 +84,7 @@ public class HistoryController {
         });
     }
 
-    public void fillHistoryTable(List<ProgramExecutorDTO> historyOfProgramList) {
+    public void fillHistoryTable(List<HistoryRowDTO> historyOfProgramList) {
         if(historyOfProgramList.isEmpty()) {
             historyTable.getItems().clear();
         } else {
@@ -128,5 +129,21 @@ public class HistoryController {
 
     public void clearHistoryTableRowSelection() {
         historyTable.getSelectionModel().clearSelection();
+    }
+
+    public static List<HistoryRowDTO> convertToHistoryRows(List<ProgramExecutorDTO> historyPerProgram) {
+        List<HistoryRowDTO> historyRows = new ArrayList<>();
+        for (int i = 0; i < historyPerProgram.size(); i++) {
+            ProgramExecutorDTO dto = historyPerProgram.get(i);
+            historyRows.add(new HistoryRowDTO(
+                    i + 1,                 // run number
+                    dto.getDegree(),
+                    dto.getResult(),
+                    dto.getTotalCycles(),
+                    dto.getVariablesToValuesSorted(),
+                    dto.getInputsValuesOfUser()
+            ));
+        }
+        return historyRows;
     }
 }

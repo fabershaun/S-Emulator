@@ -125,9 +125,21 @@ public class DebugImpl implements Debug {
         if (historyPointer < 0) {    // Before start
             currentInstructionIndex = 0;
             nextInstructionIndex = 0;
+
             ProgramExecutorDTO initializedProgramExecutor = buildProgramExecutorDTO(initializeProgramExecutor);
 
-            return new DebugDTO(initializedProgramExecutor, getCurrentInstructionIndex(), getNextInstructionIndex(), hasMoreInstructions(), null);
+            return new DebugDTO(
+                    this.programExecutor.getProgram().getName(),
+                    getCurrentInstructionIndex(),
+                    getNextInstructionIndex(),
+                    hasMoreInstructions(),
+                    null,
+                    initializedProgramExecutor.getDegree(),
+                    initializedProgramExecutor.getResult(),
+                    initializedProgramExecutor.getTotalCycles(),
+                    initializedProgramExecutor.getVariablesToValuesSorted(),
+                    initializedProgramExecutor.getInputsValuesOfUser()
+            );
         }
 
         DebugDTO dto = stepsHistory.get(historyPointer);
@@ -142,12 +154,19 @@ public class DebugImpl implements Debug {
     }
 
     private DebugDTO buildDebugDTO() {
+        ProgramExecutorDTO executorDTO = buildProgramExecutorDTO(this.programExecutor);
+
         return new DebugDTO(
-                buildProgramExecutorDTO(this.programExecutor),
+                this.programExecutor.getProgram().getName(),
                 getCurrentInstructionIndex(),
                 getNextInstructionIndex(),
                 hasMoreInstructions(),
-                getTargetVariableOfCurrentInstruction()
+                getTargetVariableOfCurrentInstruction(),
+                executorDTO.getDegree(),
+                executorDTO.getResult(),
+                executorDTO.getTotalCycles(),
+                executorDTO.getVariablesToValuesSorted(),
+                executorDTO.getInputsValuesOfUser()
         );
     }
 

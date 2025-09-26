@@ -6,9 +6,9 @@ import java.util.Map;
 public class ProgramExecutorDTO {
     private final ProgramDTO programDTO;
     private final Map<String, Long> VariablesToValuesSorted;
-    private final long result;                      // Do not change name (name needed in gui module: package components.mainInstructionsTable)
-    private final int totalCycles;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
-    private final int degree;                       // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private final long result;
+    private final int totalCycles;
+    private final int degree;
     private final List<Long> inputs;
 
 
@@ -29,9 +29,9 @@ public class ProgramExecutorDTO {
         return VariablesToValuesSorted;
     }
 
-    public long getResult() { return result; }              // Don't change name - name convention in javafx - in history table component
-    public int getTotalCycles() { return totalCycles; }     // Don't change name - name convention in javafx - in history table component
-    public int getDegree() { return degree; }               // Don't change name - name convention in javafx - in history table component
+    public long getResult() { return result; }
+    public int getTotalCycles() { return totalCycles; }
+    public int getDegree() { return degree; }
 
     public List<Long> getInputsValuesOfUser() {
         return inputs;

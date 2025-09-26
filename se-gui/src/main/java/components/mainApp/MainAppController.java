@@ -8,10 +8,7 @@ import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
 import components.topToolBar.ProgramSelectorModel;
-import dto.DebugDTO;
-import dto.InstructionDTO;
-import dto.ProgramDTO;
-import dto.ProgramExecutorDTO;
+import dto.*;
 import engine.Engine;
 import engine.EngineImpl;
 import javafx.application.Platform;
@@ -35,6 +32,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static components.history.HistoryController.convertToHistoryRows;
 import static components.loadFile.LoadFileController.*;
 
 public class MainAppController {
@@ -250,8 +248,8 @@ public class MainAppController {
         return chosenProgramName;
     }
 
-    public List<ProgramExecutorDTO> getHistory() {
-        return engine.getHistoryPerProgram(selectedProgramProperty.get().getProgramName());
+    public List<HistoryRowDTO> getHistory() {
+        return convertToHistoryRows(engine.getHistoryPerProgram(selectedProgramProperty.get().getProgramName()));
     }
 
     // When re-run was pressed
@@ -316,7 +314,7 @@ public class MainAppController {
     }
 
     public void finishDebug(DebugDTO debugStep) {
-        programAfterExecuteProperty.set(debugStep.getDebugProgramExecutorDTO());
+        //programAfterExecuteProperty.set(debugStep.getDebugProgramExecutorDTO());  TODO: check what is less
 
         mainInstructionsTableController.turnOffHighlighting();
         topToolBarController.setComponentsDisabled(false);

@@ -238,7 +238,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     private void addDebugResultToHistoryMap(DebugDTO debugDTO) {
-        String programName = debugDTO.getDebugProgramExecutorDTO().getProgramDTO().getProgramName();
+        String programName = debugDTO.getProgramName();
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
         executionHistory.add(debug.getDebugProgramExecutor());
     }

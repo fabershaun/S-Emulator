@@ -1,28 +1,45 @@
 package dto;
 
-public class DebugDTO {
+import java.util.List;
+import java.util.Map;
 
-    private final ProgramExecutorDTO debugProgramExecutorDTO;
+public class DebugDTO {
+    private final String programName;
     private final int currentInstructionNumber;
     private final int nextInstructionNumber;
     private final boolean hasMoreInstructions;
     private final String targetVariable ;
 
-    public DebugDTO(ProgramExecutorDTO debugProgramExecutorDTO,
-                    int instructionNumber,
+    private final int degree;
+    private final long result;
+    private final int totalCycles;
+    private final Map<String, Long> variablesToValuesSorted;
+    private final List<Long> inputsValues;
+
+    public DebugDTO(String programName,
+                    int currentInstructionNumber,
                     int nextInstructionNumber,
                     boolean hasMoreInstructions,
-                    String targetVariable) {
-        this.debugProgramExecutorDTO = debugProgramExecutorDTO;
-        this.currentInstructionNumber = instructionNumber;
+                    String targetVariable,
+                    int degree,
+                    long result,
+                    int totalCycles,
+                    Map<String, Long> variablesToValuesSorted,
+                    List<Long> inputsValues) {
+
+        this.programName = programName;
+        this.currentInstructionNumber = currentInstructionNumber;
         this.nextInstructionNumber = nextInstructionNumber;
         this.hasMoreInstructions = hasMoreInstructions;
         this.targetVariable = targetVariable;
+        this.degree = degree;
+        this.result = result;
+        this.totalCycles = totalCycles;
+        this.variablesToValuesSorted = variablesToValuesSorted;
+        this.inputsValues = inputsValues;
     }
 
-    public ProgramExecutorDTO getDebugProgramExecutorDTO() {
-        return debugProgramExecutorDTO;
-    }
+    public String getProgramName() { return programName; }
 
     public int getCurrentInstructionNumber() {
         return currentInstructionNumber;
@@ -40,4 +57,23 @@ public class DebugDTO {
         return hasMoreInstructions;
     }
 
+    public int getDegree() {
+        return degree;
+    }
+
+    public long getResult() {
+        return result;
+    }
+
+    public int getTotalCycles() {
+        return totalCycles;
+    }
+
+    public Map<String, Long> getVariablesToValuesSorted() {
+        return variablesToValuesSorted;
+    }
+
+    public List<Long> getInputsValuesOfUser() {
+        return inputsValues;
+    }
 }

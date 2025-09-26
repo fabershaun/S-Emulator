@@ -296,8 +296,8 @@ public class DebuggerExecutionMenuController {
     }
 
     private void updateControllerAfterStep(DebugDTO debugStep) {
-        variablesTable.getItems().setAll(debugStep.getDebugProgramExecutorDTO().getVariablesToValuesSorted().entrySet());
-        cyclesNumberLabel.setText(String.valueOf(debugStep.getDebugProgramExecutorDTO().getTotalCycles()));
+        variablesTable.getItems().setAll(debugStep.getVariablesToValuesSorted().entrySet());
+        cyclesNumberLabel.setText(String.valueOf(debugStep.getTotalCycles()));
         highlightTargetVariable(debugStep.getTargetVariable());
     }
 
