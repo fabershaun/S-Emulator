@@ -99,7 +99,7 @@ public class FunctionInstructionUtils {
     }
 
     // TODO: remove flag and dont map, delete the map as well
-    public static List<QuoteArgument> mapFunctionArgumentsToNewList(List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping, boolean isTopLevel) {
+    public static List<QuoteArgument> mapFunctionArgumentsToNewList(List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping, boolean toMapFlag) {
         List<QuoteArgument> mappedArguments = new ArrayList<>();
 
         for (QuoteArgument argument : arguments) {
@@ -108,7 +108,7 @@ public class FunctionInstructionUtils {
                     Variable originalVariable = variableArgument.getVariable();
                     Variable newVariable;
 
-                    if (isTopLevel) {
+                    if (toMapFlag) {
                         newVariable = variableMapping.get(originalVariable);
                         if (newVariable == null) {
                             throw new IllegalArgumentException(
@@ -125,7 +125,7 @@ public class FunctionInstructionUtils {
 
                 case FunctionArgument functionArgument -> {
                     List<QuoteArgument> sameInnerArguments =    // Not mapped ! stayed the same
-                            mapFunctionArgumentsToNewList(functionArgument.getArguments(), variableMapping, false);
+                            mapFunctionArgumentsToNewList(functionArgument.getArguments(), variableMapping, toMapFlag);
 
                     mappedArguments.add(new FunctionArgument(functionArgument.getFunctionName(), sameInnerArguments));
                 }

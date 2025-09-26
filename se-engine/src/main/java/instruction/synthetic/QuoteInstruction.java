@@ -11,12 +11,8 @@ import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
-
 import java.util.*;
-
-
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.*;
-import static java.lang.Math.max;
 
 
 public class QuoteInstruction extends AbstractInstruction implements SyntheticInstruction {
@@ -299,8 +295,9 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         setMainProgram(newMainProgram);
         Variable newTargetVariable = variableMap.getOrDefault(this.getTargetVariable(), this.getTargetVariable());
         Label newLabel = labelMap.getOrDefault(this.getLabel(), this.getLabel());
+        List<QuoteArgument> mappedQuoteArguments = mapFunctionArgumentsToNewList(quoteArguments, variableMap, true);
 
-        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newOrigin, newInstructionNumber, this.functionName, quoteArguments);
+        return new QuoteInstruction(getMainProgram(), getProgramOfThisInstruction(), newTargetVariable, newLabel, newOrigin, newInstructionNumber, this.functionName, mappedQuoteArguments);
     }
 
     // Assign function result back to the target of this Quote
