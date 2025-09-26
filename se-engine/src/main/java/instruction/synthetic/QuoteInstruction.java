@@ -54,45 +54,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return FixedLabel.EMPTY;
     }
 
-//    private List<Long> getInputs(List<QuoteArgument> innerQuoteArgumentsList, ExecutionContext context) {
-//        List<Long> inputs = new ArrayList<>();
-//
-//        for(QuoteArgument quoteFunctionArgument : innerQuoteArgumentsList) {
-//            switch (quoteFunctionArgument.getType()) {
-//                case FUNCTION -> {
-//                    FunctionArgument functionArgument = (FunctionArgument) quoteFunctionArgument;
-//                    long functionResult = calculateFunctionResult(functionArgument, context);
-//                    inputs.add(functionResult);
-//                }
-//                case VARIABLE -> {
-//                    VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
-//                    long inputValue = 0;
-//                    inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's INPUT variable
-//
-//                    inputs.add(inputValue);
-//                }
-//            }
-//        }
-//
-//        return inputs;
-//    }
-//
-//    // Recursive function: the goal is to reach to a functions that hold only variable arguments
-//    private long calculateFunctionResult(FunctionArgument innerFunctionArgument, ExecutionContext context) {
-//        String innerFunctionName = innerFunctionArgument.getFunctionName();
-//        Program innerFunction = getMainProgram().getFunctionsHolder().getFunctionByName(innerFunctionName);
-//
-//        ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
-//        List<Long> inputs = getInputs(innerFunctionArgument.getArguments(), context);
-//
-//        // Run
-//        functionExecutor.run(0, inputs.toArray(Long[]::new));
-//
-//        // Return function result
-//        Variable resultVariable = innerFunction.getResultVariable();
-//        return functionExecutor.getVariableValue(resultVariable);
-//    }
-
     @Override
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
@@ -202,7 +163,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         return expandedInstructions;
     }
 
-    // TODO: fix the generate problem of producing to many arguments
     private void mapQuoteFunctionVariables() {
 
         Variable functionResult = getFunctionOfThisInstruction().getResultVariable();
