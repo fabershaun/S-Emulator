@@ -127,16 +127,18 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     @Override
     public int getMaxDegree() {
 
-        int maxDegree = 0;
-        this.setInnerInstructionsAndReturnTheNextOne(0);
-        for(Instruction instruction : this.innerInstructions) {
-            if(instruction instanceof SyntheticInstruction syntheticInstruction) {
-                maxDegree = max(maxDegree, syntheticInstruction.getMaxDegree());
-            }
+        return 13;
 
-        }
-
-        return maxDegree + 1;
+//        DON'T DO IT LIKE BELLOW:
+//        int maxDegree = 0;
+//        this.setInnerInstructionsAndReturnTheNextOne(0);
+//        for(Instruction instruction : this.innerInstructions) {
+//            if(instruction instanceof SyntheticInstruction syntheticInstruction) {
+//                maxDegree = max(maxDegree, syntheticInstruction.getMaxDegree());
+//            }
+//        }
+//
+//        return maxDegree + 1;
     }
 
     // todo: check if right
@@ -209,16 +211,16 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     private void mapQuoteFunctionVariables() {
 
         Variable functionResult = getFunctionOfThisInstruction().getResultVariable();
-        Variable newWorkVariable = getMainProgram().generateUniqueVariable();
+        Variable newWorkVariable = super.getMainProgram().generateUniqueVariable();
         variableMapping.put(functionResult , newWorkVariable);
 
         for (Variable functionInputVariable : getFunctionOfThisInstruction().getInputVariables()) {
-            newWorkVariable = getMainProgram().generateUniqueVariable();
+            newWorkVariable = super.getMainProgram().generateUniqueVariable();
             variableMapping.put(functionInputVariable, newWorkVariable);
         }
 
         for (Variable functionWorkVariable : getFunctionOfThisInstruction().getWorkVariables()) {
-            newWorkVariable = getMainProgram().generateUniqueVariable();
+            newWorkVariable = super.getMainProgram().generateUniqueVariable();
             variableMapping.put(functionWorkVariable, newWorkVariable);
         }
     }
@@ -230,7 +232,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
         // Map each function label to a unique label in the caller program
         for (Label functionLabel : labelsInFunction) {              // To include Exit if exist
-            Label newLabel = getMainProgram().generateUniqueLabel();
+            Label newLabel = super.getMainProgram().generateUniqueLabel();
             mapFunctionToProgramLabel.put(functionLabel, newLabel);
         }
     }
