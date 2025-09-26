@@ -20,6 +20,7 @@ import java.util.*;
 public class EngineImpl implements Engine, Serializable {
     private transient Path xmlPath;
     private Program mainProgram;
+    private Program expandedProgram;
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private Debug debug;
 
@@ -143,13 +144,26 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramDTO getExpandedProgram(String programName, int degree) {
+    public ProgramDTO getExpandedProgram(String programName) {
+        if (expandedProgram == null) {
+            throw new IllegalArgumentException("In EngineImpl: try to call getExpandedProgram() before expandedProgram(String programName, int degree).");
+        }
+
+        if (!expandedProgram.getName().equals(programName)) {
+            throw new IllegalArgumentException("In EngineImpl: try to return the wrong expanded program. (call getExpandedProgram() before expandedProgram(String programName, int degree)).");
+        }
+
+        return buildProgramDTO(this.expandedProgram);
+    }
+
+    @Override
+    public void expandedProgram(String programName, int degree) {
         Program program = getProgramByName(programName);
 
         Program deepCopyOfProgram = program.deepClone();
         deepCopyOfProgram.expandProgram(degree);
 
-        return buildProgramDTO(deepCopyOfProgram);
+        this.expandedProgram = deepCopyOfProgram;
     }
 
     public static ProgramDTO buildProgramDTO(Program program) {

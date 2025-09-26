@@ -13,12 +13,13 @@ public interface Engine {
     ProgramDTO getMainProgram();
     ProgramDTO getProgramDTOByName(String programName);
     ProgramDTO getProgramDTOByUserString(String userString);
-    ProgramDTO getExpandedProgram(String programName, int degree);
+    ProgramDTO getExpandedProgram(String programName);
     ProgramExecutorDTO getProgramAfterRun(String programName);
     List<ProgramExecutorDTO> getHistoryPerProgram(String programName);
     List<ProgramDTO> getAllPrograms();
 
     void loadProgram(Path path) throws EngineLoadException;
+    void expandedProgram(String programName, int degree);
     int getMaxDegree(String programName);
     void runProgram(String programName, int degree, Long... inputs);
 
