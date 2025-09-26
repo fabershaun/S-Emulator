@@ -13,8 +13,14 @@ public class FunctionsHolder implements Serializable {
         this.userStringToFunction.put(UserString, function);
     }
 
-    public Program getFunctionByName(String name) {
-        return this.nameToFunction.get(name.toUpperCase(Locale.ROOT));
+    public String getUserStringByName(String name) {    // To UPPER
+        String nameToUpper = name.toUpperCase(Locale.ROOT);
+       return this.nameToFunction.get(nameToUpper).getUserString();
+    }
+
+    public Program getFunctionByName(String name) {    // To UPPER
+        String nameToUpper = name.toUpperCase(Locale.ROOT);
+        return this.nameToFunction.get(nameToUpper);
     }
 
     public Program getFunctionByUserString(String userString) {

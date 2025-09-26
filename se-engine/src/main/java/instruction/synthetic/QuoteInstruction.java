@@ -11,7 +11,6 @@ import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
-import variable.VariableType;
 
 import java.util.*;
 
@@ -73,11 +72,8 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                 case VARIABLE -> {
                     VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
                     long inputValue = 0;
-                    if (innerVariableArgument.getVariable().getType().equals(VariableType.INPUT)) {
-                        inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's INPUT variable
-                    } else if (innerVariableArgument.getVariable().getType().equals(VariableType.WORK)) {
-                        inputValue = innerVariableArgument.getValue();  // If it's WORK variable    // TODO: check if need to change like 2 lines above
-                    }
+                    inputValue = innerVariableArgument.getInputValueFromContext(context);       // If it's INPUT variable
+
                     inputs.add(inputValue);
                 }
             }
@@ -106,13 +102,18 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String userString = getFunctionOfThisInstruction().getUserString();
-        String arguments = buildCommandArguments(quoteArguments, variableMapping);
+        String arguments = buildCommandArguments(getMainProgram().getFunctionsHolder(), quoteArguments, variableMapping);
 
         StringBuilder command = new StringBuilder();
         command.append(targetVariableRepresentation);
         command.append(" <- ");
         command.append("(");
         command.append(userString);
+
+        if (!arguments.isEmpty()) {
+            command.append(",");
+        }
+
         command.append(arguments);
         command.append(")");
         return command.toString();
@@ -263,7 +264,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
                 case FUNCTION -> {
                     FunctionArgument functionArgument = (FunctionArgument) quoteArgument;
                     String innerFunctionName = functionArgument.getFunctionName();
-                    List<QuoteArgument> convertedQuoteArgumentList = mapFunctionArgumentsToNewList(functionArgument.getArguments(), variableMapping);
+                    List<QuoteArgument> convertedQuoteArgumentList = mapFunctionArgumentsToNewList(functionArgument.getArguments(), variableMapping, false);
 
                     // create quote instruction: targetVariable <- (functionName, functionArguments...)
                     targetList.add(                                                             //mapped variable

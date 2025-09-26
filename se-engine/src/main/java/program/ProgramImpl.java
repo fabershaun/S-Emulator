@@ -67,20 +67,6 @@ public class ProgramImpl implements Program, Serializable {
     public void initialize() {
         initNextLabelNumber();
         initNextWorkVariableNumber();
-
-//        programInstructions.stream()
-//                .filter(instruction -> instruction instanceof QuoteInstruction)
-//                .map(instruction -> (QuoteInstruction) instruction)
-//                .forEach(QuoteInstruction::initializeInstruction);
-
-
-//        programInstructions.forEach(instruction -> {
-//            if (instruction instanceof QuoteInstruction quoteInstruction) {
-//                quoteInstruction.initializeInstruction();
-//            } else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
-//                jumpEqualFunctionInstruction.initializeInstruction();
-//            }
-//        });
     }
 
     @Override
