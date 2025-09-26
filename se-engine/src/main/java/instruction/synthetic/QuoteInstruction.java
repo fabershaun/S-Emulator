@@ -13,7 +13,6 @@ import program.Program;
 import variable.Variable;
 import java.util.*;
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.*;
-import static java.lang.Math.max;
 
 
 public class QuoteInstruction extends AbstractInstruction implements SyntheticInstruction {

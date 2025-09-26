@@ -4,22 +4,17 @@ import execution.ExecutionContext;
 import execution.ProgramExecutor;
 import execution.ProgramExecutorImpl;
 import instruction.*;
-import instruction.synthetic.quoteArguments.FunctionArgument;
 import instruction.synthetic.quoteArguments.QuoteArgument;
-import instruction.synthetic.quoteArguments.VariableArgument;
 import label.FixedLabel;
 import label.Label;
 import program.Program;
 import variable.Variable;
-import variable.VariableType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.buildCommandArguments;
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.getInputs;
-import static java.lang.Math.max;
 
 public class JumpEqualFunctionInstruction extends AbstractInstruction implements SyntheticInstruction {
     private final String referenceFunctionName;
@@ -94,12 +89,6 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction implements
     @Override
     public int getCycleOfInstruction() {
         return (this.currentCyclesNumber == 0) ? InstructionData.JUMP_EQUAL_FUNCTION.getCycles() : this.currentCyclesNumber;
-    }
-
-    // TODO: fix
-    @Override
-    public int getMaxDegree() {
-        return 13;
     }
 
     @Override

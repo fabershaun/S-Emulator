@@ -49,23 +49,21 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public  Map<Integer, Program> calculateDegreeToProgram() {
         Map<Integer, Program>  degreeToProgram = new HashMap<>();
-        boolean canExpandMore = true;
+        boolean canExpandMore;
         int degree = 0;
 
         Program workingProgram = this.deepClone();
-        degreeToProgram.put(degree, workingProgram.deepClone());
 
-        while (canExpandMore)  {
-            degree++;
-            canExpandMore = false;
+        do {
+            degreeToProgram.put(degree, workingProgram.deepClone());
             int nextInstructionNumber = 1;
+            canExpandMore = false;
 
             for (ListIterator<Instruction> iterator = workingProgram.getInstructionsList().listIterator(); iterator.hasNext(); ) {  // Run on working program
                 Instruction instruction = iterator.next();
                 Label originalLabel = instruction.getLabel();
                 List<Instruction> newInstructionsList = new ArrayList<>();
 
-                // initialize
                 if (instruction instanceof SyntheticInstruction syntheticInstruction) {
                     nextInstructionNumber = syntheticInstruction.expandInstruction(nextInstructionNumber);
                     newInstructionsList = instruction.getExtendedInstruction();
@@ -76,7 +74,7 @@ public class ProgramImpl implements Program, Serializable {
                     nextInstructionNumber++;
                 }
 
-                iterator.remove();                                   // Remove the old instruction
+                iterator.remove();                               // Remove the old instruction
                 workingProgram.getLabelToInstruction().remove(originalLabel);       // Remove the label from the map because we will add it again in line 239
                 workingProgram.getLabelsInProgram().remove(originalLabel);          // Remove the label from the map because we will add it again in line 239
 
@@ -86,8 +84,8 @@ public class ProgramImpl implements Program, Serializable {
                 }
             }
 
-            degreeToProgram.put(degree, workingProgram.deepClone());
-        }
+            degree++;
+        } while (canExpandMore);
 
         return degreeToProgram;
     }
@@ -369,9 +367,9 @@ public class ProgramImpl implements Program, Serializable {
 
     @Override
     public void sortVariableSetByNumber(Set<Variable> variablesSet) {
-        var sorted = variablesSet.stream()
+        List<Variable> sorted = variablesSet.stream()
                 .sorted(Comparator.comparingInt(Variable::getNumber))
-                .toList();
+                .collect(Collectors.toList());  // Dont change
 
         variablesSet.clear();
         variablesSet.addAll(sorted);

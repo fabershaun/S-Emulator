@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ZeroVariableInstruction extends AbstractInstruction implements SyntheticInstruction {
-    private final int MAX_DEGREE = 1;
     private final List<Instruction> innerInstructions = new ArrayList<>();;
 
     public ZeroVariableInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
@@ -52,11 +51,6 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
     @Override
     public List<Instruction> getInnerInstructions() {
         return innerInstructions;
-    }
-
-    @Override
-    public int getMaxDegree() {
-        return MAX_DEGREE;
     }
 
     @Override

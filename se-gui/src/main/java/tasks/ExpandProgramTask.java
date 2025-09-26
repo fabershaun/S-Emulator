@@ -4,11 +4,6 @@ import dto.ProgramDTO;
 import engine.Engine;
 import javafx.concurrent.Task;
 
-/**
- * Task responsible for expanding the program to a target degree
- * without blocking the JavaFX UI thread.
- */
-
 public class ExpandProgramTask extends Task<ProgramDTO> {
 
     private final Engine engine;

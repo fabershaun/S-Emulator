@@ -14,8 +14,10 @@ import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import engine.Engine;
 import engine.EngineImpl;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -24,12 +26,14 @@ import components.loadFile.LoadFileController;
 import components.topToolBar.TopToolBarController;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import tasks.DebugResumeTask;
 import tasks.ExpandProgramTask;
 import tasks.LoadProgramTask;
 import tasks.ProgramRunTask;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static components.loadFile.LoadFileController.*;
 
@@ -268,16 +272,24 @@ public class MainAppController {
         engine.stopDebugPress();
     }
 
-    public DebugDTO debugResume() {
+    public void debugResume(Consumer<DebugDTO> onComplete) {
         List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
 
-        DebugDTO debugStep = engine.getProgramAfterResume(breakPoints);
+        DebugResumeTask debugResumeTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
 
-        if (debugStep.hasMoreInstructions()) {   // If not finish -> update UI controllers (stoped at break point)
-            updateControllerAfterDebugStep(debugStep);
-        }
+        debugResumeTask.setOnSucceeded(ev -> {
+            DebugDTO debugStep = debugResumeTask.getValue();
 
-        return  debugStep;
+            if (debugStep.hasMoreInstructions()) {
+                updateControllerAfterDebugStep(debugStep);
+            }
+
+            onComplete.accept(debugStep);
+        });
+
+        debugResumeTask.setOnFailed(ev -> { handleTaskFailure(debugResumeTask, "Debug Resume Failed"); });
+
+        new Thread(debugResumeTask, "debugResume-thread").start();
     }
 
     public DebugDTO debugStepOver() {

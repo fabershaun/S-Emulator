@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class JumpZeroInstruction extends AbstractInstruction implements LabelReferencesInstruction, SyntheticInstruction {
-    private final int MAX_DEGREE = 2;
     private final List<Instruction> innerInstructions = new ArrayList<>();
     private final Label referencesLabel;
 
@@ -60,11 +59,6 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
     @Override
     public List<Instruction> getInnerInstructions() {
         return innerInstructions;
-    }
-
-    @Override
-    public int getMaxDegree() {
-        return MAX_DEGREE;
     }
 
     @Override

@@ -22,7 +22,7 @@ public class EngineImpl implements Engine, Serializable {
     private Program mainProgram;
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private Debug debug;
-    private Map<String, Map<Integer, Program>> nameAndDegreeToProgram;
+    private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
 
     @Override
     public void loadProgram(Path xmlPath) throws EngineLoadException {
@@ -135,7 +135,7 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public int getMaxDegree(String programName) {
-        return this.nameAndDegreeToProgram.get(programName).size();  // The size of the map is the max degree
+        return this.nameAndDegreeToProgram.get(programName).size() - 1;  // The size of the map is the max degree
     }
 
     @Override
@@ -200,12 +200,8 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public void initializeDebugger(String programName, int degree, List<Long> inputs) {
-        Program program = getProgramByName(programName);
-
-        Program deepCopyOfProgram = program.deepClone();
-        deepCopyOfProgram.expandProgram(degree);
-
-        this.debug = new DebugImpl(deepCopyOfProgram, degree, inputs);
+        Program workingProgram = getExpandedProgram(programName, degree);
+        this.debug = new DebugImpl(workingProgram, degree, inputs);
     }
 
     @Override

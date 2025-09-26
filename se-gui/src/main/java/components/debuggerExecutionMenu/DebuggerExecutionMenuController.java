@@ -15,6 +15,7 @@ import javafx.util.converter.LongStringConverter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 
 public class DebuggerExecutionMenuController {
@@ -255,12 +256,15 @@ public class DebuggerExecutionMenuController {
 
     @FXML
     private void onResume() {
-        currentDebugStep = mainController.debugResume();
-        updateControllerAfterStep(currentDebugStep);
+        mainController.debugResume(debugStep -> {
 
-        if (!currentDebugStep.hasMoreInstructions()) {    // Finish only when there are no more instructions
-            stopDebug();
-        }
+            currentDebugStep = debugStep;
+            updateControllerAfterStep(currentDebugStep);
+
+            if (!currentDebugStep.hasMoreInstructions()) {
+                stopDebug();
+            }
+        });
     }
 
     private void stopDebug() {

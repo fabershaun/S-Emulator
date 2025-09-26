@@ -162,8 +162,12 @@ public class DebugImpl implements Debug {
 
     @Override
     public ProgramExecutorDTO buildProgramExecutorDTO(ProgramExecutor programExecutor) {
-        ProgramDTO programDTO = buildProgramDTO(this.program);
-        return EngineImpl.buildProgramExecutorDTO(programDTO, programExecutor);
+        try {
+            ProgramDTO programDTO = buildProgramDTO(this.program);
+            return EngineImpl.buildProgramExecutorDTO(programDTO, programExecutor);
+        } catch (Exception ev) {
+            throw new IllegalArgumentException("In DebugImpl: Instruction number: " + currentInstructionIndex + ". Message: " + ev.getMessage());
+        }
     }
 
     @Override
