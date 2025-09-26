@@ -1,6 +1,5 @@
 package execution;
 
-import debug.Debug;
 import program.Program;
 import variable.Variable;
 
@@ -14,7 +13,7 @@ public interface ProgramExecutor {
     long getVariableValue(Variable variable);
     int getRunDegree();
     List<Long> getInputsValuesOfUser();
-    int getTotalCyclesOfProgram();
+    int getTotalCycles();
     Map<String, Long> getVariablesToValuesSorted();
 
     void setRunDegree(int runDegree);

@@ -81,7 +81,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
     }
 
     @Override
-    public int getTotalCyclesOfProgram() {
+    public int getTotalCycles() {
         return this.totalCycles;
     }
 

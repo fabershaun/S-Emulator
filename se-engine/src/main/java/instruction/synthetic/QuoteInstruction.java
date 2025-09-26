@@ -4,6 +4,7 @@ import execution.ExecutionContext;
 import execution.ProgramExecutor;
 import execution.ProgramExecutorImpl;
 import instruction.*;
+import instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult;
 import instruction.synthetic.quoteArguments.FunctionArgument;
 import instruction.synthetic.quoteArguments.QuoteArgument;
 import instruction.synthetic.quoteArguments.VariableArgument;
@@ -12,6 +13,9 @@ import label.Label;
 import program.Program;
 import variable.Variable;
 import java.util.*;
+
+import static instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult.addFunctionArgumentCycles;
+import static instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult.extractInputValues;
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.*;
 
 
@@ -38,10 +42,10 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     @Override
     public Label execute(ExecutionContext context) {
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
-        List<Long> inputs = getInputs(quoteArguments, context, getMainProgram());
+        List<FunctionExecutionResult> functionExecutionResultList = getInputs(quoteArguments, context, getMainProgram());
 
         // Run
-        functionExecutor.run(0, inputs.toArray(Long[]::new));
+        functionExecutor.run(0, extractInputValues(functionExecutionResultList));
 
         // Update value in parent program
         Variable resultVariable = this.getFunctionOfThisInstruction().getResultVariable();
@@ -49,7 +53,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
         context.updateVariable(getTargetVariable(), quoteFunctionResult);
 
         // Update cycles number
-        currentCyclesNumber = InstructionData.QUOTATION.getCycles() + functionExecutor.getTotalCyclesOfProgram();
+        currentCyclesNumber = InstructionData.QUOTATION.getCycles() + functionExecutor.getTotalCycles() + addFunctionArgumentCycles(functionExecutionResultList);
 
         return FixedLabel.EMPTY;
     }

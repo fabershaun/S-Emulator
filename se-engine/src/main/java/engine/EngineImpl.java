@@ -95,7 +95,7 @@ public class EngineImpl implements Engine, Serializable {
         return new ProgramExecutorDTO(programDTO,
                 programExecutor.getVariablesToValuesSorted(),
                 programExecutor.getVariableValue(Variable.RESULT),
-                programExecutor.getTotalCyclesOfProgram(),
+                programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser()
         );
@@ -192,7 +192,7 @@ public class EngineImpl implements Engine, Serializable {
                 programDTO,
                 programExecutor.getVariablesToValuesSorted(),
                 programExecutor.getVariableValue(Variable.RESULT),
-                programExecutor.getTotalCyclesOfProgram(),
+                programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser()
         );

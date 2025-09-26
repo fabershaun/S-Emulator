@@ -4,6 +4,7 @@ import execution.ExecutionContext;
 import execution.ProgramExecutor;
 import execution.ProgramExecutorImpl;
 import instruction.*;
+import instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult;
 import instruction.synthetic.quoteArguments.QuoteArgument;
 import label.FixedLabel;
 import label.Label;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult.addFunctionArgumentCycles;
+import static instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult.extractInputValues;
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.buildCommandArguments;
 import static instruction.synthetic.functionInstructionsUtils.FunctionInstructionUtils.getInputs;
 
@@ -41,17 +44,17 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction implements
         long targetVariableValue = context.getVariableValue(getTargetVariable());
 
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
-        List<Long> inputs = getInputs(quoteArguments, context, getMainProgram());
+        List<FunctionExecutionResult> functionExecutionResultList = getInputs(quoteArguments, context, getMainProgram());
 
         // Run
-        functionExecutor.run(0, inputs.toArray(Long[]::new));
+        functionExecutor.run(0, extractInputValues(functionExecutionResultList));
 
         // Update value in parent program
         Variable resultVariable = this.getFunctionOfThisInstruction().getResultVariable();
         long functionResult = functionExecutor.getVariableValue(resultVariable);
 
         // Update cycles number
-        currentCyclesNumber = InstructionData.JUMP_EQUAL_FUNCTION.getCycles() + functionExecutor.getTotalCyclesOfProgram();
+        currentCyclesNumber = InstructionData.JUMP_EQUAL_FUNCTION.getCycles() + functionExecutor.getTotalCycles() + addFunctionArgumentCycles(functionExecutionResultList);
 
         return (targetVariableValue == functionResult) ? referenceLabel : FixedLabel.EMPTY;
     }

@@ -15,26 +15,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static instruction.synthetic.functionInstructionsUtils.FunctionExecutionResult.extractInputValues;
+
 public class FunctionInstructionUtils {
 
-    public static List<Long> getInputs(
+    public static List<FunctionExecutionResult> getInputs(
             List<QuoteArgument> innerQuoteArgumentsList,
             ExecutionContext context,
             Program mainProgram) {
 
-        List<Long> inputs = new ArrayList<>();
+        List<FunctionExecutionResult> inputs = new ArrayList<>();
 
         for (QuoteArgument quoteFunctionArgument : innerQuoteArgumentsList) {
             switch (quoteFunctionArgument.getType()) {
                 case FUNCTION -> {
                     FunctionArgument functionArgument = (FunctionArgument) quoteFunctionArgument;
-                    long functionResult = calculateFunctionResult(functionArgument, context, mainProgram);
-                    inputs.add(functionResult);
+                    FunctionExecutionResult functionExecutionResult = calculateFunctionResult(functionArgument, context, mainProgram);
+                    inputs.add(functionExecutionResult);
                 }
                 case VARIABLE -> {
                     VariableArgument innerVariableArgument = (VariableArgument) quoteFunctionArgument;
                     long inputValue = innerVariableArgument.getInputValueFromContext(context);
-                    inputs.add(inputValue);
+                    inputs.add(new FunctionExecutionResult(inputValue, 0)); // cycles 0
                 }
             }
         }
@@ -43,7 +45,7 @@ public class FunctionInstructionUtils {
     }
 
     // Recursive function: the goal is to reach functions that hold only variable arguments
-    public static long calculateFunctionResult(
+    public static FunctionExecutionResult calculateFunctionResult(
             FunctionArgument innerFunctionArgument,
             ExecutionContext context,
             Program mainProgram) {
@@ -52,14 +54,16 @@ public class FunctionInstructionUtils {
         Program innerFunction = mainProgram.getFunctionsHolder().getFunctionByName(innerFunctionName);
 
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
-        List<Long> inputs = getInputs(innerFunctionArgument.getArguments(), context, mainProgram);
+        List<FunctionExecutionResult> functionExecutionResultList = getInputs(innerFunctionArgument.getArguments(), context, mainProgram);
 
         // Run
-        functionExecutor.run(0, inputs.toArray(Long[]::new));
+        functionExecutor.run(0, extractInputValues(functionExecutionResultList));
 
         // Return function result
         Variable resultVariable = innerFunction.getResultVariable();
-        return functionExecutor.getVariableValue(resultVariable);
+        long resultValue = functionExecutor.getVariableValue(resultVariable);
+        int cycles = functionExecutor.getTotalCycles();
+        return new FunctionExecutionResult(resultValue, cycles);
     }
 
     public static String buildCommandArguments(FunctionsHolder functionsHolder, List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping) {
