@@ -270,25 +270,30 @@ public class MainAppController {
         engine.stopDebugPress();
     }
 
-    public void debugResume(Consumer<DebugDTO> onComplete) {
-        List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
+    public void debugResume() {
+        int nextBreakPointLine = get
+        return engine.getProgramAfterResume(nextBreakPointLine);
 
-        DebugResumeTask debugResumeTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
-
-        debugResumeTask.setOnSucceeded(ev -> {
-            DebugDTO debugStep = debugResumeTask.getValue();
-
-            if (debugStep.hasMoreInstructions()) {
-                updateControllerAfterDebugStep(debugStep);
-            }
-
-            onComplete.accept(debugStep);
-        });
-
-        debugResumeTask.setOnFailed(ev -> { handleTaskFailure(debugResumeTask, "Debug Resume Failed"); });
-
-        new Thread(debugResumeTask, "debugResume-thread").start();
     }
+//    public void debugResume(Consumer<DebugDTO> onComplete) {
+//        List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
+//
+//        DebugResumeTask debugResumeTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
+//
+//        debugResumeTask.setOnSucceeded(ev -> {
+//            DebugDTO debugStep = debugResumeTask.getValue();
+//
+//            if (debugStep.hasMoreInstructions()) {
+//                updateControllerAfterDebugStep(debugStep);
+//            }
+//
+//            onComplete.accept(debugStep);
+//        });
+//
+//        debugResumeTask.setOnFailed(ev -> { handleTaskFailure(debugResumeTask, "Debug Resume Failed"); });
+//
+//        new Thread(debugResumeTask, "debugResume-thread").start();
+//    }
 
     public DebugDTO debugStepOver() {
         DebugDTO debugStep = engine.getProgramAfterStepOver();
