@@ -137,8 +137,7 @@ public class DebugImpl implements Debug {
                     initializedProgramExecutor.getDegree(),
                     initializedProgramExecutor.getResult(),
                     initializedProgramExecutor.getTotalCycles(),
-                    initializedProgramExecutor.getVariablesToValuesSorted(),
-                    initializedProgramExecutor.getInputsValuesOfUser()
+                    initializedProgramExecutor.getVariablesToValuesSorted()
             );
         }
 
@@ -165,8 +164,7 @@ public class DebugImpl implements Debug {
                 executorDTO.getDegree(),
                 executorDTO.getResult(),
                 executorDTO.getTotalCycles(),
-                executorDTO.getVariablesToValuesSorted(),
-                executorDTO.getInputsValuesOfUser()
+                executorDTO.getVariablesToValuesSorted()
         );
     }
 

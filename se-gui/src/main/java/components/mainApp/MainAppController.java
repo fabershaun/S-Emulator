@@ -270,11 +270,6 @@ public class MainAppController {
         engine.stopDebugPress();
     }
 
-//    public void debugResume() {
-//        return engine.getProgramAfterResume(nextBreakPointLine);
-//
-//    }
-
     public void debugResume(Consumer<DebugDTO> onComplete) {
         List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
 
