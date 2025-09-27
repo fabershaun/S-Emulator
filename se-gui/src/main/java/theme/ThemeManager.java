@@ -1,4 +1,4 @@
-package components.theme;
+package theme;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -15,7 +15,7 @@ public class ThemeManager {
     private ThemeManager() {
         // Define themes with correct paths
         themes.put("default", "/css/themes/default.css");
-        themes.put("Light", "/css/themes/light.css");
+        themes.put("rainbow", "/css/themes/rainbow.css");
         themes.put("Dark", "/css/themes/dark.css");
     }
 

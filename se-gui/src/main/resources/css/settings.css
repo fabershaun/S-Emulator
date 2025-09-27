@@ -5,12 +5,21 @@
     -fx-border-color: #ccc;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
+    -fx-text-fill: black;
 }
 
 .menu-item {
     -fx-padding: 4 12 4 12;
+    -fx-text-fill: black;
 }
 
 .menu-item:hover {
     -fx-background-color: #e6f0ff;
+    -fx-text-fill: black;
+}
+
+.menu-item:focused,
+.menu-item:armed {
+    -fx-background-color: #e6f0ff;
+    -fx-text-fill: black;
 }

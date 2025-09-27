@@ -1,0 +1,12 @@
+#titleLabel {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(to right, #00c6ff, #3c78d8, #8e44ad);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 8, 0.6, 0, 3);
+    -fx-padding: 15 0 20 0;
+    -fx-background-color: transparent;
+    -fx-font-family: "Segoe UI Semibold", "Roboto", "Arial Black";
+    -fx-letter-spacing: 2px;
+    -fx-alignment: center;
+    -fx-underline: true;
+}

@@ -35,7 +35,7 @@ public class UIManager extends Application {
         mainAppController.setEngine(engine);
 
         // Set stage
-        stage.setTitle("S-Emulator GUI");
+        stage.setTitle("S-Emulator");
         Scene scene = new Scene(root, 1200,600);
         stage.setScene(scene);
         stage.show();

@@ -5,7 +5,7 @@ import components.debuggerExecutionMenu.RunMode;
 import components.history.HistoryController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
-import components.theme.ThemeManager;
+import theme.ThemeManager;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
 import components.topToolBar.ProgramSelectorModel;
@@ -32,7 +32,6 @@ import tasks.ProgramRunTask;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static components.history.HistoryController.convertToHistoryRows;
@@ -43,6 +42,7 @@ public class MainAppController {
     private Engine engine;
 
     @FXML private HBox loadFile;
+    @FXML private Label titleLabel;
     @FXML private LoadFileController loadFileController;        // must: field name = fx:id + "Controller"
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"

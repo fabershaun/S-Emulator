@@ -12,12 +12,12 @@
          <Insets right="7.0" />
       </HBox.margin>
    </ComboBox>
-   <ComboBox fx:id="collapseCB" prefWidth="90.0" promptText="Collapse" />
-    <VBox alignment="CENTER" prefWidth="90.0">
+    <ComboBox fx:id="collapseCB" promptText="Collapse" prefWidth="120.0" HBox.hgrow="ALWAYS"/>
+    <VBox alignment="CENTER">
         <Label text="Current Degree" />
         <Label fx:id="currentDegreeLabel" layoutX="10.0" layoutY="10.0" />
     </VBox>
-   <ComboBox fx:id="expandCB" prefWidth="90.0" promptText="Expand" />
+    <ComboBox fx:id="expandCB" promptText="Expand" prefWidth="120.0" HBox.hgrow="ALWAYS"/>
     <ComboBox fx:id="highlightSelectionCB" prefWidth="150.0" promptText="Highlight Selection">
         <HBox.margin>
           <Insets left="7.0" />
