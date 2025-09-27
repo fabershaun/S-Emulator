@@ -77,6 +77,8 @@ public class DebuggerExecutionMenuController {
                 new SimpleStringProperty(cellData.getValue().getKey()));
         colVariablesValue.setCellValueFactory(cellData ->
                 new SimpleLongProperty(cellData.getValue().getValue()).asObject());
+
+        inputsTable.getSelectionModel().setCellSelectionEnabled(true);
     }
 
     public void initializeListeners() {
@@ -151,6 +153,24 @@ public class DebuggerExecutionMenuController {
                                         } catch (NumberFormatException e) {
                                             cancelEdit();
                                         }
+                                    }
+                                });
+
+                                // handle TAB
+                                textField.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
+                                    if (event.getCode() == javafx.scene.input.KeyCode.TAB) {
+                                        try {
+                                            commitEdit(Long.parseLong(textField.getText()));
+                                        } catch (NumberFormatException e) {
+                                            cancelEdit();
+                                        }
+                                        event.consume();
+
+                                        TableView.TableViewSelectionModel<VariableRow> selectionModel = getTableView().getSelectionModel();
+                                        int currentRow = getIndex();
+                                        int nextRow = (currentRow + 1) % getTableView().getItems().size();
+                                        selectionModel.clearAndSelect(nextRow, getTableColumn());
+                                        getTableView().edit(nextRow, getTableColumn());
                                     }
                                 });
                             }
