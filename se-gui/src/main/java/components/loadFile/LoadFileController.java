@@ -1,6 +1,10 @@
 package components.loadFile;
 
 import components.mainApp.MainAppController;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 
@@ -20,6 +25,8 @@ public class LoadFileController {
     private StringProperty selectedFilePathProperty;
 
     @FXML private Label pathLabel;
+    @FXML private Button loadFileButton;
+    private Timeline pulseAnimation;       // Animation for button
 
     public void setMainController(MainAppController mainController) {
         this.mainController = mainController;
@@ -34,6 +41,27 @@ public class LoadFileController {
     }
 
     @FXML
+    private void initialize() {
+        // Create pulse animation for Load File button
+        pulseAnimation = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(loadFileButton.scaleXProperty(), 1.0),
+                        new KeyValue(loadFileButton.scaleYProperty(), 1.0)
+                ),
+                new KeyFrame(Duration.millis(600),
+                        new KeyValue(loadFileButton.scaleXProperty(), 1.07),
+                        new KeyValue(loadFileButton.scaleYProperty(), 1.07)
+                ),
+                new KeyFrame(Duration.millis(2400),
+                        new KeyValue(loadFileButton.scaleXProperty(), 1.0),
+                        new KeyValue(loadFileButton.scaleYProperty(), 1.0)
+                )
+        );
+        pulseAnimation.setCycleCount(Animation.INDEFINITE);
+        pulseAnimation.play(); // start animation immediately
+    }
+
+    @FXML
     void openFileButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select XML File");
@@ -41,6 +69,13 @@ public class LoadFileController {
 
         File file = fileChooser.showOpenDialog(pathLabel.getScene().getWindow());
         if (file == null) return;
+
+        // Stop animation once a file is chosen
+        if (pulseAnimation != null) {
+            pulseAnimation.stop();
+            loadFileButton.setScaleX(1.0);
+            loadFileButton.setScaleY(1.0);
+        }
 
         mainController.loadNewFile(file.toPath(), pathLabel.getScene().getWindow());
     }
@@ -72,7 +107,6 @@ public class LoadFileController {
         stage.show();
         return stage;
     }
-
 
     // Handle task failure
     public static void handleLoadTaskFailure(javafx.concurrent.Task<?> task, javafx.stage.Stage progressStage) {

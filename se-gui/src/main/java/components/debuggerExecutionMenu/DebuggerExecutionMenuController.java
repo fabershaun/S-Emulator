@@ -4,6 +4,10 @@ import components.mainApp.MainAppController;
 import dto.DebugDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Duration;
 import javafx.util.converter.LongStringConverter;
 
 import java.util.List;
@@ -25,6 +30,7 @@ public class DebuggerExecutionMenuController {
     private ApplicationMode currentMode = ApplicationMode.NEW_RUN_PRESSED;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
+    private boolean inputsEditableMode = false;     // Flag to control whether blinking is active
 
     @FXML private Button newRunButton;
     @FXML private RadioButton runRadio;
@@ -98,6 +104,30 @@ public class DebuggerExecutionMenuController {
             TextFieldTableCell<VariableRow, Long> cell =
                     new TextFieldTableCell<>(new LongStringConverter()) {
 
+                        private final Tooltip tooltip = new Tooltip("Enter a number");
+
+                        // Pulse animation (scale up and down)
+                        private final Timeline pulse = new Timeline(
+                                new KeyFrame(Duration.ZERO,
+                                        new KeyValue(scaleXProperty(), 1.0),
+                                        new KeyValue(scaleYProperty(), 1.0)
+                                ),
+                                new KeyFrame(Duration.millis(600),
+                                        new KeyValue(scaleXProperty(), 1.15),
+                                        new KeyValue(scaleYProperty(), 1.15)
+                                ),
+                                new KeyFrame(Duration.millis(1200),
+                                        new KeyValue(scaleXProperty(), 1.0),
+                                        new KeyValue(scaleYProperty(), 1.0)
+                                )
+                        );
+
+                        {
+                            // repeat pulse forever
+                            pulse.setCycleCount(Animation.INDEFINITE);
+                            setTooltip(tooltip);
+                        }
+
                         @Override
                         public void startEdit() {
                             super.startEdit();
@@ -108,17 +138,45 @@ public class DebuggerExecutionMenuController {
                                     return newText.matches("-?\\d*") ? change : null;
                                 }));
 
-                                // Commit value when focus is lost (not only on Enter)
+                                // Commit value when focus is lost
                                 textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                                     if (!isNowFocused && isEditing()) {
                                         try {
                                             Long value = Long.parseLong(textField.getText());
-                                            commitEdit(value); // Save the new value
+                                            commitEdit(value);
                                         } catch (NumberFormatException e) {
-                                            cancelEdit(); // Cancel if not a valid integer
+                                            cancelEdit();
                                         }
                                     }
                                 });
+                            }
+                        }
+
+                        @Override
+                        public void updateItem(Long value, boolean empty) {
+                            super.updateItem(value, empty);
+                            if (empty) {
+                                setText(null);
+                                pulse.stop();
+                                setScaleX(1.0);
+                                setScaleY(1.0);
+                                setStyle("-fx-alignment: CENTER;");
+                            } else {
+                                if (inputsEditableMode && value == 0) {
+                                    // Show placeholder instead of 0
+                                    setText("Enter value");
+                                    setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-alignment: CENTER;");
+
+                                    pulse.play(); // optional pulse effect
+                                } else {
+                                    // Show normal value
+                                    setText(value.toString());
+                                    setStyle("-fx-text-fill: black; -fx-alignment: CENTER;");
+
+                                    pulse.stop();
+                                    setScaleX(1.0);
+                                    setScaleY(1.0);
+                                }
                             }
                         }
                     };
@@ -162,6 +220,7 @@ public class DebuggerExecutionMenuController {
         resetInputTable(currentSelectedProgramProperty.getValue());
         mainController.clearHistorySelection();
         mainController.disableHistoryAndToolBarComponents(false);
+        inputsEditableMode = true; // enable blinking only now
     }
 
     private void resetInputTable(ProgramDTO program) {
@@ -233,10 +292,14 @@ public class DebuggerExecutionMenuController {
 
     @FXML
     private void onPlay() {
+        inputsEditableMode = false; // disable blinking only now
+
         List<Long> inputValues = inputsTable.getItems()
                 .stream()
                 .map(VariableRow::getVariableValue) // take the user input values
                 .toList();
+
+        inputsTable.refresh(); // force refresh so placeholders return to 0
 
         if (runRadio.isSelected()) {
             enterRunning();
