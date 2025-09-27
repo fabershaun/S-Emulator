@@ -1,0 +1,16 @@
+.context-menu {
+    -fx-font-size: 11px;
+    -fx-padding: 3 6 3 6;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.menu-item {
+    -fx-padding: 4 12 4 12;
+}
+
+.menu-item:hover {
+    -fx-background-color: #e6f0ff;
+}

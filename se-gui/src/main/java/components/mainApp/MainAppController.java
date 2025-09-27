@@ -5,6 +5,7 @@ import components.debuggerExecutionMenu.RunMode;
 import components.history.HistoryController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
+import components.theme.ThemeManager;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
 import components.topToolBar.ProgramSelectorModel;
@@ -14,8 +15,9 @@ import engine.EngineImpl;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableView;
+import javafx.geometry.Side;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import components.debuggerExecutionMenu.DebuggerExecutionMenuController;
@@ -30,6 +32,7 @@ import tasks.ProgramRunTask;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static components.history.HistoryController.convertToHistoryRows;
@@ -53,6 +56,9 @@ public class MainAppController {
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
     @FXML private VBox historyMenu;
     @FXML private HistoryController historyMenuController;   // must: field name = fx:id + "Controller"
+    @FXML private Button settingsButton;
+
+    ContextMenu settingsMenu;
 
     private final StringProperty selectedFilePath = new SimpleStringProperty();
     private final ObjectProperty<ProgramDTO> mainProgramLoadedProperty = new SimpleObjectProperty<>(null);
@@ -69,6 +75,16 @@ public class MainAppController {
 
     @FXML
     public void initialize() {                          // We need that the subcomponents will know the main controller (FullAppController)
+        initializeSettingsMenu();         // Initialize the settings menu
+
+        // Apply theme when scene is available
+        Platform.runLater(() -> {
+            Scene scene = settingsButton.getScene();
+            if (scene != null) {
+                ThemeManager.getInstance().applyTheme(scene, "default");
+            }
+        });
+
         if (
             loadFileController != null &&
             topToolBarController != null &&
@@ -80,6 +96,22 @@ public class MainAppController {
         ) {
             initializeSubComponents();
             initializeListeners();
+        }
+    }
+
+    private void initializeSettingsMenu() {
+        settingsMenu = new ContextMenu();
+
+        // Add theme options directly to the settings menu
+        for (String themeName : ThemeManager.getInstance().getAvailableThemes()) {
+            MenuItem themeItem = new MenuItem(themeName);
+            themeItem.setOnAction(e -> {
+                Scene scene = settingsButton.getScene();
+                if (scene != null) {
+                    ThemeManager.getInstance().applyTheme(scene, themeName);
+                }
+            });
+            settingsMenu.getItems().add(themeItem);
         }
     }
 
@@ -345,5 +377,11 @@ public class MainAppController {
     public void EnterDebugMode() {
         mainInstructionsTableController.highlightLineDebugMode(0);  // Highlight the first line on table instructions
         disableHistoryAndToolBarComponents(true);
+    }
+
+    @FXML
+    public void onSettingsClicked() {
+        // Show settings menu when settings button is clicked
+        settingsMenu.show(settingsButton, Side.BOTTOM, 0, 0);
     }
 }

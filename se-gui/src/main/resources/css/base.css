@@ -1,0 +1,10 @@
+/* Base rules shared by all themes */
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "Arial";
+    -fx-font-size: 13px;
+}
+
+/* Center all table cells by default */
+.table-cell {
+    -fx-alignment: CENTER;
+}

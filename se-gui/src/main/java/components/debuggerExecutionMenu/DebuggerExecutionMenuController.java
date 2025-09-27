@@ -15,13 +15,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.converter.LongStringConverter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-
 
 public class DebuggerExecutionMenuController {
 
@@ -32,6 +31,7 @@ public class DebuggerExecutionMenuController {
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
     private boolean inputsEditableMode = false;     // Flag to control whether blinking is active
 
+    @FXML private VBox debuggerExecutionMenu;
     @FXML private Button newRunButton;
     @FXML private RadioButton runRadio;
     @FXML private RadioButton debugRadio;
@@ -61,6 +61,10 @@ public class DebuggerExecutionMenuController {
     @FXML
     private void initialize() {
         enterNoProgramLoaded();
+
+        // Load custom CSS
+        String cssPath = getClass().getResource("/components/debuggerExecutionMenu/debuggerMenu.css").toExternalForm();
+        debuggerExecutionMenu.getStylesheets().add(cssPath);
 
         // Input table:
         colInputs.setCellValueFactory(new PropertyValueFactory<>("variableName"));
@@ -107,7 +111,7 @@ public class DebuggerExecutionMenuController {
                         private final Tooltip tooltip = new Tooltip("Enter a number");
 
                         // Pulse animation (scale up and down)
-                        private final Timeline pulse = new Timeline(
+                        private final Timeline pulseAnimation = new Timeline(
                                 new KeyFrame(Duration.ZERO,
                                         new KeyValue(scaleXProperty(), 1.0),
                                         new KeyValue(scaleYProperty(), 1.0)
@@ -124,7 +128,7 @@ public class DebuggerExecutionMenuController {
 
                         {
                             // repeat pulse forever
-                            pulse.setCycleCount(Animation.INDEFINITE);
+                            pulseAnimation.setCycleCount(Animation.INDEFINITE);
                             setTooltip(tooltip);
                         }
 
@@ -157,7 +161,7 @@ public class DebuggerExecutionMenuController {
                             super.updateItem(value, empty);
                             if (empty) {
                                 setText(null);
-                                pulse.stop();
+                                pulseAnimation.stop();
                                 setScaleX(1.0);
                                 setScaleY(1.0);
                                 setStyle("-fx-alignment: CENTER;");
@@ -167,13 +171,13 @@ public class DebuggerExecutionMenuController {
                                     setText("Enter value");
                                     setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-alignment: CENTER;");
 
-                                    pulse.play(); // optional pulse effect
+                                    pulseAnimation.play(); // optional pulse effect
                                 } else {
                                     // Show normal value
                                     setText(value.toString());
                                     setStyle("-fx-text-fill: black; -fx-alignment: CENTER;");
 
-                                    pulse.stop();
+                                    pulseAnimation.stop();
                                     setScaleX(1.0);
                                     setScaleY(1.0);
                                 }

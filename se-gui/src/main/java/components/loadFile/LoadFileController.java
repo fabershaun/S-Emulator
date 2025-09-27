@@ -49,10 +49,10 @@ public class LoadFileController {
                         new KeyValue(loadFileButton.scaleYProperty(), 1.0)
                 ),
                 new KeyFrame(Duration.millis(600),
-                        new KeyValue(loadFileButton.scaleXProperty(), 1.07),
-                        new KeyValue(loadFileButton.scaleYProperty(), 1.07)
+                        new KeyValue(loadFileButton.scaleXProperty(), 1.15),
+                        new KeyValue(loadFileButton.scaleYProperty(), 1.15)
                 ),
-                new KeyFrame(Duration.millis(2400),
+                new KeyFrame(Duration.millis(2000),
                         new KeyValue(loadFileButton.scaleXProperty(), 1.0),
                         new KeyValue(loadFileButton.scaleYProperty(), 1.0)
                 )
