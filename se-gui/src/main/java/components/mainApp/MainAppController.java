@@ -4,6 +4,9 @@ import components.chainInstructionTable.ChainInstructionsTableController;
 import components.history.HistoryController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.stage.Modality;
 import theme.ThemeManager;
 import components.topToolBar.ExpansionCollapseModel;
 import components.topToolBar.HighlightSelectionModel;
@@ -29,6 +32,7 @@ import tasks.ExpandProgramTask;
 import tasks.LoadProgramTask;
 import tasks.ProgramRunTask;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
@@ -55,6 +59,7 @@ public class MainAppController {
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
     @FXML private VBox historyMenu;
     @FXML private HistoryController historyMenuController;   // must: field name = fx:id + "Controller"
+    @FXML private Button createProgramButton;
     @FXML private Button settingsButton;
 
     ContextMenu settingsMenu;
@@ -382,5 +387,24 @@ public class MainAppController {
     public void onSettingsClicked() {
         // Show settings menu when settings button is clicked
         settingsMenu.show(settingsButton, Side.BOTTOM, 0, 0);
+    }
+
+    @FXML
+    public void onCreateProgramClicked() {
+        try {
+            // Load the FXML of the Program Creation window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/programCreation/programCreation.fxml"));
+            Parent root = loader.load();
+
+            // Create a new window (Stage)
+            Stage stage = new Stage();
+            stage.setTitle("Program Builder");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL); // Prevents interaction with main window until closed (optional)
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Or show an alert to the user
+        }
     }
 }
