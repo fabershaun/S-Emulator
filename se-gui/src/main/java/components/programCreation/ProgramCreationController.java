@@ -39,7 +39,6 @@ public class ProgramCreationController {
     @FXML private ComboBox<InstructionDataDTO> chooseInstructionCB;
     @FXML private VBox dynamicArgsBox;
     @FXML private TableView<InstructionDTO> instructionsTable;
-    @FXML private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
     @FXML private Button deleteInstructionButton;
 
     private MainAppController mainController;
@@ -146,7 +145,7 @@ public class ProgramCreationController {
     }
 
     @FXML
-    private void onNewProgram(ActionEvent event) {
+    private void onNewProgram() {
         disableEditing(false);
         programCreationModel.resetEngine();
         instructionsTable.getItems().clear();
@@ -158,7 +157,7 @@ public class ProgramCreationController {
     }
 
     @FXML
-    private void onUploadFileToEdit(ActionEvent event) {
+    private void onUploadFileToEdit() {
         programCreationModel.resetEngine();
 
         FileChooser fileChooser = new FileChooser();
@@ -181,7 +180,7 @@ public class ProgramCreationController {
         }    }
 
     @FXML
-    void onDeleteClicked(ActionEvent event) {
+    void onDeleteClicked() {
         // Get the selected instruction
         InstructionDTO selected = instructionsTable.getSelectionModel().getSelectedItem();
 
@@ -197,7 +196,7 @@ public class ProgramCreationController {
     }
 
     @FXML
-    void onSaveClicked(ActionEvent event) {
+    void onSaveClicked() {
         List<InstructionDTO> instructions = new ArrayList<>(instructionsTable.getItems());
         String programName = programNameTF.getText();
 
@@ -271,7 +270,7 @@ public class ProgramCreationController {
     }
 
     // Build the whole UI for unary operations (INCREASE / DECREASE)
-    private void buildUnaryOperationUI(String instructionName, String operationSymbol) {
+    private void buildUnaryOperationUI(String instructionName) {
         HBox labelIndexBox = createLabelIndexBox();
         ComboBox<String> variableTypeCB = new ComboBox<>();
         TextField variableNumberField = createNumericField();
@@ -428,7 +427,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             variableTypeCB.getSelectionModel().clearSelection();
             variableNumberField.clear();
             variablePreview.setText("");
@@ -441,11 +440,11 @@ public class ProgramCreationController {
 
 
     private void buildIncreaseUI() {
-        buildUnaryOperationUI("INCREASE", "+ 1");
+        buildUnaryOperationUI("INCREASE");
     }
 
     private void buildDecreaseUI() {
-        buildUnaryOperationUI("DECREASE", "- 1");
+        buildUnaryOperationUI("DECREASE");
     }
 
     // Build the whole UI for JNZ
@@ -462,7 +461,7 @@ public class ProgramCreationController {
 
         // Reference label field (like normal label)
         HBox referenceLabelBox = createLabelField();
-        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().getFirst();
         referenceLabelField.setPromptText("Reference Label index");
         Label referenceLabelPreview = (Label) referenceLabelBox.getUserData();
 
@@ -511,7 +510,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             variableTypeCB.getSelectionModel().clearSelection();
             variableNumberField.clear();
             variablePreview.setText("");
@@ -527,12 +526,11 @@ public class ProgramCreationController {
     }
 
     private void buildNoOpUI() {
-        buildUnaryOperationUI("NO_OP", "");
+        buildUnaryOperationUI("NO_OP");
     }
 
     private void buildZeroVariableUI() {
-        buildUnaryOperationUI("ZERO_VARIABLE", "");
-        ;
+        buildUnaryOperationUI("ZERO_VARIABLE");
     }
 
     // Build the whole UI for GOTO_LABEL
@@ -542,7 +540,7 @@ public class ProgramCreationController {
 
         // Reference label (mandatory, same mechanism as target label)
         HBox referenceLabelBox = createLabelIndexBox();
-        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().getFirst();
         Label referenceLabelPreview = (Label) referenceLabelBox.getUserData();
         referenceLabelField.setPromptText("Reference Label");
 
@@ -573,7 +571,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             referenceLabelField.clear();
 
             addButton.setDisable(true);
@@ -664,7 +662,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             targetVarTypeCB.getSelectionModel().clearSelection();
             targetVarNumberField.clear();
             targetVarPreview.setText("");
@@ -747,7 +745,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             variableTypeCB.getSelectionModel().clearSelection();
             variableNumberField.clear();
             variablePreview.setText("");
@@ -823,7 +821,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             variableTypeCB.getSelectionModel().clearSelection();
             variableNumberField.clear();
             variablePreview.setText("");
@@ -912,7 +910,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             variableTypeCB.getSelectionModel().clearSelection();
             variableNumberField.clear();
             variablePreview.setText("");
@@ -1024,7 +1022,7 @@ public class ProgramCreationController {
             addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
-            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            ((TextField) labelIndexBox.getChildren().getFirst()).clear();
             targetTypeCB.getSelectionModel().clearSelection();
             targetNumberField.clear();
             targetPreview.setText("");

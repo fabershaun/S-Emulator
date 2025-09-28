@@ -61,7 +61,6 @@ public class MainAppController {
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
     @FXML private VBox historyMenu;
     @FXML private HistoryController historyMenuController;   // must: field name = fx:id + "Controller"
-    @FXML private Button createProgramButton;
     @FXML private Button settingsButton;
 
     ContextMenu settingsMenu;
@@ -172,9 +171,7 @@ public class MainAppController {
         programSelectorModel.setMainProgram(mainProgramLoadedProperty.get());
         programSelectorModel.setSelectedProgram(selectedProgramProperty.get());
 
-        mainProgramLoadedProperty.addListener((observableValue, oldProgram, newProgram) -> {
-            programSelectorModel.setMainProgram(newProgram);
-        });
+        mainProgramLoadedProperty.addListener((observableValue, oldProgram, newProgram) -> programSelectorModel.setMainProgram(newProgram));
     }
 
     private void setMainControllerForSubcomponents() {
@@ -266,9 +263,7 @@ public class MainAppController {
 
         ProgramRunTask runTask = new ProgramRunTask(activeProgramName, engine, degree, inputs.toArray(new Long[0]));
 
-        runTask.setOnSucceeded(ev -> {
-            programAfterExecuteProperty.set(runTask.getValue());
-        });
+        runTask.setOnSucceeded(ev -> programAfterExecuteProperty.set(runTask.getValue()));
 
         runTask.setOnFailed(ev -> handleTaskFailure(runTask, "Run Failed"));
 
@@ -323,7 +318,7 @@ public class MainAppController {
             onComplete.accept(debugStep);
         });
 
-        debugResumeTask.setOnFailed(ev -> { handleTaskFailure(debugResumeTask, "Debug Resume Failed"); });
+        debugResumeTask.setOnFailed(ev -> handleTaskFailure(debugResumeTask, "Debug Resume Failed"));
 
         new Thread(debugResumeTask, "debugResume-thread").start();
     }

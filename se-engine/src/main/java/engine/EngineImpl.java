@@ -8,11 +8,9 @@ import execution.ProgramExecutorImpl;
 import execution.ProgramExecutor;
 import instruction.Instruction;
 import instruction.InstructionData;
-import instruction.InstructionType;
 import instruction.OriginOfAllInstruction;
 import program.Program;
 import loader.XmlProgramLoader;
-import program.ProgramImpl;
 import variable.Variable;
 
 import java.io.*;
@@ -283,8 +281,7 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public InstructionDTO createOriginalInstruction() {
-        Instruction origin = new OriginOfAllInstruction();
-
+        // Create and return a new Origin instruction
         return new InstructionDTO(InstructionData.ORIGIN.getName(), 0, InstructionData.ORIGIN.getCycles(), "B", null, null, null, null, 0,  "", null );
     }
 

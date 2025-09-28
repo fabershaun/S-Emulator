@@ -1,8 +1,5 @@
 package dto;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-
 public class InstructionDTO {
     private final String instructionName;
     private int instructionNumber;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
