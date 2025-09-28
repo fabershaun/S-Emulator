@@ -3,6 +3,7 @@ package components.programCreation;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import dto.InstructionDTO;
 import dto.InstructionDataDTO;
+import dto.ProgramDTO;
 import instruction.InstructionDataMapper;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -13,29 +14,26 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static components.loadFile.LoadFileController.showEngineError;
 
 public class ProgramCreationController {
 
     private final int WIDE = 100;
     private final int NORMAL = 70;
 
-    @FXML
-    private Button saveButton;
+    @FXML private Button saveButton;
 
-    @FXML
-    private TextField programNameTF;
-    @FXML
-    private ComboBox<InstructionDataDTO> chooseInstructionCB;
-    @FXML
-    private VBox dynamicArgsBox;
-    @FXML
-    private TableView<InstructionDTO> instructionsTable;
-    @FXML
-    private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
-    @FXML
-    private Button deleteInstructionButton;
+    @FXML private TextField programNameTF;
+    @FXML private ComboBox<InstructionDataDTO> chooseInstructionCB;
+    @FXML private VBox dynamicArgsBox;
+    @FXML private TableView<InstructionDTO> instructionsTable;
+    @FXML private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
+    @FXML private Button deleteInstructionButton;
 
     private ProgramCreationModel programCreationModel;
     private final Map<String, Runnable> uiBuilders = new HashMap<>();
@@ -115,13 +113,34 @@ public class ProgramCreationController {
     private void onNewProgram(ActionEvent event) {
         disableEditing(false);
         programCreationModel.resetEngine();
+        instructionsTable.getItems().clear();
+        programNameTF.clear();
+        chooseInstructionCB.getSelectionModel().clearSelection();
+        chooseInstructionCB.setPromptText("Choose instruction");
     }
 
     @FXML
     private void onUploadFile(ActionEvent event) {
         programCreationModel.resetEngine();
-        // TODO: Handle uploading a program from file
-    }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Upload Program");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml")
+        );
+
+        File file = fileChooser.showOpenDialog(saveButton.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                ProgramDTO loaded = programCreationModel.loadProgramFromFile(file.toPath());
+                instructionsTable.getItems().setAll(loaded.getInstructions().getProgramInstructionsDtoList());
+                saveButton.setDisable(false);
+                disableEditing(false);
+            } catch (Exception e) {
+                showEngineError("Failed to load program", e.getMessage());
+            }
+        }    }
 
     @FXML
     void onDeleteClicked(ActionEvent event) {
@@ -139,31 +158,26 @@ public class ProgramCreationController {
 
     @FXML
     void onSaveClicked(ActionEvent event) {
-        // Create new program in engine
-        programCreationModel.createNewProgramInEngine(instructionsTable.getItems());
+        List<InstructionDTO> instructions = new ArrayList<>(instructionsTable.getItems());
+        String programName = programNameTF.getText();
 
-        // Open file chooser
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Program");
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml")
         );
+        fileChooser.setInitialFileName(
+                (programName != null && !programName.isBlank()) ? programName + ".xml" : "new_program.xml"
+        );
 
-        // Decide default file name
-        String programName = programNameTF.getText();
-        String defaultName = (programName != null && !programName.isBlank())
-                ? programName + ".xml"
-                : "new_program.xml";
-        fileChooser.setInitialFileName(defaultName);
-
-        // Show save dialog
         File file = fileChooser.showSaveDialog(saveButton.getScene().getWindow());
-
-        // Save to file if user chose one
-        if (file != null) {
-            programCreationModel.saveProgramToFile(file);
+        try {
+            programCreationModel.saveProgramToFile(file, programName, instructions);
+        } catch (Exception e) {
+            showEngineError("Failed to save program", e.getMessage());
         }
     }
+
 
     private Button createAddButton(String instructionName, TextField... fields) {
         Button addButton = new Button("Add Instruction");

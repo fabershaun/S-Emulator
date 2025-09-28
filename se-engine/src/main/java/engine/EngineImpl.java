@@ -12,6 +12,7 @@ import instruction.InstructionType;
 import instruction.OriginOfAllInstruction;
 import program.Program;
 import loader.XmlProgramLoader;
+import program.ProgramImpl;
 import variable.Variable;
 
 import java.io.*;
@@ -285,6 +286,22 @@ public class EngineImpl implements Engine, Serializable {
         Instruction origin = new OriginOfAllInstruction();
 
         return new InstructionDTO(InstructionData.ORIGIN.getName(), 0, InstructionData.ORIGIN.getCycles(), "B", null, null, null, null, 0,  "", null );
+    }
 
+    @Override
+    public void exportToXml(File file, String programName, List<InstructionDTO> instructions) {
+        File target = ensureXml(file);
+        try {
+            saveToXml.XmlProgramSaver saver = new saveToXml.XmlProgramSaver();
+            saver.save(target, programName, instructions);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to export program to XML: " + e.getMessage(), e);
+        }
+    }
+
+    private File ensureXml(File file) {
+        String name = file.getName().toLowerCase();
+        if (name.endsWith(".xml")) return file;
+        return new File(file.getParentFile(), file.getName() + ".xml");
     }
 }

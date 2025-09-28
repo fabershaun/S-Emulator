@@ -1,11 +1,14 @@
 package components.programCreation;
 
 import dto.InstructionDTO;
+import dto.ProgramDTO;
 import engine.Engine;
 import engine.EngineImpl;
+import exceptions.EngineLoadException;
 import instruction.InstructionDataMapper;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 public class ProgramCreationModel {
@@ -20,12 +23,13 @@ public class ProgramCreationModel {
         engine = new EngineImpl();
     }
 
-    public void createNewProgramInEngine(List<InstructionDTO> instructionDTOList) {
-        //engine.createNewProgram(instructionDTOList);
+    public ProgramDTO loadProgramFromFile(Path xmlPath) throws EngineLoadException {
+        engine.loadProgram(xmlPath);
+        return engine.getMainProgram();
     }
 
-    public void saveProgramToFile(File file) {
-        //engine.exportToXml(file);
+    public void saveProgramToFile(File file, String programName, List<InstructionDTO> instructions) {
+        engine.exportToXml(file, programName, instructions);
     }
 
     // Factory for all unary operations (same target on both sides)

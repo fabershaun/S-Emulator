@@ -109,7 +109,8 @@ final class XmlProgramMapper {
             case "DECREASE":
                 return new DecreaseInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
 
-            case "JUMP_NOT_ZERO": {
+            case "JUMP_NOT_ZERO":
+            case "JNZ": {
                 String targetLabel = sInstructionArguments.getFirst().getValue();
                 Label addedLabel = parseLabel(targetLabel, instructionName, ordinal);
                 return new JumpNotZeroInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
