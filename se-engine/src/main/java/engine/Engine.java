@@ -1,6 +1,7 @@
 package engine;
 
 import dto.DebugDTO;
+import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import exceptions.EngineLoadException;
@@ -33,5 +34,6 @@ public interface Engine {
     void saveState(Path path) throws EngineLoadException;
     void loadState(Path path) throws EngineLoadException;
 
+    InstructionDTO createOriginalInstruction();
 }
 

@@ -3,6 +3,8 @@ package components.mainApp;
 import components.chainInstructionTable.ChainInstructionsTableController;
 import components.history.HistoryController;
 import components.mainInstructionsTable.MainInstructionsTableController;
+import components.programCreation.ProgramCreationController;
+import components.programCreation.ProgramCreationModel;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -395,6 +397,13 @@ public class MainAppController {
             // Load the FXML of the Program Creation window
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/components/programCreation/programCreation.fxml"));
             Parent root = loader.load();
+
+            // Get the controller of ProgramCreation
+            ProgramCreationController creationController = loader.getController();
+
+            // Pass the model
+            ProgramCreationModel model = new ProgramCreationModel();
+            creationController.setModel(model);
 
             // Create a new window (Stage)
             Stage stage = new Stage();

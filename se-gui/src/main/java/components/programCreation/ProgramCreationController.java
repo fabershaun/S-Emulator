@@ -8,24 +8,32 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProgramCreationController {
 
-    @FXML private Button createButton;
+    private final int LABEL_WIDTH = 90;
+    private final int VAR_WIDTH = 70;
+    private final int VAR_CB_WIDTH = 90;
+
     @FXML private Button saveButton;
 
     @FXML private TextField programNameTF;
     @FXML private ComboBox<InstructionDataDTO> chooseInstructionCB;
-
+    @FXML private VBox dynamicArgsBox;
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
     @FXML private Button deleteInstructionButton;
 
-    ContextMenu creationMenu;
+    private ProgramCreationModel programCreationModel;
+    private final Map<String, Runnable> uiBuilders = new HashMap<>();
 
-    // הערות:
-    // הכפתורים save ידלק רק כשיש לפחות פקודה אחת בטבלה
-    // הכפתור delete ידלק רק כשפקודה מסויימת בטבלה תיבחר
 
     @FXML
     private void initialize() {
@@ -33,8 +41,15 @@ public class ProgramCreationController {
         saveButton.setDisable(true);
         deleteInstructionButton.setDisable(true);
         initializeListeners();
-        initializeCreateMenu();
         initializeInstructionChoices();
+        initBuilders();
+
+        instructionsTable.getColumns().removeFirst();        // Remove the column of the break points
+    }
+
+
+    public void setModel(ProgramCreationModel model) {
+        this.programCreationModel = model;
     }
 
     private void initializeInstructionChoices() {
@@ -51,22 +66,37 @@ public class ProgramCreationController {
         instructionsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
              deleteInstructionButton.setDisable(newSel == null);
         });
+
+        chooseInstructionCB.valueProperty().addListener((obs, oldVal, newVal) -> {
+            dynamicArgsBox.getChildren().clear();
+
+            if (newVal == null) return;
+
+            buildDynamicArgsFields(newVal);
+        });
     }
 
-    private void initializeCreateMenu() {
-        creationMenu = new ContextMenu();
+    private void initBuilders() {
+        uiBuilders.put("INCREASE", this::buildIncreaseUI);
+        uiBuilders.put("DECREASE", this::buildDecreaseUI);
+        uiBuilders.put("JNZ", this::buildJnzUI);
+        uiBuilders.put("NO_OP", this::buildNoOpUI);
+//        uiBuilders.put("ZERO_VARIABLE", this::buildZeroVariableUI);
+//        uiBuilders.put("GOTO_LABEL", this::buildGotoLabelUI);
+//        uiBuilders.put("ASSIGNMENT", this::buildAssignmentUI);
+//        uiBuilders.put("CONSTANT_ASSIGNMENT", this::buildConstantAssignmentUI);
+//        uiBuilders.put("JUMP_ZERO", this::buildJumpZeroUI);
+//        uiBuilders.put("JUMP_EQUAL_CONSTANT", this::buildJumpEqualConstantUI);
+//        uiBuilders.put("JUMP_EQUAL_VARIABLE", this::buildJumpEqualVariableUI);
+    }
 
-        // Create menu items
-        MenuItem newProgramItem = new MenuItem("New");
-        MenuItem uploadFileItem = new MenuItem("Upload file");
-
-        newProgramItem.setOnAction(event -> {
-            disableEditing(false);
-        });
-
-        uploadFileItem.setOnAction(event -> {
-            // TODO: Handle uploading a program from file
-        });
+    private void buildDynamicArgsFields(InstructionDataDTO instructionDataDTO) {
+        Runnable builder = uiBuilders.get(instructionDataDTO.getName().toUpperCase());
+        if (builder != null) {
+            builder.run();
+        } else {
+            throw new IllegalArgumentException(instructionDataDTO.getName().toUpperCase() + " is not a valid instruction.");
+        }
     }
 
     private void disableEditing(boolean disabled) {
@@ -74,15 +104,351 @@ public class ProgramCreationController {
         chooseInstructionCB.setDisable(disabled);
     }
 
-    @FXML void OnCreateClicked(ActionEvent event) {
-        creationMenu.show(createButton, javafx.geometry.Side.BOTTOM, 0, 0);
+    @FXML
+    private void onNewProgram(ActionEvent event) {
+        disableEditing(false);
+        programCreationModel.resetEngine();
     }
 
-    @FXML void OnDeleteClicked(ActionEvent event) {
+    @FXML
+    private void onUploadFile(ActionEvent event) {
+        programCreationModel.resetEngine();
+        // TODO: Handle uploading a program from file
+    }
+
+    @FXML void onDeleteClicked(ActionEvent event) {
 
     }
 
-    @FXML void OnSaveClicked(ActionEvent event) {
+    @FXML
+    void onSaveClicked(ActionEvent event) {
+        // Create new program in engine
+        programCreationModel.createNewProgramInEngine(instructionsTable.getItems());
 
+        // Open file chooser
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Program");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml")
+        );
+
+        // Decide default file name
+        String programName = programNameTF.getText();
+        String defaultName = (programName != null && !programName.isBlank())
+                ? programName + ".xml"
+                : "new_program.xml";
+        fileChooser.setInitialFileName(defaultName);
+
+        // Show save dialog
+        File file = fileChooser.showSaveDialog(saveButton.getScene().getWindow());
+
+        // Save to file if user chose one
+        if (file != null) {
+            programCreationModel.saveProgramToFile(file);
+        }
+    }
+
+    private Button createAddButton(String instructionName, TextField... fields) {
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        // Validation: enable only when all fields are filled
+        Runnable validateFields = () -> {
+            boolean valid = true;
+            for (TextField field : fields) {
+                String prompt = field.getPromptText().toLowerCase();
+
+                if (!(prompt.contains("label index")) && field.getText().isEmpty()) {
+                    valid = false;
+                    break;
+                }
+            }
+            addButton.setDisable(!valid);
+        };
+
+        // Add listeners to each field
+        for (TextField field : fields) {
+            field.textProperty().addListener((obs, o, n) -> validateFields.run());
+        }
+
+        return addButton;
+    }
+
+
+    private TextField createNumericField() {
+        TextField textField = new TextField();
+        textField.setPromptText("Target Variable");
+
+        textField.setPrefWidth(VAR_WIDTH);
+        textField.setMaxWidth(VAR_WIDTH);
+
+        // Only integers
+        TextFormatter<Integer> formatter = new TextFormatter<>(
+                change -> change.getControlNewText().matches("-?\\d*") ? change : null
+        );
+        textField.setTextFormatter(formatter);
+
+        return textField;
+    }
+
+    private HBox createLabelField() {
+        TextField textField = new TextField();
+        textField.setPromptText("Label index");
+
+        textField.setPrefWidth(LABEL_WIDTH);
+        textField.setMaxWidth(LABEL_WIDTH);
+
+        Label label = new Label();
+
+        // Whenever user types a number, update label to "L" + number
+        textField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.matches("\\d+")) {
+                label.setText("L" + newVal);
+            } else {
+                label.setText("");
+            }
+        });
+
+        HBox hBox = new HBox(5, textField, label); // spacing of 5px between field and label
+        hBox.setSpacing(5);
+
+        hBox.setUserData(label);
+
+        return hBox;
+    }
+
+    // Build the whole UI for unary operations (INCREASE / DECREASE)
+    private void buildUnaryOperationUI(String instructionName, String operationSymbol) {
+        HBox labelIndexBox = createLabelIndexBox();
+        ComboBox<String> variableTypeCB = new ComboBox<>();
+        TextField variableNumberField = createNumericField();
+        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+
+        Label variablePreview = new Label();
+
+        // Prepare variable row with behavior
+        HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
+
+        // Add button
+        Button addButton = createUnaryAddButton(
+                instructionName,
+                labelIndexBox,
+                variableTypeCB,
+                variableNumberField,
+                variablePreview
+        );
+
+        dynamicArgsBox.setSpacing(8);
+        dynamicArgsBox.getChildren().addAll(labelIndexBox, variableRow, addButton);
+    }
+
+
+// ----------------------- Helpers -----------------------
+
+    // Creates the "Label index" row
+    private HBox createLabelIndexBox() {
+        return createLabelField(); // Already have your helper
+    }
+
+    // Creates the variable row: ComboBox + TextField + Preview
+    private HBox createVariableRow(ComboBox<String> variableTypeCB,
+                                   TextField variableNumberField,
+                                   Label variablePreview) {
+
+        variableTypeCB.getItems().addAll("x", "y", "z");
+        variableTypeCB.setPromptText("Type");
+
+        variableNumberField.setPromptText("Number");
+
+// Behavior when type changes
+        variableTypeCB.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if ("Y".equalsIgnoreCase(newVal)) {
+                variableNumberField.setDisable(true);
+                variableNumberField.clear();
+                variablePreview.setText("y");
+            } else if ("X".equalsIgnoreCase(newVal) || "Z".equalsIgnoreCase(newVal)) {
+                variableNumberField.setDisable(false);
+                String number = variableNumberField.getText();
+                variablePreview.setText(newVal.toLowerCase() + (number.isEmpty() ? "" : number));
+            } else {
+                variableNumberField.setDisable(true);
+                variablePreview.setText("");
+            }
+        });
+
+// Behavior when number changes
+        variableNumberField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String type = variableTypeCB.getValue();
+            if ("X".equalsIgnoreCase(type) || "Z".equalsIgnoreCase(type)) {
+                variablePreview.setText(type.toLowerCase() + newVal);
+            }
+        });
+
+        return new HBox(8, variableTypeCB, variableNumberField, variablePreview);
+    }
+
+    // Creates the "Add Instruction" button with logic
+    private Button createUnaryAddButton(String instructionName,
+                                        HBox labelIndexBox,
+                                        ComboBox<String> variableTypeCB,
+                                        TextField variableNumberField,
+                                        Label variablePreview) {
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        // Validation logic
+        Runnable validateFields = () -> {
+            String type = variableTypeCB.getValue();
+            String number = variableNumberField.getText();
+
+            boolean valid = false;
+
+            if (type != null) {
+                if ("y".equalsIgnoreCase(type)) {
+                    // For Y, no number is required
+                    valid = true;
+                } else if ("x".equalsIgnoreCase(type) || "z".equalsIgnoreCase(type)) {
+                    // For X/Z, require a number
+                    valid = !number.isBlank();
+                }
+            }
+
+            addButton.setDisable(!valid);
+        };
+
+        // Add listeners
+        variableTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        variableNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+
+        // Action
+        addButton.setOnAction(ev -> {
+            int instructionNumber = instructionsTable.getItems().size();
+            Label labelNode = (Label) labelIndexBox.getUserData();
+            String label = labelNode.getText();
+            String variableType = variableTypeCB.getValue();
+            String variableNumber = variableNumberField.getText();
+
+            String targetVarStr = (variableType != null)
+                    ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
+                    : "";
+
+            InstructionDTO dto;
+            if ("INCREASE".equals(instructionName)) {
+                dto = programCreationModel.createIncrease(instructionNumber, targetVarStr, label);
+            } else if ("DECREASE".equals(instructionName)) {
+                dto = programCreationModel.createDecrease(instructionNumber, targetVarStr, label);
+            } else if ("NO_OP".equals(instructionName)) {
+                dto = programCreationModel.createNoOp(instructionNumber, targetVarStr, label);
+            } else {
+                throw new IllegalArgumentException("Unsupported: " + instructionName);
+            }
+
+            instructionsTable.getItems().add(dto);
+
+            // Clear fields
+            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            variableTypeCB.getSelectionModel().clearSelection();
+            variableNumberField.clear();
+            variablePreview.setText("");
+
+            addButton.setDisable(true);
+        });
+
+        return addButton;
+    }
+
+
+    private void buildIncreaseUI() {
+        buildUnaryOperationUI("INCREASE", "+ 1");
+    }
+
+    private void buildDecreaseUI() {
+        buildUnaryOperationUI("DECREASE", "- 1");
+    }
+
+    // Build the whole UI for JNZ
+    private void buildJnzUI() {
+        // Label index row
+        HBox labelIndexBox = createLabelIndexBox();
+
+        // Variable row (type + number)
+        ComboBox<String> variableTypeCB = new ComboBox<>();
+        TextField variableNumberField = createNumericField();
+        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        Label variablePreview = new Label();
+        HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
+
+        // Reference label field (like normal label)
+        HBox referenceLabelBox = createLabelField();
+        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        referenceLabelField.setPromptText("Reference Label index");
+        Label referenceLabelPreview = (Label) referenceLabelBox.getUserData();
+
+        // Add button with validation
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        Runnable validateFields = () -> {
+            boolean valid = false;
+            String type = variableTypeCB.getValue();
+            String number = variableNumberField.getText();
+            String ref = referenceLabelPreview.getText(); // use the "L<num>" label
+
+            if (type != null && ref != null && !ref.isBlank()) {
+                if ("y".equalsIgnoreCase(type)) {
+                    valid = true;
+                } else if ("x".equalsIgnoreCase(type) || "z".equalsIgnoreCase(type)) {
+                    valid = !number.isBlank();
+                }
+            }
+
+            addButton.setDisable(!valid);
+        };
+
+        variableTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        variableNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
+
+        addButton.setOnAction(ev -> {
+            int instructionNumber = instructionsTable.getItems().size();
+            Label labelNode = (Label) labelIndexBox.getUserData();
+            String label = labelNode.getText();
+            String variableType = variableTypeCB.getValue();
+            String variableNumber = variableNumberField.getText();
+            String referenceLabel = referenceLabelPreview.getText(); // use "L<num>"
+
+            String targetVarStr = (variableType != null)
+                    ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
+                    : "";
+
+            InstructionDTO dto = programCreationModel.createJnz(
+                    instructionNumber,
+                    targetVarStr,
+                    label,
+                    referenceLabel
+            );
+
+            instructionsTable.getItems().add(dto);
+
+            // Clear fields
+            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            variableTypeCB.getSelectionModel().clearSelection();
+            variableNumberField.clear();
+            variablePreview.setText("");
+            referenceLabelField.clear();
+            referenceLabelPreview.setText("");
+
+            addButton.setDisable(true);
+        });
+
+        // Add all UI rows
+        dynamicArgsBox.setSpacing(8);
+        dynamicArgsBox.getChildren().addAll(labelIndexBox, variableRow, referenceLabelBox, addButton);
+    }
+
+
+
+    private void buildNoOpUI() {
+        buildUnaryOperationUI("NO_OP", "");
     }
 }

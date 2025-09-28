@@ -15,6 +15,10 @@ public class OriginOfAllInstruction extends AbstractInstruction {
         super(mainProgram, programOfThisInstruction, InstructionData.ORIGIN, InstructionType.BASIC, Variable.RESULT, null, 0);
     }
 
+    public OriginOfAllInstruction() {
+        super(null, null, InstructionData.ORIGIN, InstructionType.BASIC, Variable.RESULT, null, 0);
+    }
+
     @Override
     public String getCommand() {
         return "";
@@ -27,7 +31,7 @@ public class OriginOfAllInstruction extends AbstractInstruction {
 
     @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
-        return null;
+        return new OriginOfAllInstruction();
     }
 
     @Override

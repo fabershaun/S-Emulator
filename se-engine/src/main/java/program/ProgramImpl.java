@@ -90,39 +90,6 @@ public class ProgramImpl implements Program, Serializable {
         return degreeToProgram;
     }
 
-//    @Override
-//    public void expandProgram(int degree) {
-//        for (int i = 0 ; i < degree ; i++) {
-//            int nextInstructionNumber = 1;
-//
-//            for (ListIterator<Instruction> iterator = getInstructionsList().listIterator(); iterator.hasNext(); ) {
-//                Instruction instruction = iterator.next();
-//                Label originalLabel = instruction.getLabel();
-//                List<Instruction> newInstructionsList = new ArrayList<>();
-//
-//                // initialize
-//                if (instruction instanceof SyntheticInstruction syntheticInstruction) {
-//                    nextInstructionNumber = syntheticInstruction.setInnerInstructionsAndReturnTheNextOne(nextInstructionNumber);
-//                    newInstructionsList = instruction.getExtendedInstruction();
-//                }
-//                else {
-//                    Instruction cloneInstruction = instruction.createInstructionWithInstructionNumber(nextInstructionNumber);
-//                    newInstructionsList.add(cloneInstruction);
-//                    nextInstructionNumber++;
-//                }
-//
-//                iterator.remove();                                   // Remove the old instruction
-//                getLabelToInstruction().remove(originalLabel);       // Remove the label from the map because we will add it again in line 239
-//                getLabelsInProgram().remove(originalLabel);          // Remove the label from the map because we will add it again in line 239
-//
-//                for (Instruction extendedInstruction : newInstructionsList) {
-//                    updateVariableAndLabel(extendedInstruction);
-//                    iterator.add(extendedInstruction);          // Add the extended (inner) instruction to the list
-//                }
-//            }
-//        }
-//    }
-
     @Override
     public Program deepClone() {
         try {
@@ -321,7 +288,6 @@ public class ProgramImpl implements Program, Serializable {
     public Map<Label, Instruction> getLabelToInstruction() {
         return labelToInstruction;
     }
-
 
     private void initNextLabelNumber() {
         nextLabelNumber = labelsInProgram.stream()

@@ -2,13 +2,14 @@ package engine;
 
 import debug.Debug;
 import debug.DebugImpl;
-import dto.DebugDTO;
-import dto.InstructionsDTO;
-import dto.ProgramDTO;
-import dto.ProgramExecutorDTO;
+import dto.*;
 import exceptions.EngineLoadException;
 import execution.ProgramExecutorImpl;
 import execution.ProgramExecutor;
+import instruction.Instruction;
+import instruction.InstructionData;
+import instruction.InstructionType;
+import instruction.OriginOfAllInstruction;
 import program.Program;
 import loader.XmlProgramLoader;
 import variable.Variable;
@@ -277,5 +278,13 @@ public class EngineImpl implements Engine, Serializable {
         in.defaultReadObject();
         String pathStr = (String) in.readObject();
         this.xmlPath = pathStr != null ? Path.of(pathStr) : null;
+    }
+
+    @Override
+    public InstructionDTO createOriginalInstruction() {
+        Instruction origin = new OriginOfAllInstruction();
+
+        return new InstructionDTO(InstructionData.ORIGIN.getName(), 0, InstructionData.ORIGIN.getCycles(), "B", null, null, null, null, "", null );
+
     }
 }
