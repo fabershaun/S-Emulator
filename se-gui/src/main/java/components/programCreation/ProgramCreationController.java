@@ -1,7 +1,6 @@
 package components.programCreation;
 
 import components.mainApp.MainAppController;
-import components.mainInstructionsTable.MainInstructionsTableController;
 import dto.InstructionDTO;
 import dto.InstructionDataDTO;
 import dto.ProgramDTO;
@@ -90,9 +89,7 @@ public class ProgramCreationController {
         });
 
         // Enable delete only if a row is selected
-        instructionsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-            deleteInstructionButton.setDisable(newSel == null);
-        });
+        instructionsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> deleteInstructionButton.setDisable(newSel == null));
 
         chooseInstructionCB.valueProperty().addListener((obs, oldVal, newVal) -> {
             dynamicArgsBox.getChildren().clear();
