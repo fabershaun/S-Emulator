@@ -36,6 +36,7 @@ public class HighlightSelectionModel {
     private void recalcOptions() {
         List<String> result = new ArrayList<>();
         result.add(EMPTY_CHOICE);
+        result.add(currentProgram.get().getResult());
         result.addAll(currentProgram.get().getInputVariables());
         result.addAll(currentProgram.get().getWorkVariables());
         result.addAll(currentProgram.get().getLabelsStr());

@@ -55,4 +55,8 @@ public class ProgramDTO {
     public List<List<InstructionDTO>> getExpandedProgram() {
         return expandedProgram;
     }
+
+    public String getResult() {
+        return "y";
+    }
 }

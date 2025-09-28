@@ -8,6 +8,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -387,6 +388,8 @@ public class DebuggerExecutionMenuController {
         cyclesNumberLabel.setText(String.valueOf(debugStep.getTotalCycles()));
         highlightTargetVariable(debugStep.getTargetVariable());
     }
+
+
 
     private void highlightTargetVariable(String variableName) {
         if (variableName == null) {

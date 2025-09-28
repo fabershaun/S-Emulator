@@ -1,7 +1,6 @@
 package components.mainApp;
 
 import components.chainInstructionTable.ChainInstructionsTableController;
-import components.debuggerExecutionMenu.RunMode;
 import components.history.HistoryController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
@@ -258,7 +257,7 @@ public class MainAppController {
         int degree = degreeModel.currentDegreeProperty().get();
         String activeProgramName = getActiveProgramName();
 
-        ProgramRunTask runTask = new ProgramRunTask(activeProgramName, engine, RunMode.RUNNING, degree, inputs.toArray(new Long[0]));
+        ProgramRunTask runTask = new ProgramRunTask(activeProgramName, engine, degree, inputs.toArray(new Long[0]));
 
         runTask.setOnSucceeded(ev -> {
             programAfterExecuteProperty.set(runTask.getValue());

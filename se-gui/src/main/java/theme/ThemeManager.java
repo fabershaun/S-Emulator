@@ -5,11 +5,12 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ThemeManager {
     private static ThemeManager instance;
-    private final Map<String, String> themes = new HashMap<>();
+    private final Map<String, String> themes = new LinkedHashMap<>();
     private final StringProperty currentTheme = new SimpleStringProperty();
 
     private ThemeManager() {
