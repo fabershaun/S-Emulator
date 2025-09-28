@@ -85,11 +85,10 @@ public class ProgramCreationController {
         uiBuilders.put("GOTO_LABEL", this::buildGotoLabelUI);
         uiBuilders.put("ASSIGNMENT", this::buildAssignmentUI);
         uiBuilders.put("CONSTANT_ASSIGNMENT", this::buildConstantAssignmentUI);
-//        uiBuilders.put("JUMP_ZERO", this::buildJumpZeroUI);
-//        uiBuilders.put("JUMP_EQUAL_CONSTANT", this::buildJumpEqualConstantUI);
-//        uiBuilders.put("JUMP_EQUAL_VARIABLE", this::buildJumpEqualVariableUI);
+        uiBuilders.put("JUMP_ZERO", this::buildJumpZeroUI);
+        uiBuilders.put("JUMP_EQUAL_CONSTANT", this::buildJumpEqualConstantUI);
+        uiBuilders.put("JUMP_EQUAL_VARIABLE", this::buildJumpEqualVariableUI);
     }
-
 
     private void buildDynamicArgsFields(InstructionDataDTO instructionDataDTO) {
         Runnable builder = uiBuilders.get(instructionDataDTO.getName().toUpperCase());
@@ -605,6 +604,363 @@ public class ProgramCreationController {
         // Add UI rows
         dynamicArgsBox.setSpacing(8);
         dynamicArgsBox.getChildren().addAll(labelIndexBox, targetVarRow, refVarRow, addButton);
+    }
+
+    // Build the whole UI for CONSTANT_ASSIGNMENT
+    private void buildConstantAssignmentUI() {
+        // Label index row
+        HBox labelIndexBox = createLabelIndexBox();
+
+        // Target Variable row (ComboBox + Number + Preview)
+        ComboBox<String> variableTypeCB = new ComboBox<>();
+        TextField variableNumberField = createNumericField();
+        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        Label variablePreview = new Label();
+        HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
+
+        // Constant field (only positive integers)
+        TextField constantField = new TextField();
+        constantField.setPromptText("Constant");
+        constantField.setPrefWidth(VAR_WIDTH);
+        constantField.setMaxWidth(VAR_WIDTH);
+
+        TextFormatter<Integer> constantFormatter = new TextFormatter<>(
+                change -> change.getControlNewText().matches("\\d*") ? change : null
+        );
+        constantField.setTextFormatter(constantFormatter);
+
+        // Add button with validation
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        Runnable validateFields = () -> {
+            String type = variableTypeCB.getValue();
+            String number = variableNumberField.getText();
+            String constant = constantField.getText();
+
+            boolean valid = false;
+            if (type != null && constant != null && !constant.isBlank()) {
+                if ("y".equalsIgnoreCase(type)) {
+                    valid = true;
+                } else if ("x".equalsIgnoreCase(type) || "z".equalsIgnoreCase(type)) {
+                    valid = !number.isBlank();
+                }
+            }
+            addButton.setDisable(!valid);
+        };
+
+        variableTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        variableNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        constantField.textProperty().addListener((obs, o, n) -> validateFields.run());
+
+        addButton.setOnAction(ev -> {
+            int instructionNumber = instructionsTable.getItems().size();
+            Label labelNode = (Label) labelIndexBox.getUserData();
+            String label = labelNode.getText();
+            String variableType = variableTypeCB.getValue();
+            String variableNumber = variableNumberField.getText();
+            String constant = constantField.getText();
+
+            String targetVarStr = (variableType != null)
+                    ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
+                    : "";
+
+            InstructionDTO dto = programCreationModel.createConstantAssignment(
+                    instructionNumber,
+                    targetVarStr,
+                    label,
+                    constant
+            );
+
+            instructionsTable.getItems().add(dto);
+
+            // Clear fields
+            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            variableTypeCB.getSelectionModel().clearSelection();
+            variableNumberField.clear();
+            variablePreview.setText("");
+            constantField.clear();
+
+            addButton.setDisable(true);
+        });
+
+        // Add all UI rows
+        dynamicArgsBox.setSpacing(8);
+        dynamicArgsBox.getChildren().addAll(labelIndexBox, variableRow, constantField, addButton);
+    }
+
+    // Build the whole UI for JUMP_ZERO
+    private void buildJumpZeroUI() {
+        // Label index row
+        HBox labelIndexBox = createLabelIndexBox();
+
+        // Target Variable row (type + number)
+        ComboBox<String> variableTypeCB = new ComboBox<>();
+        TextField variableNumberField = createNumericField();
+        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        Label variablePreview = new Label();
+        HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
+
+        // Reference Label (mandatory, with "L + number" like other labels)
+        HBox referenceLabelBox = createLabelField();
+        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
+
+        // Add button with validation
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        Runnable validateFields = () -> {
+            String type = variableTypeCB.getValue();
+            String number = variableNumberField.getText();
+            String ref = referenceLabelField.getText();
+
+            boolean valid = false;
+            if (type != null && ref != null && !ref.isBlank()) {
+                if ("y".equalsIgnoreCase(type)) {
+                    valid = true;
+                } else if ("x".equalsIgnoreCase(type) || "z".equalsIgnoreCase(type)) {
+                    valid = !number.isBlank();
+                }
+            }
+            addButton.setDisable(!valid);
+        };
+
+        variableTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        variableNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
+
+        addButton.setOnAction(ev -> {
+            int instructionNumber = instructionsTable.getItems().size();
+            Label labelNode = (Label) labelIndexBox.getUserData();
+            String label = labelNode.getText();
+            String variableType = variableTypeCB.getValue();
+            String variableNumber = variableNumberField.getText();
+            String referenceLabel = referenceLabelPreview.getText();
+
+            String targetVarStr = (variableType != null)
+                    ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
+                    : "";
+
+            InstructionDTO dto = programCreationModel.createJumpZero(
+                    instructionNumber,
+                    targetVarStr,
+                    label,
+                    referenceLabel
+            );
+
+            instructionsTable.getItems().add(dto);
+
+            // Clear fields
+            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            variableTypeCB.getSelectionModel().clearSelection();
+            variableNumberField.clear();
+            variablePreview.setText("");
+            referenceLabelField.clear();
+            referenceLabelPreview.setText("");
+
+            addButton.setDisable(true);
+        });
+
+        // Add all UI rows
+        dynamicArgsBox.setSpacing(8);
+        dynamicArgsBox.getChildren().addAll(labelIndexBox, variableRow, referenceLabelBox, addButton);
+    }
+
+    // Build the whole UI for JUMP_EQUAL_CONSTANT
+    private void buildJumpEqualConstantUI() {
+        // Label index row
+        HBox labelIndexBox = createLabelIndexBox();
+
+        // Target Variable row (type + number)
+        ComboBox<String> variableTypeCB = new ComboBox<>();
+        TextField variableNumberField = createNumericField();
+        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        Label variablePreview = new Label();
+        HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
+
+        // Constant field (positive integers only)
+        TextField constantField = new TextField();
+        constantField.setPromptText("Constant");
+        constantField.setPrefWidth(VAR_WIDTH);
+        constantField.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches("\\d*") ? change : null));
+
+        // Reference Label (mandatory, same as other labels)
+        HBox referenceLabelBox = createLabelField();
+        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
+
+        // Add button with validation
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        Runnable validateFields = () -> {
+            String type = variableTypeCB.getValue();
+            String number = variableNumberField.getText();
+            String constant = constantField.getText();
+            String ref = referenceLabelField.getText();
+
+            boolean valid = false;
+            if (type != null && !constant.isBlank() && ref != null && !ref.isBlank()) {
+                if ("y".equalsIgnoreCase(type)) {
+                    valid = true;
+                } else if ("x".equalsIgnoreCase(type) || "z".equalsIgnoreCase(type)) {
+                    valid = !number.isBlank();
+                }
+            }
+            addButton.setDisable(!valid);
+        };
+
+        variableTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        variableNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        constantField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
+
+        addButton.setOnAction(ev -> {
+            int instructionNumber = instructionsTable.getItems().size();
+            Label labelNode = (Label) labelIndexBox.getUserData();
+            String label = labelNode.getText();
+            String variableType = variableTypeCB.getValue();
+            String variableNumber = variableNumberField.getText();
+            String constant = constantField.getText();
+            String referenceLabel = referenceLabelPreview.getText();
+
+            String targetVarStr = (variableType != null)
+                    ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
+                    : "";
+
+            InstructionDTO dto = programCreationModel.createJumpEqualConstant(
+                    instructionNumber,
+                    targetVarStr,
+                    label,
+                    constant,
+                    referenceLabel
+            );
+
+            instructionsTable.getItems().add(dto);
+
+            // Clear fields
+            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            variableTypeCB.getSelectionModel().clearSelection();
+            variableNumberField.clear();
+            variablePreview.setText("");
+            constantField.clear();
+            referenceLabelField.clear();
+            referenceLabelPreview.setText("");
+
+            addButton.setDisable(true);
+        });
+
+        // Add all UI rows
+        dynamicArgsBox.setSpacing(8);
+        dynamicArgsBox.getChildren().addAll(
+                labelIndexBox,
+                variableRow,
+                constantField,
+                referenceLabelBox,
+                addButton
+        );
+    }
+
+    // Build the whole UI for JUMP_EQUAL_VARIABLE
+    private void buildJumpEqualVariableUI() {
+        // Label index row
+        HBox labelIndexBox = createLabelIndexBox();
+
+        // Target Variable row
+        ComboBox<String> targetTypeCB = new ComboBox<>();
+        TextField targetNumberField = createNumericField();
+        targetTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        Label targetPreview = new Label();
+        HBox targetRow = createVariableRow(targetTypeCB, targetNumberField, targetPreview);
+
+        // Reference Variable row
+        ComboBox<String> refTypeCB = new ComboBox<>();
+        TextField refNumberField = createNumericField();
+        refTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        Label refPreview = new Label();
+        HBox refRow = createVariableRow(refTypeCB, refNumberField, refPreview);
+
+        // Add button with validation
+        Button addButton = new Button("Add Instruction");
+        addButton.setDisable(true);
+
+        Runnable validateFields = () -> {
+            String targetType = targetTypeCB.getValue();
+            String targetNumber = targetNumberField.getText();
+            String refType = refTypeCB.getValue();
+            String refNumber = refNumberField.getText();
+
+            boolean targetValid = false;
+            boolean refValid = false;
+
+            if (targetType != null) {
+                if ("y".equalsIgnoreCase(targetType)) {
+                    targetValid = true;
+                } else if ("x".equalsIgnoreCase(targetType) || "z".equalsIgnoreCase(targetType)) {
+                    targetValid = !targetNumber.isBlank();
+                }
+            }
+
+            if (refType != null) {
+                if ("y".equalsIgnoreCase(refType)) {
+                    refValid = true;
+                } else if ("x".equalsIgnoreCase(refType) || "z".equalsIgnoreCase(refType)) {
+                    refValid = !refNumber.isBlank();
+                }
+            }
+
+            addButton.setDisable(!(targetValid && refValid));
+        };
+
+        targetTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        targetNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        refTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
+        refNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+
+        addButton.setOnAction(ev -> {
+            int instructionNumber = instructionsTable.getItems().size();
+            Label labelNode = (Label) labelIndexBox.getUserData();
+            String label = labelNode.getText();
+
+            String targetVarStr = (targetTypeCB.getValue() != null)
+                    ? targetTypeCB.getValue() + (targetTypeCB.getValue().equalsIgnoreCase("Y") ? "" : targetNumberField.getText())
+                    : "";
+
+            String refVarStr = (refTypeCB.getValue() != null)
+                    ? refTypeCB.getValue() + (refTypeCB.getValue().equalsIgnoreCase("Y") ? "" : refNumberField.getText())
+                    : "";
+
+            InstructionDTO dto = programCreationModel.createJumpEqualVariable(
+                    instructionNumber,
+                    targetVarStr,
+                    label,
+                    refVarStr
+            );
+
+            instructionsTable.getItems().add(dto);
+
+            // Clear fields
+            ((TextField) labelIndexBox.getChildren().get(0)).clear();
+            targetTypeCB.getSelectionModel().clearSelection();
+            targetNumberField.clear();
+            targetPreview.setText("");
+            refTypeCB.getSelectionModel().clearSelection();
+            refNumberField.clear();
+            refPreview.setText("");
+
+            addButton.setDisable(true);
+        });
+
+        // Add all UI rows
+        dynamicArgsBox.setSpacing(8);
+        dynamicArgsBox.getChildren().addAll(
+                labelIndexBox,
+                targetRow,
+                refRow,
+                addButton
+        );
     }
 
 }

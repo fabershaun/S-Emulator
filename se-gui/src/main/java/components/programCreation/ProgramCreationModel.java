@@ -58,21 +58,21 @@ public class ProgramCreationModel {
         );
     }
 
-    public InstructionDTO createIncrease(int instructionNumber, String targetVarStr, String targetLabelStr) {
-        return buildUnaryInstruction("INCREASE", instructionNumber, targetVarStr, targetLabelStr, "+ 1");
+    public InstructionDTO createIncrease(int instructionNumber, String targetVariableStr, String targetLabelStr) {
+        return buildUnaryInstruction("INCREASE", instructionNumber, targetVariableStr, targetLabelStr, "+ 1");
     }
 
-    public InstructionDTO createDecrease(int instructionNumber, String targetVarStr, String targetLabelStr) {
-        return buildUnaryInstruction("DECREASE", instructionNumber, targetVarStr, targetLabelStr, "- 1");
+    public InstructionDTO createDecrease(int instructionNumber, String targetVariableStr, String targetLabelStr) {
+        return buildUnaryInstruction("DECREASE", instructionNumber, targetVariableStr, targetLabelStr, "- 1");
     }
 
-    public InstructionDTO createNoOp(int instructionNumber, String targetVarStr, String targetLabelStr) {
-        return buildUnaryInstruction("NO_OP", instructionNumber, targetVarStr, targetLabelStr, "");
+    public InstructionDTO createNoOp(int instructionNumber, String targetVariableStr, String targetLabelStr) {
+        return buildUnaryInstruction("NO_OP", instructionNumber, targetVariableStr, targetLabelStr, "");
     }
 
-    public InstructionDTO createJnz(int instructionNumber, String targetVarStr, String targetLabelStr, String referenceLabel) {
+    public InstructionDTO createJnz(int instructionNumber, String targetVariableStr, String targetLabelStr, String referenceLabel) {
 
-        String command = "IF " + targetVarStr + " != 0 GOTO " + referenceLabel;
+        String command = "IF " + targetVariableStr + " != 0 GOTO " + referenceLabel;
 
         InstructionDTO originDTO = engine.createOriginalInstruction();
 
@@ -83,15 +83,15 @@ public class ProgramCreationModel {
                 "B",
                 targetLabelStr,      // labelStr
                 referenceLabel,   // referenceLabelStr
-                targetVarStr,     // targetVariableStr
+                targetVariableStr,     // targetVariableStr
                 null,             // sourceVariableStr
                 command,
                 originDTO
         );
     }
 
-    public InstructionDTO createZeroVariable(int instructionNumber, String targetVarStr, String targetLabelStr) {
-        String command = targetVarStr + " <- 0";
+    public InstructionDTO createZeroVariable(int instructionNumber, String targetVariableStr, String targetLabelStr) {
+        String command = targetVariableStr + " <- 0";
 
         InstructionDTO originDTO = engine.createOriginalInstruction();
 
@@ -102,7 +102,7 @@ public class ProgramCreationModel {
                 "S",
                 targetLabelStr,      // labelStr
                 null,                // referenceLabelStr
-                targetVarStr,        // targetVariableStr
+                targetVariableStr,        // targetVariableStr
                 null,                // sourceVariableStr
                 command,
                 originDTO
@@ -128,10 +128,7 @@ public class ProgramCreationModel {
         );
     }
 
-    public InstructionDTO createAssignment(int instructionNumber,
-                                           String targetVariableStr,
-                                           String referenceVariableStr,
-                                           String targetLabelStr) {
+    public InstructionDTO createAssignment(int instructionNumber, String targetVariableStr, String referenceVariableStr, String targetLabelStr) {
         String name = "ASSIGNMENT";
         String command = targetVariableStr + " <- " + referenceVariableStr;
 
@@ -150,5 +147,82 @@ public class ProgramCreationModel {
                 originDTO
         );
     }
+
+    public InstructionDTO createConstantAssignment(int instructionNumber, String targetVariableStr, String targetLabelStr, String constantValue) {
+        String command = targetVariableStr + " <- " + constantValue;
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                "CONSTANT_ASSIGNMENT",
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction("CONSTANT_ASSIGNMENT"),
+                "S",
+                targetLabelStr,
+                null,
+                targetVariableStr,
+                null,
+                command,
+                originDTO
+        );
+    }
+
+    public InstructionDTO createJumpZero(int instructionNumber, String targetVariableStr, String targetLabelStr, String referenceLabelStr) {
+        String command = "IF " + targetVariableStr + " = 0 GOTO " + referenceLabelStr;
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                "JUMP_ZERO",
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction("JUMP_ZERO"),
+                "S",
+                targetLabelStr,
+                referenceLabelStr,
+                targetVariableStr,
+                null,
+                command,
+                originDTO
+        );
+    }
+
+    public InstructionDTO createJumpEqualConstant(int instructionNumber, String targetVariableStr, String targetLabelStr, String constantValue, String referenceLabelStr) {
+        String command = "IF " + targetVariableStr + " = " + constantValue + " GOTO " + referenceLabelStr;
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                "JUMP_EQUAL_CONSTANT",
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction("JUMP_EQUAL_CONSTANT"),
+                "B",
+                targetLabelStr,
+                referenceLabelStr,
+                targetVariableStr,
+                null,
+                command,
+                originDTO
+        );
+    }
+
+    public InstructionDTO createJumpEqualVariable(int instructionNumber, String targetVariableStr, String targetLabelStr, String sourceVariableStr) {
+        String command = "IF " + targetVariableStr + " = " + sourceVariableStr;
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                "JUMP_EQUAL_VARIABLE",
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction("JUMP_EQUAL_VARIABLE"),
+                "B",
+                targetLabelStr,
+                null,              // כאן אין Label, אלא Reference Variable
+                targetVariableStr,
+                sourceVariableStr,
+                command,
+                originDTO
+        );
+    }
+
 
 }
