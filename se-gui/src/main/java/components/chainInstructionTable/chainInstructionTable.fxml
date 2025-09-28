@@ -13,7 +13,7 @@
         <TableColumn fx:id="colCycles" prefWidth="60" style="-fx-alignment: CENTER;" text="Cycles" />
     </columns>
     <placeholder>
-        <Label text="No program loaded" />
+        <Label text="No instruction selected" />
     </placeholder>
     <columnResizePolicy>
         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

@@ -33,6 +33,11 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
     }
 
     @Override
+    public long getConstantValue() {
+        return this.constantValue;
+    }
+
+    @Override
     public Instruction createInstructionWithInstructionNumber(int instructionNumber) {
         return new JumpEqualConstantInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), constantValue, referencelabel, getOriginalInstruction(), instructionNumber);
     }

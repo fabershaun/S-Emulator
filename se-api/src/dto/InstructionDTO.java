@@ -12,6 +12,7 @@ public class InstructionDTO {
     private final String referenceLabelStr;
     private final String targetVariableStr;
     private final String sourceVariableStr;
+    private final long constantValue;
     private final String command;                   // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final InstructionDTO origin;
 
@@ -25,6 +26,7 @@ public class InstructionDTO {
                           String referenceLabelStr,
                           String targetVariableStr,
                           String sourceVariableStr,
+                          long constantValue,
                           String command,
                           InstructionDTO origin
     ) {
@@ -36,6 +38,7 @@ public class InstructionDTO {
         this.referenceLabelStr = referenceLabelStr;
         this.targetVariableStr = targetVariableStr;
         this.sourceVariableStr = sourceVariableStr;
+        this.constantValue = constantValue;
         this.command = command;
         this.origin = origin;
     }
@@ -70,6 +73,10 @@ public class InstructionDTO {
 
     public String getSourceVariableStr() {
         return sourceVariableStr;
+    }
+
+    public long getConstantValue() {
+        return constantValue;
     }
 
     public String getCommand() {

@@ -284,7 +284,7 @@ public class EngineImpl implements Engine, Serializable {
     public InstructionDTO createOriginalInstruction() {
         Instruction origin = new OriginOfAllInstruction();
 
-        return new InstructionDTO(InstructionData.ORIGIN.getName(), 0, InstructionData.ORIGIN.getCycles(), "B", null, null, null, null, "", null );
+        return new InstructionDTO(InstructionData.ORIGIN.getName(), 0, InstructionData.ORIGIN.getCycles(), "B", null, null, null, null, 0,  "", null );
 
     }
 }

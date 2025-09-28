@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import label.Label;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class ChainInstructionsTableController {
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
+
+
     }
 
     public void fillTable(List<InstructionDTO> instructionChain) {

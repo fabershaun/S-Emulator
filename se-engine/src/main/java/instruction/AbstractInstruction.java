@@ -68,6 +68,11 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
     }
 
     @Override
+    public long getConstantValue() {
+        return 0;
+    }
+
+    @Override
     public int getInstructionNumber() {
         return this.instructionNumber;
     }
@@ -122,6 +127,7 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
                 referenceLabelStr,
                 getTargetVariable().getRepresentation(),
                 sourceVariableStr,
+                getConstantValue(),
                 getCommand(),
                 parentDto
         );

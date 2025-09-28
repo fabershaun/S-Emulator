@@ -18,6 +18,7 @@ public interface Instruction extends Serializable {
     Label getReferenceLabel();
     Variable getTargetVariable();
     Variable getSourceVariable();
+    long getConstantValue();
     int getInstructionNumber();
     Program getProgramOfThisInstruction();
     Program getMainProgram();

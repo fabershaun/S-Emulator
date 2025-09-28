@@ -18,18 +18,24 @@ import java.util.Map;
 
 public class ProgramCreationController {
 
-    private final int LABEL_WIDTH = 90;
-    private final int VAR_WIDTH = 70;
-    private final int VAR_CB_WIDTH = 90;
+    private final int WIDE = 100;
+    private final int NORMAL = 70;
 
-    @FXML private Button saveButton;
+    @FXML
+    private Button saveButton;
 
-    @FXML private TextField programNameTF;
-    @FXML private ComboBox<InstructionDataDTO> chooseInstructionCB;
-    @FXML private VBox dynamicArgsBox;
-    @FXML private TableView<InstructionDTO> instructionsTable;
-    @FXML private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
-    @FXML private Button deleteInstructionButton;
+    @FXML
+    private TextField programNameTF;
+    @FXML
+    private ComboBox<InstructionDataDTO> chooseInstructionCB;
+    @FXML
+    private VBox dynamicArgsBox;
+    @FXML
+    private TableView<InstructionDTO> instructionsTable;
+    @FXML
+    private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
+    @FXML
+    private Button deleteInstructionButton;
 
     private ProgramCreationModel programCreationModel;
     private final Map<String, Runnable> uiBuilders = new HashMap<>();
@@ -45,6 +51,7 @@ public class ProgramCreationController {
         initBuilders();
 
         instructionsTable.getColumns().removeFirst();        // Remove the column of the break points
+        instructionsTable.setPlaceholder(new Label("No instructions have been created"));
     }
 
 
@@ -64,7 +71,7 @@ public class ProgramCreationController {
 
         // Enable delete only if a row is selected
         instructionsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-             deleteInstructionButton.setDisable(newSel == null);
+            deleteInstructionButton.setDisable(newSel == null);
         });
 
         chooseInstructionCB.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -116,8 +123,18 @@ public class ProgramCreationController {
         // TODO: Handle uploading a program from file
     }
 
-    @FXML void onDeleteClicked(ActionEvent event) {
+    @FXML
+    void onDeleteClicked(ActionEvent event) {
+        // Get the selected instruction
+        InstructionDTO selected = instructionsTable.getSelectionModel().getSelectedItem();
 
+        if (selected != null) {
+            // Remove it from the table
+            instructionsTable.getItems().remove(selected);
+
+            // Clear the selection
+            instructionsTable.getSelectionModel().clearSelection();
+        }
     }
 
     @FXML
@@ -174,13 +191,12 @@ public class ProgramCreationController {
         return addButton;
     }
 
-
     private TextField createNumericField() {
         TextField textField = new TextField();
         textField.setPromptText("Target Variable");
 
-        textField.setPrefWidth(VAR_WIDTH);
-        textField.setMaxWidth(VAR_WIDTH);
+        textField.setPrefWidth(NORMAL);
+        textField.setMaxWidth(NORMAL);
 
         // Only integers
         TextFormatter<Integer> formatter = new TextFormatter<>(
@@ -195,8 +211,8 @@ public class ProgramCreationController {
         TextField textField = new TextField();
         textField.setPromptText("Label index");
 
-        textField.setPrefWidth(LABEL_WIDTH);
-        textField.setMaxWidth(LABEL_WIDTH);
+        textField.setPrefWidth(WIDE);
+        textField.setMaxWidth(WIDE);
 
         Label label = new Label();
 
@@ -222,7 +238,7 @@ public class ProgramCreationController {
         HBox labelIndexBox = createLabelIndexBox();
         ComboBox<String> variableTypeCB = new ComboBox<>();
         TextField variableNumberField = createNumericField();
-        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        variableTypeCB.setPrefWidth(WIDE);
 
         Label variablePreview = new Label();
 
@@ -342,8 +358,7 @@ public class ProgramCreationController {
                         instructionDTO = programCreationModel.createNoOp(instructionNumber, targetVarStr, label);
                 case "ZERO_VARIABLE" ->
                         instructionDTO = programCreationModel.createZeroVariable(instructionNumber, targetVarStr, label);
-                default ->
-                        throw new IllegalArgumentException("Unsupported: " + instructionName);
+                default -> throw new IllegalArgumentException("Unsupported: " + instructionName);
             }
 
             instructionsTable.getItems().add(instructionDTO);
@@ -377,7 +392,7 @@ public class ProgramCreationController {
         // Variable row (type + number)
         ComboBox<String> variableTypeCB = new ComboBox<>();
         TextField variableNumberField = createNumericField();
-        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        variableTypeCB.setPrefWidth(WIDE);
         Label variablePreview = new Label();
         HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
 
@@ -454,7 +469,8 @@ public class ProgramCreationController {
     }
 
     private void buildZeroVariableUI() {
-        buildUnaryOperationUI("ZERO_VARIABLE", "");;
+        buildUnaryOperationUI("ZERO_VARIABLE", "");
+        ;
     }
 
     // Build the whole UI for GOTO_LABEL
@@ -516,14 +532,14 @@ public class ProgramCreationController {
         // Target variable row
         ComboBox<String> targetVarTypeCB = new ComboBox<>();
         TextField targetVarNumberField = createNumericField();
-        targetVarTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        targetVarTypeCB.setPrefWidth(WIDE);
         Label targetVarPreview = new Label();
         HBox targetVarRow = createVariableRow(targetVarTypeCB, targetVarNumberField, targetVarPreview);
 
         // Reference variable row
         ComboBox<String> refVarTypeCB = new ComboBox<>();
         TextField refVarNumberField = createNumericField();
-        refVarTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        refVarTypeCB.setPrefWidth(WIDE);
         Label refVarPreview = new Label();
         HBox refVarRow = createVariableRow(refVarTypeCB, refVarNumberField, refVarPreview);
 
@@ -614,15 +630,15 @@ public class ProgramCreationController {
         // Target Variable row (ComboBox + Number + Preview)
         ComboBox<String> variableTypeCB = new ComboBox<>();
         TextField variableNumberField = createNumericField();
-        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        variableTypeCB.setPrefWidth(WIDE);
         Label variablePreview = new Label();
         HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
 
         // Constant field (only positive integers)
         TextField constantField = new TextField();
         constantField.setPromptText("Constant");
-        constantField.setPrefWidth(VAR_WIDTH);
-        constantField.setMaxWidth(VAR_WIDTH);
+        constantField.setPrefWidth(WIDE);
+        constantField.setMaxWidth(WIDE);
 
         TextFormatter<Integer> constantFormatter = new TextFormatter<>(
                 change -> change.getControlNewText().matches("\\d*") ? change : null
@@ -659,7 +675,7 @@ public class ProgramCreationController {
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
             String variableNumber = variableNumberField.getText();
-            String constant = constantField.getText();
+            long constant = Long.parseLong(constantField.getText());
 
             String targetVarStr = (variableType != null)
                     ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
@@ -697,13 +713,14 @@ public class ProgramCreationController {
         // Target Variable row (type + number)
         ComboBox<String> variableTypeCB = new ComboBox<>();
         TextField variableNumberField = createNumericField();
-        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        variableTypeCB.setPrefWidth(WIDE);
         Label variablePreview = new Label();
         HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
 
         // Reference Label (mandatory, with "L + number" like other labels)
         HBox referenceLabelBox = createLabelField();
         TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        referenceLabelField.setPromptText("Reference Label index");
         Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
 
         // Add button with validation
@@ -775,20 +792,22 @@ public class ProgramCreationController {
         // Target Variable row (type + number)
         ComboBox<String> variableTypeCB = new ComboBox<>();
         TextField variableNumberField = createNumericField();
-        variableTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        variableTypeCB.setPrefWidth(WIDE);
         Label variablePreview = new Label();
         HBox variableRow = createVariableRow(variableTypeCB, variableNumberField, variablePreview);
 
         // Constant field (positive integers only)
         TextField constantField = new TextField();
         constantField.setPromptText("Constant");
-        constantField.setPrefWidth(VAR_WIDTH);
+        constantField.setPrefWidth(WIDE);
+        constantField.setMaxWidth(WIDE);
         constantField.setTextFormatter(new TextFormatter<>(change ->
                 change.getControlNewText().matches("\\d*") ? change : null));
 
         // Reference Label (mandatory, same as other labels)
         HBox referenceLabelBox = createLabelField();
         TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        referenceLabelField.setPromptText("Reference Label index");
         Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
 
         // Add button with validation
@@ -823,7 +842,7 @@ public class ProgramCreationController {
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
             String variableNumber = variableNumberField.getText();
-            String constant = constantField.getText();
+            long constant = Long.parseLong(constantField.getText());
             String referenceLabel = referenceLabelPreview.getText();
 
             String targetVarStr = (variableType != null)
@@ -865,35 +884,40 @@ public class ProgramCreationController {
 
     // Build the whole UI for JUMP_EQUAL_VARIABLE
     private void buildJumpEqualVariableUI() {
-        // Label index row
         HBox labelIndexBox = createLabelIndexBox();
 
         // Target Variable row
         ComboBox<String> targetTypeCB = new ComboBox<>();
         TextField targetNumberField = createNumericField();
-        targetTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        targetTypeCB.setPrefWidth(WIDE);
         Label targetPreview = new Label();
         HBox targetRow = createVariableRow(targetTypeCB, targetNumberField, targetPreview);
 
         // Reference Variable row
         ComboBox<String> refTypeCB = new ComboBox<>();
         TextField refNumberField = createNumericField();
-        refTypeCB.setPrefWidth(VAR_CB_WIDTH);
+        refTypeCB.setPrefWidth(WIDE);
         Label refPreview = new Label();
         HBox refRow = createVariableRow(refTypeCB, refNumberField, refPreview);
 
-        // Add button with validation
+        // Reference Label row (mandatory)
+        HBox referenceLabelBox = createLabelField();
+        TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().get(0);
+        Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
+        referenceLabelField.setPromptText("Reference Label");
+
+        // Add button
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
 
+        // Validation: require target var + ref var + ref label
         Runnable validateFields = () -> {
-            String targetType = targetTypeCB.getValue();
-            String targetNumber = targetNumberField.getText();
-            String refType = refTypeCB.getValue();
-            String refNumber = refNumberField.getText();
-
             boolean targetValid = false;
             boolean refValid = false;
+            boolean labelValid = referenceLabelPreview.getText() != null && !referenceLabelPreview.getText().isBlank();
+
+            String targetType = targetTypeCB.getValue();
+            String targetNumber = targetNumberField.getText();
 
             if (targetType != null) {
                 if ("y".equalsIgnoreCase(targetType)) {
@@ -903,6 +927,9 @@ public class ProgramCreationController {
                 }
             }
 
+            String refType = refTypeCB.getValue();
+            String refNumber = refNumberField.getText();
+
             if (refType != null) {
                 if ("y".equalsIgnoreCase(refType)) {
                     refValid = true;
@@ -911,14 +938,16 @@ public class ProgramCreationController {
                 }
             }
 
-            addButton.setDisable(!(targetValid && refValid));
+            addButton.setDisable(!(targetValid && refValid && labelValid));
         };
 
         targetTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
         targetNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
         refTypeCB.valueProperty().addListener((obs, o, n) -> validateFields.run());
         refNumberField.textProperty().addListener((obs, o, n) -> validateFields.run());
+        referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
 
+        // Action
         addButton.setOnAction(ev -> {
             int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
@@ -932,11 +961,14 @@ public class ProgramCreationController {
                     ? refTypeCB.getValue() + (refTypeCB.getValue().equalsIgnoreCase("Y") ? "" : refNumberField.getText())
                     : "";
 
+            String referenceLabel = referenceLabelPreview.getText();
+
             InstructionDTO dto = programCreationModel.createJumpEqualVariable(
                     instructionNumber,
                     targetVarStr,
                     label,
-                    refVarStr
+                    refVarStr,
+                    referenceLabel
             );
 
             instructionsTable.getItems().add(dto);
@@ -949,6 +981,8 @@ public class ProgramCreationController {
             refTypeCB.getSelectionModel().clearSelection();
             refNumberField.clear();
             refPreview.setText("");
+            referenceLabelField.clear();
+            referenceLabelPreview.setText("");
 
             addButton.setDisable(true);
         });
@@ -959,8 +993,8 @@ public class ProgramCreationController {
                 labelIndexBox,
                 targetRow,
                 refRow,
+                referenceLabelBox,
                 addButton
         );
     }
-
 }

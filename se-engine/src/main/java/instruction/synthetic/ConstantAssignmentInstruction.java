@@ -27,6 +27,11 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
     }
 
     @Override
+    public long getConstantValue() {
+        return this.constantValue;
+    }
+
+    @Override
     public Instruction createInstructionWithInstructionNumber(int  instructionNumber) {
         return new ConstantAssignmentInstruction(getMainProgram(), getProgramOfThisInstruction(), getTargetVariable(), getLabel(), constantValue, getOriginalInstruction(), instructionNumber);
     }
