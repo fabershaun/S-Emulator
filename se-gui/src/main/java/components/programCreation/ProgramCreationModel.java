@@ -37,14 +37,10 @@ public class ProgramCreationModel {
     }
 
     // Factory for all unary operations (same target on both sides)
-    private InstructionDTO buildUnaryInstruction(String name,
-                                                 int instructionNumber,
-                                                 String targetVar,
-                                                 String targetLabel,
-                                                 String rhsSuffix) {
+    private InstructionDTO buildUnaryInstruction(String name, int instructionNumber, String targetVarStr, String targetLabelStr, String rhsSuffix) {
 
         // Build the command string, e.g. "x1 <- x1 + 1" / "x1 <- x1 - 1" / "x1 <- x1"
-        String command = targetVar + " <- " + targetVar + (rhsSuffix == null || rhsSuffix.isBlank() ? "" : " " + rhsSuffix);
+        String command = targetVarStr + " <- " + targetVarStr + (rhsSuffix == null || rhsSuffix.isBlank() ? "" : " " + rhsSuffix);
 
         InstructionDTO originDTO = engine.createOriginalInstruction();
 
@@ -53,31 +49,28 @@ public class ProgramCreationModel {
                 instructionNumber,
                 InstructionDataMapper.getCyclesOfInstruction(name),
                 "B",            // instruction type (kept as in your code)
-                targetLabel,    // labelStr
+                targetLabelStr,    // labelStr
                 null,           // referenceLabelStr
-                targetVar,      // targetVariableStr
+                targetVarStr,      // targetVariableStr
                 null,           // sourceVariableStr
                 command,
                 originDTO
         );
     }
 
-    public InstructionDTO createIncrease(int instructionNumber, String targetVar, String targetLabel) {
-        return buildUnaryInstruction("INCREASE", instructionNumber, targetVar, targetLabel, "+ 1");
+    public InstructionDTO createIncrease(int instructionNumber, String targetVarStr, String targetLabelStr) {
+        return buildUnaryInstruction("INCREASE", instructionNumber, targetVarStr, targetLabelStr, "+ 1");
     }
 
-    public InstructionDTO createDecrease(int instructionNumber, String targetVar, String targetLabel) {
-        return buildUnaryInstruction("DECREASE", instructionNumber, targetVar, targetLabel, "- 1");
+    public InstructionDTO createDecrease(int instructionNumber, String targetVarStr, String targetLabelStr) {
+        return buildUnaryInstruction("DECREASE", instructionNumber, targetVarStr, targetLabelStr, "- 1");
     }
 
-    public InstructionDTO createNoOp(int instructionNumber, String targetVar, String targetLabel) {
-        return buildUnaryInstruction("NO_OP", instructionNumber, targetVar, targetLabel, "");
+    public InstructionDTO createNoOp(int instructionNumber, String targetVarStr, String targetLabelStr) {
+        return buildUnaryInstruction("NO_OP", instructionNumber, targetVarStr, targetLabelStr, "");
     }
 
-    public InstructionDTO createJnz(int instructionNumber,
-                                    String targetVarStr,
-                                    String targetLabel,
-                                    String referenceLabel) {
+    public InstructionDTO createJnz(int instructionNumber, String targetVarStr, String targetLabelStr, String referenceLabel) {
 
         String command = "IF " + targetVarStr + " != 0 GOTO " + referenceLabel;
 
@@ -88,10 +81,71 @@ public class ProgramCreationModel {
                 instructionNumber,
                 InstructionDataMapper.getCyclesOfInstruction("JNZ"),
                 "B",
-                targetLabel,      // labelStr
+                targetLabelStr,      // labelStr
                 referenceLabel,   // referenceLabelStr
                 targetVarStr,     // targetVariableStr
                 null,             // sourceVariableStr
+                command,
+                originDTO
+        );
+    }
+
+    public InstructionDTO createZeroVariable(int instructionNumber, String targetVarStr, String targetLabelStr) {
+        String command = targetVarStr + " <- 0";
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                "ZERO_VARIABLE",
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction("ZERO_VARIABLE"),
+                "S",
+                targetLabelStr,      // labelStr
+                null,                // referenceLabelStr
+                targetVarStr,        // targetVariableStr
+                null,                // sourceVariableStr
+                command,
+                originDTO
+        );
+    }
+
+    public InstructionDTO createGotoLabel(int instructionNumber, String targetLabelStr, String referenceLabel) {
+        String command = "GOTO " + referenceLabel;
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                "GOTO_LABEL",
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction("GOTO_LABEL"),
+                "S",
+                targetLabelStr,         // labelStr
+                referenceLabel,         // referenceLabelStr
+                null,                   // targetVariableStr
+                null,                   // sourceVariableStr
+                command,
+                originDTO
+        );
+    }
+
+    public InstructionDTO createAssignment(int instructionNumber,
+                                           String targetVariableStr,
+                                           String referenceVariableStr,
+                                           String targetLabelStr) {
+        String name = "ASSIGNMENT";
+        String command = targetVariableStr + " <- " + referenceVariableStr;
+
+        InstructionDTO originDTO = engine.createOriginalInstruction();
+
+        return new InstructionDTO(
+                name,
+                instructionNumber,
+                InstructionDataMapper.getCyclesOfInstruction(name),
+                "S",
+                targetLabelStr,   // labelStr
+                null,             // referenceLabelStr
+                targetVariableStr,     // targetVariableStr
+                referenceVariableStr,        // sourceVariableStr
                 command,
                 originDTO
         );
