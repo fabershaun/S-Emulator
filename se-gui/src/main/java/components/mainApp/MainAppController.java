@@ -404,6 +404,8 @@ public class MainAppController {
             // Pass the model
             ProgramCreationModel model = new ProgramCreationModel();
             creationController.setModel(model);
+            creationController.setMainController(this);
+            creationController.setOwnerWindow(loadFile.getScene().getWindow()); // needed for the upload back
 
             // Create a new window (Stage)
             Stage stage = new Stage();

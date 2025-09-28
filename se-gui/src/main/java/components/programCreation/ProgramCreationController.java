@@ -1,5 +1,6 @@
 package components.programCreation;
 
+import components.mainApp.MainAppController;
 import components.mainInstructionsTable.MainInstructionsTableController;
 import dto.InstructionDTO;
 import dto.InstructionDataDTO;
@@ -8,12 +9,16 @@ import instruction.InstructionDataMapper;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +32,7 @@ public class ProgramCreationController {
     private final int NORMAL = 70;
 
     @FXML private Button saveButton;
+    @FXML private Button uploadToAppButton;
 
     @FXML private TextField programNameTF;
     @FXML private ComboBox<InstructionDataDTO> chooseInstructionCB;
@@ -35,14 +41,17 @@ public class ProgramCreationController {
     @FXML private MainInstructionsTableController instructionsTableController;          // must: field name = fx:id + "Controller"
     @FXML private Button deleteInstructionButton;
 
+    private MainAppController mainController;
     private ProgramCreationModel programCreationModel;
     private final Map<String, Runnable> uiBuilders = new HashMap<>();
-
+    private Path lastProgramCreatedPath;
+    private Window ownerWindow;
 
     @FXML
     private void initialize() {
         disableEditing(true);
         saveButton.setDisable(true);
+        uploadToAppButton.setDisable(true);
         deleteInstructionButton.setDisable(true);
         initializeListeners();
         initializeInstructionChoices();
@@ -52,9 +61,16 @@ public class ProgramCreationController {
         instructionsTable.setPlaceholder(new Label("No instructions have been created"));
     }
 
-
     public void setModel(ProgramCreationModel model) {
         this.programCreationModel = model;
+    }
+
+    public void setMainController(MainAppController mainAppController) {
+        this.mainController = mainAppController;
+    }
+
+    public void setOwnerWindow(Window ownerWindow) {
+        this.ownerWindow = ownerWindow;
     }
 
     private void initializeInstructionChoices() {
@@ -120,7 +136,7 @@ public class ProgramCreationController {
     }
 
     @FXML
-    private void onUploadFile(ActionEvent event) {
+    private void onUploadFileToEdit(ActionEvent event) {
         programCreationModel.resetEngine();
 
         FileChooser fileChooser = new FileChooser();
@@ -173,11 +189,20 @@ public class ProgramCreationController {
         File file = fileChooser.showSaveDialog(saveButton.getScene().getWindow());
         try {
             programCreationModel.saveProgramToFile(file, programName, instructions);
+            uploadToAppButton.setDisable(false);
+            this.lastProgramCreatedPath = file.toPath();
         } catch (Exception e) {
             showEngineError("Failed to save program", e.getMessage());
         }
     }
 
+    @FXML
+    void onUploadToAppButtonClicked(ActionEvent event) {
+        mainController.loadNewFile(lastProgramCreatedPath, ownerWindow);
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
 
     private Button createAddButton(String instructionName, TextField... fields) {
         Button addButton = new Button("Add Instruction");
