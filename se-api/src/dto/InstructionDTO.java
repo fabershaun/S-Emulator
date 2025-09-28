@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 public class InstructionDTO {
     private final String instructionName;
-    private final int instructionNumber;            // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private int instructionNumber;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final int cycleNumber;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final String instructionTypeStr;        // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final String labelStr;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
@@ -94,6 +94,10 @@ public class InstructionDTO {
     public void setBreakpoint(boolean breakpoint) {
         this.breakpoint = breakpoint;
     }   // Used for break point
+
+    public void setInstructionNumber(int newInstructionNumber) {
+        this.instructionNumber = newInstructionNumber;
+    }
 }
 
 

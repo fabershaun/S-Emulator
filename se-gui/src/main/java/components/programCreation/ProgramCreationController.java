@@ -35,6 +35,7 @@ public class ProgramCreationController {
     @FXML private Button uploadToAppButton;
 
     @FXML private TextField programNameTF;
+    @FXML private ComboBox<Integer> lineNumberChooserCB;
     @FXML private ComboBox<InstructionDataDTO> chooseInstructionCB;
     @FXML private VBox dynamicArgsBox;
     @FXML private TableView<InstructionDTO> instructionsTable;
@@ -56,6 +57,9 @@ public class ProgramCreationController {
         initializeListeners();
         initializeInstructionChoices();
         initBuilders();
+
+        Tooltip lineNumberTooltip = new Tooltip("Select the line number in the program where this instruction will be inserted");
+        lineNumberChooserCB.setTooltip(lineNumberTooltip);
 
         instructionsTable.getColumns().removeFirst();        // Remove the column of the break points
         instructionsTable.setPlaceholder(new Label("No instructions have been created"));
@@ -81,6 +85,9 @@ public class ProgramCreationController {
         // Enable save only if there is at least one instruction
         instructionsTable.getItems().addListener((ListChangeListener<InstructionDTO>) change -> {
             saveButton.setDisable(instructionsTable.getItems().isEmpty());
+            refreshLineNumberChooser();
+            lineNumberChooserCB.getSelectionModel().clearSelection();
+            lineNumberChooserCB.setPromptText("Select instruction number");
         });
 
         // Enable delete only if a row is selected
@@ -111,6 +118,18 @@ public class ProgramCreationController {
         uiBuilders.put("JUMP_EQUAL_VARIABLE", this::buildJumpEqualVariableUI);
     }
 
+    private void refreshLineNumberChooser() {
+        int size = instructionsTable.getItems().size();
+
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 1; i <= size + 1; i++) {
+            numbers.add(i);
+        }
+
+        lineNumberChooserCB.getItems().setAll(numbers);
+        lineNumberChooserCB.getSelectionModel().select(size + 1);   // Default choice is the next line number
+    }
+
     private void buildDynamicArgsFields(InstructionDataDTO instructionDataDTO) {
         Runnable builder = uiBuilders.get(instructionDataDTO.getName().toUpperCase());
         if (builder != null) {
@@ -123,6 +142,7 @@ public class ProgramCreationController {
     private void disableEditing(boolean disabled) {
         programNameTF.setDisable(disabled);
         chooseInstructionCB.setDisable(disabled);
+        lineNumberChooserCB.setDisable(disabled);
     }
 
     @FXML
@@ -133,6 +153,8 @@ public class ProgramCreationController {
         programNameTF.clear();
         chooseInstructionCB.getSelectionModel().clearSelection();
         chooseInstructionCB.setPromptText("Choose instruction");
+        lineNumberChooserCB.getSelectionModel().clearSelection();
+        lineNumberChooserCB.setPromptText("Select instruction number");
     }
 
     @FXML
@@ -167,6 +189,8 @@ public class ProgramCreationController {
             // Remove it from the table
             instructionsTable.getItems().remove(selected);
 
+            // Set the indexes
+            reindexInstructions();
             // Clear the selection
             instructionsTable.getSelectionModel().clearSelection();
         }
@@ -202,32 +226,6 @@ public class ProgramCreationController {
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
-    }
-
-    private Button createAddButton(String instructionName, TextField... fields) {
-        Button addButton = new Button("Add Instruction");
-        addButton.setDisable(true);
-
-        // Validation: enable only when all fields are filled
-        Runnable validateFields = () -> {
-            boolean valid = true;
-            for (TextField field : fields) {
-                String prompt = field.getPromptText().toLowerCase();
-
-                if (!(prompt.contains("label index")) && field.getText().isEmpty()) {
-                    valid = false;
-                    break;
-                }
-            }
-            addButton.setDisable(!valid);
-        };
-
-        // Add listeners to each field
-        for (TextField field : fields) {
-            field.textProperty().addListener((obs, o, n) -> validateFields.run());
-        }
-
-        return addButton;
     }
 
     private TextField createNumericField() {
@@ -300,6 +298,32 @@ public class ProgramCreationController {
 
 // ----------------------- Helpers -----------------------
 
+    private void addInstructionAtChosenLine(InstructionDTO instructionDTO) {
+        Integer chosenLine = lineNumberChooserCB.getValue();
+
+        if (chosenLine == null) {
+            instructionsTable.getItems().add(instructionDTO);
+        } else {
+            int index = Math.max(0, chosenLine - 1);
+
+            if (index >= instructionsTable.getItems().size()) {
+                instructionsTable.getItems().add(instructionDTO);
+            } else {    // add to the middle
+                instructionsTable.getItems().add(index, instructionDTO);
+                reindexInstructions();
+            }
+        }
+    }
+
+    private void reindexInstructions() {
+        List<InstructionDTO> items = instructionsTable.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            InstructionDTO instructionDTO = items.get(i);
+            instructionDTO.setInstructionNumber(i + 1);
+        }
+        instructionsTable.refresh();
+    }
+
     // Creates the "Label index" row
     private HBox createLabelIndexBox() {
         return createLabelField(); // Already have your helper
@@ -351,6 +375,8 @@ public class ProgramCreationController {
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
 
+
+
         // Validation logic
         Runnable validateFields = () -> {
             String type = variableTypeCB.getValue();
@@ -377,7 +403,6 @@ public class ProgramCreationController {
 
         // Action
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
@@ -390,17 +415,17 @@ public class ProgramCreationController {
             InstructionDTO instructionDTO;
             switch (instructionName) {
                 case "INCREASE" ->
-                        instructionDTO = programCreationModel.createIncrease(instructionNumber, targetVarStr, label);
+                        instructionDTO = programCreationModel.createIncrease(targetVarStr, label);
                 case "DECREASE" ->
-                        instructionDTO = programCreationModel.createDecrease(instructionNumber, targetVarStr, label);
+                        instructionDTO = programCreationModel.createDecrease(targetVarStr, label);
                 case "NO_OP" ->
-                        instructionDTO = programCreationModel.createNoOp(instructionNumber, targetVarStr, label);
+                        instructionDTO = programCreationModel.createNoOp(targetVarStr, label);
                 case "ZERO_VARIABLE" ->
-                        instructionDTO = programCreationModel.createZeroVariable(instructionNumber, targetVarStr, label);
+                        instructionDTO = programCreationModel.createZeroVariable(targetVarStr, label);
                 default -> throw new IllegalArgumentException("Unsupported: " + instructionName);
             }
 
-            instructionsTable.getItems().add(instructionDTO);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -467,7 +492,6 @@ public class ProgramCreationController {
         referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
 
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
@@ -478,14 +502,13 @@ public class ProgramCreationController {
                     ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
                     : "";
 
-            InstructionDTO dto = programCreationModel.createJnz(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createJnz(
                     targetVarStr,
                     label,
                     referenceLabel
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -536,20 +559,18 @@ public class ProgramCreationController {
         referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
 
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
 
             Label labelNode = (Label) labelIndexBox.getUserData();
             String targetLabel = labelNode.getText();
 
             String referenceLabel = referenceLabelPreview.getText();
 
-            InstructionDTO dto = programCreationModel.createGotoLabel(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createGotoLabel(
                     targetLabel,
                     referenceLabel
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -623,7 +644,6 @@ public class ProgramCreationController {
 
         // Action
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
 
@@ -635,14 +655,13 @@ public class ProgramCreationController {
                     ? refVarTypeCB.getValue() + (refVarTypeCB.getValue().equalsIgnoreCase("Y") ? "" : refVarNumberField.getText())
                     : "";
 
-            InstructionDTO dto = programCreationModel.createAssignment(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createAssignment(
                     targetVarStr,
                     refVarStr,
                     label
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -709,7 +728,6 @@ public class ProgramCreationController {
         constantField.textProperty().addListener((obs, o, n) -> validateFields.run());
 
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
@@ -720,14 +738,13 @@ public class ProgramCreationController {
                     ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
                     : "";
 
-            InstructionDTO dto = programCreationModel.createConstantAssignment(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createConstantAssignment(
                     targetVarStr,
                     label,
                     constant
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -787,7 +804,6 @@ public class ProgramCreationController {
         referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
 
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
@@ -798,14 +814,13 @@ public class ProgramCreationController {
                     ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
                     : "";
 
-            InstructionDTO dto = programCreationModel.createJumpZero(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createJumpZero(
                     targetVarStr,
                     label,
                     referenceLabel
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -876,7 +891,6 @@ public class ProgramCreationController {
         referenceLabelField.textProperty().addListener((obs, o, n) -> validateFields.run());
 
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
             String variableType = variableTypeCB.getValue();
@@ -888,15 +902,14 @@ public class ProgramCreationController {
                     ? variableType + (variableType.equalsIgnoreCase("Y") ? "" : variableNumber)
                     : "";
 
-            InstructionDTO dto = programCreationModel.createJumpEqualConstant(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createJumpEqualConstant(
                     targetVarStr,
                     label,
                     constant,
                     referenceLabel
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
@@ -988,7 +1001,6 @@ public class ProgramCreationController {
 
         // Action
         addButton.setOnAction(ev -> {
-            int instructionNumber = instructionsTable.getItems().size();
             Label labelNode = (Label) labelIndexBox.getUserData();
             String label = labelNode.getText();
 
@@ -1002,15 +1014,14 @@ public class ProgramCreationController {
 
             String referenceLabel = referenceLabelPreview.getText();
 
-            InstructionDTO dto = programCreationModel.createJumpEqualVariable(
-                    instructionNumber,
+            InstructionDTO instructionDTO = programCreationModel.createJumpEqualVariable(
                     targetVarStr,
                     label,
                     refVarStr,
                     referenceLabel
             );
 
-            instructionsTable.getItems().add(dto);
+            addInstructionAtChosenLine(instructionDTO);
 
             // Clear fields
             ((TextField) labelIndexBox.getChildren().get(0)).clear();
