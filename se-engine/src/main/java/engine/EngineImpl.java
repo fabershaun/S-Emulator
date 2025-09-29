@@ -232,7 +232,7 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public void stopDebugPress() {
-        DebugDTO debugDTO =  debug.stop();
+        DebugDTO debugDTO = debug.stop();
         addDebugResultToHistoryMap(debugDTO);
     }
 

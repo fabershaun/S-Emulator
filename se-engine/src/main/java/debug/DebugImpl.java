@@ -1,7 +1,6 @@
 package debug;
 
 import dto.DebugDTO;
-import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
 import engine.EngineImpl;
@@ -59,6 +58,10 @@ public class DebugImpl implements Debug {
 
     @Override
     public DebugDTO resume(List<Boolean> breakPoints) throws InterruptedException {
+        // If resume is called before any step has been executed
+        if (historyPointer < 0 && hasMoreInstructions()) {
+            stepOver();   // create the first snapshot
+        }
 
         if (justStoppedOnBreakpoint) {
             justStoppedOnBreakpoint = false;
@@ -72,17 +75,57 @@ public class DebugImpl implements Debug {
             }
 
             int indexBP = currentInstructionIndex;
-            System.out.println("checking index: " + indexBP);
+            //System.out.println("checking index: " + indexBP);
 
-            if (indexBP >= 0 && indexBP < breakPoints.size() && breakPoints.get(indexBP)) {   // Break point is ON in this instruction line
+            if (indexBP >= 0 && indexBP < breakPoints.size() && breakPoints.get(indexBP)) {
                 justStoppedOnBreakpoint = true;
-                return stop();  // return the value before enter the line
+
+                // Save the current state to history only once
+                DebugDTO snapshot = buildDebugDTO();
+                stepsHistory.add(snapshot);
+                historyPointer = stepsHistory.size() - 1;
+
+                return snapshot;
             }
 
-            stepOver();
+            stepOverWithoutSavingHistory();
         }
 
-        return stop();
+        // finished program (no more instructions)
+        DebugDTO finalSnapshot = buildDebugDTO();
+        stepsHistory.add(finalSnapshot);
+        historyPointer = stepsHistory.size() - 1;
+
+        return finalSnapshot;
+    }
+
+
+    // Note: **NOT touch history here**
+    private void stepOverWithoutSavingHistory() {
+        if (currentInstructionIndex >= instructions.size()) {
+            return; // already out of range
+        }
+
+        Instruction currentInstruction = instructions.get(currentInstructionIndex);
+
+        // Execute the instruction on the current context
+        Label nextInstructionLabel = currentInstruction.execute(context);
+        currentCycles += currentInstruction.getCycleOfInstruction();
+
+        // Update target variable if exists
+        if (currentInstruction.getTargetVariable() != null) {
+            targetVariable = currentInstruction.getTargetVariable().getRepresentation();
+        } else {
+            targetVariable = null;
+        }
+
+        // Update programExecutor (context + cycles)
+        updateProgramExecutorData();
+
+        // Update index of the next instruction
+        updateNextInstructionIndexToNextIndex(nextInstructionLabel);
+        currentInstructionIndex = nextInstructionIndex;
+
     }
 
     @Override
@@ -147,10 +190,23 @@ public class DebugImpl implements Debug {
             );
         }
 
-        DebugDTO dto = stepsHistory.get(historyPointer);
-        currentInstructionIndex = dto.getCurrentInstructionNumber();
-        nextInstructionIndex = dto.getNextInstructionNumber();
-        return dto;
+        // Case: historyPointer is still inside the valid range
+        if (historyPointer < stepsHistory.size()) {
+            // We already have a snapshot for this step
+            DebugDTO dto = stepsHistory.get(historyPointer);
+            currentInstructionIndex = dto.getCurrentInstructionNumber();
+            nextInstructionIndex = dto.getNextInstructionNumber();
+            return dto;
+        } else {
+            // We got here after a resume run that skipped saving some states
+            DebugDTO snapshot = buildDebugDTO();
+            stepsHistory.add(snapshot);
+            historyPointer = stepsHistory.size() - 1;
+
+            currentInstructionIndex = snapshot.getCurrentInstructionNumber();
+            nextInstructionIndex = snapshot.getNextInstructionNumber();
+            return snapshot;
+        }
     }
 
     @Override
