@@ -236,6 +236,7 @@ public class ProgramCreationController {
                 change -> change.getControlNewText().matches("-?\\d*") ? change : null
         );
         textField.setTextFormatter(formatter);
+        textField.setFocusTraversable(true);
 
         return textField;
     }
@@ -248,6 +249,7 @@ public class ProgramCreationController {
         textField.setMaxWidth(WIDE);
 
         Label label = new Label();
+        label.setFocusTraversable(false); // skip label on TAB
 
         // Whenever user types a number, update label to "L" + number
         textField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -286,6 +288,8 @@ public class ProgramCreationController {
                 variableNumberField,
                 variablePreview
         );
+
+        addButton.setFocusTraversable(false); // skip button on TAB
 
         dynamicArgsBox.setSpacing(8);
         dynamicArgsBox.getChildren().addAll(labelIndexBox, variableRow, addButton);
@@ -462,9 +466,14 @@ public class ProgramCreationController {
         referenceLabelField.setPromptText("Reference Label index");
         Label referenceLabelPreview = (Label) referenceLabelBox.getUserData();
 
+        variableTypeCB.setFocusTraversable(true);
+        variableNumberField.setFocusTraversable(true);
+        referenceLabelField.setFocusTraversable(true);
+
         // Add button with validation
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         Runnable validateFields = () -> {
             boolean valid = false;
@@ -540,10 +549,12 @@ public class ProgramCreationController {
         TextField referenceLabelField = (TextField) referenceLabelBox.getChildren().getFirst();
         Label referenceLabelPreview = (Label) referenceLabelBox.getUserData();
         referenceLabelField.setPromptText("Reference Label");
+        referenceLabelField.setFocusTraversable(true);
 
         // Add button with validation
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         Runnable validateFields = () -> {
             String ref = referenceLabelField.getText();
@@ -581,7 +592,6 @@ public class ProgramCreationController {
 
     // Build the whole UI for ASSIGNMENT
     private void buildAssignmentUI() {
-        // Target label row (optional, כמו תמיד)
         HBox labelIndexBox = createLabelIndexBox();
 
         // Target variable row
@@ -598,9 +608,15 @@ public class ProgramCreationController {
         Label refVarPreview = new Label();
         HBox refVarRow = createVariableRow(refVarTypeCB, refVarNumberField, refVarPreview);
 
+        targetVarTypeCB.setFocusTraversable(true);
+        targetVarNumberField.setFocusTraversable(true);
+        refVarTypeCB.setFocusTraversable(true);
+        refVarNumberField.setFocusTraversable(true);
+
         // Add button
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         // Validation: require both target + reference
         Runnable validateFields = () -> {
@@ -693,14 +709,20 @@ public class ProgramCreationController {
         constantField.setPrefWidth(WIDE);
         constantField.setMaxWidth(WIDE);
 
+        variableTypeCB.setFocusTraversable(true);
+        variableNumberField.setFocusTraversable(true);
+        constantField.setFocusTraversable(true);
+
         TextFormatter<Integer> constantFormatter = new TextFormatter<>(
                 change -> change.getControlNewText().matches("\\d*") ? change : null
         );
         constantField.setTextFormatter(constantFormatter);
 
+
         // Add button with validation
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         Runnable validateFields = () -> {
             String type = variableTypeCB.getValue();
@@ -774,9 +796,14 @@ public class ProgramCreationController {
         referenceLabelField.setPromptText("Reference Label index");
         Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
 
+        variableTypeCB.setFocusTraversable(true);
+        variableNumberField.setFocusTraversable(true);
+        referenceLabelField.setFocusTraversable(true);
+
         // Add button with validation
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         Runnable validateFields = () -> {
             String type = variableTypeCB.getValue();
@@ -859,9 +886,15 @@ public class ProgramCreationController {
         referenceLabelField.setPromptText("Reference Label index");
         Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
 
+        variableTypeCB.setFocusTraversable(true);
+        variableNumberField.setFocusTraversable(true);
+        constantField.setFocusTraversable(true);
+        referenceLabelField.setFocusTraversable(true);
+
         // Add button with validation
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         Runnable validateFields = () -> {
             String type = variableTypeCB.getValue();
@@ -953,9 +986,16 @@ public class ProgramCreationController {
         Label referenceLabelPreview = (Label) referenceLabelBox.getChildren().get(1);
         referenceLabelField.setPromptText("Reference Label");
 
+        targetTypeCB.setFocusTraversable(true);
+        targetNumberField.setFocusTraversable(true);
+        refTypeCB.setFocusTraversable(true);
+        refNumberField.setFocusTraversable(true);
+        referenceLabelField.setFocusTraversable(true);
+
         // Add button
         Button addButton = new Button("Add Instruction");
         addButton.setDisable(true);
+        addButton.setFocusTraversable(false);
 
         // Validation: require target var + ref var + ref label
         Runnable validateFields = () -> {

@@ -116,6 +116,7 @@ final class XmlProgramMapper {
                 return new JumpNotZeroInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal);
             }
 
+            case "NO_OP":
             case "NEUTRAL":
                 return new NoOpInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal);
 

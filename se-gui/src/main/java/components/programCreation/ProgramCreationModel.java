@@ -120,7 +120,7 @@ public class ProgramCreationModel {
                 "S",
                 targetLabelStr,         // labelStr
                 referenceLabel,         // referenceLabelStr
-                null,                   // targetVariableStr
+                "y",                   // targetVariableStr
                 null,                   // sourceVariableStr
                 0,                      // Constant value
                 command,
