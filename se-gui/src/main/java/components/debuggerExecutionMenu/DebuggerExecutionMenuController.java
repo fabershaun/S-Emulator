@@ -348,11 +348,18 @@ public class DebuggerExecutionMenuController {
             currentDebugStep = debugStep;
             updateControllerAfterStep(currentDebugStep);
 
-            if (!currentDebugStep.hasMoreInstructions()) {
+            if (!currentDebugStep.hasMoreInstructions()) { // When finish
                 stopDebug();
+            } else {    // When stop at break point -> not finish debug! cant start new run, only debug / stop
+                newRunButton.setDisable(true);
+                resumeButton.setDisable(false);
+                stepOverButton.setDisable(false);
+                stepBackButton.setDisable(false);
+                stopButton.setDisable(false);
             }
         });
 
+        // While engine is calculating debug resume (long task)
         newRunButton.setDisable(true);
         stopButton.setDisable(false);       // Only 'stop' available while resume
         resumeButton.setDisable(true);
