@@ -8,7 +8,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -219,8 +218,8 @@ public class DebuggerExecutionMenuController {
         currentMode = ApplicationMode.NO_PROGRAM_LOADED;
         setNewRunEnabled(false);
         setPlayEnabled(false);
-        setModeSelectionEnabled(false);
-        setDebugControlsDisabled(false);
+        setModeSelectionDisabled(true);
+        setDebugControlsDisabled(true);
         inputsTable.setEditable(false);
     }
 
@@ -228,17 +227,17 @@ public class DebuggerExecutionMenuController {
         currentMode = ApplicationMode.PROGRAM_READY;
         setNewRunEnabled(true);
         setPlayEnabled(false);
-        setModeSelectionEnabled(true);
-        setDebugControlsDisabled(false);
+        setModeSelectionDisabled(false);
+        setDebugControlsDisabled(true);
         inputsTable.setEditable(false);
     }
 
     private void enterNewRunPressed() {
         currentMode = ApplicationMode.NEW_RUN_PRESSED;
         setNewRunEnabled(true);
-        setModeSelectionEnabled(true);
+        setModeSelectionDisabled(false);
         setPlayEnabled(true);
-        setDebugControlsDisabled(false);
+        setDebugControlsDisabled(true);
         inputsTable.setEditable(true);
         variablesTable.getItems().clear();
         cyclesNumberLabel.setText(String.valueOf(0));
@@ -272,18 +271,18 @@ public class DebuggerExecutionMenuController {
     private void enterRunning() {
         currentMode = ApplicationMode.RUN;
         setNewRunEnabled(true);
-        setModeSelectionEnabled(false);
+        setModeSelectionDisabled(true);
         setPlayEnabled(false);
-        setDebugControlsDisabled(false);
+        setDebugControlsDisabled(true);
         inputsTable.setEditable(false);
     }
 
     private void enterDebugging() {
         currentMode = ApplicationMode.DEBUG;
         setNewRunEnabled(true);
-        setModeSelectionEnabled(false);
+        setModeSelectionDisabled(true);
         setPlayEnabled(false);
-        setDebugControlsDisabled(true);
+        setDebugControlsDisabled(false);
         stepBackButton.setDisable(true); // Specific to shot down
         stopButton.setDisable(true);     // Specific to shot down
         inputsTable.setEditable(false);
@@ -295,19 +294,19 @@ public class DebuggerExecutionMenuController {
     }
 
     private void setDebugControlsDisabled(boolean disable) {
-        stopButton.setDisable(!disable);
-        resumeButton.setDisable(!disable);
-        stepBackButton.setDisable(!disable);
-        stepOverButton.setDisable(!disable);
+        stopButton.setDisable(disable);
+        resumeButton.setDisable(disable);
+        stepBackButton.setDisable(disable);
+        stepOverButton.setDisable(disable);
     }
 
     private void setNewRunEnabled(boolean enabled) {
         newRunButton.setDisable(!enabled);
     }
 
-    private void setModeSelectionEnabled(boolean enabled) {
-        runRadio.setDisable(!enabled);
-        debugRadio.setDisable(!enabled);
+    private void setModeSelectionDisabled(boolean disabled) {
+        runRadio.setDisable(disabled);
+        debugRadio.setDisable(disabled);
     }
 
     @FXML
@@ -353,10 +352,19 @@ public class DebuggerExecutionMenuController {
                 stopDebug();
             }
         });
+
+        newRunButton.setDisable(true);
+        stopButton.setDisable(false);       // Only 'stop' available while resume
+        resumeButton.setDisable(true);
+        stepOverButton.setDisable(true);
+        stepBackButton.setDisable(true);
     }
 
     private void stopDebug() {
-        setDebugControlsDisabled(false);
+        setDebugControlsDisabled(true);
+        setNewRunEnabled(true);
+        setModeSelectionDisabled(false);
+
         mainController.finishDebug(currentDebugStep);
     }
 
@@ -388,8 +396,6 @@ public class DebuggerExecutionMenuController {
         cyclesNumberLabel.setText(String.valueOf(debugStep.getTotalCycles()));
         highlightTargetVariable(debugStep.getTargetVariable());
     }
-
-
 
     private void highlightTargetVariable(String variableName) {
         if (variableName == null) {

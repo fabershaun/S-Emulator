@@ -199,6 +199,7 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public void initializeDebugger(String programName, int degree, List<Long> inputs) {
         Program workingProgram = getExpandedProgram(programName, degree);
+
         this.debug = new DebugImpl(workingProgram, degree, inputs);
     }
 
@@ -214,7 +215,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public DebugDTO getProgramAfterResume(List<Boolean> breakPoints) {
+    public DebugDTO getProgramAfterResume(List<Boolean> breakPoints) throws InterruptedException {
         DebugDTO debugDTO = debug.resume(breakPoints);  // Resume
 
         if (!debugDTO.hasMoreInstructions()) {      // Add to history

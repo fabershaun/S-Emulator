@@ -1,6 +1,5 @@
 package execution;
 
-import debug.Debug;
 import instruction.Instruction;
 import label.FixedLabel;
 import label.Label;

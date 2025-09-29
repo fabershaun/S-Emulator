@@ -45,6 +45,7 @@ import static components.loadFile.LoadFileController.*;
 public class MainAppController {
 
     private Engine engine;
+    private DebugResumeTask currentDebugTask;
 
     @FXML private HBox loadFile;
     @FXML private Label titleLabel;
@@ -301,15 +302,19 @@ public class MainAppController {
 
     public void debugStop() {
         engine.stopDebugPress();
+
+        if (currentDebugTask != null && currentDebugTask.isRunning()) { // kill the running thread
+            currentDebugTask.cancel(true);
+        }
     }
 
     public void debugResume(Consumer<DebugDTO> onComplete) {
         List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
 
-        DebugResumeTask debugResumeTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
+        currentDebugTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
 
-        debugResumeTask.setOnSucceeded(ev -> {
-            DebugDTO debugStep = debugResumeTask.getValue();
+        currentDebugTask.setOnSucceeded(ev -> {
+            DebugDTO debugStep = currentDebugTask.getValue();
 
             if (debugStep.hasMoreInstructions()) {
                 updateControllerAfterDebugStep(debugStep);
@@ -318,9 +323,11 @@ public class MainAppController {
             onComplete.accept(debugStep);
         });
 
-        debugResumeTask.setOnFailed(ev -> handleTaskFailure(debugResumeTask, "Debug Resume Failed"));
+        currentDebugTask.setOnFailed(ev -> handleTaskFailure(currentDebugTask, "Debug Resume Failed"));
 
-        new Thread(debugResumeTask, "debugResume-thread").start();
+        Thread thread = new Thread(currentDebugTask, "debugResume-thread");
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public DebugDTO debugStepOver() {
@@ -363,7 +370,12 @@ public class MainAppController {
             msg = "Unknown  error";
         }
 
-        showEngineError(title, msg);
+        // Print full details to console
+        if (taskException != null) {
+            taskException.printStackTrace();
+        }
+
+            showEngineError(title, msg);
     }
 
     public void clearHistorySelection() {

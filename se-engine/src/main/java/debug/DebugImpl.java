@@ -58,7 +58,7 @@ public class DebugImpl implements Debug {
     }
 
     @Override
-    public DebugDTO resume(List<Boolean> breakPoints) {
+    public DebugDTO resume(List<Boolean> breakPoints) throws InterruptedException {
 
         if (justStoppedOnBreakpoint) {
             justStoppedOnBreakpoint = false;
@@ -66,7 +66,13 @@ public class DebugImpl implements Debug {
         }
 
         while (hasMoreInstructions()) {
+            if (Thread.currentThread().isInterrupted()) {
+                System.out.println("Debug cancelled at instruction " + currentInstructionIndex);
+                throw new InterruptedException("In DebugImpl - resume(): currentThread cancelled by user");
+            }
+
             int indexBP = currentInstructionIndex;
+            System.out.println("checking index: " + indexBP);
 
             if (indexBP >= 0 && indexBP < breakPoints.size() && breakPoints.get(indexBP)) {   // Break point is ON in this instruction line
                 justStoppedOnBreakpoint = true;
@@ -183,7 +189,8 @@ public class DebugImpl implements Debug {
             ProgramDTO programDTO = buildProgramDTO(this.program);
             return EngineImpl.buildProgramExecutorDTO(programDTO, programExecutor);
         } catch (Exception ev) {
-            throw new IllegalArgumentException("In DebugImpl: Instruction number: " + currentInstructionIndex + ". Message: " + ev.getMessage());
+            throw new IllegalArgumentException("In DebugImpl: Instruction number: "
+                    + currentInstructionIndex + ". Message: " + ev.getMessage());
         }
     }
 

@@ -38,7 +38,7 @@ public interface Engine {
 
     DebugDTO getProgramAfterStepOver();
 
-    DebugDTO getProgramAfterResume(List<Boolean> breakPoints);
+    DebugDTO getProgramAfterResume(List<Boolean> breakPoints) throws InterruptedException;
 
     DebugDTO getProgramAfterStepBack();
 
