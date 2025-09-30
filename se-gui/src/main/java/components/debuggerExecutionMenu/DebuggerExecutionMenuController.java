@@ -287,6 +287,7 @@ public class DebuggerExecutionMenuController {
         stopButton.setDisable(true);     // Specific to shot down
         inputsTable.setEditable(false);
         mainController.EnterDebugMode();
+        currentDebugStep = null; // Reset
     }
 
     private void setPlayEnabled(boolean enabled) {
@@ -331,13 +332,21 @@ public class DebuggerExecutionMenuController {
         } else if (debugRadio.isSelected()) {
             mainController.initializeDebugger(inputValues); // Important
             enterDebugging();
+            onResume();
         }
     }
 
     @FXML
     private void onStop() {
         mainController.debugStop();
-        updateControllerAfterStep(currentDebugStep);
+
+        // Update the UI only if we already have a valid debug step
+        if (currentDebugStep != null) {
+            updateControllerAfterStep(currentDebugStep);
+        } else {
+            mainController.clearVariableTableInDebugController(); // Clear the variable table and rest cycles
+        }
+
         stopDebug();
     }
 
