@@ -7,6 +7,7 @@ import dto.InstructionDTO;
 import dto.InstructionsDTO;
 import dto.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -56,7 +57,11 @@ public class MainInstructionsTableController {
             }
         });
 
-        colIndex.setCellValueFactory(new PropertyValueFactory<>("instructionNumber"));
+        colIndex.setCellValueFactory(param ->
+                new ReadOnlyObjectWrapper<>(instructionsTable.getItems().indexOf(param.getValue()) + 1)
+        );
+
+//        colIndex.setCellValueFactory(new PropertyValueFactory<>("instructionNumber"));
         colType.setCellValueFactory(new PropertyValueFactory<>("instructionTypeStr"));
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));

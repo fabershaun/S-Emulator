@@ -34,12 +34,27 @@ public class HighlightSelectionModel {
     }
 
     private void recalcOptions() {
+        if (currentProgram.get() == null) {
+            highlightSelectionOptions.clear();
+            selectedHighlight.set(null);
+            return;
+        }
+
         List<String> result = new ArrayList<>();
         result.add(EMPTY_CHOICE);
-        result.add(currentProgram.get().getResult());
-        result.addAll(currentProgram.get().getInputVariables());
-        result.addAll(currentProgram.get().getWorkVariables());
-        result.addAll(currentProgram.get().getLabelsStr());
+
+        if (currentProgram.get().getResult() != null) {
+            result.add(currentProgram.get().getResult());
+        }
+        if (currentProgram.get().getInputVariables() != null) {
+            result.addAll(currentProgram.get().getInputVariables());
+        }
+        if (currentProgram.get().getWorkVariables() != null) {
+            result.addAll(currentProgram.get().getWorkVariables());
+        }
+        if (currentProgram.get().getLabelsStr() != null) {
+            result.addAll(currentProgram.get().getLabelsStr());
+        }
 
         highlightSelectionOptions.setAll(result);
         selectedHighlight.set(null);
