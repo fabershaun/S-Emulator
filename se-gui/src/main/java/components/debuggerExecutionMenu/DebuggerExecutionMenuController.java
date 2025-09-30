@@ -435,5 +435,9 @@ public class DebuggerExecutionMenuController {
         table.scrollTo(targetIndex);
     }
 
+    public void clearVariableTableAndResetCycles() {
+        variablesTable.getItems().clear();
+        cyclesNumberLabel.setText("");
+    }
 }
 

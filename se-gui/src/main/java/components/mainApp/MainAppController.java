@@ -217,6 +217,8 @@ public class MainAppController {
             programAfterExecuteProperty.set(null);
             degreeModel.setMaxDegree(engine.getMaxDegree(selectedProgramProperty.get().getProgramName()));
             degreeModel.setCurrentDegree(0);
+            historyMenuController.clearHistoryTable();  // Clear the table in case of debug -> load
+            debuggerExecutionMenuController.clearVariableTableAndResetCycles();   // Clear the table in case of debug -> load
         });
 
         loadProgramTask.setOnFailed(ev -> handleLoadTaskFailure(loadProgramTask, progressStage));

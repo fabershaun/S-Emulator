@@ -51,6 +51,7 @@ public class ProgramCreationController {
         disableEditing(true);
         saveButton.setDisable(true);
         uploadToAppButton.setDisable(true);
+        lineNumberChooserCB.setDisable(true);
         deleteInstructionButton.setDisable(true);
         initializeListeners();
         initializeInstructionChoices();
@@ -82,7 +83,10 @@ public class ProgramCreationController {
     private void initializeListeners() {
         // Enable save only if there is at least one instruction
         instructionsTable.getItems().addListener((ListChangeListener<InstructionDTO>) change -> {
-            saveButton.setDisable(instructionsTable.getItems().isEmpty());
+            boolean empty = instructionsTable.getItems().isEmpty();
+            saveButton.setDisable(empty);
+            lineNumberChooserCB.setDisable(empty);
+
             refreshLineNumberChooser();
             lineNumberChooserCB.getSelectionModel().clearSelection();
             lineNumberChooserCB.setPromptText("Select instruction number");
@@ -138,7 +142,6 @@ public class ProgramCreationController {
     private void disableEditing(boolean disabled) {
         programNameTF.setDisable(disabled);
         chooseInstructionCB.setDisable(disabled);
-        lineNumberChooserCB.setDisable(disabled);
     }
 
     @FXML
@@ -207,6 +210,12 @@ public class ProgramCreationController {
         );
 
         File file = fileChooser.showSaveDialog(saveButton.getScene().getWindow());
+
+        if (file == null) {
+            // User pressed Cancel, so just return without doing anything
+            return;
+        }
+
         try {
             programCreationModel.saveProgramToFile(file, programName, instructions);
             uploadToAppButton.setDisable(false);

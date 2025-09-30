@@ -150,4 +150,8 @@ public class HistoryController {
     public void updateHistoryTableManual() {
         historyTable.getItems().setAll(mainController.getHistory());
     }
+
+    public void clearHistoryTable() {
+        historyTable.getItems().clear();
+    }
 }
