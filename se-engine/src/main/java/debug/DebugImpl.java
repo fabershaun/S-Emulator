@@ -56,10 +56,46 @@ public class DebugImpl implements Debug {
         this.initializeProgramExecutor.setTotalCycles(currentCycles);
     }
 
+    private boolean checkAndStopAtBreakpoint(List<Boolean> breakPoints) {
+        if (currentInstructionIndex < breakPoints.size() && breakPoints.get(currentInstructionIndex)) {
+            DebugDTO snapshot;
+
+            // Case: very first instruction, before any step was executed
+            if (currentInstructionIndex == 0 && historyPointer < 0) {
+                ProgramExecutorDTO initializedExecutorDTO = buildProgramExecutorDTO(initializeProgramExecutor);
+
+                snapshot = new DebugDTO(
+                        this.programExecutor.getProgram().getName(),
+                        0, // current instruction index
+                        0, // next instruction index (still at start)
+                        hasMoreInstructions(),
+                        null, // no target variable yet
+                        initializedExecutorDTO.getDegree(),
+                        initializedExecutorDTO.getResult(),
+                        initializedExecutorDTO.getTotalCycles(),
+                        initializedExecutorDTO.getVariablesToValuesSorted()
+                );
+            } else {
+                // Normal case, after at least one step
+                snapshot = buildDebugDTO();
+            }
+
+            stepsHistory.add(snapshot);
+            historyPointer = stepsHistory.size() - 1;
+            justStoppedOnBreakpoint = true;
+            return true;
+        }
+        return false;
+    }
+
+
     @Override
     public DebugDTO resume(List<Boolean> breakPoints) throws InterruptedException {
         // If resume is called before any step has been executed
         if (historyPointer < 0 && hasMoreInstructions()) {
+            if (checkAndStopAtBreakpoint(breakPoints)) {
+                return stepsHistory.get(historyPointer);
+            }
             stepOver();   // create the first snapshot
         }
 
@@ -74,18 +110,10 @@ public class DebugImpl implements Debug {
                 throw new InterruptedException("In DebugImpl - resume(): currentThread cancelled by user");
             }
 
-            int indexBP = currentInstructionIndex;
-            //System.out.println("checking index: " + indexBP);
+            //System.out.println("checking index: " + currentInstructionIndex);
 
-            if (indexBP >= 0 && indexBP < breakPoints.size() && breakPoints.get(indexBP)) {
-                justStoppedOnBreakpoint = true;
-
-                // Save the current state to history only once
-                DebugDTO snapshot = buildDebugDTO();
-                stepsHistory.add(snapshot);
-                historyPointer = stepsHistory.size() - 1;
-
-                return snapshot;
+            if (checkAndStopAtBreakpoint(breakPoints)) {
+                return stepsHistory.get(historyPointer);
             }
 
             stepOverWithoutSavingHistory();

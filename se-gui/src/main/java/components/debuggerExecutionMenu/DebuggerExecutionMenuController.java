@@ -331,6 +331,7 @@ public class DebuggerExecutionMenuController {
         } else if (debugRadio.isSelected()) {
             mainController.initializeDebugger(inputValues); // Important
             enterDebugging();
+            onResume();
         }
     }
 
