@@ -63,7 +63,8 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction implements
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String userString = getFunctionOfThisInstruction().getUserString();
-        String arguments = buildCommandArguments(getMainProgram().getFunctionsHolder(), quoteArguments, Map.of());
+
+        String arguments = buildCommandArguments(getMainProgram().getProgramsHolder(), quoteArguments, Map.of());
         StringBuilder command = new StringBuilder();
 
         command.append("IF ");
@@ -116,7 +117,7 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction implements
     }
 
     public Program getFunctionOfThisInstruction() {
-        return super.getMainProgram().getFunctionsHolder().getFunctionByName(this.referenceFunctionName);
+        return super.getMainProgram().getFunctionByName(this.referenceFunctionName);
     }
 }
 

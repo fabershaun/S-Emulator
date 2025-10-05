@@ -15,7 +15,10 @@ public interface Program extends Serializable {
 
     String getName();
     String getUserString();
-    FunctionsHolder getFunctionsHolder();
+
+    Program getFunctionByName(String functionName);
+    ProgramsHolder getProgramsHolder();
+
     List<Instruction> getInstructionsList();
     Instruction getInstructionByLabel(Label label);
     Set<Variable> getInputVariables();

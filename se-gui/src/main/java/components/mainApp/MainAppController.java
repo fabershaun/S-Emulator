@@ -275,10 +275,10 @@ public class MainAppController {
 
     private String getActiveProgramName() {
         String chosenUserString = programSelectorModel.getSelectedUserString();
-        String chosenProgramName = engine.getProgramDTOByUserString(chosenUserString).getProgramName();
+        String chosenProgramName = engine.getProgramNameByUserString(chosenUserString);
 
-        if (chosenProgramName == null) {
-            chosenProgramName = engine.getMainProgram().getProgramName();
+        if (chosenProgramName == null) {    // If the user didnt select something
+            chosenProgramName = mainProgramLoadedProperty.get().getProgramName();
         }
 
         return chosenProgramName;

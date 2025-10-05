@@ -13,7 +13,11 @@ import java.util.List;
 
 public interface Engine {
 
-    ProgramDTO getMainProgram();
+    String getProgramNameByUserString(String userString);
+
+
+
+//    ProgramDTO getMainProgram();
     ProgramDTO getProgramDTOByName(String programName);
     ProgramDTO getProgramDTOByUserString(String userString);
     ProgramDTO getExpandedProgramDTO(String programName, int degree);
@@ -22,10 +26,10 @@ public interface Engine {
     List<ProgramDTO> getAllPrograms();
 
     int getMaxDegree(String programName);
-    void calculateExpansionForAllPrograms();
+    void calculateExpansionForAllLoadedPrograms(String mainProgramName);
 
     void loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException;
-    void loadProgramFromFile(Path path) throws EngineLoadException;
+    String loadProgramFromFile(Path path) throws EngineLoadException;
     void runProgram(String programName, int degree, Long... inputs);
     void initializeDebugger(String programName, int degree, List<Long> inputs);
 
@@ -35,8 +39,8 @@ public interface Engine {
     void stopDebugPress();
 
     // For console module only:
-    void saveState(Path path) throws EngineLoadException;
-    void loadState(Path path) throws EngineLoadException;
+//    void saveState(Path path) throws EngineLoadException;
+//    void loadState(Path path) throws EngineLoadException;
     InstructionDTO createOriginalInstruction();
     void exportToXml(File file, String programName, List<InstructionDTO> instructions);
 }

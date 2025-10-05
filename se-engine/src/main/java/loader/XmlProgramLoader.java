@@ -3,6 +3,7 @@ package loader;
 import exceptions.EngineLoadException;
 import instruction.Instruction;
 import instruction.synthetic.QuoteInstruction;
+import program.ProgramsHolder;
 import program.Program;
 import generatedFromXml.SProgram;
 import jakarta.xml.bind.*;
@@ -53,16 +54,16 @@ public class XmlProgramLoader {
     }
 
 
-    public Program loadFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
+    public Program loadFromStream(InputStream xmlStream, String sourceName, ProgramsHolder programsHolder) throws EngineLoadException {
         if (xmlStream == null) {
             throw new EngineLoadException("XML input stream is null");
         }
 
         SProgram sProgram = unmarshalFromStream(xmlStream, sourceName);
 
-        Program program = XmlProgramMapper.map(sProgram);
+        Program program = XmlProgramMapper.map(sProgram, programsHolder);
 
-        validateFunctions(program);
+        validateFunctions(program, programsHolder);
 
         return program;
     }
@@ -72,12 +73,12 @@ public class XmlProgramLoader {
     }
 
 
-    public Program loadFromFile(Path xmlPath) throws EngineLoadException {
+    public Program loadFromFile(Path xmlPath, ProgramsHolder programsHolder) throws EngineLoadException {
         validatePath(xmlPath);
         SProgram sProgram = unmarshalFromFile(xmlPath);
-        Program program = XmlProgramMapper.map(sProgram);
+        Program program = XmlProgramMapper.map(sProgram, programsHolder);
 
-        validateFunctions(program);
+        validateFunctions(program , programsHolder);
         return program;
     }
 
@@ -91,10 +92,10 @@ public class XmlProgramLoader {
     }
 
     // Only for part 2
-    private void validateFunctions(Program program) throws EngineLoadException {
+    private void validateFunctions(Program program, ProgramsHolder programsHolder) throws EngineLoadException {
 
         // Collect all defined function names
-        Set<String> definedFunctions = new HashSet<>(program.getFunctionsHolder().getFunctions()
+        Set<String> definedFunctions = new HashSet<>(programsHolder.getFunctions()
                 .stream()
                 .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
                 .toList());
@@ -103,7 +104,7 @@ public class XmlProgramLoader {
         validateFunctionCalls(program, definedFunctions, "Main Program");
 
         // Validate each sub-function's instructions
-        for (Program function : program.getFunctionsHolder().getFunctions()) {
+        for (Program function : programsHolder.getFunctions()) {
             function.validateProgram();                     // Validate that there are no undefined label references
             validateFunctionCalls(function, definedFunctions, "Function: " + function.getName());
         }

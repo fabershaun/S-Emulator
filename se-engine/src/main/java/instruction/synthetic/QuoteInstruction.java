@@ -62,7 +62,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String userString = getFunctionOfThisInstruction().getUserString();
-        String arguments = buildCommandArguments(getMainProgram().getFunctionsHolder(), quoteArguments, variableMapping);
+        String arguments = buildCommandArguments(getMainProgram().getProgramsHolder(), quoteArguments, variableMapping);
 
         StringBuilder command = new StringBuilder();
         command.append(targetVariableRepresentation);
@@ -103,7 +103,7 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     }
 
     public Program getFunctionOfThisInstruction() {
-        return super.getMainProgram().getFunctionsHolder().getFunctionByName(this.functionName);
+        return super.getMainProgram().getFunctionByName(this.functionName);
     }
 
     private List<Instruction> convertFunctionData(int startNumber) {

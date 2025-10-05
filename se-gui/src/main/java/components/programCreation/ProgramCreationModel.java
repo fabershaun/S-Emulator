@@ -24,8 +24,8 @@ public class ProgramCreationModel {
     }
 
     public ProgramDTO loadProgramFromFile(Path xmlPath) throws EngineLoadException {
-        engine.loadProgramFromFile(xmlPath);
-        return engine.getMainProgram();
+        String loadedProgramName = engine.loadProgramFromFile(xmlPath);
+        return engine.getProgramDTOByName(loadedProgramName);
     }
 
     public void saveProgramToFile(File file, String programName, List<InstructionDTO> instructions) {

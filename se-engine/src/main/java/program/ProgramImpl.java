@@ -21,7 +21,9 @@ import static java.lang.Math.max;
 public class ProgramImpl implements Program, Serializable {
     private final String programName;
     private final String userString;
-    private final FunctionsHolder functions;
+
+    private final ProgramsHolder programsHolder;
+
     private final List<Instruction> programInstructions;
     private final Set<Variable> inputVariables;
     private final Set<Variable> workVariables;
@@ -33,10 +35,10 @@ public class ProgramImpl implements Program, Serializable {
     private int nextLabelNumber = 1;
     private int nextWorkVariableNumber = 1;
 
-    public ProgramImpl(String name, String userString, FunctionsHolder functions) {
+    public ProgramImpl(String name, String userString, ProgramsHolder programsHolder) {
         this.programName = name;
         this.userString = userString;
-        this.functions = functions;
+        this.programsHolder = programsHolder;
         this.programInstructions = new ArrayList<>();
         this.labelToInstruction = new HashMap<>();
         this.inputVariables = new LinkedHashSet<>();
@@ -123,8 +125,13 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
-    public FunctionsHolder getFunctionsHolder() {
-        return functions;
+    public Program getFunctionByName(String functionName) {
+        return programsHolder.getFunctionByName(functionName);
+    }
+
+    @Override
+    public ProgramsHolder getProgramsHolder() {
+        return programsHolder;
     }
 
     @Override

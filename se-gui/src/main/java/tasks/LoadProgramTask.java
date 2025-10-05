@@ -18,6 +18,8 @@ public class LoadProgramTask extends Task<ProgramDTO> {
 
     @Override
     protected ProgramDTO  call() throws EngineLoadException, InterruptedException {
+        String loadedProgramName;
+
         // Step 1: basic validation and initial feedback
         updateMessage("Preparing");
         updateProgress(0, 100);
@@ -30,7 +32,7 @@ public class LoadProgramTask extends Task<ProgramDTO> {
 
         // Step 2: load program into engine
         updateMessage("Loading");
-        engine.loadProgramFromFile(xmlPath);
+        loadedProgramName = engine.loadProgramFromFile(xmlPath);
 
         if (isCancelled()) {
             return null;
@@ -46,7 +48,7 @@ public class LoadProgramTask extends Task<ProgramDTO> {
         // Step 4: finish
         updateProgress(100, 100);
         updateMessage("Done");
-        return engine.getMainProgram();
+        return engine.getProgramDTOByName(loadedProgramName);
     }
 
     @Override

@@ -6,7 +6,7 @@ import execution.ProgramExecutorImpl;
 import instruction.synthetic.quoteArguments.FunctionArgument;
 import instruction.synthetic.quoteArguments.QuoteArgument;
 import instruction.synthetic.quoteArguments.VariableArgument;
-import program.FunctionsHolder;
+import program.ProgramsHolder;
 import program.Program;
 import variable.Variable;
 
@@ -51,7 +51,7 @@ public class FunctionInstructionUtils {
             Program mainProgram) {
 
         String innerFunctionName = innerFunctionArgument.getFunctionName();
-        Program innerFunction = mainProgram.getFunctionsHolder().getFunctionByName(innerFunctionName);
+        Program innerFunction = mainProgram.getFunctionByName(innerFunctionName);
 
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
         List<FunctionExecutionResult> functionExecutionResultList = getInputs(innerFunctionArgument.getArguments(), context, mainProgram);
@@ -66,13 +66,13 @@ public class FunctionInstructionUtils {
         return new FunctionExecutionResult(resultValue, cycles);
     }
 
-    public static String buildCommandArguments(FunctionsHolder functionsHolder, List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping) {
+    public static String buildCommandArguments(ProgramsHolder programsHolder, List<QuoteArgument> arguments, Map<Variable, Variable> variableMapping) {
         return arguments.stream()
-                .map(argument -> buildSingleArgument(functionsHolder, argument, variableMapping))
+                .map(argument -> buildSingleArgument(programsHolder, argument, variableMapping))
                 .collect(Collectors.joining(","));
     }
 
-    private static String buildSingleArgument(FunctionsHolder functionsHolder, QuoteArgument argument, Map<Variable, Variable> variableMapping) {
+    private static String buildSingleArgument(ProgramsHolder programsHolder, QuoteArgument argument, Map<Variable, Variable> variableMapping) {
 
         return switch (argument) {
             case VariableArgument variableArgument -> {
@@ -86,10 +86,10 @@ public class FunctionInstructionUtils {
 
             case FunctionArgument functionArgument -> {
                 String innerArgumentsAsString = functionArgument.getArguments().stream()
-                        .map(innerArgument -> buildSingleArgument(functionsHolder, innerArgument, variableMapping))
+                        .map(innerArgument -> buildSingleArgument(programsHolder, innerArgument, variableMapping))
                         .collect(Collectors.joining(","));
 
-                String functionUserString = functionsHolder.getUserStringByName(functionArgument.getFunctionName());
+                String functionUserString = programsHolder.getNameByUserString(functionArgument.getFunctionName());
 
                 yield "(" + functionUserString
                         + (innerArgumentsAsString.isEmpty() ? "" : "," + innerArgumentsAsString)

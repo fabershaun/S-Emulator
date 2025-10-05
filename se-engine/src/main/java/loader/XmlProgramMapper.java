@@ -10,7 +10,7 @@ import instruction.synthetic.quoteArguments.VariableArgument;
 import label.FixedLabel;
 import label.Label;
 import label.LabelImpl;
-import program.FunctionsHolder;
+import program.ProgramsHolder;
 import program.Program;
 import program.ProgramImpl;
 import variable.Variable;
@@ -30,33 +30,32 @@ final class XmlProgramMapper {
 
     private XmlProgramMapper() {}
 
-    static Program map(SProgram sProgram) {
+    static Program map(SProgram sProgram, ProgramsHolder programsHolder) {
         String programName = safeTrim(sProgram.getName());
         programName = programName != null ? programName : "Unnamed";
 
-        FunctionsHolder functionsHolder = new FunctionsHolder();
-        Program targetProgram = new ProgramImpl(programName, programName, functionsHolder);  // The user string of program is its name
+        Program targetProgram = new ProgramImpl(programName, programName, programsHolder);  // The user string of program is its name
 
         mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
 
         // Map functions (sub-programs) if they exist
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
-                Program innerFunction = mapFunction(sFunction, functionsHolder);
-                functionsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
+                Program innerFunction = mapFunction(sFunction, programsHolder);
+                programsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
             }
         }
 
         return targetProgram;
     }
 
-    private static Program mapFunction(SFunction sFunction, FunctionsHolder functionsHolder) {
+    private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());
         Program functionProgram = new ProgramImpl(
                 functionName != null ? functionName : "UnnamedFunction",
                 userString != null ? userString : "UnnamedUserString",
-                functionsHolder
+                programsHolder
         );
 
         // Map instructions of this function into its program

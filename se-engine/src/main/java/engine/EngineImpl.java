@@ -7,6 +7,7 @@ import exceptions.EngineLoadException;
 import execution.ProgramExecutorImpl;
 import execution.ProgramExecutor;
 import instruction.InstructionData;
+import program.ProgramsHolder;
 import program.Program;
 import loader.XmlProgramLoader;
 import variable.Variable;
@@ -16,33 +17,42 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class EngineImpl implements Engine, Serializable {
-    private transient Path xmlPath;
-    private Program mainProgram;
+    private transient Path xmlPath; // Needed only for part 1
+
+    //private Program mainProgram;        // TODO: DELETE
+    private final ProgramsHolder programsHolder = new ProgramsHolder();
+
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private Debug debug;
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
 
 
+    public Program getMainProgram(String programName) {
+        return programsHolder.getMainProgramByName(programName);
+    }
+
     @Override
     public void loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
-        Program program = loader.loadFromStream(xmlStream, sourceName);
+        Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder);
         finalizeProgramLoading(program);
     }
 
     @Override
-    public void loadProgramFromFile(Path xmlPath) throws EngineLoadException {
+    public String loadProgramFromFile(Path xmlPath) throws EngineLoadException {
         this.xmlPath = xmlPath;
         XmlProgramLoader loader = new XmlProgramLoader();
-        Program program = loader.loadFromFile(xmlPath);
+        Program program = loader.loadFromFile(xmlPath, this.programsHolder);
         finalizeProgramLoading(program);
+
+        return program.getName();
     }
 
     private void finalizeProgramLoading(Program program) throws EngineLoadException {
         program.validateProgram();
         program.initialize();
-        mainProgram = program;
-        calculateExpansionForAllPrograms();
+        programsHolder.addMainProgram(program.getName(), program.getName(), program);
+        calculateExpansionForAllLoadedPrograms(program.getName());
     }
 
     @Override
@@ -57,10 +67,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     private Program getProgramByName(String programName) {
-        if (mainProgram.getName().equals(programName)) {
-            return mainProgram;
+
+        if (programsHolder.getMainProgramByName(programName) != null) {   // If program is main program
+            return programsHolder.getMainProgramByName(programName);
         }
-        Program resProgram = mainProgram.getFunctionsHolder().getFunctionByName(programName);
+
+        Program resProgram = programsHolder.getFunctionByName(programName);    // else - program is a function
 
         if (resProgram == null) {
             throw new IllegalStateException("Program " + programName + " does not exist");
@@ -75,23 +87,20 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramDTO getProgramDTOByUserString(String userString) {
-        if (mainProgram.getUserString().equals(userString)) {
-            return buildProgramDTO(mainProgram);
-        }
-        Program resProgram = mainProgram.getFunctionsHolder().getFunctionByUserString(userString);
-
-        if (resProgram == null) {
-            throw new IllegalStateException("Program " + userString + " does not exist");
-        }
-
-        return buildProgramDTO(resProgram);
+    public String getProgramNameByUserString(String userString) {
+        return programsHolder.getNameByUserString(userString);
     }
 
     @Override
-    public ProgramDTO getMainProgram() {
-        return buildProgramDTO(mainProgram);
+    public ProgramDTO getProgramDTOByUserString(String userString) {
+        String programName = getProgramNameByUserString(userString);
+        return getProgramDTOByName(programName);
     }
+
+//    @Override
+//    public ProgramDTO getMainProgram() {
+//        return buildProgramDTO(mainProgram);
+//    }
 
     @Override
     public ProgramExecutorDTO getProgramAfterRun(String programName) {
@@ -130,9 +139,11 @@ public class EngineImpl implements Engine, Serializable {
     public List<ProgramDTO> getAllPrograms() {
         List<ProgramDTO> result = new ArrayList<>();
 
-        result.add(buildProgramDTO(mainProgram));   // Add the main program
+        for (Program mainProgram : programsHolder.getMainPrograms()) {
+            result.add(buildProgramDTO(mainProgram));   // Add all the main programs
+        }
 
-        for(Program function : mainProgram.getFunctionsHolder().getFunctions()) {
+        for(Program function : programsHolder.getFunctions()) {
             result.add(buildProgramDTO(function));      // Add all the functions
         }
 
@@ -164,13 +175,15 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void calculateExpansionForAllPrograms() {
+    public void calculateExpansionForAllLoadedPrograms(String mainProgramName) {
+        Program mainProgram = programsHolder.getMainProgramByName(mainProgramName);
+
         this.nameAndDegreeToProgram.put(
-                mainProgram.getName(),
+                mainProgramName,
                 mainProgram.calculateDegreeToProgram()
         );
 
-        List<Program> functions = mainProgram.getFunctionsHolder().getFunctions().stream().toList();
+        List<Program> functions = programsHolder.getFunctions().stream().toList();
         for (Program function : functions) {
             this.nameAndDegreeToProgram.put(
                     function.getName(),
@@ -250,34 +263,33 @@ public class EngineImpl implements Engine, Serializable {
         executionHistory.add(debug.getDebugProgramExecutor());
     }
 
-    @Override
-    public void saveState(Path path) throws EngineLoadException {
-        try {
-            EngineIO.save(this, path);
-        } catch (IOException e) {
-            throw new EngineLoadException("Failed to save engine state: " + e.getMessage(), e);
-        }
-    }
+//    @Override
+//    public void saveState(Path path) throws EngineLoadException {
+//        try {
+//            EngineIO.save(this, path);
+//        } catch (IOException e) {
+//            throw new EngineLoadException("Failed to save engine state: " + e.getMessage(), e);
+//        }
+//    }
 
-    @Override
-    public void loadState(Path path) throws EngineLoadException {
-        try {
-            EngineImpl loaded = EngineIO.load(path);
+//    @Override
+//    public void loadState(Path path) throws EngineLoadException {
+//        try {
+//            EngineImpl loaded = EngineIO.load(path);
+//
+//            this.xmlPath = loaded.xmlPath;
+//            this.mainProgram = loaded.mainProgram;
+//
+//        } catch (IOException | ClassNotFoundException e) {
+//            throw new EngineLoadException("Failed to load engine state: " + e.getMessage(), e);
+//        }
+//    }
 
-            this.xmlPath = loaded.xmlPath;
-            this.mainProgram = loaded.mainProgram;
-            //this.executionHistory = loaded.executionHistory;
-
-        } catch (IOException | ClassNotFoundException e) {
-            throw new EngineLoadException("Failed to load engine state: " + e.getMessage(), e);
-        }
-    }
-
-    @Serial
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeObject(xmlPath != null ? xmlPath.toString() : null);
-    }
+//    @Serial
+//    private void writeObject(ObjectOutputStream out) throws IOException {
+//        out.defaultWriteObject();
+//        out.writeObject(xmlPath != null ? xmlPath.toString() : null);
+//    }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

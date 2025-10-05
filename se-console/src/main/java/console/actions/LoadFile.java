@@ -21,7 +21,6 @@ public class LoadFile implements MenuActionable {
 
         Path xmlPath = Validator.getValidateDegree(scanner);
         engine.loadProgramFromFile(xmlPath);
-        engine.calculateExpansionForAllPrograms();  // Initialize expansion
 
         System.out.println("Successfully loaded the file");
     }
