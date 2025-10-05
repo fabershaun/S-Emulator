@@ -7,6 +7,7 @@ import dto.ProgramExecutorDTO;
 import exceptions.EngineLoadException;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -22,7 +23,9 @@ public interface Engine {
 
     int getMaxDegree(String programName);
     void calculateExpansionForAllPrograms();
-    void loadProgram(Path path) throws EngineLoadException;
+
+    void loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException;
+    void loadProgramFromFile(Path path) throws EngineLoadException;
     void runProgram(String programName, int degree, Long... inputs);
     void initializeDebugger(String programName, int degree, List<Long> inputs);
 

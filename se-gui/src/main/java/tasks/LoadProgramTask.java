@@ -30,7 +30,7 @@ public class LoadProgramTask extends Task<ProgramDTO> {
 
         // Step 2: load program into engine
         updateMessage("Loading");
-        engine.loadProgram(xmlPath);
+        engine.loadProgramFromFile(xmlPath);
 
         if (isCancelled()) {
             return null;

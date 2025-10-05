@@ -22,19 +22,27 @@ public class EngineImpl implements Engine, Serializable {
     private Debug debug;
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
 
+
     @Override
-    public void loadProgram(Path xmlPath) throws EngineLoadException {
-        this.xmlPath = xmlPath;
-        Program newProgram;
-
+    public void loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
-        newProgram = loader.load(xmlPath);
-        newProgram.validateProgram();
-        newProgram.initialize();
+        Program program = loader.loadFromStream(xmlStream, sourceName);
+        finalizeProgramLoading(program);
+    }
 
-        mainProgram = newProgram;
+    @Override
+    public void loadProgramFromFile(Path xmlPath) throws EngineLoadException {
+        this.xmlPath = xmlPath;
+        XmlProgramLoader loader = new XmlProgramLoader();
+        Program program = loader.loadFromFile(xmlPath);
+        finalizeProgramLoading(program);
+    }
 
-        calculateExpansionForAllPrograms(); // Initialize expansion
+    private void finalizeProgramLoading(Program program) throws EngineLoadException {
+        program.validateProgram();
+        program.initialize();
+        mainProgram = program;
+        calculateExpansionForAllPrograms();
     }
 
     @Override

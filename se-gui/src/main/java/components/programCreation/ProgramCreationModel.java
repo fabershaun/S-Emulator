@@ -24,7 +24,7 @@ public class ProgramCreationModel {
     }
 
     public ProgramDTO loadProgramFromFile(Path xmlPath) throws EngineLoadException {
-        engine.loadProgram(xmlPath);
+        engine.loadProgramFromFile(xmlPath);
         return engine.getMainProgram();
     }
 
