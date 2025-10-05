@@ -1,5 +1,6 @@
 package servlets;
 
+import dto.ProgramDTO;
 import engine.Engine;
 import exceptions.EngineLoadException;
 import jakarta.servlet.ServletException;
@@ -21,14 +22,27 @@ import static utils.ServletUtils.getEngine;
 public class FileUploadServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Part filePart = request.getPart(XML_FILE);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         Engine engine = getEngine(getServletContext());
+        Part filePart = request.getPart(XML_FILE);
+
+        if (filePart == null || filePart.getSize() == 0) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No file uploaded");
+            return;
+        }
 
         try (InputStream inputStream = filePart.getInputStream()) {
-            engine.loadProgramFromStream(inputStream, inputStream.toString());
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            String loadedProgramName = engine.loadProgramFromStream(inputStream, filePart.getSubmittedFileName());
+            ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
+
+            String json = GSON.toJson(loadedProgramDTO);
+            response.getWriter().write(json);
         } catch (EngineLoadException ex) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+        } catch (Exception ex) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
         }
     }
 }

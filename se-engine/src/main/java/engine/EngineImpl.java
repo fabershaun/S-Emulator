@@ -17,12 +17,10 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class EngineImpl implements Engine, Serializable {
-//    private transient Path xmlPath; // Needed only for part 1
     private final ProgramsHolder programsHolder = new ProgramsHolder();
-
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
-    private Debug debug;
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
+    private Debug debug;
 
 
     public Program getMainProgram(String programName) {
@@ -30,15 +28,16 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
+    public String loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder);
         finalizeProgramLoading(program);
+
+        return program.getName();
     }
 
     @Override
     public String loadProgramFromFile(Path xmlPath) throws EngineLoadException {
-//        this.xmlPath = xmlPath;
         XmlProgramLoader loader = new XmlProgramLoader();
         Program program = loader.loadFromFile(xmlPath, this.programsHolder);
         finalizeProgramLoading(program);

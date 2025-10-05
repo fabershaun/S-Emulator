@@ -15,8 +15,6 @@ public interface Engine {
 
     String getProgramNameByUserString(String userString);
 
-
-
 //    ProgramDTO getMainProgram();
     ProgramDTO getProgramDTOByName(String programName);
     ProgramDTO getProgramDTOByUserString(String userString);
@@ -28,7 +26,7 @@ public interface Engine {
     int getMaxDegree(String programName);
     void calculateExpansionForAllLoadedPrograms(String mainProgramName);
 
-    void loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException;
+    String loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException;
     String loadProgramFromFile(Path path) throws EngineLoadException;
     void runProgram(String programName, int degree, Long... inputs);
     void initializeDebugger(String programName, int degree, List<Long> inputs);
