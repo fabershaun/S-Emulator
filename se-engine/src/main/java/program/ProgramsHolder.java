@@ -8,8 +8,6 @@ public class ProgramsHolder implements Serializable {
     private final Map<String, Program> nameToMainProgram = new HashMap<>();
     private final Map<String, String> userStringToName = new HashMap<>();
 
-    //private final Map<String, Program> userStringToFunction = new HashMap<>();
-
 
     public void addMainProgram(String programName, String UserString, Program mainProgram) {
         this.nameToMainProgram.put(programName.toUpperCase(Locale.ROOT), mainProgram);
@@ -43,11 +41,4 @@ public class ProgramsHolder implements Serializable {
     public Collection<Program> getMainPrograms() {
         return nameToMainProgram.values();
     }
-
-//    public Set<String> getFunctionNamesUpperCase() {
-//        return getFunctions()
-//                .stream()
-//                .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
-//                .collect(Collectors.toSet());
-//    }
 }

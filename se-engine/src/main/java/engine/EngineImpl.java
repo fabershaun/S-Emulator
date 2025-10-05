@@ -17,9 +17,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class EngineImpl implements Engine, Serializable {
-    private transient Path xmlPath; // Needed only for part 1
-
-    //private Program mainProgram;        // TODO: DELETE
+//    private transient Path xmlPath; // Needed only for part 1
     private final ProgramsHolder programsHolder = new ProgramsHolder();
 
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
@@ -40,7 +38,7 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public String loadProgramFromFile(Path xmlPath) throws EngineLoadException {
-        this.xmlPath = xmlPath;
+//        this.xmlPath = xmlPath;
         XmlProgramLoader loader = new XmlProgramLoader();
         Program program = loader.loadFromFile(xmlPath, this.programsHolder);
         finalizeProgramLoading(program);
@@ -96,11 +94,6 @@ public class EngineImpl implements Engine, Serializable {
         String programName = getProgramNameByUserString(userString);
         return getProgramDTOByName(programName);
     }
-
-//    @Override
-//    public ProgramDTO getMainProgram() {
-//        return buildProgramDTO(mainProgram);
-//    }
 
     @Override
     public ProgramExecutorDTO getProgramAfterRun(String programName) {
@@ -263,41 +256,6 @@ public class EngineImpl implements Engine, Serializable {
         executionHistory.add(debug.getDebugProgramExecutor());
     }
 
-//    @Override
-//    public void saveState(Path path) throws EngineLoadException {
-//        try {
-//            EngineIO.save(this, path);
-//        } catch (IOException e) {
-//            throw new EngineLoadException("Failed to save engine state: " + e.getMessage(), e);
-//        }
-//    }
-
-//    @Override
-//    public void loadState(Path path) throws EngineLoadException {
-//        try {
-//            EngineImpl loaded = EngineIO.load(path);
-//
-//            this.xmlPath = loaded.xmlPath;
-//            this.mainProgram = loaded.mainProgram;
-//
-//        } catch (IOException | ClassNotFoundException e) {
-//            throw new EngineLoadException("Failed to load engine state: " + e.getMessage(), e);
-//        }
-//    }
-
-//    @Serial
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.defaultWriteObject();
-//        out.writeObject(xmlPath != null ? xmlPath.toString() : null);
-//    }
-
-    @Serial
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        String pathStr = (String) in.readObject();
-        this.xmlPath = pathStr != null ? Path.of(pathStr) : null;
-    }
-
     @Override
     public InstructionDTO createOriginalInstruction() {
         // Create and return a new Origin instruction
@@ -313,7 +271,7 @@ public class EngineImpl implements Engine, Serializable {
         } catch (Exception e) {
             throw new RuntimeException("Failed to export program to XML: " + e.getMessage(), e);
         }
-    }
+    }   // For 'הכתבן החרוץ'
 
     private File ensureXml(File file) {
         String name = file.getName().toLowerCase();
