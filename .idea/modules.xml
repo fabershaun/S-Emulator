@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/S-Emulator.iml" filepath="$PROJECT_DIR$/S-Emulator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/se-WebApp/se-WebApp.iml" filepath="$PROJECT_DIR$/se-WebApp/se-WebApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/se-api/se-api.iml" filepath="$PROJECT_DIR$/se-api/se-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/se-client/se-client.iml" filepath="$PROJECT_DIR$/se-client/se-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/se-console/se-console.iml" filepath="$PROJECT_DIR$/se-console/se-console.iml" />
       <module fileurl="file://$PROJECT_DIR$/se-engine/se-engine.iml" filepath="$PROJECT_DIR$/se-engine/se-engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/se-gui/src/main/se-gui.iml" filepath="$PROJECT_DIR$/se-gui/src/main/se-gui.iml" />
