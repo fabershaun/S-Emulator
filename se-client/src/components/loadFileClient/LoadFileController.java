@@ -1,5 +1,6 @@
 package components.loadFileClient;
 
+import components.dashboard.DashboardController;
 import components.mainApp.MainAppController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -14,10 +15,15 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import static components.dashboard.DashboardController.showError;
 
 public class LoadFileController {
 
-    private MainAppController mainController;
+    private DashboardController dashboardController;
     private StringProperty selectedFilePathProperty;
 
 
@@ -29,8 +35,8 @@ public class LoadFileController {
 
     private Timeline pulseAnimation;       // Animation for button
 
-    public void setMainController(MainAppController mainController) {
-        this.mainController = mainController;
+    public void setDashboardController(DashboardController dashboardController) {
+        this.dashboardController = dashboardController;
     }
 
     public void setProperty(StringProperty selectedFilePathProperty) {
@@ -44,13 +50,11 @@ public class LoadFileController {
     @FXML
     private void initialize() {
         initializePulseAnimationLoadButton();
-
-
     }
 
 
     @FXML
-    public void onFileButtonAction() {
+    public void onLoadFileButtonAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select XML File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
@@ -65,7 +69,13 @@ public class LoadFileController {
             loadFileButton.setScaleY(1.0);
         }
 
-//        mainController.loadNewFile(file.toPath(), pathLabel.getScene().getWindow());
+        try {
+            // Pass the File object instead of the InputStream
+            dashboardController.loadNewFile(file, file.getAbsolutePath());
+        } catch (Exception e) {
+            showError("Load failed", "Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

@@ -1,9 +1,7 @@
 package utils;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.*;
+import org.jetbrains.annotations.Nullable;
 
 public class HttpClientUtil {
 
@@ -18,10 +16,15 @@ public class HttpClientUtil {
         simpleCookieManager.removeCookiesOf(domain);
     }
 
-    public static void runAsync(String finalUrl, Callback callback) {
-        Request request = new Request.Builder()
-                .url(finalUrl)
-                .build();
+    public static void runAsync(String finalUrl, @Nullable RequestBody requestBody, Callback callback) {
+        Request.Builder builder = new Request.Builder()
+                .url(finalUrl);
+
+        if (requestBody != null) {
+            builder.post(requestBody);
+        }
+
+        Request request = builder.build();
 
         Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
 

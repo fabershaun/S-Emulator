@@ -80,7 +80,7 @@ public class MainAppController {
     }
 
     @FXML
-    public void initialize() {                          // We need that the subcomponents will know the main controller (FullAppController)
+    public void initialize() {            // We need that the subcomponents will know the main controller (FullAppController)
         initializeSettingsMenu();         // Initialize the settings menu
 
         // Apply theme when scene is available

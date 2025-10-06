@@ -50,7 +50,7 @@ public class LoginController {
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -78,7 +78,7 @@ public class LoginController {
 
     @FXML
     private void onQuitButtonClicked() {
-
+        Platform.exit();
     }
 
     @FXML

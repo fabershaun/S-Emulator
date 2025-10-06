@@ -18,6 +18,8 @@ public class Constants {
     public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
     public final static String DASHBOARD_PAGE = FULL_SERVER_PATH + "/dashboard";
     public final static String FILE_UPLOAD_PATH = FULL_SERVER_PATH + "/upload-file";
+    public static final String XML_FILE = "xmlFile";
+
 }
 
 // http://localhost:8080/S-Emulator

@@ -11,7 +11,7 @@
    <left>
       <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="loadFileButton" mnemonicParsing="false" onAction="#onFileButtonAction" text="Load File" HBox.hgrow="NEVER">
+            <Button fx:id="loadFileButton" mnemonicParsing="false" onAction="#onLoadFileButtonAction" text="Load File" HBox.hgrow="NEVER">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
