@@ -47,8 +47,8 @@ public class MainAppController {
     private Engine engine;
     private DebugResumeTask currentDebugTask;
 
-    @FXML private HBox loadFile;
     @FXML private Label titleLabel;
+    @FXML private HBox loadFile;
     @FXML private LoadFileController loadFileController;        // must: field name = fx:id + "Controller"
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
