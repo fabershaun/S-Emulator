@@ -41,4 +41,8 @@ public class ProgramsHolder implements Serializable {
     public Collection<Program> getMainPrograms() {
         return nameToMainProgram.values();
     }
+
+    public Program getMainProgramForConsoleModuleOnly() {
+        return getMainPrograms().stream().findFirst().orElse(null);
+    }
 }

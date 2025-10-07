@@ -15,12 +15,11 @@ import static console.menu.MenuItem.printTitle;
 public class Display implements MenuActionable {
 
     @Override
-    public String startAction(Scanner scanner, Engine engine) {
+    public void startAction(Scanner scanner, Engine engine) {
 
         printTitle("Display Program");
-        ProgramDTO programDTO = engine.getMainProgram();
+        ProgramDTO programDTO = engine.getMainProgramToConsoleModule();
         displayProgram(programDTO);
-        return null;
     }
 
     public static void displayProgram(ProgramDTO programDTO) {

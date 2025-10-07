@@ -135,7 +135,7 @@ public class MenuItem implements Menu {
     }
 
     private void execute(MenuItem selectedItem) throws EngineLoadException {
-        mainProgramName = selectedItem.actionToExecute.startAction(scanner, engine);
+        selectedItem.actionToExecute.startAction(scanner, engine);
         System.out.println();
     }
 }

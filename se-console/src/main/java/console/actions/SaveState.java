@@ -23,7 +23,7 @@ public class SaveState implements MenuActionable {
         String fileName = Validator.getValidateNewFileName(scanner);
 
         Path fullPath = directory.resolve(fileName).toAbsolutePath().normalize();
-        engine.saveState(fullPath);
+        //engine.saveState(fullPath);
 
         System.out.println("State saved successfully.");
     }

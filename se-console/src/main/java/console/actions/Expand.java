@@ -17,7 +17,7 @@ public class Expand implements MenuActionable {
     @Override
     public void startAction(Scanner scanner, Engine engine) throws EngineLoadException {
         printTitle("Present Expand Program");
-        String programName = engine.getMainProgram().getProgramName(); // Added because gui module
+        String programName = engine.getMainProgramToConsoleModule().getProgramName(); // Added because gui module
 
         if (engine.getMaxDegree(programName) == 0) {
             System.out.println("The program cannot be expand because its maximum degree is already 0");

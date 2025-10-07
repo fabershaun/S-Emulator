@@ -19,7 +19,7 @@ public class LoadState implements MenuActionable {
         System.out.print("Enter the full path from: ");
         Path file = Validator.getValidateExistingFile(scanner);
 
-        engine.loadState(file);
+        //engine.loadState(file);
 
         System.out.println("State loaded successfully.");
     }

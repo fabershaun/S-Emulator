@@ -40,10 +40,12 @@ public interface Engine {
     DebugDTO getProgramAfterStepBack();
     void stopDebugPress();
 
+    InstructionDTO createOriginalInstruction();
+    void exportToXml(File file, String programName, List<InstructionDTO> instructions);
+
     // For console module only:
 //    void saveState(Path path) throws EngineLoadException;
 //    void loadState(Path path) throws EngineLoadException;
-    InstructionDTO createOriginalInstruction();
-    void exportToXml(File file, String programName, List<InstructionDTO> instructions);
+    ProgramDTO getMainProgramToConsoleModule();
 }
 

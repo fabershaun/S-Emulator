@@ -7,6 +7,6 @@ import java.util.Scanner;
 
 public interface MenuActionable {
 
-    String startAction(Scanner scanner, Engine engine) throws EngineLoadException;
+    void startAction(Scanner scanner, Engine engine) throws EngineLoadException;
 
 }

@@ -294,4 +294,10 @@ public class EngineImpl implements Engine, Serializable {
         if (name.endsWith(".xml")) return file;
         return new File(file.getParentFile(), file.getName() + ".xml");
     }
+
+    @Override
+    public ProgramDTO getMainProgramToConsoleModule() {
+        Program mainProgram = this.programsHolder.getMainProgramForConsoleModuleOnly();
+        return buildProgramDTO(mainProgram);
+    }
 }
