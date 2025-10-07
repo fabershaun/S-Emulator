@@ -1,24 +1,26 @@
 package components.dashboard.availablePrograms;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 
 public class AvailableProgramsController {
+    @FXML private TableView<?> availableProgramTable;
+    @FXML private TableColumn<?, ?> colAverageCreditsCost;
+    @FXML private TableColumn<?, ?> colInstructionsAmount;
+    @FXML private TableColumn<?, ?> colMaxDegree;
+    @FXML private TableColumn<?, ?> colProgramName;
+    @FXML private TableColumn<?, ?> colTimesPlayed;
+    @FXML private TableColumn<?, ?> colUserUploaded;
+
     @FXML private Button executeProgramsButton;
-    @FXML private Label headerLabel;
-    @FXML private ListView<String> itemsListView;
 
     @FXML
     public void initialize() {
-        Label placeholderLabel = new Label("No history to display");
-        placeholderLabel.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-alignment: center;");
-        itemsListView.setPlaceholder(placeholderLabel);        // set placeholder dynamically
+
     }
 
     @FXML
-    void onExecuteProgramsButtonClicked() {
+    void onExecuteProgramButtonClicked() {
 
     }
 }

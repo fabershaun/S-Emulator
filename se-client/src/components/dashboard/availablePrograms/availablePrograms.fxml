@@ -6,14 +6,28 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 <VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.availablePrograms.AvailableProgramsController">
 
-    <Label fx:id="headerLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Available Items" />
+    <Label alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Available Programs" />
 
-    <ListView fx:id="itemsListView" VBox.vgrow="ALWAYS" />
+    <TableView fx:id="availableProgramTable">
+        <columns>
+            <TableColumn fx:id="colProgramName" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Program Name" />
+            <TableColumn fx:id="colUserUploaded" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Uploader" />
+            <TableColumn fx:id="colInstructionsAmount" prefWidth="130.0" style="-fx-alignment: CENTER;" text="Instructions Amount" />
+            <TableColumn fx:id="colMaxDegree" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Max Degree" />
+            <TableColumn fx:id="colTimesPlayed" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Times Played" />
+            <TableColumn fx:id="colAverageCreditsCost" prefWidth="140.0" style="-fx-alignment: CENTER;" text="Average Credits Usage" />
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
+    </TableView>
    <ToolBar>
       <items>
-          <Button fx:id="executeProgramsButton" alignment="CENTER" onAction="#onExecuteProgramsButtonClicked" text="Execute Programs" />
+          <Button fx:id="executeProgramsButton" alignment="CENTER" onAction="#onExecuteProgramButtonClicked" text="Execute Program" />
       </items>
    </ToolBar>
 

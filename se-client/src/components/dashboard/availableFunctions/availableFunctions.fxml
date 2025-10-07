@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.availableFunctions.AvailableFunctionsController">
+
+    <Label fx:id="headerLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Available Functions" />
+
+    <TableView fx:id="availableProgramTable">
+        <columns>
+            <TableColumn fx:id="colFunctionName" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Function Name" />
+            <TableColumn fx:id="colMainProgramName" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Main Program" />
+            <TableColumn fx:id="colUserUploaded" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Uploader" />
+            <TableColumn fx:id="colInstructionsAmount" prefWidth="130.0" style="-fx-alignment: CENTER;" text="Instructions Amount" />
+            <TableColumn fx:id="colMaxDegree" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Max Degree" />
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
+    </TableView>
+    <ToolBar>
+        <items>
+            <Button fx:id="executeProgramsButton" alignment="CENTER" onAction="#onExecuteFunctionButtonClicked" text="Execute Program" />
+        </items>
+    </ToolBar>
+
+</VBox>
