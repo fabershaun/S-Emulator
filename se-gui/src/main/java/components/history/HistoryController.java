@@ -31,10 +31,10 @@ public class HistoryController {
     private boolean lockHistoryButton = false;
 
     @FXML private TableView<HistoryRowDTO> historyTable;
-    @FXML private TableColumn<HistoryRowDTO, Number> colCycles;
-    @FXML private TableColumn<HistoryRowDTO, Number> colDegree;
-    @FXML private TableColumn<HistoryRowDTO, Number> colResult;
     @FXML private TableColumn<HistoryRowDTO, Number> colRunNumber;
+    @FXML private TableColumn<HistoryRowDTO, Number> colDegree;
+    @FXML private TableColumn<HistoryRowDTO, Number> colCycles;
+    @FXML private TableColumn<HistoryRowDTO, Number> colResult;
     @FXML private Button showStatusButton;
     @FXML private Button reRunButton;
 
