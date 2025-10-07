@@ -1,6 +1,6 @@
 package components.mainApp;
 
-import components.dashboard.DashboardController;
+import components.dashboard.mainDashboard.DashboardController;
 import components.login.LoginController;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 import java.net.URL;

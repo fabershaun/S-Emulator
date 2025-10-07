@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.mainDashboard.DashboardController">
+
+    <fx:include fx:id="loadFile" source="../loadFileClient/loadFile.fxml" />
+
+    <SplitPane dividerPositions="0.5">
+        <items>
+            <SplitPane orientation="VERTICAL">
+                <items>
+                    <VBox alignment="TOP_CENTER">
+                  <children>
+                     <Label alignment="CENTER" contentDisplay="TOP" style="-fx-font-weight: bold;" text="Users History" textAlignment="CENTER" />
+                     <ListView fx:id="histoyryListView" />
+                  </children>
+                    </VBox>
+                </items>
+            </SplitPane>
+
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
+                <items>
+                    <VBox alignment="TOP_CENTER">
+                        <children>
+                            <Label alignment="CENTER" contentDisplay="TOP" style="-fx-font-weight: bold;" text="Available Programs" textAlignment="CENTER" />
+                            <ListView fx:id="programsListView" />
+                            <ToolBar>
+                                <items>
+                                    <Button onAction="#onExcuteProgramClicked" text="Execute Program" />
+                                </items>
+                            </ToolBar>
+                        </children>
+                    </VBox>
+                    <VBox alignment="TOP_CENTER">
+                        <children>
+                            <Label alignment="CENTER" contentDisplay="TOP" style="-fx-font-weight: bold;" text="Available Functions" textAlignment="CENTER" />
+                            <ListView fx:id="functionsListView" />
+                            <ToolBar>
+                                <items>
+                                    <Button onAction="#onExcuteFunctionClicked" text="Execute Program" />
+                                </items>
+                            </ToolBar>
+                        </children>
+                    </VBox>
+                </items>
+            </SplitPane>
+        </items>
+    </SplitPane>
+   <padding>
+      <Insets left="5.0" right="5.0" />
+   </padding>
+</VBox>

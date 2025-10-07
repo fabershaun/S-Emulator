@@ -1,7 +1,6 @@
-package components.loadFileClient;
+package components.dashboard.loadFileClient;
 
-import components.dashboard.DashboardController;
-import components.mainApp.MainAppController;
+import components.dashboard.mainDashboard.DashboardController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -15,11 +14,8 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
-import static components.dashboard.DashboardController.showError;
+import static components.dashboard.mainDashboard.DashboardController.showError;
 
 public class LoadFileController {
 

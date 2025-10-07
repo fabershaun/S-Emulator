@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.loadFileClient.LoadFileController">
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.loadFileClient.LoadFileController">
    <left>
       <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,7 +19,7 @@
                   <Insets right="5.0" />
                </HBox.margin>
             </Button>
-            <Label fx:id="pathLabel" alignment="CENTER" text="Select XML File" textAlignment="CENTER" textFill="#616161">
+            <Label fx:id="pathLabel" alignment="CENTER" prefWidth="200.0" text="Select XML File" textAlignment="CENTER" textFill="#616161">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -34,7 +34,7 @@
       <HBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="chargeCreditsButton" mnemonicParsing="false" onAction="#onChargeCreditsButton" text="Charge Credits" />
-            <TextField fx:id="chargeCreditsTextField" prefWidth="50.0" />
+            <TextField fx:id="chargeCreditsTextField" prefWidth="100.0" />
          </children>
       </HBox>
    </right>

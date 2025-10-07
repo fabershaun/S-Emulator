@@ -1,6 +1,6 @@
-package components.dashboard;
+package components.dashboard.mainDashboard;
 
-import components.loadFileClient.LoadFileController;
+import components.dashboard.loadFileClient.LoadFileController;
 import components.mainApp.MainAppController;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,14 +10,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import okhttp3.*;
-import okio.BufferedSink;
 import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import static utils.Constants.FILE_UPLOAD_PATH;
 import static utils.Constants.XML_FILE;
 
