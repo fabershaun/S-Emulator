@@ -15,6 +15,7 @@ import variable.Variable;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
     private final ProgramsHolder programsHolder = new ProgramsHolder();
@@ -140,6 +141,22 @@ public class EngineImpl implements Engine, Serializable {
         }
 
         return result;
+    }
+
+    @Override
+    public Set<String> getMainProgramsSetStr() {
+        return programsHolder.getMainPrograms()
+                .stream()
+                .map(Program::getUserString)         // Extract the program name
+                .collect(Collectors.toSet());  // Collect unique names into a Set
+    }
+
+    @Override
+    public Set<String> getFunctionsSetStr() {
+        return programsHolder.getFunctions()
+                .stream()
+                .map(Program::getUserString)         // Extract the program name
+                .collect(Collectors.toSet());  // Collect unique names into a Set
     }
 
     @Override

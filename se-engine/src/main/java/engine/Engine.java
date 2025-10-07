@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 public interface Engine {
 
@@ -21,7 +22,10 @@ public interface Engine {
     ProgramDTO getExpandedProgramDTO(String programName, int degree);
     ProgramExecutorDTO getProgramAfterRun(String programName);
     List<ProgramExecutorDTO> getHistoryPerProgram(String programName);
+
     List<ProgramDTO> getAllPrograms();
+    Set<String> getMainProgramsSetStr();
+    Set<String> getFunctionsSetStr();
 
     int getMaxDegree(String programName);
     void calculateExpansionForAllLoadedPrograms(String mainProgramName);
