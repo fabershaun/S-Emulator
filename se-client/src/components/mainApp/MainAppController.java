@@ -53,6 +53,8 @@ public class MainAppController {
             dashboardScreen = fxmlLoader.load();
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainAppController(this);
+            dashboardController.setProperty(currentUserName);
+            dashboardController.setupAfterMainAppInit();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,7 +98,7 @@ public class MainAppController {
         });
     }
 
-    public String getLoginUsername() {
-        return currentUserName.get();
+    public StringProperty currentUserNameProperty() {
+        return currentUserName;
     }
 }

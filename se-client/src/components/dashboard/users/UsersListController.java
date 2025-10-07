@@ -68,7 +68,7 @@ public class UsersListController implements Closeable {
     }
 
     // Getter for other components to bind to
-    public StringProperty selectedUserPropertyProperty() {
+    public StringProperty selectedUserProperty() {
         return selectedUserProperty;
     }
 

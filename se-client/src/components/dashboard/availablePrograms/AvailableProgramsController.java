@@ -10,6 +10,12 @@ public class AvailableProgramsController {
     @FXML private Label headerLabel;
     @FXML private ListView<String> itemsListView;
 
+    @FXML
+    public void initialize() {
+        Label placeholderLabel = new Label("No history to display");
+        placeholderLabel.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-alignment: center;");
+        itemsListView.setPlaceholder(placeholderLabel);        // set placeholder dynamically
+    }
 
     @FXML
     void onExecuteProgramsButtonClicked() {

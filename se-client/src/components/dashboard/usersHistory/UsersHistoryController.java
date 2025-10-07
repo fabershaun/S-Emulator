@@ -25,42 +25,26 @@ public class UsersHistoryController {
 
     private DashboardController dashboardController;
     private StringProperty selectedUserProperty;
-
+    private StringProperty currentUserLoginProperty;
 
     public void setDashboardController(DashboardController dashboardController) {
         this.dashboardController = dashboardController;
     }
 
-    public void setProperty(StringProperty selectedUserProperty) {
+    public void setProperty(StringProperty selectedUserProperty, StringProperty currentUserLoginProperty) {
         this.selectedUserProperty = selectedUserProperty;
+        this.currentUserLoginProperty = currentUserLoginProperty;
     }
 
     public void initializeListeners() {
         selectedUserProperty.addListener((obs, oldUser, newUser) -> {
                 String targetUser = (newUser == null || newUser.isEmpty())
-                        ? dashboardController.getLoginUserName()   // fallback: current user
+                        ? currentUserLoginProperty.get()   // fallback: current user
                         : newUser;
 
                 userHistoryLabel.setText("History of: " + targetUser);
                 loadUserHistory(targetUser);
                 });
-
-        // set initial label when screen loads
-        String initialUser = (selectedUserProperty.get() == null || selectedUserProperty.get().isEmpty())
-                ? dashboardController.getLoginUserName()
-                : selectedUserProperty.get();
-
-        userHistoryLabel.setText("History of: " + initialUser);
-        loadUserHistory(initialUser);
-    }
-
-    public void initializeDefaultHistory() {
-        String initialUser = (selectedUserProperty.get() == null || selectedUserProperty.get().isEmpty())
-                ? dashboardController.getLoginUserName()
-                : selectedUserProperty.get();
-
-        userHistoryLabel.setText("History of: " + initialUser);
-        loadUserHistory(initialUser);
     }
 
     private void loadUserHistory(String username) {
@@ -83,9 +67,15 @@ public class UsersHistoryController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String json = response.body().string();
                 String[] historyItems = GSON_INSTANCE.fromJson(json, String[].class);
-                Platform.runLater(() ->
-                        historyListView.getItems().setAll(historyItems)
-                );
+                System.out.println("DEBUG - Server returned: " + json);
+
+                Platform.runLater(() -> {
+                    if (historyItems == null || historyItems.length == 0) {
+                        historyListView.getItems().clear();
+                    } else {
+                        historyListView.getItems().setAll(historyItems);
+                    }
+                });
             }
         });
     }

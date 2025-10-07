@@ -37,8 +37,8 @@ public class FileUploadServlet extends HttpServlet {
             String loadedProgramName = engine.loadProgramFromStream(inputStream, filePart.getSubmittedFileName());
             ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
 
-            String json = GSON_INSTANCE.toJson(loadedProgramDTO);
-            response.getWriter().write(json);
+            String jsonResponse = GSON_INSTANCE.toJson(loadedProgramDTO);
+            response.getWriter().write(jsonResponse);
         } catch (EngineLoadException ex) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         } catch (Exception ex) {

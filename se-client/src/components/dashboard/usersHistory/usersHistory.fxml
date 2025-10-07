@@ -4,9 +4,14 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.usersHistory.UsersHistoryController">
    <children>
-       <Label fx:id="userHistoryLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Users History" />
-      <ListView fx:id="historyListView" VBox.vgrow="ALWAYS" />
+       <Label fx:id="userHistoryLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="User History" />
+       <ListView fx:id="historyListView" VBox.vgrow="ALWAYS">
+           <placeholder>
+               <Label text="No history to display"
+                      style="-fx-text-fill: gray; -fx-font-style: italic;"/>
+           </placeholder>
+       </ListView>
    </children>
 </VBox>

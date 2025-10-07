@@ -27,7 +27,8 @@ import static utils.Constants.XML_FILE;
 public class DashboardController implements Closeable {
 
     private MainAppController mainAppController;
-    private String currentUsername;
+    private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
+    private StringProperty currentUsername;
 
     @FXML private BorderPane loadFile;
     @FXML private LoadFileController loadFileController;          // must: field name = fx:id + "Controller"
@@ -39,15 +40,30 @@ public class DashboardController implements Closeable {
     @FXML private AvailableProgramsController availableProgramsListController;        // must: field name = fx:id + "Controller"
     @FXML private VBox availableFunctionsList;
     @FXML private AvailableProgramsController availableFunctionsListController;       // must: field name = fx:id + "Controller"
-    private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
 
 
     public void setMainAppController(MainAppController mainAppController) {
         this.mainAppController = mainAppController;
     }
 
-    @FXML
-    public void initialize() {
+    public void setProperty(StringProperty currentUsername) {
+        this.currentUsername = currentUsername;
+    }
+
+//    public void initListeners() {
+//        if (mainAppController == null) {
+//            throw new IllegalStateException("MainAppController must be set before starting username listener.");
+//        }
+//
+//        currentUsername.addListener((obs, oldName, newName) -> {
+//
+//            if (userHistoryListController != null) {
+//                userHistoryListController.initializeDefaultHistory();
+//            }
+//        });
+//    }
+
+    public void setupAfterMainAppInit() {
         if (
             loadFileController != null &&
             usersListController != null &&
@@ -55,13 +71,13 @@ public class DashboardController implements Closeable {
             availableProgramsListController != null &&
             availableFunctionsListController != null
         ) {
-            initLoadController();
+            initLoadFileController();
             intiUserListController();
             initHistoryListController();
         }
     }
 
-    private void initLoadController() {
+    private void initLoadFileController() {
         loadFileController.setDashboardController(this);
         loadFileController.setProperty(selectedFilePathProperty);
         loadFileController.initializeBindings();
@@ -73,9 +89,8 @@ public class DashboardController implements Closeable {
 
     private void initHistoryListController() {
         userHistoryListController.setDashboardController(this);
-        userHistoryListController.setProperty(this.selectedUsernameProperty());
+        userHistoryListController.setProperty(this.selectedUsernameProperty(), currentUsername);
         userHistoryListController.initializeListeners();
-        userHistoryListController.initializeDefaultHistory();
     }
 
     public void setActive() {
@@ -140,11 +155,7 @@ public class DashboardController implements Closeable {
 
     }
 
-    public String getLoginUserName() {
-        return mainAppController.getLoginUsername();
-    }
-
     public StringProperty selectedUsernameProperty() {
-        return usersListController.selectedUserPropertyProperty();
+        return usersListController.selectedUserProperty();
     }
 }
