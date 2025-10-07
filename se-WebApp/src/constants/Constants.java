@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 public class Constants {
 
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON_INSTANCE = new Gson();
 
     public static final String USERNAME = "username";
 
@@ -17,5 +17,19 @@ public class Constants {
     public static final String FILE_UPLOAD_SERVLET_URL = "/upload-file";
     public static final String XML_FILE = "xmlFile";
 
+    // Get Users List:
+    public static final String USERS_LIST_NAME = "UsersListServlet";
+    public static final String USERS_LIST_URL = "/users-list";
 
+    // Get Users History List:
+    public static final String USER_HISTORY_LIST_NAME = "UserHistoryListServlet";
+    public static final String USER_HISTORY_LIST_URL = "/user-history-list";
+
+    // Get Available Programs List:
+    public static final String AVAILABLE_PROGRAMS_LIST_NAME = "AvailableProgramsListServlet";
+    public static final String AVAILABLE_PROGRAMS_LIST_URL = "/available-programs-list";
+
+    // Get Available Functions List:
+    public static final String AVAILABLE_FUNCTIONS_LIST_NAME = "AvailableFunctionsListServlet";
+    public static final String AVAILABLE_FUNCTIONS_LIST_URL = "/available-functions-list";
 }
