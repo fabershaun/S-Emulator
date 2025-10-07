@@ -86,6 +86,7 @@ public class MainAppController {
 
     public void switchToDashboard() {
         setMainPanelTo(dashboardScreen);
+        dashboardController.setActive();
     }
 
     public void switchToLogin() {
@@ -93,5 +94,9 @@ public class MainAppController {
             currentUserName.set(ANONYMOUS);
             setMainPanelTo(loginScreen);
         });
+    }
+
+    public String getLoginUsername() {
+        return currentUserName.get();
     }
 }

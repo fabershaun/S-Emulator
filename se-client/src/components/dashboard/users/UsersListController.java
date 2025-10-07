@@ -1,12 +1,8 @@
 package components.dashboard.users;
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -24,9 +20,11 @@ public class UsersListController implements Closeable {
     private Timer timer;
     private TimerTask listRefresher;
     private final IntegerProperty totalUsers;
+    private final StringProperty selectedUserProperty = new SimpleStringProperty();
 
     @FXML private Label usersLabel;
     @FXML private ListView<String> usersListView;
+
 
     public UsersListController() {
         totalUsers = new SimpleIntegerProperty();
@@ -35,14 +33,27 @@ public class UsersListController implements Closeable {
     @FXML
     public void initialize() {
         usersLabel.textProperty().bind(Bindings.concat("Available users: (", totalUsers.asString(), ")"));
+
+        usersListView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUserSelected) -> {
+            selectedUserProperty.set(newUserSelected); // can be null if cleared
+        });
     }
 
     private void updateUsersList(List<String> usersList) {
         Platform.runLater(() -> {
+            String currentSelection = usersListView.getSelectionModel().getSelectedItem();
+
+            // Update list items
             ObservableList<String> items = usersListView.getItems();
-            items.clear();
-            items.addAll(usersList);
-            totalUsers.setValue(usersList.size());
+            items.setAll(usersList);
+
+            // Restore selection if still exists in the new list
+            if (currentSelection != null && usersList.contains(currentSelection)) {
+                usersListView.getSelectionModel().select(currentSelection);
+            }
+
+            // Update count
+            totalUsers.set(usersList.size());
         });
     }
 
@@ -53,6 +64,12 @@ public class UsersListController implements Closeable {
     }
 
     @FXML void onUnselectUserClicked() {
+        usersListView.getSelectionModel().clearSelection();
+    }
+
+    // Getter for other components to bind to
+    public StringProperty selectedUserPropertyProperty() {
+        return selectedUserProperty;
     }
 
     @Override
