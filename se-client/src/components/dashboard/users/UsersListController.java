@@ -60,7 +60,7 @@ public class UsersListController implements Closeable {
     public void startListRefresher() {
         listRefresher = new UserListRefresher(this::updateUsersList);
         timer = new Timer();
-        timer.schedule(listRefresher, REFRESH_RATE, REFRESH_RATE);
+        timer.schedule(listRefresher, 0, REFRESH_RATE);
     }
 
     @FXML void onUnselectUserClicked() {

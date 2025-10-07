@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+import static components.dashboard.mainDashboard.DashboardController.showError;
 import static utils.Constants.GSON_INSTANCE;
 import static utils.Constants.USERS_LIST_PAGE;
 
@@ -30,9 +31,9 @@ public class UserListRefresher extends TimerTask {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        usersListConsumer.accept(List.of("Failed to load users: " + e.getMessage()))
-                );
+                Platform.runLater(() -> {
+                    showError("Server Error", "Failed to load users list" + e.getMessage());
+                });
             }
 
             @Override

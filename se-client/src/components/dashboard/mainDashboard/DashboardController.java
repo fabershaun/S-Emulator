@@ -20,6 +20,8 @@ import utils.HttpClientUtil;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
+
 import static utils.Constants.FILE_UPLOAD_PAGE;
 import static utils.Constants.XML_FILE;
 
@@ -50,19 +52,6 @@ public class DashboardController implements Closeable {
         this.currentUsername = currentUsername;
     }
 
-//    public void initListeners() {
-//        if (mainAppController == null) {
-//            throw new IllegalStateException("MainAppController must be set before starting username listener.");
-//        }
-//
-//        currentUsername.addListener((obs, oldName, newName) -> {
-//
-//            if (userHistoryListController != null) {
-//                userHistoryListController.initializeDefaultHistory();
-//            }
-//        });
-//    }
-
     public void setupAfterMainAppInit() {
         if (
             loadFileController != null &&
@@ -74,6 +63,7 @@ public class DashboardController implements Closeable {
             initLoadFileController();
             intiUserListController();
             initHistoryListController();
+            initProgramListController();
         }
     }
 
@@ -85,7 +75,7 @@ public class DashboardController implements Closeable {
 
     private void intiUserListController() {
 
-    }
+    }   //TODO: WRITE
 
     private void initHistoryListController() {
         userHistoryListController.setDashboardController(this);
@@ -93,15 +83,20 @@ public class DashboardController implements Closeable {
         userHistoryListController.initializeListeners();
     }
 
+    private void initProgramListController() {
+        availableProgramsListController.initListeners();
+    }
+
     public void setActive() {
         usersListController.startListRefresher();
+        availableProgramsListController.startListRefresher();
     }
 
     public void loadNewFile(File file, String pathStr) {
-        String finalUrl = HttpUrl
-                .parse(FILE_UPLOAD_PAGE)
-                .newBuilder()
-                .toString();
+        String finalUrl = Objects.requireNonNull(HttpUrl
+                        .parse(FILE_UPLOAD_PAGE))
+                        .newBuilder()
+                        .toString();
 
         // Build multipart request body
         RequestBody requestBody = new MultipartBody.Builder()
@@ -130,9 +125,7 @@ public class DashboardController implements Closeable {
                             showError("Load failed", responseBody)
                     );
                 } else {
-                    Platform.runLater(() -> {
-                        selectedFilePathProperty.set(pathStr);
-                    });
+                    Platform.runLater(() -> selectedFilePathProperty.set(pathStr));
                 }
             }
         });
@@ -151,8 +144,10 @@ public class DashboardController implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
-
+    public void close() {
+        usersListController.close();
+        availableProgramsListController.close();
+        availableFunctionsListController.close();
     }
 
     public StringProperty selectedUsernameProperty() {
