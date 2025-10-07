@@ -15,6 +15,7 @@ public class MenuItem implements Menu {
     private final List<MenuItem> subItems = new ArrayList<>();
     private MenuActionable actionToExecute;
     private Engine engine;
+    private String mainProgramName;
     Scanner scanner;
 
 
@@ -134,7 +135,7 @@ public class MenuItem implements Menu {
     }
 
     private void execute(MenuItem selectedItem) throws EngineLoadException {
-        selectedItem.actionToExecute.startAction(scanner, engine);
+        mainProgramName = selectedItem.actionToExecute.startAction(scanner, engine);
         System.out.println();
     }
 }

@@ -1,6 +1,6 @@
 package components.dashboard.mainDashboard;
 
-import components.dashboard.availablePrograms.AvailableProgramsController;
+import components.dashboard.availablePrograms.AvailableProgramsListController;
 import components.dashboard.loadFileClient.LoadFileController;
 import components.dashboard.users.UsersListController;
 import components.dashboard.usersHistory.UsersHistoryController;
@@ -37,9 +37,9 @@ public class DashboardController implements Closeable {
     @FXML private VBox userHistoryList;
     @FXML private UsersHistoryController userHistoryListController;  // must: field name = fx:id + "Controller"
     @FXML private VBox availableProgramsList;
-    @FXML private AvailableProgramsController availableProgramsListController;        // must: field name = fx:id + "Controller"
+    @FXML private AvailableProgramsListController availableProgramsListController;        // must: field name = fx:id + "Controller"
     @FXML private VBox availableFunctionsList;
-    @FXML private AvailableProgramsController availableFunctionsListController;       // must: field name = fx:id + "Controller"
+    @FXML private AvailableProgramsListController availableFunctionsListController;       // must: field name = fx:id + "Controller"
 
 
     public void setMainAppController(MainAppController mainAppController) {

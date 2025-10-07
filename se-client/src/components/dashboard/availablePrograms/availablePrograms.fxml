@@ -8,9 +8,9 @@
 
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
-<VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.availablePrograms.AvailableProgramsController">
+<VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.availablePrograms.AvailableProgramsListController">
 
-    <Label alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Available Programs" />
+    <Label fx:id="programListLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Available Programs" />
 
     <TableView fx:id="availableProgramTable">
         <columns>

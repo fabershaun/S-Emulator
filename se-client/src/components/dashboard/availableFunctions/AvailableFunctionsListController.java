@@ -1,4 +1,5 @@
 package components.dashboard.availableFunctions;
 
-public class AvailableFunctionsController {
+public class AvailableFunctionsListController {
+
 }
