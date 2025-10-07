@@ -1,17 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Button?>
 <VBox spacing="5" style="-fx-border-color: lightgray; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.usersHistory.UsersHistoryController">
    <children>
        <Label fx:id="userHistoryLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="User History" />
-       <ListView fx:id="historyListView" VBox.vgrow="ALWAYS">
-           <placeholder>
-               <Label text="No history to display"
-                      style="-fx-text-fill: gray; -fx-font-style: italic;"/>
-           </placeholder>
-       </ListView>
+       <TableView fx:id="historyTable">
+           <columns>
+               <TableColumn fx:id="colRunNumber" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Run Number" />
+               <TableColumn fx:id="colMainProgramOrFunction" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Main / Function" />
+               <TableColumn fx:id="colProgramName" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Name" />
+               <TableColumn fx:id="colArchitectureType" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Architecture type" />
+               <TableColumn fx:id="colDegree" prefWidth="60.0" style="-fx-alignment: CENTER;" text="Degree" />
+               <TableColumn fx:id="colResult" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Result" />
+               <TableColumn fx:id="colCycles" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Cycles" />
+           </columns>
+           <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+           </columnResizePolicy>
+       </TableView>
+       <ToolBar prefHeight="40.0" prefWidth="200.0">
+           <items>
+               <Button fx:id="showStatusButton" mnemonicParsing="false" onAction="#onShowStatus" text="Show Status" />
+               <Button fx:id="reRunButton" mnemonicParsing="false" onAction="#onReRun" text="Re-Run" />
+           </items>
+       </ToolBar>
    </children>
 </VBox>

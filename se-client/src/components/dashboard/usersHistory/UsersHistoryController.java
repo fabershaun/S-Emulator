@@ -4,8 +4,7 @@ import components.dashboard.mainDashboard.DashboardController;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -19,6 +18,20 @@ import static utils.Constants.GSON_INSTANCE;
 import static utils.Constants.USER_HISTORY_LIST_PAGE;
 
 public class UsersHistoryController {
+
+    @FXML private TableColumn<?, ?> colArchitectureType;
+    @FXML private TableColumn<?, ?> colCycles;
+    @FXML private TableColumn<?, ?> colDegree;
+    @FXML private TableColumn<?, ?> colMainProgramOrFunction;
+    @FXML private TableColumn<?, ?> colProgramName;
+    @FXML private TableColumn<?, ?> colResult;
+    @FXML private TableColumn<?, ?> colRunNumber;
+    @FXML private TableView<?> historyTable;
+    @FXML private Button reRunButton;
+    @FXML private Button showStatusButton;
+
+    @FXML
+    private Label userHistoryLabel;
 
     @FXML private Label userHistoryLabel;
     @FXML private ListView<String> historyListView;
@@ -78,5 +91,15 @@ public class UsersHistoryController {
                 });
             }
         });
+    }
+
+    @FXML
+    void onReRun() {
+
+    }
+
+    @FXML
+    void onShowStatus() {
+
     }
 }
