@@ -1,7 +1,6 @@
 package components.dashboard.users;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
+import javafx.application.Platform;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -11,12 +10,11 @@ import utils.HttpClientUtil;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import static utils.Constants.GSON_INSTANCE;
-import static utils.Constants.USERS_LIST;
+import static utils.Constants.USERS_LIST_PAGE;
 
 public class UserListRefresher extends TimerTask {
 
@@ -28,11 +26,13 @@ public class UserListRefresher extends TimerTask {
 
     @Override
     public void run() {
-        HttpClientUtil.runAsync(USERS_LIST, null, new Callback() {
+        HttpClientUtil.runAsync(USERS_LIST_PAGE, null, new Callback() {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                // todo: write
+                Platform.runLater(() ->
+                        usersListConsumer.accept(List.of("Failed to load users: " + e.getMessage()))
+                );
             }
 
             @Override
