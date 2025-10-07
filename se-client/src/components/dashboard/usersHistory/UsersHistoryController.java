@@ -1,6 +1,7 @@
 package components.dashboard.usersHistory;
 
 import components.dashboard.mainDashboard.DashboardController;
+import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
 import dto.HistoryRowDTO;
 import dto.ProgramExecutorDTO;
 import javafx.application.Platform;

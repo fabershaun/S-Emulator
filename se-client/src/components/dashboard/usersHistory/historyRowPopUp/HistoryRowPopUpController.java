@@ -1,4 +1,4 @@
-package components.dashboard.usersHistory;
+package components.dashboard.usersHistory.historyRowPopUp;
 
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
