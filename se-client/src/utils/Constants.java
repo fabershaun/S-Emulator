@@ -8,6 +8,9 @@ public class Constants {
     public static final String XML_FILE = "xmlFile";
     public final static int REFRESH_RATE = 500;
 
+    // GSON instance
+    public final static Gson GSON_INSTANCE = new Gson();
+
     // fxml locations
     public final static String MAIN_PAGE_FXML_RESOURCE_LOCATION = "/components/mainApp/mainApp.fxml";
     public final static String LOGIN_PAGE_FXML_RESOURCE_LOCATION = "/components/login/login.fxml";
@@ -19,13 +22,26 @@ public class Constants {
     private final static String CONTEXT_PATH = "/S-Emulator";
     private final static String FULL_SERVER_PATH = BASE_URL + CONTEXT_PATH;
 
-    public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
+    // Home Page:
     public final static String DASHBOARD_PAGE = FULL_SERVER_PATH + "/dashboard";
-    public final static String FILE_UPLOAD_PATH = FULL_SERVER_PATH + "/upload-file";
-    public final static String USERS_LIST = FULL_SERVER_PATH + "/userslist";
 
-    // GSON instance
-    public final static Gson GSON_INSTANCE = new Gson();
+    // Login:
+    public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
+
+    // Upload File:
+    public final static String FILE_UPLOAD_PAGE = FULL_SERVER_PATH + "/upload-file";
+
+    // Get Users List:
+    public final static String USERS_LIST_PAGE = FULL_SERVER_PATH + "/users-list";
+
+    // Get Users History List:
+    public final static String USER_HISTORY_LIST_PAGE = FULL_SERVER_PATH + "/users-list";
+
+    // Get Available Programs List:
+    public final static String AVAILABLE_PROGRAMS_LIST_PAGE = FULL_SERVER_PATH + "/available-programs-list";
+
+    // Get Available Functions List:
+    public final static String AVAILABLE_FUNCTIONS_LIST_PAGE = FULL_SERVER_PATH + "/available-functions-list";
 }
 
 // http://localhost:8080/S-Emulator
