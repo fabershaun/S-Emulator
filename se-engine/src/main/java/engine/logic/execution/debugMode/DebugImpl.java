@@ -21,16 +21,14 @@ import static engine.EngineImpl.buildProgramDTO;
 
 public class DebugImpl implements Debug {
 
-    private String uploaderName;
+    private final String uploaderName;
     private final UserDTO userDTO;
     private final ProgramExecutor programExecutor;
     private final ProgramExecutor initializeProgramExecutor;
     private final Program program;
 
     private final ExecutionContext context = new ExecutionContextImpl();
-    private final ExecutionContext initializeContext = new ExecutionContextImpl();
     private final List<Instruction> instructions;
-    private final List<Long> inputs;
 
     private String targetVariable;
 
@@ -46,8 +44,8 @@ public class DebugImpl implements Debug {
         this.uploaderName = uploaderName;
         this.userDTO = userDTO;
         this.instructions = program.getInstructionsList();
-        this.inputs = inputs;
         context.initializeVariables(program, inputs.toArray(new Long[0]));
+        ExecutionContext initializeContext = new ExecutionContextImpl();
         initializeContext.initializeVariables(program, inputs.toArray(new Long[0]));
 
         this.programExecutor = new ProgramExecutorImpl(program);
@@ -179,7 +177,7 @@ public class DebugImpl implements Debug {
 
                 stepsHistory.add(buildDebugDTO());
                 ++historyPointer;
-            } else {    // When historyPointer is less then the list size
+            } else {    // When historyPointer is less than the list size
                 historyPointer++;
                 DebugDTO dto = stepsHistory.get(historyPointer);
                 currentInstructionIndex = dto.getCurrentInstructionNumber();
@@ -308,7 +306,7 @@ public class DebugImpl implements Debug {
         this.programExecutor.setTotalCycles(currentCycles);
     }
 
-    private String getTargetVariableOfCurrentInstruction() {    // If don't have target variable return null
+    private String getTargetVariableOfCurrentInstruction() {    // If: don't have target variable -> return null
         return targetVariable;
     }
 }
