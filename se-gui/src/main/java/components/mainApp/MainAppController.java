@@ -6,6 +6,7 @@ import components.mainInstructionsTable.MainInstructionsTableController;
 import components.programCreation.ProgramCreationController;
 import components.programCreation.ProgramCreationModel;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
+import engine.logic.exceptions.EngineLoadException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Modality;
@@ -364,7 +365,7 @@ public class MainAppController {
         Throwable taskException = task.getException();
         String msg;
 
-        if (taskException instanceof exceptions.EngineLoadException) {
+        if (taskException instanceof EngineLoadException) {
             msg = taskException.getMessage();
         } else if (taskException != null) {
             msg = taskException.getMessage() != null ? taskException.getMessage() : taskException.toString();

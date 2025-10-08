@@ -1,16 +1,17 @@
 package engine;
 
-import debug.Debug;
-import debug.DebugImpl;
+import engine.logic.debug.Debug;
+import engine.logic.debug.DebugImpl;
 import dto.*;
-import exceptions.EngineLoadException;
-import execution.ProgramExecutorImpl;
-import execution.ProgramExecutor;
-import instruction.InstructionData;
-import program.ProgramsHolder;
-import program.Program;
-import loader.XmlProgramLoader;
-import variable.Variable;
+import engine.logic.exceptions.EngineLoadException;
+import engine.logic.execution.ProgramExecutorImpl;
+import engine.logic.execution.ProgramExecutor;
+import engine.logic.instruction.InstructionData;
+import engine.logic.saveToXml.XmlProgramSaver;
+import engine.logic.program.ProgramsHolder;
+import engine.logic.program.Program;
+import engine.logic.loader.XmlProgramLoader;
+import engine.logic.variable.Variable;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -22,7 +23,6 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
     private Debug debug;
-
 
     public Program getMainProgram(String programName) {
         return programsHolder.getMainProgramByName(programName);
@@ -282,7 +282,7 @@ public class EngineImpl implements Engine, Serializable {
     public void exportToXml(File file, String programName, List<InstructionDTO> instructions) {
         File target = ensureXml(file);
         try {
-            saveToXml.XmlProgramSaver saver = new saveToXml.XmlProgramSaver();
+            XmlProgramSaver saver = new XmlProgramSaver();
             saver.save(target, programName, instructions);
         } catch (Exception e) {
             throw new RuntimeException("Failed to export program to XML: " + e.getMessage(), e);

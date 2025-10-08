@@ -1,7 +1,6 @@
 package console.validator;
 
 import engine.Engine;
-import exceptions.EngineLoadException;
 
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;

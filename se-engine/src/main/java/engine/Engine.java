@@ -4,7 +4,7 @@ import dto.DebugDTO;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import dto.ProgramExecutorDTO;
-import exceptions.EngineLoadException;
+import engine.logic.exceptions.EngineLoadException;
 
 import java.io.File;
 import java.io.InputStream;

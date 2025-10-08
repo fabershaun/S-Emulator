@@ -4,7 +4,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import users.UserManager;
+import engine.users.User;
 import utils.ServletUtils;
 import utils.SessionUtils;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class LoginJavafxServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/plain;charset=UTF-8");
         String usernameFromSession = SessionUtils.getUsername(request);
-        UserManager userManager = ServletUtils.getUserManager(getServletContext());
+        User userManager = ServletUtils.getUserManager(getServletContext());
 
         if (usernameFromSession == null) { //user is not logged in yet
             String usernameFromParameter = request.getParameter(USERNAME);

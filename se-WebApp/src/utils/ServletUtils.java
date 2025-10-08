@@ -3,7 +3,7 @@ package utils;
 import engine.Engine;
 import engine.EngineImpl;
 import jakarta.servlet.ServletContext;
-import users.UserManager;
+import engine.users.User;
 
 public class ServletUtils {
 
@@ -22,15 +22,5 @@ public class ServletUtils {
             }
         }
         return (Engine) servletContext.getAttribute(ENGINE_ATTRIBUTE_NAME);
-    }
-
-    public static UserManager getUserManager(ServletContext servletContext) {
-
-        synchronized (userManagerLock) {
-            if (servletContext.getAttribute(USER_MANAGER_ATTRIBUTE_NAME) == null) {
-                servletContext.setAttribute(USER_MANAGER_ATTRIBUTE_NAME, new UserManager());
-            }
-        }
-        return (UserManager) servletContext.getAttribute(USER_MANAGER_ATTRIBUTE_NAME);
     }
 }

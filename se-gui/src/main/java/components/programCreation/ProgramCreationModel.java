@@ -4,8 +4,8 @@ import dto.InstructionDTO;
 import dto.ProgramDTO;
 import engine.Engine;
 import engine.EngineImpl;
-import exceptions.EngineLoadException;
-import instruction.InstructionDataMapper;
+import engine.logic.exceptions.EngineLoadException;
+import engine.logic.instruction.InstructionDataMapper;
 
 import java.io.File;
 import java.nio.file.Path;

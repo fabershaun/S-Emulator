@@ -5,7 +5,7 @@ import console.validator.Validator;
 import dto.InstructionDTO;
 import dto.ProgramDTO;
 import engine.Engine;
-import exceptions.EngineLoadException;
+import engine.logic.exceptions.EngineLoadException;
 
 import java.util.List;
 import java.util.Scanner;

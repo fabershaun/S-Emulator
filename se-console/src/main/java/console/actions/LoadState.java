@@ -3,7 +3,7 @@ package console.actions;
 import console.menu.MenuActionable;
 import console.validator.Validator;
 import engine.Engine;
-import exceptions.EngineLoadException;
+import engine.logic.exceptions.EngineLoadException;
 
 import java.nio.file.Path;
 import java.util.Scanner;

@@ -1,21 +1,15 @@
 package servlets;
 
-import com.google.gson.Gson;
 import dto.ProgramExecutorDTO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import users.UserManager;
-import utils.ServletUtils;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static constants.Constants.*;
 

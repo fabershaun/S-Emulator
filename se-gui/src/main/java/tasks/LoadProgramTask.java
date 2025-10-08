@@ -2,7 +2,7 @@ package tasks;
 
 import dto.ProgramDTO;
 import engine.Engine;
-import exceptions.EngineLoadException;
+import engine.logic.exceptions.EngineLoadException;
 import javafx.concurrent.Task;
 
 import java.nio.file.Path;

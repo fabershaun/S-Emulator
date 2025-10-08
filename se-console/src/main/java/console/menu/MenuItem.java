@@ -1,7 +1,7 @@
 package console.menu;
 
 import engine.Engine;
-import exceptions.EngineLoadException;
+import engine.logic.exceptions.EngineLoadException;
 
 import java.util.ArrayList;
 import java.util.List;
