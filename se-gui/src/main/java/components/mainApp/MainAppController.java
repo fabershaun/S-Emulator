@@ -300,7 +300,7 @@ public class MainAppController {
     }
 
     public void initializeDebugger(List<Long> inputValues) {
-        engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues);
+        engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues, null);
     }
 
     public void debugStop() {

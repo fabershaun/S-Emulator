@@ -1,5 +1,6 @@
 package engine.logic.loadFromXml;
 
+import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.instruction.synthetic.QuoteInstruction;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -31,23 +33,23 @@ public class XmlProgramLoader {
         }
     }
 
-    public Program loadFromStream(InputStream xmlStream, String sourceName, ProgramsHolder programsHolder) throws EngineLoadException {
+    public Program loadFromStream(InputStream xmlStream, String sourceName, ProgramsHolder programsHolder, UserDTO userDTO, String uploaderName) throws EngineLoadException {
         if (xmlStream == null) {
             throw new EngineLoadException("XML input stream is null");
         }
 
         SProgram sProgram = unmarshalFromStream(xmlStream, sourceName);
-        return XmlProgramMapper.map(sProgram, programsHolder);
+        return XmlProgramMapper.map(sProgram, programsHolder, userDTO, uploaderName);
     }
 
     private SProgram unmarshalFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
         return unmarshal(xmlStream, sourceName);
     }
 
-    public Program loadFromFile(Path xmlPath, ProgramsHolder programsHolder) throws EngineLoadException {
+    public Program loadFromFile(Path xmlPath, ProgramsHolder programsHolder, UserDTO userDTO, String uploaderName) throws EngineLoadException {
         validatePath(xmlPath);
         SProgram sProgram = unmarshalFromFile(xmlPath);
-        Program program = XmlProgramMapper.map(sProgram, programsHolder);
+        Program program = XmlProgramMapper.map(sProgram, programsHolder, userDTO, uploaderName);
 
         validateFunctionsForVersion2(program , programsHolder);
         return program;

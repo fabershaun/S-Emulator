@@ -20,6 +20,7 @@ import static java.lang.Math.max;
 
 public class ProgramImpl implements Program, Serializable {
     private final String programName;
+    private final String uploaderName;
     private final String userString;
 
     private final ProgramsHolder programsHolder;
@@ -35,8 +36,9 @@ public class ProgramImpl implements Program, Serializable {
     private int nextLabelNumber = 1;
     private int nextWorkVariableNumber = 1;
 
-    public ProgramImpl(String name, String userString, ProgramsHolder programsHolder) {
+    public ProgramImpl(String name, String userString, ProgramsHolder programsHolder, String username) {
         this.programName = name;
+        this.uploaderName = username;
         this.userString = userString;
         this.programsHolder = programsHolder;
         this.programInstructions = new ArrayList<>();
@@ -117,6 +119,11 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public String getName() {
         return this.programName;
+    }
+
+    @Override
+    public String getUploaderName() {
+        return this.uploaderName;
     }
 
     @Override

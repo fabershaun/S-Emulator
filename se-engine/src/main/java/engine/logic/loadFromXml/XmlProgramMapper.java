@@ -1,5 +1,6 @@
 package engine.logic.loadFromXml;
 
+import dto.v3.UserDTO;
 import engine.logic.loadFromXml.generatedFromXml.*;
 import engine.logic.programData.instruction.synthetic.*;
 import engine.logic.loadFromXml.generatedFromXml.*;
@@ -32,13 +33,13 @@ final class XmlProgramMapper {
 
     private XmlProgramMapper() {}
 
-    static Program map(SProgram sProgram, ProgramsHolder programsHolder) {
+    static Program map(SProgram sProgram, ProgramsHolder programsHolder, UserDTO uploader, String uploaderName) {
         String programName = safeTrim(sProgram.getName());
         programName = programName != null ? programName : "Unnamed";
 
         validateUniqueProgramName(programsHolder, programName);
 
-        Program targetProgram = new ProgramImpl(programName, programName, programsHolder);  // The user string of program is its name
+        Program targetProgram = new ProgramImpl(programName, programName, programsHolder, uploaderName);  // The user string of program is its name
 
         mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
 
@@ -47,7 +48,7 @@ final class XmlProgramMapper {
         // Map functions (sub-programs) if they exist
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
-                Program innerFunction = mapFunction(sFunction, programsHolder);
+                Program innerFunction = mapFunction(sFunction, programsHolder, uploaderName);
                 validateUniqueProgramName(programsHolder, innerFunction.getName());
                 innerFunctionsSet.add(innerFunction);   // Temporary save the functions
             }
@@ -56,6 +57,7 @@ final class XmlProgramMapper {
         // After validate all the functions -> add them to the programHolder
         for (Program innerFunction : innerFunctionsSet) {
             programsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
+            uploader.addOneToSubFunctionsCount();   // TODO: Need synchronized
         }
 
         return targetProgram;
@@ -67,13 +69,14 @@ final class XmlProgramMapper {
         }
     }
 
-    private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder) {
+    private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder, String uploaderName) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());
         Program functionProgram = new ProgramImpl(
                 functionName != null ? functionName : "UnnamedFunction",
                 userString != null ? userString : "UnnamedUserString",
-                programsHolder
+                programsHolder,
+                uploaderName
         );
 
         // Map instructions of this function into its program

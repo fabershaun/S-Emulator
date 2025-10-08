@@ -30,7 +30,7 @@ public class RunProgram implements MenuActionable {
         displayInputVariables();
         Long[] inputs = getInputs();
 
-        engine.runProgram(programName, degree, inputs);
+        engine.runProgram(programName, degree, null, inputs);
 
         ProgramExecutorDTO programExecutorDTO = engine.getProgramAfterRun(programName);
         displayProgramAfterRun(programExecutorDTO);

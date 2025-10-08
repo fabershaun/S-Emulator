@@ -1,6 +1,7 @@
 package tasks;
 
 import dto.v2.ProgramDTO;
+import dto.v3.UserDTO;
 import engine.Engine;
 import engine.logic.exceptions.EngineLoadException;
 import javafx.concurrent.Task;
@@ -32,7 +33,7 @@ public class LoadProgramTask extends Task<ProgramDTO> {
 
         // Step 2: load program into engine
         updateMessage("Loading");
-        loadedProgramName = engine.loadProgramFromFile(xmlPath);
+        loadedProgramName = engine.loadProgramFromFile(xmlPath, UserDTO.DEFAULT_NAME);
 
         if (isCancelled()) {
             return null;

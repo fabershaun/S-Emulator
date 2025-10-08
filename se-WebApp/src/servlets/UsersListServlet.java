@@ -19,10 +19,11 @@ public class UsersListServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        UserDTO userManager = ServletUtils.getUserManager(getServletContext());
-        Set<String> usersList = userManager.getUsers();
+//        TODO: UPDATE !!!
+//        UserDTO userManager = ServletUtils.getUserManager(getServletContext());
+//        Set<String> usersList = userManager.getUsers();
 
-        String json = GSON_INSTANCE.toJson(usersList);
-        response.getWriter().write(json);
+//        String json = GSON_INSTANCE.toJson(usersList);
+//        response.getWriter().write(json);
     }
 }

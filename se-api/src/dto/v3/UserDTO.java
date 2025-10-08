@@ -2,6 +2,8 @@ package dto.v3;
 
 public class UserDTO {
 
+    public static String DEFAULT_NAME = "";
+
     private final String userName;
     private int mainProgramsCount;
     private int subFunctionsCount;
@@ -62,20 +64,4 @@ public class UserDTO {
     public void addOneToExecutionsCount() {
         this.executionsCount += 1;
     }
-
-//    public synchronized void addUser(String username) {
-//        usersSet.add(username);
-//    }
-//
-//    public synchronized void removeUser(String username) {
-//        usersSet.remove(username);
-//    }
-//
-//    public synchronized Set<String> getUsers() {
-//        return Collections.unmodifiableSet(usersSet);
-//    }
-//
-//    public boolean isUserExists(String username) {
-//        return usersSet.contains(username);
-//    }
 }

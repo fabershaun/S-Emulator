@@ -20,7 +20,7 @@ public class ProgramRunTask extends Task<ProgramExecutorDTO> {
 
     @Override
     protected ProgramExecutorDTO call() {
-        engine.runProgram(programToRunName, degree, inputs);
+        engine.runProgram(programToRunName, degree, null, inputs);
         return engine.getProgramAfterRun(programToRunName);
     }
 }

@@ -2,6 +2,7 @@ package components.programCreation;
 
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
+import dto.v3.UserDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.logic.exceptions.EngineLoadException;
@@ -24,7 +25,7 @@ public class ProgramCreationModel {
     }
 
     public ProgramDTO loadProgramFromFile(Path xmlPath) throws EngineLoadException {
-        String loadedProgramName = engine.loadProgramFromFile(xmlPath);
+        String loadedProgramName = engine.loadProgramFromFile(xmlPath, UserDTO.DEFAULT_NAME);
         return engine.getProgramDTOByName(loadedProgramName);
     }
 

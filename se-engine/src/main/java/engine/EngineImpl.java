@@ -28,40 +28,79 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();
 
 
-    public Program getMainProgram(String programName) {
-        return programsHolder.getMainProgramByName(programName);
+    @Override
+    public synchronized void addUser(String username) {
+        if (usernameToUserDTO.containsKey(username)) {
+            throw new IllegalArgumentException("User '" + username + "' already exists");
+        }
+        usernameToUserDTO.put(username, new UserDTO(username));
     }
 
     @Override
-    public String loadProgramFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
+    public synchronized void removeUser(String username) {
+        if (!usernameToUserDTO.containsKey(username)) {
+            throw new NoSuchElementException("User '" + username + "' not found");
+        }
+        usernameToUserDTO.remove(username);
+    }
+
+    @Override
+    public synchronized Set<String> getUsers() {
+        return Collections.unmodifiableSet(usernameToUserDTO.keySet());
+    }
+
+    @Override
+    public boolean isUserExists(String username) {
+        return usernameToUserDTO.containsKey(username);
+    }
+
+    @Override
+    public UserDTO getUserDTO(String username) {
+        UserDTO userDTO = usernameToUserDTO.get(username);
+        if (userDTO == null) {
+            throw new NoSuchElementException("Username '" + username + "' not found");
+        }
+        return userDTO;
+    }
+
+    @Override
+    public String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
-        Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder);
-        finalizeProgramLoading(program);
+        UserDTO userDTO = getUserDTO(uploaderName);
+        Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder, userDTO, uploaderName);
+        finalizeProgramLoading(program, userDTO);
 
         return program.getName();
     }
 
     @Override
-    public String loadProgramFromFile(Path xmlPath) throws EngineLoadException {
+    public String loadProgramFromFile(Path xmlPath, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
-        Program program = loader.loadFromFile(xmlPath, this.programsHolder);
-        finalizeProgramLoading(program);
+        UserDTO userDTO = getUserDTO(uploaderName);
+        Program program = loader.loadFromFile(xmlPath, this.programsHolder, userDTO, uploaderName);
+        finalizeProgramLoading(program, userDTO);
 
         return program.getName();
     }
 
-    private void finalizeProgramLoading(Program program) throws EngineLoadException {
+    private void finalizeProgramLoading(Program program, UserDTO userDTO) throws EngineLoadException {
         program.validateProgram();
         program.initialize();
         programsHolder.addMainProgram(program.getName(), program.getName(), program);
+        userDTO.addOneToMainProgramsCount();
+
         calculateExpansionForAllLoadedPrograms(program.getName());
     }
 
     @Override
-    public void runProgram(String programName, int degree, Long... inputs) {
+    public void runProgram(String programName, int degree, String uploaderName, Long... inputs) {
 
         Program workingProgram = getExpandedProgram(programName, degree);
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram);
+
+        UserDTO userDTO = usernameToUserDTO.get(uploaderName);
+        userDTO.addOneToExecutionsCount();
+
         programExecutor.run(degree, inputs);
 
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
@@ -231,10 +270,10 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void initializeDebugger(String programName, int degree, List<Long> inputs) {
+    public void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName) {
         Program workingProgram = getExpandedProgram(programName, degree);
 
-        this.debug = new DebugImpl(workingProgram, degree, inputs);
+        this.debug = new DebugImpl(workingProgram, degree, inputs, uploaderName);
     }
 
     @Override
@@ -254,6 +293,10 @@ public class EngineImpl implements Engine, Serializable {
 
         if (!debugDTO.hasMoreInstructions()) {      // Add to history
             addDebugResultToHistoryMap(debugDTO);
+
+            String uploaderName = this.debug.getUploaderName();
+            UserDTO userDTO = usernameToUserDTO.get(uploaderName);
+            userDTO.addOneToExecutionsCount();
         }
 
         return debugDTO;

@@ -33,16 +33,17 @@ public class FileUploadServlet extends HttpServlet {
             return;
         }
 
-        try (InputStream inputStream = filePart.getInputStream()) {
-            String loadedProgramName = engine.loadProgramFromStream(inputStream, filePart.getSubmittedFileName());
-            ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
-
-            String jsonResponse = GSON_INSTANCE.toJson(loadedProgramDTO);
-            response.getWriter().write(jsonResponse);
-        } catch (EngineLoadException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-        } catch (Exception ex) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
-        }
+        // TODO: REMOVE // and fix
+//        try (InputStream inputStream = filePart.getInputStream()) {
+//            String loadedProgramName = engine.loadProgramFromStream(inputStream, filePart.getSubmittedFileName());  // TODO: GET username FROM SESSION
+//            ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
+//
+//            String jsonResponse = GSON_INSTANCE.toJson(loadedProgramDTO);
+//            response.getWriter().write(jsonResponse);
+//        } catch (EngineLoadException ex) {
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+//        } catch (Exception ex) {
+//            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
+//        }
     }
 }

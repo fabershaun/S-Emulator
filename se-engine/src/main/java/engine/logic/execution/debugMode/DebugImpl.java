@@ -20,6 +20,7 @@ import static engine.EngineImpl.buildProgramDTO;
 
 public class DebugImpl implements Debug {
 
+    private String uploaderName;
     private final ProgramExecutor programExecutor;
     private final ProgramExecutor initializeProgramExecutor;
     private final Program program;
@@ -38,8 +39,9 @@ public class DebugImpl implements Debug {
     private int historyPointer = -1;
     private boolean justStoppedOnBreakpoint = false;
 
-    public DebugImpl(Program program, int degree, List<Long> inputs) {
+    public DebugImpl(Program program, int degree, List<Long> inputs, String uploaderName) {
         this.program = program;
+        this.uploaderName = uploaderName;
         this.instructions = program.getInstructionsList();
         this.inputs = inputs;
         context.initializeVariables(program, inputs.toArray(new Long[0]));
@@ -276,6 +278,11 @@ public class DebugImpl implements Debug {
             throw new IllegalArgumentException("In DebugImpl: Instruction number: "
                     + currentInstructionIndex + ". Message: " + ev.getMessage());
         }
+    }
+
+    @Override
+    public String getUploaderName() {
+        return uploaderName;
     }
 
     @Override

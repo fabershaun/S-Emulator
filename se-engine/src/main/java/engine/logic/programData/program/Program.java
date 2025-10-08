@@ -14,6 +14,7 @@ import java.util.Set;
 public interface Program extends Serializable {
 
     String getName();
+    String getUploaderName();
     String getUserString();
 
     Program getFunctionByName(String functionName);
