@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.instruction.*;
 import engine.logic.programData.instruction.*;
@@ -34,7 +35,7 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         return referencesLabel;
     }
 

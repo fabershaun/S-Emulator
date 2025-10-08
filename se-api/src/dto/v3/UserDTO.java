@@ -53,15 +53,24 @@ public class UserDTO {
         this.subFunctionsCount += 1;
     }
 
-    public void addToCurrentCredits(int count) {
-        this.currentCredits += count;
+    public void addToCurrentCredits(int creditsToAdd) {
+        this.currentCredits += creditsToAdd;
     }
 
-    public void addToUsedCredits(int usedCredits) {
-        this.usedCredits += usedCredits;
+    public void subtractFromCurrentCredits(int creditsToSubtract) {
+        this.currentCredits -= creditsToSubtract;
+        this.usedCredits += creditsToSubtract;
     }
 
     public void addOneToExecutionsCount() {
         this.executionsCount += 1;
+    }
+
+    public boolean hasPositiveCredits() {
+        return currentCredits >= 0;
+    }
+
+    public boolean hasEnoughCredits(int requiredCredits) {
+        return currentCredits >= requiredCredits;
     }
 }

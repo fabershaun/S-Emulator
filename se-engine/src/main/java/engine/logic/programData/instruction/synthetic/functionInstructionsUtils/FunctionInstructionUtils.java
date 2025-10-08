@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic.functionInstructionsUtils;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.runMode.ProgramExecutor;
 import engine.logic.execution.runMode.ProgramExecutorImpl;
@@ -22,7 +23,8 @@ public class FunctionInstructionUtils {
     public static List<FunctionExecutionResult> getInputs(
             List<QuoteArgument> innerQuoteArgumentsList,
             ExecutionContext context,
-            Program mainProgram) {
+            Program mainProgram,
+            UserDTO userDTO) {
 
         List<FunctionExecutionResult> inputs = new ArrayList<>();
 
@@ -30,7 +32,7 @@ public class FunctionInstructionUtils {
             switch (quoteFunctionArgument.getType()) {
                 case FUNCTION -> {
                     FunctionArgument functionArgument = (FunctionArgument) quoteFunctionArgument;
-                    FunctionExecutionResult functionExecutionResult = calculateFunctionResult(functionArgument, context, mainProgram);
+                    FunctionExecutionResult functionExecutionResult = calculateFunctionResult(functionArgument, context, mainProgram, userDTO);
                     inputs.add(functionExecutionResult);
                 }
                 case VARIABLE -> {
@@ -48,16 +50,17 @@ public class FunctionInstructionUtils {
     public static FunctionExecutionResult calculateFunctionResult(
             FunctionArgument innerFunctionArgument,
             ExecutionContext context,
-            Program mainProgram) {
+            Program mainProgram,
+            UserDTO userDTO) {
 
         String innerFunctionName = innerFunctionArgument.getFunctionName();
         Program innerFunction = mainProgram.getFunctionByName(innerFunctionName);
 
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
-        List<FunctionExecutionResult> functionExecutionResultList = getInputs(innerFunctionArgument.getArguments(), context, mainProgram);
+        List<FunctionExecutionResult> functionExecutionResultList = getInputs(innerFunctionArgument.getArguments(), context, mainProgram, userDTO);
 
         // Run
-        functionExecutor.run(0, extractInputValues(functionExecutionResultList));
+        functionExecutor.run(userDTO, 0, extractInputValues(functionExecutionResultList));
 
         // Return function result
         Variable resultVariable = innerFunction.getResultVariable();

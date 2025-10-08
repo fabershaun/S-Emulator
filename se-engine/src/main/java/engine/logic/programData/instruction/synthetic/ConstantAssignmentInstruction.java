@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.instruction.*;
 import engine.logic.programData.instruction.*;
@@ -38,7 +39,7 @@ public class ConstantAssignmentInstruction extends AbstractInstruction implement
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         context.updateVariable(getTargetVariable(), constantValue);
 
         return FixedLabel.EMPTY;

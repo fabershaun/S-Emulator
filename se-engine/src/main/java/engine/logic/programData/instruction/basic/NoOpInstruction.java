@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.basic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.instruction.AbstractInstruction;
 import engine.logic.programData.instruction.Instruction;
@@ -28,7 +29,7 @@ public class NoOpInstruction extends AbstractInstruction {
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         return FixedLabel.EMPTY;
     }
 

@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.label.Label;
 import engine.logic.programData.program.Program;
@@ -25,7 +26,7 @@ public class OriginOfAllInstruction extends AbstractInstruction {
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         return null;
     }
 

@@ -3,6 +3,7 @@ package engine.logic.execution.debugMode;
 import dto.v2.DebugDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
+import dto.v3.UserDTO;
 import engine.EngineImpl;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.ExecutionContextImpl;
@@ -21,6 +22,7 @@ import static engine.EngineImpl.buildProgramDTO;
 public class DebugImpl implements Debug {
 
     private String uploaderName;
+    private final UserDTO userDTO;
     private final ProgramExecutor programExecutor;
     private final ProgramExecutor initializeProgramExecutor;
     private final Program program;
@@ -39,9 +41,10 @@ public class DebugImpl implements Debug {
     private int historyPointer = -1;
     private boolean justStoppedOnBreakpoint = false;
 
-    public DebugImpl(Program program, int degree, List<Long> inputs, String uploaderName) {
+    public DebugImpl(Program program, int degree, List<Long> inputs, String uploaderName, UserDTO userDTO) { // TODO: why need both uploaderName, and userDTO
         this.program = program;
         this.uploaderName = uploaderName;
+        this.userDTO = userDTO;
         this.instructions = program.getInstructionsList();
         this.inputs = inputs;
         context.initializeVariables(program, inputs.toArray(new Long[0]));
@@ -139,7 +142,7 @@ public class DebugImpl implements Debug {
         Instruction currentInstruction = instructions.get(currentInstructionIndex);
 
         // Execute the instruction on the current context
-        Label nextInstructionLabel = currentInstruction.execute(context);
+        Label nextInstructionLabel = currentInstruction.execute(context, userDTO);
         currentCycles += currentInstruction.getCycleOfInstruction();
 
         // Update target variable if exists
@@ -166,7 +169,7 @@ public class DebugImpl implements Debug {
                 throw new IllegalArgumentException("In DebugImpl: historyPointer is out of range. (historyPointer and currentInstructionIndex aren't synchronized");
             } else if(historyPointer == stepsHistory.size() - 1) {
                 Instruction currentInstruction = instructions.get(currentInstructionIndex);
-                Label nextInstructionLabel = currentInstruction.execute(context);
+                Label nextInstructionLabel = currentInstruction.execute(context, userDTO);
                 currentCycles +=  currentInstruction.getCycleOfInstruction();
                 targetVariable = currentInstruction.getTargetVariable().getRepresentation();
 

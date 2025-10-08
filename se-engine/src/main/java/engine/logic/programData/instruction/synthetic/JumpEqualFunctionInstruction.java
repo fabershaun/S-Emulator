@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.runMode.ProgramExecutor;
 import engine.logic.execution.runMode.ProgramExecutorImpl;
@@ -40,14 +41,14 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction implements
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         long targetVariableValue = context.getVariableValue(getTargetVariable());
 
         ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
-        List<FunctionExecutionResult> functionExecutionResultList = getInputs(quoteArguments, context, getMainProgram());
+        List<FunctionExecutionResult> functionExecutionResultList = getInputs(quoteArguments, context, getMainProgram(), userDTO);
 
         // Run
-        functionExecutor.run(0, extractInputValues(functionExecutionResultList));
+        functionExecutor.run(userDTO, 0, extractInputValues(functionExecutionResultList));
 
         // Update value in parent program
         Variable resultVariable = this.getFunctionOfThisInstruction().getResultVariable();

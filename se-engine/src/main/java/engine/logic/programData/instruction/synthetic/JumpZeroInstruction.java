@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.instruction.*;
 import engine.logic.programData.instruction.basic.JumpNotZeroInstruction;
@@ -32,7 +33,7 @@ public class JumpZeroInstruction extends AbstractInstruction implements LabelRef
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         long variableValue = context.getVariableValue(this.getTargetVariable());
 
         return variableValue == 0 ? this.referencesLabel : FixedLabel.EMPTY;

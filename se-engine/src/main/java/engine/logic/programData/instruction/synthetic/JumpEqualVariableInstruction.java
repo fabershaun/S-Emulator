@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.instruction.*;
 import engine.logic.programData.instruction.basic.DecreaseInstruction;
@@ -37,7 +38,7 @@ public class JumpEqualVariableInstruction extends AbstractInstruction implements
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         long targetVariableValue = context.getVariableValue(getTargetVariable());
         long sourceVariableValue = context.getVariableValue(sourceVariable);
 

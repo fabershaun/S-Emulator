@@ -1,5 +1,6 @@
 package engine.logic.programData.instruction.synthetic;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.instruction.*;
 import engine.logic.programData.instruction.basic.DecreaseInstruction;
@@ -35,7 +36,7 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ExecutionContext context, UserDTO userDTO) {
         long sourceVariableValue = context.getVariableValue(sourceVariable);
         context.updateVariable(getTargetVariable(), sourceVariableValue);
 

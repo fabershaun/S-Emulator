@@ -1,6 +1,7 @@
 package engine.logic.programData.instruction;
 
 import dto.v2.InstructionDTO;
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.programData.label.Label;
 import engine.logic.programData.program.Program;
@@ -30,7 +31,7 @@ public interface Instruction extends Serializable {
     List<InstructionDTO> getInstructionExtendedList();
 
 //    void setProgramOfThisInstruction(Program programOfThisInstruction);
-    Label execute(ExecutionContext context);
+    Label execute(ExecutionContext context, UserDTO userDTO);
     Instruction createInstructionWithInstructionNumber(int instructionNumber);
 
     Instruction remapAndClone(int newInstructionNumber, Map<Variable, Variable> variableMap, Map<Label, Label> labelMap, Instruction origin, Program mainProgram);

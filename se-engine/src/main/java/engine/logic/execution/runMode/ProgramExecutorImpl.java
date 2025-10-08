@@ -1,5 +1,6 @@
 package engine.logic.execution.runMode;
 
+import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.ExecutionContextImpl;
 import engine.logic.programData.instruction.Instruction;
@@ -28,7 +29,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
     }
 
     @Override
-    public void run(int runDegree, Long... inputs) {
+    public void run(UserDTO userDTO, int runDegree, Long... inputs) {
         Instruction currentInstruction = program.getInstructionsList().getFirst();
         Instruction nextInstruction = null;
         Label nextLabel;
@@ -38,8 +39,12 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         this.runDegree = runDegree;
 
         do {
-                nextLabel = currentInstruction.execute(context);
-                totalCycles += currentInstruction.getCycleOfInstruction();
+                nextLabel = currentInstruction.execute(context, userDTO);
+
+                // Cycles update:
+                int currentInstructionCycles  = currentInstruction.getCycleOfInstruction();
+                totalCycles += currentInstructionCycles ;
+                userDTO.subtractFromCurrentCredits(currentInstructionCycles );
 
                 if (nextLabel == FixedLabel.EMPTY) {
                     int indexOfNextInstruction = program.getInstructionsList().indexOf(currentInstruction) + 1;
@@ -55,6 +60,16 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
                 }
 
                 currentInstruction = nextInstruction;
+
+                // When the user doesn't have positive credits and the program isn't finished
+            if (!userDTO.hasPositiveCredits() && nextLabel != FixedLabel.EXIT) {    // TODO: to add the not finish run to the history
+                StringBuilder errorMessage = new StringBuilder()
+                        .append("Execution isn't finished.").append(System.lineSeparator())
+                        .append("You don't have enough credits.").append(System.lineSeparator())
+                        .append("Current credits amount: ").append(userDTO.getCurrentCredits());
+
+                throw new IllegalStateException(errorMessage.toString());
+            }
 
         } while(nextLabel != FixedLabel.EXIT);
 

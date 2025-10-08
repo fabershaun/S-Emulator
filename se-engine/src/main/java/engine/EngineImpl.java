@@ -13,6 +13,7 @@ import engine.logic.programData.program.Program;
 import engine.logic.loadFromXml.XmlProgramLoader;
 import engine.logic.programData.variable.Variable;
 import dto.v3.UserDTO;
+import utils.Constants;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -24,14 +25,13 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
     private final Map<String, Debug> usernameToDebug = new HashMap<>();
-    //Debug debug;
-
     private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();
 
     public EngineImpl() {
         // Create default user with empty name (For version 2)
         UserDTO defaultUser = new UserDTO(UserDTO.DEFAULT_NAME);
         usernameToUserDTO.put(UserDTO.DEFAULT_NAME, defaultUser);
+        getUserDTO(UserDTO.DEFAULT_NAME).addToCurrentCredits(Constants.EXTRA_CREDIT_AMOUNT);
     }
 
     @Override
@@ -106,8 +106,7 @@ public class EngineImpl implements Engine, Serializable {
 
         UserDTO userDTO = getUserDTO(uploaderName);
         userDTO.addOneToExecutionsCount();
-
-        programExecutor.run(degree, inputs);
+        programExecutor.run(userDTO, degree, inputs);
 
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
         executionHistory.add(programExecutor);
@@ -278,9 +277,10 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName) {
         Program workingProgram = getExpandedProgram(programName, degree);
+        UserDTO userDTO = getUserDTO(uploaderName);
 
         // In any case, overwrite the previous value
-        usernameToDebug.put(uploaderName, new DebugImpl(workingProgram, degree, inputs, uploaderName));
+        usernameToDebug.put(uploaderName, new DebugImpl(workingProgram, degree, inputs, uploaderName, userDTO));
     }
 
     private Debug getDebugSystemByUsername(String username) {
@@ -294,6 +294,7 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public DebugDTO getProgramAfterStepOver(String uploaderName) {
         Debug debug = getDebugSystemByUsername(uploaderName);
+        UserDTO userDTO = getUserDTO(uploaderName);
 
         DebugDTO debugDTO = debug.stepOver();    // Step Over
 
