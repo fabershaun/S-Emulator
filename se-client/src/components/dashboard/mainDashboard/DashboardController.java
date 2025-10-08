@@ -5,6 +5,7 @@ import components.dashboard.loadFileClient.LoadFileController;
 import components.dashboard.users.UsersListController;
 import components.dashboard.usersHistory.UsersHistoryController;
 import components.mainApp.MainAppController;
+import components.toastMessage.ToastUtil;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -13,6 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
@@ -125,7 +127,13 @@ public class DashboardController implements Closeable {
                             showError("Load failed", responseBody)
                     );
                 } else {
-                    Platform.runLater(() -> selectedFilePathProperty.set(pathStr));
+                    Platform.runLater(() ->  {
+                        ToastUtil.showToast(
+                                (Stage) loadFile.getScene().getWindow(),
+                                "XML file uploaded successfully!"
+                        );
+                        selectedFilePathProperty.set(pathStr);
+                    });
                 }
             }
         });
