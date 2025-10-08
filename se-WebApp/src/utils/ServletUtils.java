@@ -3,7 +3,6 @@ package utils;
 import engine.Engine;
 import engine.EngineImpl;
 import jakarta.servlet.ServletContext;
-import engine.users.User;
 
 public class ServletUtils {
 

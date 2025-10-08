@@ -1,8 +1,7 @@
-package engine.users;
+package dto.v3;
 
-public class User {
+public class UserDTO {
 
-    //private final Set<String> usersSet;
     private final String userName;
     private int mainProgramsCount;
     private int subFunctionsCount;
@@ -11,7 +10,7 @@ public class User {
     private int executionsCount;
 
 
-    public User(String userName) {
+    public UserDTO(String userName) {
         this.userName = userName;
         this.mainProgramsCount = 0;
         this.subFunctionsCount = 0;

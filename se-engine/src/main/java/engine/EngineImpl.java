@@ -12,6 +12,7 @@ import engine.logic.program.ProgramsHolder;
 import engine.logic.program.Program;
 import engine.logic.loader.XmlProgramLoader;
 import engine.logic.variable.Variable;
+import dto.v3.UserDTO;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -23,6 +24,9 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
     private Debug debug;
+
+    private final Set<UserDTO> usersSet = new HashSet<>();
+
 
     public Program getMainProgram(String programName) {
         return programsHolder.getMainProgramByName(programName);

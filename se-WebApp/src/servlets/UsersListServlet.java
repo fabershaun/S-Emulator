@@ -4,7 +4,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import engine.users.User;
+import dto.v3.UserDTO;
 import utils.ServletUtils;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class UsersListServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        User userManager = ServletUtils.getUserManager(getServletContext());
+        UserDTO userManager = ServletUtils.getUserManager(getServletContext());
         Set<String> usersList = userManager.getUsers();
 
         String json = GSON_INSTANCE.toJson(usersList);
