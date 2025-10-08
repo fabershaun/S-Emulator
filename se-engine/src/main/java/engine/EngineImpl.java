@@ -1,17 +1,17 @@
 package engine;
 
 import dto.v2.*;
-import engine.logic.debug.Debug;
-import engine.logic.debug.DebugImpl;
+import engine.logic.execution.debugMode.Debug;
+import engine.logic.execution.debugMode.DebugImpl;
 import engine.logic.exceptions.EngineLoadException;
-import engine.logic.execution.ProgramExecutorImpl;
-import engine.logic.execution.ProgramExecutor;
-import engine.logic.instruction.InstructionData;
+import engine.logic.execution.runMode.ProgramExecutorImpl;
+import engine.logic.execution.runMode.ProgramExecutor;
+import engine.logic.programData.instruction.InstructionData;
 import engine.logic.saveToXml.XmlProgramSaver;
-import engine.logic.program.ProgramsHolder;
-import engine.logic.program.Program;
-import engine.logic.loader.XmlProgramLoader;
-import engine.logic.variable.Variable;
+import engine.logic.programData.program.ProgramsHolder;
+import engine.logic.programData.program.Program;
+import engine.logic.loadFromXml.XmlProgramLoader;
+import engine.logic.programData.variable.Variable;
 import dto.v3.UserDTO;
 
 import java.io.*;

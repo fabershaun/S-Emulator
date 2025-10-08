@@ -1,7 +1,7 @@
 package engine.logic.execution;
 
-import engine.logic.program.Program;
-import engine.logic.variable.Variable;
+import engine.logic.programData.program.Program;
+import engine.logic.programData.variable.Variable;
 
 public interface ExecutionContext {
     void initializeVariables(Program program, Long... inputs);

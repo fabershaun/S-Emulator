@@ -5,7 +5,7 @@ import dto.v2.ProgramDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.logic.exceptions.EngineLoadException;
-import engine.logic.instruction.InstructionDataMapper;
+import engine.logic.programData.instruction.InstructionDataMapper;
 
 import java.io.File;
 import java.nio.file.Path;

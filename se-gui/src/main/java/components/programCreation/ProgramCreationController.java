@@ -4,7 +4,7 @@ import components.mainApp.MainAppController;
 import dto.v2.InstructionDTO;
 import dto.v2.InstructionDataDTO;
 import dto.v2.ProgramDTO;
-import engine.logic.instruction.InstructionDataMapper;
+import engine.logic.programData.instruction.InstructionDataMapper;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

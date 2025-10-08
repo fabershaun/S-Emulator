@@ -1,9 +1,9 @@
 package engine.logic.execution;
 
-import engine.logic.program.Program;
-import engine.logic.variable.Variable;
-import engine.logic.variable.VariableImpl;
-import engine.logic.variable.VariableType;
+import engine.logic.programData.program.Program;
+import engine.logic.programData.variable.Variable;
+import engine.logic.programData.variable.VariableImpl;
+import engine.logic.programData.variable.VariableType;
 
 import java.io.Serializable;
 import java.util.*;
