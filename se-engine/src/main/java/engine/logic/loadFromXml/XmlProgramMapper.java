@@ -2,7 +2,7 @@ package engine.logic.loadFromXml;
 
 import engine.logic.loadFromXml.generatedFromXml.*;
 import engine.logic.programData.instruction.synthetic.*;
-import generatedFromXml.*;
+import engine.logic.loadFromXml.generatedFromXml.*;
 import engine.logic.programData.instruction.AbstractInstruction;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.instruction.OriginOfAllInstruction;
@@ -22,7 +22,7 @@ import engine.logic.programData.instruction.basic.DecreaseInstruction;
 import engine.logic.programData.instruction.basic.IncreaseInstruction;
 import engine.logic.programData.instruction.basic.JumpNotZeroInstruction;
 import engine.logic.programData.instruction.basic.NoOpInstruction;
-import instruction.synthetic.*;
+import engine.logic.programData.instruction.*;
 
 import java.util.*;
 import java.util.regex.Matcher;

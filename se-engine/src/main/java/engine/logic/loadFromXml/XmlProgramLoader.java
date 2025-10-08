@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class XmlProgramLoader {
 
-    private static final String JAXB_PACKAGE = "engine/logic/loadFromXml/generatedFromXml";
+    private static final String JAXB_PACKAGE = "engine.logic.loadFromXml.generatedFromXml";
     private static final JAXBContext JAXB_CTX;
 
     static {

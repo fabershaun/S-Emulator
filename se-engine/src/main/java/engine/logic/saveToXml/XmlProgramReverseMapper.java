@@ -2,7 +2,6 @@ package engine.logic.saveToXml;
 
 import dto.v2.InstructionDTO;
 import engine.logic.loadFromXml.generatedFromXml.*;
-import generatedFromXml.*;
 import java.util.List;
 
 public class XmlProgramReverseMapper {

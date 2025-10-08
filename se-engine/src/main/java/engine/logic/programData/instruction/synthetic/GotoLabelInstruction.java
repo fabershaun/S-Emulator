@@ -1,9 +1,8 @@
 package engine.logic.programData.instruction.synthetic;
 
 import engine.logic.execution.ExecutionContext;
-import engine.logic.instruction.*;
 import engine.logic.programData.instruction.*;
-import instruction.*;
+import engine.logic.programData.instruction.*;
 import engine.logic.programData.instruction.basic.IncreaseInstruction;
 import engine.logic.programData.instruction.basic.JumpNotZeroInstruction;
 import engine.logic.programData.label.FixedLabel;
