@@ -1,6 +1,7 @@
 package tasks;
 
 import dto.v2.DebugDTO;
+import dto.v3.UserDTO;
 import engine.Engine;
 import javafx.concurrent.Task;
 
@@ -20,6 +21,6 @@ public class DebugResumeTask extends Task<DebugDTO> {
 
     @Override
     protected DebugDTO call() throws Exception {
-        return engine.getProgramAfterResume(breakPoints);
+        return engine.getProgramAfterResume(breakPoints, UserDTO.DEFAULT_NAME);
     }
 }

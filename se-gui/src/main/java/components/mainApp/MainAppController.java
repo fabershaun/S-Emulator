@@ -7,6 +7,7 @@ import components.programCreation.ProgramCreationController;
 import components.programCreation.ProgramCreationModel;
 import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import dto.v2.*;
+import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -247,7 +248,6 @@ public class MainAppController {
     }
 
     public List<ProgramDTO> getAllPrograms() {
-        String mainProgramName = mainProgramLoadedProperty.get().getProgramName();
         return engine.getAllPrograms();
     }
 
@@ -300,11 +300,11 @@ public class MainAppController {
     }
 
     public void initializeDebugger(List<Long> inputValues) {
-        engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues, null);
+        engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
     }
 
     public void debugStop() {
-        engine.stopDebugPress();
+        engine.stopDebugPress(UserDTO.DEFAULT_NAME);
 
         if (currentDebugTask != null && currentDebugTask.isRunning()) { // kill the running thread
             currentDebugTask.cancel(true);
@@ -334,14 +334,14 @@ public class MainAppController {
     }
 
     public DebugDTO debugStepOver() {
-        DebugDTO debugStep = engine.getProgramAfterStepOver();
+        DebugDTO debugStep = engine.getProgramAfterStepOver(UserDTO.DEFAULT_NAME);
         updateControllerAfterDebugStep(debugStep);
 
         return debugStep;
     }
 
     public DebugDTO debugStepBack() {
-        DebugDTO debugStep = engine.getProgramAfterStepBack();
+        DebugDTO debugStep = engine.getProgramAfterStepBack(UserDTO.DEFAULT_NAME);
         updateControllerAfterDebugStep(debugStep);
 
         return debugStep;
@@ -373,12 +373,7 @@ public class MainAppController {
             msg = "Unknown  error";
         }
 
-        // Print full details to console
-        if (taskException != null) {
-            taskException.printStackTrace();
-        }
-
-            showEngineError(title, msg);
+        showEngineError(title, msg);
     }
 
     public void clearHistorySelection() {

@@ -23,15 +23,21 @@ public class EngineImpl implements Engine, Serializable {
     private final ProgramsHolder programsHolder = new ProgramsHolder();
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
-    private Debug debug;
+    private final Map<String, Debug> usernameToDebug = new HashMap<>();
+    //Debug debug;
 
     private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();
 
+    public EngineImpl() {
+        // Create default user with empty name (For version 2)
+        UserDTO defaultUser = new UserDTO(UserDTO.DEFAULT_NAME);
+        usernameToUserDTO.put(UserDTO.DEFAULT_NAME, defaultUser);
+    }
 
     @Override
     public synchronized void addUser(String username) {
         if (usernameToUserDTO.containsKey(username)) {
-            throw new IllegalArgumentException("User '" + username + "' already exists");
+            throw new IllegalArgumentException("In EngineImpl, when try to add a new user: user '" + username + "' already exists");
         }
         usernameToUserDTO.put(username, new UserDTO(username));
     }
@@ -39,7 +45,7 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public synchronized void removeUser(String username) {
         if (!usernameToUserDTO.containsKey(username)) {
-            throw new NoSuchElementException("User '" + username + "' not found");
+            throw new NoSuchElementException("In EngineImpl, when try to remove the user: " + username + "' not found");
         }
         usernameToUserDTO.remove(username);
     }
@@ -58,7 +64,7 @@ public class EngineImpl implements Engine, Serializable {
     public UserDTO getUserDTO(String username) {
         UserDTO userDTO = usernameToUserDTO.get(username);
         if (userDTO == null) {
-            throw new NoSuchElementException("Username '" + username + "' not found");
+            throw new NoSuchElementException("In EngineImpl, when try to get the user: user '" + username + "' not found");
         }
         return userDTO;
     }
@@ -98,7 +104,7 @@ public class EngineImpl implements Engine, Serializable {
         Program workingProgram = getExpandedProgram(programName, degree);
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram);
 
-        UserDTO userDTO = usernameToUserDTO.get(uploaderName);
+        UserDTO userDTO = getUserDTO(uploaderName);
         userDTO.addOneToExecutionsCount();
 
         programExecutor.run(degree, inputs);
@@ -273,50 +279,66 @@ public class EngineImpl implements Engine, Serializable {
     public void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName) {
         Program workingProgram = getExpandedProgram(programName, degree);
 
-        this.debug = new DebugImpl(workingProgram, degree, inputs, uploaderName);
+        // In any case, overwrite the previous value
+        usernameToDebug.put(uploaderName, new DebugImpl(workingProgram, degree, inputs, uploaderName));
+    }
+
+    private Debug getDebugSystemByUsername(String username) {
+        Debug debug = usernameToDebug.get(username);
+        if (debug == null) {
+            throw new IllegalArgumentException("In EngineImpl, when try getting Debug system from map: username not found: '" + username + "'");
+        }
+        return debug;
     }
 
     @Override
-    public DebugDTO getProgramAfterStepOver() {
+    public DebugDTO getProgramAfterStepOver(String uploaderName) {
+        Debug debug = getDebugSystemByUsername(uploaderName);
+
         DebugDTO debugDTO = debug.stepOver();    // Step Over
 
         if (!debugDTO.hasMoreInstructions()) {  // Add debug program executor to history map
-            addDebugResultToHistoryMap(debugDTO);
+            addDebugResultToHistoryMap(debugDTO, uploaderName);
         }
 
         return debugDTO;
     }
 
     @Override
-    public DebugDTO getProgramAfterResume(List<Boolean> breakPoints) throws InterruptedException {
+    public DebugDTO getProgramAfterResume(List<Boolean> breakPoints, String uploaderName) throws InterruptedException {
+        Debug debug = getDebugSystemByUsername(uploaderName);
+
         DebugDTO debugDTO = debug.resume(breakPoints);  // Resume
 
         if (!debugDTO.hasMoreInstructions()) {      // Add to history
-            addDebugResultToHistoryMap(debugDTO);
-
-            String uploaderName = this.debug.getUploaderName();
-            UserDTO userDTO = usernameToUserDTO.get(uploaderName);
-            userDTO.addOneToExecutionsCount();
+            addDebugResultToHistoryMap(debugDTO, uploaderName);
         }
 
         return debugDTO;
     }
 
     @Override
-    public DebugDTO getProgramAfterStepBack() {
+    public DebugDTO getProgramAfterStepBack(String uploaderName) {
+        Debug debug = getDebugSystemByUsername(uploaderName);
         return debug.stepBack();
     }
 
     @Override
-    public void stopDebugPress() {
+    public void stopDebugPress(String uploaderName) {
+        Debug debug = getDebugSystemByUsername(uploaderName);
         DebugDTO debugDTO = debug.stop();
-        addDebugResultToHistoryMap(debugDTO);
+        addDebugResultToHistoryMap(debugDTO, uploaderName);
     }
 
-    private void addDebugResultToHistoryMap(DebugDTO debugDTO) {
+    private void addDebugResultToHistoryMap(DebugDTO debugDTO, String uploaderName) {
+        Debug debug = getDebugSystemByUsername(uploaderName);
+
         String programName = debugDTO.getProgramName();
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
         executionHistory.add(debug.getDebugProgramExecutor());
+
+        UserDTO userDTO = this.usernameToUserDTO.get(uploaderName);
+        userDTO.addOneToExecutionsCount();
     }
 
     @Override

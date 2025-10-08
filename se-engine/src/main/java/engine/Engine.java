@@ -40,12 +40,12 @@ public interface Engine {
     String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException;
     String loadProgramFromFile(Path path, String uploaderName) throws EngineLoadException;
     void runProgram(String programName, int degree, String uploaderName, Long... inputs);
-    void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName);
 
-    DebugDTO getProgramAfterStepOver();
-    DebugDTO getProgramAfterResume(List<Boolean> breakPoints) throws InterruptedException;
-    DebugDTO getProgramAfterStepBack();
-    void stopDebugPress();
+    void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName);
+    DebugDTO getProgramAfterStepOver(String uploaderName);
+    DebugDTO getProgramAfterResume(List<Boolean> breakPoints, String uploaderName) throws InterruptedException;
+    DebugDTO getProgramAfterStepBack(String uploaderName);
+    void stopDebugPress(String uploaderName);
 
     InstructionDTO createOriginalInstruction();
     void exportToXml(File file, String programName, List<InstructionDTO> instructions);

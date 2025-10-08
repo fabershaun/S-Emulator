@@ -3,7 +3,6 @@ package engine.logic.loadFromXml;
 import dto.v3.UserDTO;
 import engine.logic.loadFromXml.generatedFromXml.*;
 import engine.logic.programData.instruction.synthetic.*;
-import engine.logic.loadFromXml.generatedFromXml.*;
 import engine.logic.programData.instruction.AbstractInstruction;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.instruction.OriginOfAllInstruction;
@@ -23,7 +22,6 @@ import engine.logic.programData.instruction.basic.DecreaseInstruction;
 import engine.logic.programData.instruction.basic.IncreaseInstruction;
 import engine.logic.programData.instruction.basic.JumpNotZeroInstruction;
 import engine.logic.programData.instruction.basic.NoOpInstruction;
-import engine.logic.programData.instruction.*;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -37,7 +35,7 @@ final class XmlProgramMapper {
         String programName = safeTrim(sProgram.getName());
         programName = programName != null ? programName : "Unnamed";
 
-        validateUniqueProgramName(programsHolder, programName);
+        validateUniqueMainProgramName(programsHolder, programName);
 
         Program targetProgram = new ProgramImpl(programName, programName, programsHolder, uploaderName);  // The user string of program is its name
 
@@ -49,7 +47,7 @@ final class XmlProgramMapper {
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
                 Program innerFunction = mapFunction(sFunction, programsHolder, uploaderName);
-                validateUniqueProgramName(programsHolder, innerFunction.getName());
+                validateUniqueFunctionName(programsHolder, innerFunction.getName());
                 innerFunctionsSet.add(innerFunction);   // Temporary save the functions
             }
         }
@@ -63,12 +61,17 @@ final class XmlProgramMapper {
         return targetProgram;
     }
 
-    private static void validateUniqueProgramName(ProgramsHolder programsHolder, String programName) {
+    private static void validateUniqueMainProgramName(ProgramsHolder programsHolder, String programName) {
         if (programsHolder.getMainProgramByName(programName) != null) {
-            throw new IllegalArgumentException("Main program with name " + programName + " already exists");
+            throw new IllegalArgumentException("Unable to upload file: main program with name " + programName + " already exists");
         }
     }
 
+    private static void validateUniqueFunctionName(ProgramsHolder programsHolder, String programName) {
+        if (programsHolder.getFunctionByName(programName) != null) {
+            throw new IllegalArgumentException("Unable to upload file: function with name " + programName + " already exists");
+        }
+    }
     private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder, String uploaderName) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());

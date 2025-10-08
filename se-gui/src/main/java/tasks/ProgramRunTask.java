@@ -1,6 +1,7 @@
 package tasks;
 
 import dto.v2.ProgramExecutorDTO;
+import dto.v3.UserDTO;
 import engine.Engine;
 import javafx.concurrent.Task;
 
@@ -20,7 +21,7 @@ public class ProgramRunTask extends Task<ProgramExecutorDTO> {
 
     @Override
     protected ProgramExecutorDTO call() {
-        engine.runProgram(programToRunName, degree, null, inputs);
+        engine.runProgram(programToRunName, degree, UserDTO.DEFAULT_NAME, inputs);
         return engine.getProgramAfterRun(programToRunName);
     }
 }
