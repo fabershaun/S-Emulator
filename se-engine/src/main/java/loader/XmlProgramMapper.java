@@ -34,19 +34,35 @@ final class XmlProgramMapper {
         String programName = safeTrim(sProgram.getName());
         programName = programName != null ? programName : "Unnamed";
 
+        validateUniqueProgramName(programsHolder, programName);
+
         Program targetProgram = new ProgramImpl(programName, programName, programsHolder);  // The user string of program is its name
 
         mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
+
+        Set<Program> innerFunctionsSet = new HashSet<>();
 
         // Map functions (sub-programs) if they exist
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
                 Program innerFunction = mapFunction(sFunction, programsHolder);
-                programsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
+                validateUniqueProgramName(programsHolder, innerFunction.getName());
+                innerFunctionsSet.add(innerFunction);   // Temporary save the functions
             }
         }
 
+        // After validate all the functions -> add them to the programHolder
+        for (Program innerFunction : innerFunctionsSet) {
+            programsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
+        }
+
         return targetProgram;
+    }
+
+    private static void validateUniqueProgramName(ProgramsHolder programsHolder, String programName) {
+        if (programsHolder.getMainProgramByName(programName) != null) {
+            throw new IllegalArgumentException("Main program with name " + programName + " already exists");
+        }
     }
 
     private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder) {

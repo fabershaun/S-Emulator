@@ -31,6 +31,37 @@ public class XmlProgramLoader {
         }
     }
 
+    public Program loadFromStream(InputStream xmlStream, String sourceName, ProgramsHolder programsHolder) throws EngineLoadException {
+        if (xmlStream == null) {
+            throw new EngineLoadException("XML input stream is null");
+        }
+
+        SProgram sProgram = unmarshalFromStream(xmlStream, sourceName);
+        return XmlProgramMapper.map(sProgram, programsHolder);
+    }
+
+    private SProgram unmarshalFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
+        return unmarshal(xmlStream, sourceName);
+    }
+
+    public Program loadFromFile(Path xmlPath, ProgramsHolder programsHolder) throws EngineLoadException {
+        validatePath(xmlPath);
+        SProgram sProgram = unmarshalFromFile(xmlPath);
+        Program program = XmlProgramMapper.map(sProgram, programsHolder);
+
+        validateFunctionsForVersion2(program , programsHolder);
+        return program;
+    }
+
+    private SProgram unmarshalFromFile(Path path) throws EngineLoadException {
+        Path abs = path.toAbsolutePath().normalize();
+        try (FileInputStream fis = new FileInputStream(abs.toFile())) {
+            return unmarshal(fis, abs.toUri().toString());
+        } catch (Exception e) {
+            throw new EngineLoadException("Failed to open file: " + abs + ", " + e.getMessage(), e);
+        }
+    }
+
     private SProgram unmarshal(InputStream xmlStream, String sourceName) throws EngineLoadException {
         try {
             Unmarshaller um = JAXB_CTX.createUnmarshaller();
@@ -54,45 +85,10 @@ public class XmlProgramLoader {
     }
 
 
-    public Program loadFromStream(InputStream xmlStream, String sourceName, ProgramsHolder programsHolder) throws EngineLoadException {
-        if (xmlStream == null) {
-            throw new EngineLoadException("XML input stream is null");
-        }
-
-        SProgram sProgram = unmarshalFromStream(xmlStream, sourceName);
-
-        Program program = XmlProgramMapper.map(sProgram, programsHolder);
-
-        validateFunctions(program, programsHolder);
-
-        return program;
-    }
-
-    private SProgram unmarshalFromStream(InputStream xmlStream, String sourceName) throws EngineLoadException {
-        return unmarshal(xmlStream, sourceName);
-    }
-
-
-    public Program loadFromFile(Path xmlPath, ProgramsHolder programsHolder) throws EngineLoadException {
-        validatePath(xmlPath);
-        SProgram sProgram = unmarshalFromFile(xmlPath);
-        Program program = XmlProgramMapper.map(sProgram, programsHolder);
-
-        validateFunctions(program , programsHolder);
-        return program;
-    }
-
-    private SProgram unmarshalFromFile(Path path) throws EngineLoadException {
-        Path abs = path.toAbsolutePath().normalize();
-        try (FileInputStream fis = new FileInputStream(abs.toFile())) {
-            return unmarshal(fis, abs.toUri().toString());
-        } catch (Exception e) {
-            throw new EngineLoadException("Failed to open file: " + abs + ", " + e.getMessage(), e);
-        }
-    }
-
+    // Validates that all function calls within the given program (and its sub-functions)
+    // refer to functions that are actually defined in the XML file.
     // Only for part 2
-    private void validateFunctions(Program program, ProgramsHolder programsHolder) throws EngineLoadException {
+    private void validateFunctionsForVersion2(Program program, ProgramsHolder programsHolder) throws EngineLoadException {
 
         // Collect all defined function names
         Set<String> definedFunctions = new HashSet<>(programsHolder.getFunctions()
@@ -101,17 +97,17 @@ public class XmlProgramLoader {
                 .toList());
 
         // Validate main program instructions
-        validateFunctionCalls(program, definedFunctions, "Main Program");
+        validateFunctionCallsForVersion2(program, definedFunctions, "Main Program");
 
         // Validate each sub-function's instructions
         for (Program function : programsHolder.getFunctions()) {
             function.validateProgram();                     // Validate that there are no undefined label references
-            validateFunctionCalls(function, definedFunctions, "Function: " + function.getName());
+            validateFunctionCallsForVersion2(function, definedFunctions, "Function: " + function.getName());
         }
     }
 
     // Only for part 2
-    private void validateFunctionCalls(Program program, Set<String> definedFunctions, String context) throws EngineLoadException {
+    private void validateFunctionCallsForVersion2(Program program, Set<String> definedFunctions, String context) throws EngineLoadException {
         for (Instruction instruction : program.getInstructionsList()) {
             if (instruction instanceof QuoteInstruction quoteInstruction) {
                 String calledFunc = quoteInstruction.getQuoteFunctionName().toUpperCase(Locale.ROOT); // assuming getter exists
