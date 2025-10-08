@@ -1,9 +1,9 @@
 package console.actions;
 
 import console.menu.MenuActionable;
-import dto.InstructionDTO;
-import dto.InstructionsDTO;
-import dto.ProgramDTO;
+import dto.v2.InstructionDTO;
+import dto.v2.InstructionsDTO;
+import dto.v2.ProgramDTO;
 import engine.Engine;
 
 import java.util.List;

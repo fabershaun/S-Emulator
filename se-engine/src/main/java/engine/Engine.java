@@ -1,9 +1,9 @@
 package engine;
 
-import dto.DebugDTO;
-import dto.InstructionDTO;
-import dto.ProgramDTO;
-import dto.ProgramExecutorDTO;
+import dto.v2.DebugDTO;
+import dto.v2.InstructionDTO;
+import dto.v2.ProgramDTO;
+import dto.v2.ProgramExecutorDTO;
 import engine.logic.exceptions.EngineLoadException;
 
 import java.io.File;

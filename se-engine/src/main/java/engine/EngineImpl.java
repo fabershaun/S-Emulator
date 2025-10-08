@@ -1,8 +1,8 @@
 package engine;
 
+import dto.v2.*;
 import engine.logic.debug.Debug;
 import engine.logic.debug.DebugImpl;
-import dto.*;
 import engine.logic.exceptions.EngineLoadException;
 import engine.logic.execution.ProgramExecutorImpl;
 import engine.logic.execution.ProgramExecutor;
@@ -25,7 +25,7 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
     private Debug debug;
 
-    private final Set<UserDTO> usersSet = new HashSet<>();
+    private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();
 
 
     public Program getMainProgram(String programName) {

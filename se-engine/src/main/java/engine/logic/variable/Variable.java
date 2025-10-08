@@ -3,8 +3,8 @@ package engine.logic.variable;
 import java.io.Serializable;
 
 public interface Variable extends Serializable {
-    VariableType getType();
+    VariableType type();
     String getRepresentation();
-    int getNumber();
+    int number();
     Variable RESULT = new VariableImpl(VariableType.RESULT, 0);
 }

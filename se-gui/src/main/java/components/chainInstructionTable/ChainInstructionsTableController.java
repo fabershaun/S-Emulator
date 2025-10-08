@@ -1,6 +1,6 @@
 package components.chainInstructionTable;
 
-import dto.InstructionDTO;
+import dto.v2.InstructionDTO;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;

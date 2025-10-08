@@ -1,7 +1,7 @@
 package engine.logic.debug;
 
-import dto.DebugDTO;
-import dto.ProgramExecutorDTO;
+import dto.v2.DebugDTO;
+import dto.v2.ProgramExecutorDTO;
 import engine.logic.execution.ProgramExecutor;
 
 import java.util.List;

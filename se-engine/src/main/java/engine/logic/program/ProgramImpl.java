@@ -1,6 +1,6 @@
 package engine.logic.program;
 
-import dto.InstructionDTO;
+import dto.v2.InstructionDTO;
 import engine.logic.exceptions.EngineLoadException;
 import engine.logic.instruction.Instruction;
 import engine.logic.instruction.LabelReferencesInstruction;
@@ -171,7 +171,7 @@ public class ProgramImpl implements Program, Serializable {
     private void bucketVariable(Variable variable) {
         if (variable == null) return;
 
-        switch (variable.getType()) {
+        switch (variable.type()) {
             case INPUT -> inputVariables.add(variable);
             case WORK  -> workVariables.add(variable);
         }
@@ -180,7 +180,7 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public void bucketVariableByFunctionInstruction(Set<Variable> variablesList) {
         for (Variable variable : variablesList) {
-            switch (variable.getType()) {
+            switch (variable.type()) {
                 case INPUT -> inputVariables.add(variable);
                 case WORK  -> workVariables.add(variable);
             }
@@ -243,7 +243,7 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public List<String> getInputVariablesSortedStr() {
         return inputVariables.stream()
-                .sorted(Comparator.comparingInt(Variable::getNumber))
+                .sorted(Comparator.comparingInt(Variable::number))
                 .map(Variable::getRepresentation)
                 .collect(Collectors.toList());
     }
@@ -251,7 +251,7 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public List<String> getWorkVariablesSortedStr() {
         return workVariables.stream()
-                .sorted(Comparator.comparingInt(Variable::getNumber))
+                .sorted(Comparator.comparingInt(Variable::number))
                 .map(Variable::getRepresentation)
                 .collect(Collectors.toList());
     }
@@ -320,7 +320,7 @@ public class ProgramImpl implements Program, Serializable {
 
     private void initNextWorkVariableNumber() {
         nextWorkVariableNumber = workVariables.stream()
-                .filter(v -> v.getType() == VariableType.WORK)
+                .filter(v -> v.type() == VariableType.WORK)
                 .map(Variable::getRepresentation)
                 .map(rep -> {
                     String digits = rep.replaceAll("\\D+", "");    // Only the digits
@@ -341,7 +341,7 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public void sortVariableSetByNumber(Set<Variable> variablesSet) {
         List<Variable> sorted = variablesSet.stream()
-                .sorted(Comparator.comparingInt(Variable::getNumber))
+                .sorted(Comparator.comparingInt(Variable::number))
                 .collect(Collectors.toList());  // Dont change
 
         variablesSet.clear();

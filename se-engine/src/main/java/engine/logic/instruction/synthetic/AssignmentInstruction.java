@@ -47,13 +47,12 @@ public class AssignmentInstruction extends AbstractInstruction implements Synthe
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String sourceVariableRepresentation = sourceVariable.getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append(targetVariableRepresentation);
-        command.append(" <- ");
-        command.append(sourceVariableRepresentation);
+        String command = targetVariableRepresentation +
+                " <- " +
+                sourceVariableRepresentation;
 
-        return command.toString();
+        return command;
     }
 
     @Override

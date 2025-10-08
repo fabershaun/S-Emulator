@@ -1,7 +1,7 @@
 package components.topToolBar;
 
 import components.mainApp.MainAppController;
-import dto.ProgramDTO;
+import dto.v2.ProgramDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;

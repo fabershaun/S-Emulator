@@ -1,4 +1,4 @@
-package dto;
+package dto.v2;
 
 public class InstructionDTO {
     private final String instructionName;

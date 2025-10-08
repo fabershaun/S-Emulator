@@ -2,8 +2,8 @@ package components.history;
 
 import components.history.historyRowPopUp.HistoryRowPopUpController;
 import components.mainApp.MainAppController;
-import dto.HistoryRowDTO;
-import dto.ProgramExecutorDTO;
+import dto.v2.HistoryRowDTO;
+import dto.v2.ProgramExecutorDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;

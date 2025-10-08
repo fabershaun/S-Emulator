@@ -1,6 +1,6 @@
 package engine.logic.saveToXml;
 
-import dto.InstructionDTO;
+import dto.v2.InstructionDTO;
 import engine.logic.generatedFromXml.SProgram;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

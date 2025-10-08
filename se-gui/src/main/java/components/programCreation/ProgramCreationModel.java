@@ -1,7 +1,7 @@
 package components.programCreation;
 
-import dto.InstructionDTO;
-import dto.ProgramDTO;
+import dto.v2.InstructionDTO;
+import dto.v2.ProgramDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.logic.exceptions.EngineLoadException;

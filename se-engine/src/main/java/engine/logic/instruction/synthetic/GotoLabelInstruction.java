@@ -41,12 +41,11 @@ public class GotoLabelInstruction extends AbstractInstruction implements LabelRe
     @Override
     public String getCommand() {
         String labelRepresentation = referencesLabel.getLabelRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append("GOTO ");
-        command.append(labelRepresentation);
+        String command = "GOTO " +
+                labelRepresentation;
 
-        return command.toString();
+        return command;
     }
 
     @Override

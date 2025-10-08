@@ -53,16 +53,15 @@ public class JumpEqualConstantInstruction extends AbstractInstruction implements
     @Override
     public String getCommand() {
         String variableRepresentation = getTargetVariable().getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append("IF ");
-        command.append(variableRepresentation);
-        command.append(" = ");
-        command.append(constantValue);
-        command.append(" GOTO ");
-        command.append(referencelabel.getLabelRepresentation());
+        String command = "IF " +
+                variableRepresentation +
+                " = " +
+                constantValue +
+                " GOTO " +
+                referencelabel.getLabelRepresentation();
 
-        return command.toString();
+        return command;
     }
 
     @Override

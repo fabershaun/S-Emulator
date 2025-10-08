@@ -33,7 +33,7 @@ public class ExecutionContextImpl implements ExecutionContext, Serializable {
         Set<Variable> inputVariables = program.getInputVariables();
 
         Map<Integer, Variable> serialNumberToVariable = inputVariables.stream()
-                .collect(Collectors.toMap(Variable::getNumber, v -> v));
+                .collect(Collectors.toMap(Variable::number, v -> v));
 
 
         for (int i = 1; i <= inputs.length; i++) {
@@ -50,7 +50,7 @@ public class ExecutionContextImpl implements ExecutionContext, Serializable {
         }
 
         for (Variable v : inputVariables) {     // For all the variables that their serial number is bigger that inputs.length
-            if (v.getNumber() > inputs.length) {
+            if (v.number() > inputs.length) {
                 this.updateVariable(v, 0L);
             }
         }
@@ -67,7 +67,7 @@ public class ExecutionContextImpl implements ExecutionContext, Serializable {
 
     @Override
     public long getVariableValue(Variable variable) {
-        if(variable.getType() == VariableType.RESULT)
+        if(variable.type() == VariableType.RESULT)
             variable = Variable.RESULT;
 
         return variableToValue.get(variable);
@@ -75,7 +75,7 @@ public class ExecutionContextImpl implements ExecutionContext, Serializable {
 
     @Override
     public void updateVariable(Variable variable, long value) {
-        if(variable.getType() == VariableType.RESULT)
+        if(variable.type() == VariableType.RESULT)
             variable = Variable.RESULT;
 
         variableToValue.put(variable, value);

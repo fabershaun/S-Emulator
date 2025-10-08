@@ -1,6 +1,6 @@
 package tasks;
 
-import dto.ProgramDTO;
+import dto.v2.ProgramDTO;
 import engine.Engine;
 import javafx.concurrent.Task;
 

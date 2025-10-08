@@ -1,6 +1,6 @@
 package engine.logic.program;
 
-import dto.InstructionDTO;
+import dto.v2.InstructionDTO;
 import engine.logic.exceptions.EngineLoadException;
 import engine.logic.instruction.Instruction;
 import engine.logic.label.Label;

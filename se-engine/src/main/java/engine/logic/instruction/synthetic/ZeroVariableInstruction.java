@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ZeroVariableInstruction extends AbstractInstruction implements SyntheticInstruction {
-    private final List<Instruction> innerInstructions = new ArrayList<>();;
+    private final List<Instruction> innerInstructions = new ArrayList<>();
 
     public ZeroVariableInstruction(Program mainProgram, Program programOfThisInstruction, Variable variable, Instruction origin, int instructionNumber) {
         super(mainProgram, programOfThisInstruction, InstructionData.ZERO_VARIABLE, InstructionType.SYNTHETIC ,variable, FixedLabel.EMPTY, origin, instructionNumber);
@@ -40,13 +40,12 @@ public class ZeroVariableInstruction extends AbstractInstruction implements Synt
     @Override
     public String getCommand() {
         String variableRepresentation = getTargetVariable().getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append(variableRepresentation);
-        command.append(" <- ");
-        command.append(0);
+        String command = variableRepresentation +
+                " <- " +
+                0;
 
-        return command.toString();
+        return command;
     }
 
     @Override

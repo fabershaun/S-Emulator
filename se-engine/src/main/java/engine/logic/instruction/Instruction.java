@@ -1,6 +1,6 @@
 package engine.logic.instruction;
 
-import dto.InstructionDTO;
+import dto.v2.InstructionDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.label.Label;
 import engine.logic.program.Program;

@@ -1,4 +1,4 @@
-package dto;
+package dto.v2;
 
 import java.util.List;
 import java.util.Map;

@@ -1,9 +1,9 @@
 package components.debuggerExecutionMenu;
 
 import components.mainApp.MainAppController;
-import dto.DebugDTO;
-import dto.ProgramDTO;
-import dto.ProgramExecutorDTO;
+import dto.v2.DebugDTO;
+import dto.v2.ProgramDTO;
+import dto.v2.ProgramExecutorDTO;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

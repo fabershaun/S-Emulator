@@ -1,9 +1,9 @@
 package components.programCreation;
 
 import components.mainApp.MainAppController;
-import dto.InstructionDTO;
-import dto.InstructionDataDTO;
-import dto.ProgramDTO;
+import dto.v2.InstructionDTO;
+import dto.v2.InstructionDataDTO;
+import dto.v2.ProgramDTO;
 import engine.logic.instruction.InstructionDataMapper;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;

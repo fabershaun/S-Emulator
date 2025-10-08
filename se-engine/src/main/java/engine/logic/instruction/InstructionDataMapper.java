@@ -1,6 +1,6 @@
 package engine.logic.instruction;
 
-import dto.InstructionDataDTO;
+import dto.v2.InstructionDataDTO;
 
 import java.util.ArrayList;
 import java.util.List;

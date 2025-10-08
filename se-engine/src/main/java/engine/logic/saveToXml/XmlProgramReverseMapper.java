@@ -1,6 +1,6 @@
 package engine.logic.saveToXml;
 
-import dto.InstructionDTO;
+import dto.v2.InstructionDTO;
 import engine.logic.generatedFromXml.*;
 import generatedFromXml.*;
 import java.util.List;

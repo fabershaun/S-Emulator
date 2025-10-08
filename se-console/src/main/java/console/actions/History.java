@@ -1,7 +1,7 @@
 package console.actions;
 
 import console.menu.MenuActionable;
-import dto.ProgramExecutorDTO;
+import dto.v2.ProgramExecutorDTO;
 import engine.Engine;
 
 import java.util.List;

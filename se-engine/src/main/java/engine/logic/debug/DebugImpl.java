@@ -1,8 +1,8 @@
 package engine.logic.debug;
 
-import dto.DebugDTO;
-import dto.ProgramDTO;
-import dto.ProgramExecutorDTO;
+import dto.v2.DebugDTO;
+import dto.v2.ProgramDTO;
+import dto.v2.ProgramExecutorDTO;
 import engine.EngineImpl;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.ExecutionContextImpl;

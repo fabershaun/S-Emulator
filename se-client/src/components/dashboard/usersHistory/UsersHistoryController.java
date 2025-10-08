@@ -2,8 +2,8 @@ package components.dashboard.usersHistory;
 
 import components.dashboard.mainDashboard.DashboardController;
 import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
-import dto.HistoryRowDTO;
-import dto.ProgramExecutorDTO;
+import dto.v2.HistoryRowDTO;
+import dto.v2.ProgramExecutorDTO;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.StringProperty;

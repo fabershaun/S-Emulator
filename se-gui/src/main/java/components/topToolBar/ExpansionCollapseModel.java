@@ -1,6 +1,6 @@
 package components.topToolBar;
 
-import dto.ProgramDTO;
+import dto.v2.ProgramDTO;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

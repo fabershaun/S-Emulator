@@ -38,14 +38,13 @@ public class JumpNotZeroInstruction extends AbstractInstruction implements Label
     @Override
     public String getCommand() {
         String variableRepresentation = getTargetVariable().getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append("IF ");
-        command.append(variableRepresentation);
-        command.append(" != 0 GOTO ");
-        command.append(referencesLabel.getLabelRepresentation());
+        String command = "IF " +
+                variableRepresentation +
+                " != 0 GOTO " +
+                referencesLabel.getLabelRepresentation();
 
-        return command.toString();
+        return command;
     }
 
     @Override

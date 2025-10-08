@@ -1,7 +1,7 @@
 package components.summaryLineOfMainInstructionsTable;
 
-import dto.InstructionDTO;
-import dto.ProgramDTO;
+import dto.v2.InstructionDTO;
+import dto.v2.ProgramDTO;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.ObjectProperty;

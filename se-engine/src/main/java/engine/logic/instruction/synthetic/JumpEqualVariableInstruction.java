@@ -49,16 +49,15 @@ public class JumpEqualVariableInstruction extends AbstractInstruction implements
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String sourceVariableRepresentation = sourceVariable.getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append("IF ");
-        command.append(targetVariableRepresentation);
-        command.append(" = ");
-        command.append(sourceVariableRepresentation);
-        command.append(" GOTO ");
-        command.append(referencesLabel.getLabelRepresentation());
+        String command = "IF " +
+                targetVariableRepresentation +
+                " = " +
+                sourceVariableRepresentation +
+                " GOTO " +
+                referencesLabel.getLabelRepresentation();
 
-        return command.toString();
+        return command;
     }
 
     @Override

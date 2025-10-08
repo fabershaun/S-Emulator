@@ -2,8 +2,8 @@ package console.actions;
 
 import console.menu.MenuActionable;
 import console.validator.Validator;
-import dto.InstructionDTO;
-import dto.ProgramDTO;
+import dto.v2.InstructionDTO;
+import dto.v2.ProgramDTO;
 import engine.Engine;
 import engine.logic.exceptions.EngineLoadException;
 

@@ -41,14 +41,13 @@ public class DecreaseInstruction extends AbstractInstruction {
     @Override
     public String getCommand() {
         String variableRepresentation = getTargetVariable().getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append(variableRepresentation);
-        command.append(" <- ");
-        command.append(variableRepresentation);
-        command.append(" - 1");
+        String command = variableRepresentation +
+                " <- " +
+                variableRepresentation +
+                " - 1";
 
-        return command.toString();
+        return command;
     }
 
     @Override

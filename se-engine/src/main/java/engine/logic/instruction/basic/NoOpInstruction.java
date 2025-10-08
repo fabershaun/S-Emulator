@@ -35,13 +35,12 @@ public class NoOpInstruction extends AbstractInstruction {
     @Override
     public String getCommand() {
         String variableRepresentation = getTargetVariable().getRepresentation();
-        StringBuilder command = new StringBuilder();
 
-        command.append(variableRepresentation);
-        command.append(" <- ");
-        command.append(variableRepresentation);
+        String command = variableRepresentation +
+                " <- " +
+                variableRepresentation;
 
-        return command.toString();
+        return command;
     }
 
     @Override
