@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox spacing="8.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="components.execution.topToolBar.TopToolBarController">
+    <ComboBox fx:id="programSelectorCB" promptText="Program \ Function Selector">
+        <HBox.margin>
+            <Insets right="7.0" />
+        </HBox.margin>
+    </ComboBox>
+    <ComboBox fx:id="collapseCB" prefWidth="120.0" promptText="Collapse" HBox.hgrow="ALWAYS" />
+    <VBox alignment="CENTER">
+        <Label text="Current Degree"
+               wrapText="true"
+               maxWidth="90"
+               minWidth="50"
+               alignment="CENTER" />
+        <Label fx:id="currentDegreeLabel" layoutX="10.0" layoutY="10.0" />
+    </VBox>
+    <ComboBox fx:id="expandCB" prefWidth="120.0" promptText="Expand" HBox.hgrow="ALWAYS" />
+    <ComboBox fx:id="highlightSelectionCB" prefWidth="150.0" promptText="Highlight Selection">
+        <HBox.margin>
+            <Insets left="7.0" />
+        </HBox.margin>
+    </ComboBox>
+</HBox>
