@@ -39,6 +39,7 @@ public interface Program extends Serializable {
     List<String> getWorkVariablesSortedStr();
     List<List<InstructionDTO>> getExpandedProgram();
     List<InstructionDTO> getInstructionDtoList();
+    Variable getResultVariable();
 
     void initialize();
     Program deepClone();
@@ -53,5 +54,11 @@ public interface Program extends Serializable {
     void addInputVariable(Variable variable);
 
     Map<Integer, Program> calculateDegreeToProgram();
-    Variable getResultVariable();
+
+    void incrementExecutionsCount();
+    int getExecutionsCount();
+    int getAverageCreditCost();
+    void addCreditCostOfProgram(int creditCost);
+
+    String getMainProgramNameOfThisProgram();
 }

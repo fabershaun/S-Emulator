@@ -20,12 +20,17 @@ import java.util.stream.Collectors;
 import static java.lang.Math.max;
 
 public class ProgramImpl implements Program, Serializable {
+
     private final String programName;
-    private final String uploaderName;
     private final String userString;
-    private ArchitectureType minimumArchitectureRequired;
     private final ProgramType programType;
-    private final ProgramsHolder programsHolder;
+    private final ProgramsHolder programsHolder;    // That is the programHolder of the engine (that holds all the programs and functions)
+    private final String uploaderName;
+
+    private ArchitectureType minimumArchitectureRequired;
+    private int executionsCount = 0;
+    private int creditCostOfProgram = 0;
+    private String mainProgramNameOfThisProgram;
 
     private final List<Instruction> programInstructions;
     private final Set<Variable> inputVariables;
@@ -38,12 +43,14 @@ public class ProgramImpl implements Program, Serializable {
     private int nextLabelNumber = 1;
     private int nextWorkVariableNumber = 1;
 
-    public ProgramImpl(String name, String userString, ProgramType programType, ProgramsHolder programsHolder, String username) {
+    public ProgramImpl(String name, String userString, ProgramType programType, ProgramsHolder programsHolder, String uploaderName, String mainProgramOfThisProgramName) {
         this.programName = name;
-        this.uploaderName = username;
-        this.programType = programType;
         this.userString = userString;
+        this.programType = programType;
+        this.uploaderName = uploaderName;
         this.programsHolder = programsHolder;
+        this.mainProgramNameOfThisProgram = mainProgramOfThisProgramName;
+
         this.programInstructions = new ArrayList<>();
         this.labelToInstruction = new HashMap<>();
         this.inputVariables = new LinkedHashSet<>();
@@ -396,5 +403,36 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public ProgramType getProgramType() {
         return programType;
+    }
+
+    // Called every time the program executes
+    @Override
+    public void incrementExecutionsCount() {
+        this.executionsCount++;
+    }
+
+    @Override
+    public int getExecutionsCount() {
+        return executionsCount;
+    }
+
+    @Override
+    public int getAverageCreditCost() {
+        if (executionsCount == 0) {
+            return 0;
+        }
+
+        return creditCostOfProgram / this.executionsCount;
+    }
+
+    // Called every time the program executes
+    @Override
+    public void addCreditCostOfProgram(int creditCost) {
+        this.creditCostOfProgram += creditCost;
+    }
+
+    @Override
+    public String getMainProgramNameOfThisProgram() {
+        return this.mainProgramNameOfThisProgram;
     }
 }

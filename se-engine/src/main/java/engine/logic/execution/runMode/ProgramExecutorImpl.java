@@ -66,6 +66,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
             // TODO: to add the not finish run to the history
         } while(nextLabel != FixedLabel.EXIT);
 
+        this.program.addCreditCostOfProgram(totalCycles);
         context.getVariableValue(Variable.RESULT);
     }
 

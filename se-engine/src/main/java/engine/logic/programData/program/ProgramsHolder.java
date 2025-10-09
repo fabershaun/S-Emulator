@@ -37,12 +37,12 @@ public class ProgramsHolder implements Serializable {
        return userStringToName.get(UserStringToUpper);
     }
 
-    public Collection<Program> getFunctions() {
-        return nameToFunction.values();
+    public Set<Program> getFunctions() {
+        return new HashSet<>(nameToFunction.values());
     }
 
-    public Collection<Program> getMainPrograms() {
-        return nameToMainProgram.values();
+    public Set<Program> getMainPrograms() {
+        return new HashSet<>(nameToMainProgram.values());
     }
 
     public Program getMainProgramForConsoleModuleOnly() {

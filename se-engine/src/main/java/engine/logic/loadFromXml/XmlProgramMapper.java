@@ -39,7 +39,7 @@ final class XmlProgramMapper {
 
         validateUniqueMainProgramName(programsHolder, programName);
 
-        Program targetProgram = new ProgramImpl(programName, programName, ProgramType.MAIN, programsHolder, uploaderName);  // The user string of program is its name
+        Program targetProgram = new ProgramImpl(programName, programName, ProgramType.MAIN, programsHolder, uploaderName, programName);  // The user string of program is its name
 
         mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
 
@@ -48,7 +48,7 @@ final class XmlProgramMapper {
         // Map functions (sub-programs) if they exist
         if (sProgram.getSFunctions() != null) {
             for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
-                Program innerFunction = mapFunction(sFunction, programsHolder, uploaderName);
+                Program innerFunction = mapFunction(sFunction, programsHolder, uploaderName, programName);
                 validateUniqueFunctionName(programsHolder, innerFunction.getName());
                 innerFunctionsSet.add(innerFunction);   // Temporary save the functions
             }
@@ -74,7 +74,7 @@ final class XmlProgramMapper {
             throw new IllegalArgumentException("Unable to upload file: function with name " + programName + " already exists");
         }
     }
-    private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder, String uploaderName) {
+    private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder, String uploaderName, String mainProgramName) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());
         Program functionProgram = new ProgramImpl(
@@ -82,7 +82,8 @@ final class XmlProgramMapper {
                 userString != null ? userString : "UnnamedUserString",
                 ProgramType.FUNCTION,
                 programsHolder,
-                uploaderName
+                uploaderName,
+                mainProgramName
         );
 
         // Map instructions of this function into its program

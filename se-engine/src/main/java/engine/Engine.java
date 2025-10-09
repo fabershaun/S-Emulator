@@ -4,6 +4,7 @@ import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
+import dto.v3.AvailableFunctionsDTO;
 import dto.v3.AvailableProgramsDTO;
 import dto.v3.HistoryRowV3DTO;
 import dto.v3.UserDTO;
@@ -25,31 +26,34 @@ public interface Engine {
     UserDTO getUserDTO(String username);
 
     String getProgramNameByUserString(String userString);
-
     ProgramDTO getProgramDTOByName(String programName);
     ProgramDTO getProgramDTOByUserString(String userString);
     ProgramDTO getExpandedProgramDTO(String programName, int degree);
+    int getMaxDegree(String programName);
 
     // V2:
     ProgramExecutorDTO getProgramAfterRunV2(String programName);
     List<ProgramExecutorDTO> getHistoryV2PerProgram(String programName);    // Version 2
+    List<ProgramDTO> getAllPrograms();    // V2 (to recalculateOptions())
 
     // V3:
     ProgramExecutorDTO getProgramAfterRunV3(String programName);
     List<HistoryRowV3DTO> getHistoryV3PerProgram(String programName);           // Version 3
-    List<AvailableProgramsDTO> getAvailableProgramsList();
+    List<AvailableProgramsDTO> getAvailableMainProgramsDTOsList();
+    List<AvailableFunctionsDTO> getAvailableFunctionsDTOsList();
 
-    List<ProgramDTO> getAllPrograms();
-    Set<String> getMainProgramsSetStr();
-    Set<String> getFunctionsSetStr();
 
-    int getMaxDegree(String programName);
+    // Expansion:
     void calculateExpansionForAllLoadedPrograms(String mainProgramName);
 
+    // Load
     String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException;
     String loadProgramFromFile(Path path, String uploaderName) throws EngineLoadException;
+
+    // Run
     void runProgram(String programName, String architectureTypeRepresentation, int degree, String uploaderName, Long... inputs);
 
+    // Debug
     void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName);
     DebugDTO getProgramAfterStepOver(String uploaderName);
     DebugDTO getProgramAfterResume(List<Boolean> breakPoints, String uploaderName) throws InterruptedException;
@@ -60,9 +64,9 @@ public interface Engine {
     void exportToXml(File file, String programName, List<InstructionDTO> instructions);
 
     // For console module only:
-//    void saveState(Path path) throws EngineLoadException;
-//    void loadState(Path path) throws EngineLoadException;
     ProgramDTO getMainProgramToConsoleModule();
+//    void loadState(Path path) throws EngineLoadException;
+//    void saveState(Path path) throws EngineLoadException;
 
 
 }

@@ -1,6 +1,8 @@
 package engine;
 
 import dto.v2.*;
+import dto.v3.AvailableFunctionsDTO;
+import dto.v3.AvailableProgramsDTO;
 import dto.v3.HistoryRowV3DTO;
 import engine.logic.execution.debugMode.Debug;
 import engine.logic.execution.debugMode.DebugImpl;
@@ -23,10 +25,10 @@ import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
     private final ProgramsHolder programsHolder = new ProgramsHolder();
+
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();      // Program name : ( Degree : Program )
     private final Map<String, Debug> usernameToDebug = new HashMap<>();                             // Username : Debug
     private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();                         // Username : UserDTO
-
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();   // Program name : Execution history
     private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new HashMap<>();  // Username : Execution history
 
@@ -108,16 +110,17 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public void runProgram(String programName, String architectureTypeRepresentation, int degree, String uploaderName, Long... inputs) {
 
-        Program workingProgram = getExpandedProgram(programName, degree);
+        Program workingProgram = getExpandedProgram(programName, degree);  // Get the relevant program from the map
+        workingProgram.incrementExecutionsCount();  // Add one to execution count of the program;
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram);
         ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
         UserDTO userDTO = getUserDTO(uploaderName);
         userDTO.addOneToExecutionsCount();
-        programExecutor.run(userDTO, architectureTypeSelected, degree, inputs);
 
-        // Get the history list per program (if not exist create empty list) and add it to the list
+        programExecutor.run(userDTO, architectureTypeSelected, degree, inputs); // The important method
+
         // For Version 2
-        List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());
+        List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());  // Get the history list per program (if not exist create empty list) and add it to the list
         executionV2History.add(programExecutor);
 
         // For Version 3
@@ -199,7 +202,6 @@ public class EngineImpl implements Engine, Serializable {
         return buildHistoryRowsFromExecutors(programExecutorDTOList);
     }
 
-
     private List<ProgramExecutorDTO> buildExecutorDTOList(List<ProgramExecutor> programExecutors) {
         if (programExecutors == null || programExecutors.isEmpty()) {
             return List.of();
@@ -259,20 +261,26 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public Set<String> getMainProgramsSetStr() {
-        return programsHolder.getMainPrograms()
-                .stream()
-                .map(Program::getUserString)         // Extract the program name
-                .collect(Collectors.toSet());  // Collect unique names into a Set
+    public List<AvailableProgramsDTO> getAvailableMainProgramsDTOsList() {
+        List<AvailableProgramsDTO> availableProgramsDTOsList = new ArrayList<>();
+
+        for(Program mainProgram : programsHolder.getMainPrograms()) {
+            availableProgramsDTOsList.add(buildAvailableProgramDTO(mainProgram));
+        }
+
+        return availableProgramsDTOsList;
     }
 
     @Override
-    public Set<String> getFunctionsSetStr() {
-        return programsHolder.getFunctions()
-                .stream()
-                .map(Program::getUserString)         // Extract the program name
-                .collect(Collectors.toSet());  // Collect unique names into a Set
-    }
+    public List<AvailableFunctionsDTO> getAvailableFunctionsDTOsList() {
+        List<AvailableFunctionsDTO> availableFunctionsDTOsList = new ArrayList<>();
+
+        for(Program function : programsHolder.getMainPrograms()) {
+            availableFunctionsDTOsList.add(buildAvailableFunctionDTO(function));
+        }
+
+        return availableFunctionsDTOsList;    }
+
 
     @Override
     public int getMaxDegree(String programName) {
@@ -340,6 +348,27 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser(),
                 programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
+        );
+    }
+
+    public AvailableProgramsDTO buildAvailableProgramDTO(Program program) {
+        return new AvailableProgramsDTO(
+                program.getName(),
+                program.getUploaderName(),
+                program.getInstructionsList().size(),
+                getMaxDegree(program.getName()),
+                program.getExecutionsCount(),
+                program.getAverageCreditCost()
+        );
+    }
+
+    public AvailableFunctionsDTO buildAvailableFunctionDTO(Program function) {
+        return new AvailableFunctionsDTO(
+                function.getName(),
+                function.getMainProgramNameOfThisProgram(),
+                function.getUploaderName(),
+                function.getInstructionsList().size(),
+                getMaxDegree(function.getName())
         );
     }
 

@@ -1,8 +1,5 @@
 package dto.v3;
 
-import java.util.List;
-import java.util.Map;
-
 public class AvailableProgramsDTO {
     private final String programName;
     private final String uploaderName;
