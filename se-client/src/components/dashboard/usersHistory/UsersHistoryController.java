@@ -163,21 +163,11 @@ public class UsersHistoryController {
         List<Long> inputs = selectedHistoryRow.getInputsValuesOfUser();
         //mainController.prepareForNewRun(degree, inputs);  // TODO: WRITE AND WIRE
         clearHistoryTableRowSelection();
-    }
-
-    public void setHistoryButtonsDisabled(boolean disable) {
-        this.lockHistoryButton = disable;
+        throw new IllegalStateException("Need to write this code in UserHistoryController");
     }
 
     public void clearHistoryTableRowSelection() {
         historyTable.getSelectionModel().clearSelection();
     }
 
-    public void updateHistoryTableManual() {
-    //    historyTable.getItems().setAll(mainController.getHistory());
-    }
-
-    public void clearHistoryTable() {
-        historyTable.getItems().clear();
-    }
 }
