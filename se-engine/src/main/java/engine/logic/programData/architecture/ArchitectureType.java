@@ -1,6 +1,7 @@
 package engine.logic.programData.architecture;
 
 public enum ArchitectureType {
+    A_0 (0), // Only for origin instruction
     A_1 (5),
     A_2 (100),
     A_3 (500),
