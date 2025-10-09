@@ -19,7 +19,7 @@
                   <Insets right="5.0" />
                </HBox.margin>
             </Button>
-            <Label fx:id="pathLabel" alignment="CENTER" prefWidth="200.0" text="Select XML File" textAlignment="CENTER" textFill="#616161">
+            <Label fx:id="pathLabel" alignment="CENTER" text="Select XML File" textAlignment="CENTER" textFill="#616161">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

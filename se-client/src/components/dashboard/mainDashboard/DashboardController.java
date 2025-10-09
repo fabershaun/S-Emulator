@@ -6,6 +6,7 @@ import components.dashboard.users.UsersListController;
 import components.dashboard.usersHistory.UsersHistoryController;
 import components.mainApp.MainAppController;
 import components.toastMessage.ToastUtil;
+import dto.v2.ProgramDTO;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -24,8 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import static utils.Constants.FILE_UPLOAD_PAGE;
-import static utils.Constants.XML_FILE;
+import static utils.Constants.*;
 
 
 public class DashboardController implements Closeable {
@@ -100,6 +100,7 @@ public class DashboardController implements Closeable {
                         .newBuilder()
                         .toString();
 
+        System.out.println("Final URL: " + finalUrl);
         // Build multipart request body
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -121,17 +122,19 @@ public class DashboardController implements Closeable {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
+
                 if (response.code() != 200) {
-                    String responseBody = response.body().string();
                     Platform.runLater(() ->
                             showError("Load failed", responseBody)
                     );
                 } else {
+                    ProgramDTO loadedProgramDTO = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+
                     Platform.runLater(() ->  {
                         ToastUtil.showToast(
                                 (Stage) loadFile.getScene().getWindow(),
-                                "XML file uploaded successfully!"
-                        );
+                                "XML file uploaded successfully: " + loadedProgramDTO.getProgramName());
                         selectedFilePathProperty.set(pathStr);
                     });
                 }

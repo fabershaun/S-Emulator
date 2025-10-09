@@ -1,21 +1,31 @@
 package components.dashboard.loadFileClient;
 
 import components.dashboard.mainDashboard.DashboardController;
+import components.toastMessage.ToastUtil;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+import utils.HttpClientUtil;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 import static components.dashboard.mainDashboard.DashboardController.showError;
+import static utils.Constants.FILE_UPLOAD_PAGE;
+import static utils.Constants.XML_FILE;
 
 public class LoadFileController {
 
@@ -47,7 +57,6 @@ public class LoadFileController {
     private void initialize() {
         initializePulseAnimationLoadButton();
     }
-
 
     @FXML
     public void onLoadFileButtonAction() {

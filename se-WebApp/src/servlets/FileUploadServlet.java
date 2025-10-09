@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import utils.SessionUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -25,6 +27,12 @@ public class FileUploadServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        String username = SessionUtils.getUsername(request);
+        if (username == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User is not logged in. Please log in first.");
+            return;
+        }
+
         Engine engine = getEngine(getServletContext());
         Part filePart = request.getPart(XML_FILE);
 
@@ -33,17 +41,20 @@ public class FileUploadServlet extends HttpServlet {
             return;
         }
 
-        // TODO: REMOVE // and fix
-//        try (InputStream inputStream = filePart.getInputStream()) {
-//            String loadedProgramName = engine.loadProgramFromStream(inputStream, filePart.getSubmittedFileName());  // TODO: GET username FROM SESSION
-//            ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
-//
-//            String jsonResponse = GSON_INSTANCE.toJson(loadedProgramDTO);
-//            response.getWriter().write(jsonResponse);
-//        } catch (EngineLoadException ex) {
-//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-//        } catch (Exception ex) {
-//            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
-//        }
+        try (InputStream inputStream = filePart.getInputStream()) {
+            String loadedProgramName = engine.loadProgramFromStream(
+                    inputStream,
+                    filePart.getSubmittedFileName(),
+                    username);
+
+            ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
+
+            String jsonResponse = GSON_INSTANCE.toJson(loadedProgramDTO);
+            response.getWriter().write(jsonResponse);
+        } catch (EngineLoadException ex) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+        } catch (Exception ex) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
+        }
     }
 }
