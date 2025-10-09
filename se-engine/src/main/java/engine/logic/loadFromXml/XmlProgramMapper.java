@@ -2,6 +2,7 @@ package engine.logic.loadFromXml;
 
 import dto.v3.UserDTO;
 import engine.logic.loadFromXml.generatedFromXml.*;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.synthetic.*;
 import engine.logic.programData.instruction.AbstractInstruction;
 import engine.logic.programData.instruction.Instruction;
@@ -93,12 +94,23 @@ final class XmlProgramMapper {
             return; // No instructions to map
         }
 
+        ArchitectureType maxArchitectureRequired = ArchitectureType.A_0; // the lowest
+        ArchitectureType currentInstructionArchitecture;
+
         List<SInstruction> instructions = sInstructions.getSInstruction();
         for (int i = 0; i < instructions.size(); i++) {
             SInstruction sInstruction = instructions.get(i);
             Instruction mapped = mapSingleInstruction(targetProgram, sInstruction, i + 1);
             targetProgram.addInstruction(mapped);
+
+            // To find the required architecture
+            currentInstructionArchitecture = mapped.getArchitectureType();
+            if (currentInstructionArchitecture.isHigherThan(maxArchitectureRequired)) {
+                maxArchitectureRequired = currentInstructionArchitecture;
+            }
         }
+
+        targetProgram.setArchitectureRequired(maxArchitectureRequired);
     }
 
     private static Instruction mapSingleInstruction(Program targetProgram, SInstruction sInstruction, int ordinal) {

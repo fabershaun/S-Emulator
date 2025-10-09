@@ -31,4 +31,9 @@ public enum ArchitectureType {
     public boolean supports(ArchitectureType other) {
         return getSupportedArchitectures().contains(other);
     }
+
+    public boolean isHigherThan(ArchitectureType other) {
+        // Compare enum order
+        return this.ordinal() > other.ordinal();
+    }
 }

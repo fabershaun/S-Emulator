@@ -1,6 +1,7 @@
 package engine.logic.programData.instruction;
 
 import dto.v2.InstructionDTO;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.label.Label;
 import engine.logic.programData.label.FixedLabel;
 import engine.logic.programData.program.Program;
@@ -157,5 +158,10 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
     @Override
     public void setMainProgram(Program mainProgram) {
         this.mainProgram = mainProgram;
+    }
+
+    @Override
+    public ArchitectureType getArchitectureType() {
+        return instructionData.getArchitectureType();
     }
 }

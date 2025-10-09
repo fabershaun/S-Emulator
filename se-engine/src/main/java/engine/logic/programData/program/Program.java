@@ -14,7 +14,8 @@ import java.util.Set;
 
 public interface Program extends Serializable {
 
-    ArchitectureType minimumArchitectureType();
+    ArchitectureType architectureRequired();
+    void setArchitectureRequired(ArchitectureType architectureRequired);
 
     String getName();
     String getUploaderName();

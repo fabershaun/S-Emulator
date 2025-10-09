@@ -1,7 +1,6 @@
 package engine.logic.programData.instruction;
 
 import engine.logic.programData.architecture.ArchitectureType;
-
 import static engine.logic.programData.architecture.ArchitectureType.*;
 
 public enum InstructionData {

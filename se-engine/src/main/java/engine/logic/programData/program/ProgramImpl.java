@@ -2,6 +2,7 @@ package engine.logic.programData.program;
 
 import dto.v2.InstructionDTO;
 import engine.logic.exceptions.EngineLoadException;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.instruction.LabelReferencesInstruction;
 import engine.logic.programData.instruction.SyntheticInstruction;
@@ -22,6 +23,7 @@ public class ProgramImpl implements Program, Serializable {
     private final String programName;
     private final String uploaderName;
     private final String userString;
+    private ArchitectureType architectureRequired;
 
     private final ProgramsHolder programsHolder;
 
@@ -48,6 +50,16 @@ public class ProgramImpl implements Program, Serializable {
         this.labelsInProgram = new ArrayList<>();
         this.labelsAddedAfterExtension = new LinkedHashSet<>();
         this.referencedLabels  = new LinkedHashSet<>();
+    }
+
+    @Override
+    public ArchitectureType architectureRequired() {
+            return architectureRequired;
+    }
+
+    @Override
+    public void setArchitectureRequired(ArchitectureType architectureRequired) {
+        this.architectureRequired = architectureRequired;
     }
 
     @Override
