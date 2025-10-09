@@ -16,6 +16,7 @@ public interface Program extends Serializable {
 
     ArchitectureType architectureRequired();
     void setArchitectureRequired(ArchitectureType architectureRequired);
+    ArchitectureType getArchitectureRequired();
 
     String getName();
     String getUploaderName();

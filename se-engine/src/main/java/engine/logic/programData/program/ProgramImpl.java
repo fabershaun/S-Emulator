@@ -53,16 +53,6 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
-    public ArchitectureType architectureRequired() {
-            return architectureRequired;
-    }
-
-    @Override
-    public void setArchitectureRequired(ArchitectureType architectureRequired) {
-        this.architectureRequired = architectureRequired;
-    }
-
-    @Override
     public  Map<Integer, Program> calculateDegreeToProgram() {
         Map<Integer, Program>  degreeToProgram = new HashMap<>();
         boolean canExpandMore;
@@ -385,5 +375,20 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public Variable getResultVariable() {
         return Variable.RESULT;
+    }
+
+    @Override
+    public ArchitectureType architectureRequired() {
+        return architectureRequired;
+    }
+
+    @Override
+    public ArchitectureType getArchitectureRequired() {
+        return this.architectureRequired;
+    }
+
+    @Override
+    public void setArchitectureRequired(ArchitectureType architectureRequired) {
+        this.architectureRequired = architectureRequired;
     }
 }
