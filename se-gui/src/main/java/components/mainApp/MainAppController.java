@@ -285,8 +285,8 @@ public class MainAppController {
         return chosenProgramName;
     }
 
-    public List<HistoryRowDTO> getHistory() {
-        return convertToHistoryRows(engine.getHistoryPerProgram(selectedProgramProperty.get().getProgramName()));
+    public List<HistoryRowV2DTO> getHistory() {
+        return convertToHistoryRows(engine.getHistoryV2PerProgram(selectedProgramProperty.get().getProgramName()));
     }
 
     // When re-run was pressed

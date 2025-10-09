@@ -1,11 +1,13 @@
 package engine;
 
 import dto.v2.*;
+import dto.v3.HistoryRowV3DTO;
 import engine.logic.execution.debugMode.Debug;
 import engine.logic.execution.debugMode.DebugImpl;
 import engine.logic.exceptions.EngineLoadException;
 import engine.logic.execution.runMode.ProgramExecutorImpl;
 import engine.logic.execution.runMode.ProgramExecutor;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.InstructionData;
 import engine.logic.saveToXml.XmlProgramSaver;
 import engine.logic.programData.program.ProgramsHolder;
@@ -21,10 +23,12 @@ import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
     private final ProgramsHolder programsHolder = new ProgramsHolder();
-    private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();
-    private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();
-    private final Map<String, Debug> usernameToDebug = new HashMap<>();
-    private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();
+    private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();      // Program name : ( Degree : Program )
+    private final Map<String, Debug> usernameToDebug = new HashMap<>();                             // Username : Debug
+    private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();                         // Username : UserDTO
+
+    private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();   // Program name : Execution history
+    private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new HashMap<>();  // Username : Execution history
 
     public EngineImpl() {
         // Create default user with empty name (For version 2)
@@ -102,17 +106,23 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void runProgram(String programName, int degree, String uploaderName, Long... inputs) {
+    public void runProgram(String programName, String architectureTypeRepresentation, int degree, String uploaderName, Long... inputs) {
 
         Program workingProgram = getExpandedProgram(programName, degree);
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram);
-
+        ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
         UserDTO userDTO = getUserDTO(uploaderName);
         userDTO.addOneToExecutionsCount();
-        programExecutor.run(userDTO, degree, inputs);
+        programExecutor.run(userDTO, architectureTypeSelected, degree, inputs);
 
-        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
-        executionHistory.add(programExecutor);
+        // Get the history list per program (if not exist create empty list) and add it to the list
+        // For Version 2
+        List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());
+        executionV2History.add(programExecutor);
+
+        // For Version 3
+        List<ProgramExecutor> executionV3History = usernameToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());
+        executionV3History.add(programExecutor);
     }
 
     private Program getProgramByName(String programName) {
@@ -147,7 +157,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramExecutorDTO getProgramAfterRun(String programName) {
+    public ProgramExecutorDTO getProgramAfterRunV2(String programName) {
         ProgramDTO programDTO = buildProgramDTO(getProgramByName(programName));
         ProgramExecutor programExecutor = programToExecutionHistory.get(programName).getLast();
 
@@ -156,14 +166,41 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getVariableValue(Variable.RESULT),
                 programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
-                programExecutor.getInputsValuesOfUser()
+                programExecutor.getInputsValuesOfUser(),
+                programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
         );
     }
 
     @Override
-    public List<ProgramExecutorDTO> getHistoryPerProgram(String programName) {
-        List<ProgramExecutor> programExecutors = programToExecutionHistory.get(programName);
+    public ProgramExecutorDTO getProgramAfterRunV3(String programName) {
+        ProgramDTO programDTO = buildProgramDTO(getProgramByName(programName));
+        ProgramExecutor programExecutor = usernameToExecutionHistory.get(programName).getLast();
 
+        return new ProgramExecutorDTO(programDTO,
+                programExecutor.getVariablesToValuesSorted(),
+                programExecutor.getVariableValue(Variable.RESULT),
+                programExecutor.getTotalCycles(),
+                programExecutor.getRunDegree(),
+                programExecutor.getInputsValuesOfUser(),
+                programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
+        );
+    }
+
+    @Override
+    public List<ProgramExecutorDTO> getHistoryV2PerProgram(String programName) {
+        List<ProgramExecutor> programExecutors = programToExecutionHistory.get(programName);
+        return buildExecutorDTOList(programExecutors);
+    }
+
+    @Override
+    public List<HistoryRowV3DTO> getHistoryV3PerProgram(String programName) {
+        List<ProgramExecutor> programExecutors = usernameToExecutionHistory.get(programName);
+        List<ProgramExecutorDTO> programExecutorDTOList = buildExecutorDTOList(programExecutors);
+        return buildHistoryRowsFromExecutors(programExecutorDTOList);
+    }
+
+
+    private List<ProgramExecutorDTO> buildExecutorDTOList(List<ProgramExecutor> programExecutors) {
         if (programExecutors == null || programExecutors.isEmpty()) {
             return List.of();
         }
@@ -177,6 +214,33 @@ public class EngineImpl implements Engine, Serializable {
         }
 
         return res;
+    }
+
+    private List<HistoryRowV3DTO> buildHistoryRowsFromExecutors(List<ProgramExecutorDTO> executors) {
+        if (executors == null || executors.isEmpty()) {
+            return List.of();
+        }
+
+        List<HistoryRowV3DTO> historyRows = new ArrayList<>();
+
+        for (ProgramExecutorDTO executor : executors) {
+            ProgramDTO programDTO = executor.getProgramDTO();
+
+            HistoryRowV3DTO row = new HistoryRowV3DTO(
+                    programDTO.getProgramType(),
+                    programDTO.getProgramUserString(),
+                    executor.getArchitectureTypeSelected(),
+                    executor.getDegree(),
+                    executor.getResult(),
+                    executor.getTotalCycles(),
+                    executor.getVariablesToValuesSorted(),
+                    executor.getInputsValuesOfUser()
+            );
+
+            historyRows.add(row);
+        }
+
+        return historyRows;
     }
 
     @Override
@@ -258,6 +322,7 @@ public class EngineImpl implements Engine, Serializable {
         return new ProgramDTO(
                 program.getName(),
                 program.getUserString(),
+                program.getProgramType().getType(),
                 program.getOrderedLabelsExitLastStr(),
                 program.getInputVariablesSortedStr(),
                 program.getWorkVariablesSortedStr(),
@@ -273,7 +338,8 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getVariableValue(Variable.RESULT),
                 programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
-                programExecutor.getInputsValuesOfUser()
+                programExecutor.getInputsValuesOfUser(),
+                programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
         );
     }
 

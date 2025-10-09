@@ -13,6 +13,7 @@ import engine.logic.programData.instruction.synthetic.quoteArguments.VariableArg
 import engine.logic.programData.label.FixedLabel;
 import engine.logic.programData.label.Label;
 import engine.logic.programData.label.LabelImpl;
+import engine.logic.programData.program.ProgramType;
 import engine.logic.programData.program.ProgramsHolder;
 import engine.logic.programData.program.Program;
 import engine.logic.programData.program.ProgramImpl;
@@ -38,7 +39,7 @@ final class XmlProgramMapper {
 
         validateUniqueMainProgramName(programsHolder, programName);
 
-        Program targetProgram = new ProgramImpl(programName, programName, programsHolder, uploaderName);  // The user string of program is its name
+        Program targetProgram = new ProgramImpl(programName, programName, ProgramType.MAIN, programsHolder, uploaderName);  // The user string of program is its name
 
         mapInstructionsIntoProgram(sProgram.getSInstructions(), targetProgram);
 
@@ -79,6 +80,7 @@ final class XmlProgramMapper {
         Program functionProgram = new ProgramImpl(
                 functionName != null ? functionName : "UnnamedFunction",
                 userString != null ? userString : "UnnamedUserString",
+                ProgramType.FUNCTION,
                 programsHolder,
                 uploaderName
         );
@@ -110,7 +112,7 @@ final class XmlProgramMapper {
             }
         }
 
-        targetProgram.setArchitectureRequired(maxArchitectureRequired);
+        targetProgram.setMinimumArchitectureRequired(maxArchitectureRequired);
     }
 
     private static Instruction mapSingleInstruction(Program targetProgram, SInstruction sInstruction, int ordinal) {

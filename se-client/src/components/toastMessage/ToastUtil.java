@@ -3,6 +3,7 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -22,7 +23,7 @@ public class ToastUtil {
                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 5, 0, 0, 2);
                     """);
 
-            StackPane root = (StackPane) stage.getScene().getRoot();
+            Pane root = (javafx.scene.layout.Pane) stage.getScene().getRoot();
             StackPane toastContainer = new StackPane(toastLabel);
             toastContainer.setAlignment(Pos.TOP_CENTER);
             toastContainer.setMouseTransparent(true);  // allows clicks through the toast

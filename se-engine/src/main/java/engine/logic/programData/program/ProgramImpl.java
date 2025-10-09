@@ -23,8 +23,8 @@ public class ProgramImpl implements Program, Serializable {
     private final String programName;
     private final String uploaderName;
     private final String userString;
-    private ArchitectureType architectureRequired;
-
+    private ArchitectureType minimumArchitectureRequired;
+    private final ProgramType programType;
     private final ProgramsHolder programsHolder;
 
     private final List<Instruction> programInstructions;
@@ -38,9 +38,10 @@ public class ProgramImpl implements Program, Serializable {
     private int nextLabelNumber = 1;
     private int nextWorkVariableNumber = 1;
 
-    public ProgramImpl(String name, String userString, ProgramsHolder programsHolder, String username) {
+    public ProgramImpl(String name, String userString, ProgramType programType, ProgramsHolder programsHolder, String username) {
         this.programName = name;
         this.uploaderName = username;
+        this.programType = programType;
         this.userString = userString;
         this.programsHolder = programsHolder;
         this.programInstructions = new ArrayList<>();
@@ -379,16 +380,21 @@ public class ProgramImpl implements Program, Serializable {
 
     @Override
     public ArchitectureType architectureRequired() {
-        return architectureRequired;
+        return minimumArchitectureRequired;
     }
 
     @Override
-    public ArchitectureType getArchitectureRequired() {
-        return this.architectureRequired;
+    public ArchitectureType getMinimumArchitectureRequired() {
+        return this.minimumArchitectureRequired;
     }
 
     @Override
-    public void setArchitectureRequired(ArchitectureType architectureRequired) {
-        this.architectureRequired = architectureRequired;
+    public void setMinimumArchitectureRequired(ArchitectureType minimumArchitectureRequired) {
+        this.minimumArchitectureRequired = minimumArchitectureRequired;
+    }
+
+    @Override
+    public ProgramType getProgramType() {
+        return programType;
     }
 }

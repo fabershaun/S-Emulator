@@ -48,7 +48,7 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction implements
         List<FunctionExecutionResult> functionExecutionResultList = getInputs(quoteArguments, context, getMainProgram(), userDTO);
 
         // Run
-        functionExecutor.run(userDTO, 0, extractInputValues(functionExecutionResultList));
+        functionExecutor.run(userDTO, null, 0, extractInputValues(functionExecutionResultList));  // architectureTypeSelected - not needed here (it's an inner call)
 
         // Update value in parent program
         Variable resultVariable = this.getFunctionOfThisInstruction().getResultVariable();

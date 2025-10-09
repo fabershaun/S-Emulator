@@ -15,7 +15,7 @@ public class History implements MenuActionable {
         printTitle("Present History");
 
         String programName = engine.getMainProgramToConsoleModule().getProgramName(); // Added because gui module
-        List<ProgramExecutorDTO> programExecutorDTOList = engine.getHistoryPerProgram(programName);
+        List<ProgramExecutorDTO> programExecutorDTOList = engine.getHistoryV2PerProgram(programName);
 
         if (!programExecutorDTOList.isEmpty()) {
             displayHistory(programExecutorDTOList);

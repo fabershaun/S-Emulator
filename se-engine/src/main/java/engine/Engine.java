@@ -4,6 +4,8 @@ import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
+import dto.v3.AvailableProgramsDTO;
+import dto.v3.HistoryRowV3DTO;
 import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
 
@@ -27,8 +29,15 @@ public interface Engine {
     ProgramDTO getProgramDTOByName(String programName);
     ProgramDTO getProgramDTOByUserString(String userString);
     ProgramDTO getExpandedProgramDTO(String programName, int degree);
-    ProgramExecutorDTO getProgramAfterRun(String programName);
-    List<ProgramExecutorDTO> getHistoryPerProgram(String programName);
+
+    // V2:
+    ProgramExecutorDTO getProgramAfterRunV2(String programName);
+    List<ProgramExecutorDTO> getHistoryV2PerProgram(String programName);    // Version 2
+
+    // V3:
+    ProgramExecutorDTO getProgramAfterRunV3(String programName);
+    List<HistoryRowV3DTO> getHistoryV3PerProgram(String programName);           // Version 3
+    List<AvailableProgramsDTO> getAvailableProgramsList();
 
     List<ProgramDTO> getAllPrograms();
     Set<String> getMainProgramsSetStr();
@@ -39,7 +48,7 @@ public interface Engine {
 
     String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException;
     String loadProgramFromFile(Path path, String uploaderName) throws EngineLoadException;
-    void runProgram(String programName, int degree, String uploaderName, Long... inputs);
+    void runProgram(String programName, String architectureTypeRepresentation, int degree, String uploaderName, Long... inputs);
 
     void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName);
     DebugDTO getProgramAfterStepOver(String uploaderName);
@@ -54,5 +63,7 @@ public interface Engine {
 //    void saveState(Path path) throws EngineLoadException;
 //    void loadState(Path path) throws EngineLoadException;
     ProgramDTO getMainProgramToConsoleModule();
+
+
 }
 

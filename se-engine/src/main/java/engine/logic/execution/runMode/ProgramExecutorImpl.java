@@ -3,6 +3,7 @@ package engine.logic.execution.runMode;
 import dto.v3.UserDTO;
 import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.ExecutionContextImpl;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.label.FixedLabel;
 import engine.logic.programData.label.Label;
@@ -20,7 +21,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
     private List<Long> inputsValues;
     private int runDegree = 0;
     private int totalCycles = 0;
-
+    private ArchitectureType architectureTypeSelected;
 
     public ProgramExecutorImpl(Program program) {
         this.program = program;
@@ -29,7 +30,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
     }
 
     @Override
-    public void run(UserDTO userDTO, int runDegree, Long... inputs) {
+    public void run(UserDTO userDTO, ArchitectureType architectureTypeSelected, int runDegree, Long... inputs) {
         Instruction currentInstruction = program.getInstructionsList().getFirst();
         Instruction nextInstruction = null;
         Label nextLabel;
@@ -37,6 +38,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         inputsValues = List.of(inputs);
         context.initializeVariables(program, inputs);
         this.runDegree = runDegree;
+        this.architectureTypeSelected = architectureTypeSelected;
 
         do {
                 nextLabel = currentInstruction.execute(context, userDTO);
@@ -103,6 +105,11 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         }
 
         return variablesToValuesSorted;
+    }
+
+    @Override
+    public ArchitectureType getArchitectureTypeSelected() {
+        return architectureTypeSelected;
     }
 
     @Override

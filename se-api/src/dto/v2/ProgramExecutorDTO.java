@@ -10,15 +10,17 @@ public class ProgramExecutorDTO {
     private final int totalCycles;
     private final int degree;
     private final List<Long> inputs;
+    private String architectureTypeSelected;
 
 
-    public ProgramExecutorDTO(ProgramDTO programDTO, Map<String, Long> VariablesToValuesSorted, long result, int totalCycles, int degree, List<Long> inputs) {
+    public ProgramExecutorDTO(ProgramDTO programDTO, Map<String, Long> VariablesToValuesSorted, long result, int totalCycles, int degree, List<Long> inputs, String architectureTypeSelected) {
         this.programDTO = programDTO;
         this.VariablesToValuesSorted = VariablesToValuesSorted;
         this.result = result;
         this.totalCycles = totalCycles;
         this.degree = degree;
         this.inputs = inputs;
+        this.architectureTypeSelected = architectureTypeSelected;
     }
 
     public ProgramDTO getProgramDTO() {
@@ -36,4 +38,6 @@ public class ProgramExecutorDTO {
     public List<Long> getInputsValuesOfUser() {
         return inputs;
     }
+
+    public String getArchitectureTypeSelected() { return architectureTypeSelected; }
 }

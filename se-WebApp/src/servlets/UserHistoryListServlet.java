@@ -1,12 +1,11 @@
 package servlets;
 
-import dto.v2.ProgramExecutorDTO;
+import dto.v3.HistoryRowV3DTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
@@ -30,7 +29,7 @@ public class UserHistoryListServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        List<ProgramExecutorDTO> userHistory = engine.g.getUserHistory(username);
+        List<HistoryRowV3DTO> userHistory = engine.getHistoryV3PerProgram(username);
 
         if (userHistory == null) {
             userHistory = new ArrayList<>();

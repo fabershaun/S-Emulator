@@ -60,7 +60,7 @@ public class FunctionInstructionUtils {
         List<FunctionExecutionResult> functionExecutionResultList = getInputs(innerFunctionArgument.getArguments(), context, mainProgram, userDTO);
 
         // Run
-        functionExecutor.run(userDTO, 0, extractInputValues(functionExecutionResultList));
+        functionExecutor.run(userDTO, null, 0, extractInputValues(functionExecutionResultList));    // architectureTypeSelected - not needed here (it's an inner call)
 
         // Return function result
         Variable resultVariable = innerFunction.getResultVariable();

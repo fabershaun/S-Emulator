@@ -2,8 +2,7 @@ package components.dashboard.usersHistory;
 
 import components.dashboard.mainDashboard.DashboardController;
 import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
-import dto.v2.HistoryRowDTO;
-import dto.v2.ProgramExecutorDTO;
+import dto.v3.HistoryRowV3DTO;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.StringProperty;
@@ -22,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static utils.Constants.*;
@@ -33,19 +31,19 @@ public class UsersHistoryController {
     private StringProperty selectedUserProperty;
     private StringProperty currentUserLoginProperty;
 
-    private HistoryRowDTO selectedHistoryRow;
+    private HistoryRowV3DTO selectedHistoryRow;
     private int selectedRowIndex;
     private boolean lockHistoryButton = false;
 
     @FXML private Label userHistoryLabel;
-    @FXML private TableView<HistoryRowDTO> historyTable;
-    @FXML private TableColumn<HistoryRowDTO, Number> colRunNumber;
-    @FXML private TableColumn<HistoryRowDTO, String> colMainProgramOrFunction;
-    @FXML private TableColumn<HistoryRowDTO, String> colProgramName;
-    @FXML private TableColumn<HistoryRowDTO, String> colArchitectureType;
-    @FXML private TableColumn<HistoryRowDTO, Number> colDegree;
-    @FXML private TableColumn<HistoryRowDTO, Number> colCycles;
-    @FXML private TableColumn<HistoryRowDTO, Number> colResult;
+    @FXML private TableView<HistoryRowV3DTO> historyTable;
+    @FXML private TableColumn<HistoryRowV3DTO, Number> colRunNumber;
+    @FXML private TableColumn<HistoryRowV3DTO, String> colMainProgramOrFunction;
+    @FXML private TableColumn<HistoryRowV3DTO, String> colProgramName;
+    @FXML private TableColumn<HistoryRowV3DTO, String> colArchitectureType;
+    @FXML private TableColumn<HistoryRowV3DTO, Number> colDegree;
+    @FXML private TableColumn<HistoryRowV3DTO, Number> colCycles;
+    @FXML private TableColumn<HistoryRowV3DTO, Number> colResult;
     @FXML private Button reRunButton;
     @FXML private Button showStatusButton;
 
@@ -59,7 +57,10 @@ public class UsersHistoryController {
 
         colRunNumber.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(historyTable.getItems().indexOf(cellData.getValue()) + 1));
-        // TODO: write the set for the reset of the columns
+        colDegree.setCellValueFactory(new PropertyValueFactory<>("programType"));
+        colDegree.setCellValueFactory(new PropertyValueFactory<>("programName"));
+        colDegree.setCellValueFactory(new PropertyValueFactory<>("architectureChoice"));
+
         colDegree.setCellValueFactory(new PropertyValueFactory<>("degree"));
         colResult.setCellValueFactory(new PropertyValueFactory<>("result"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("totalCycles"));
@@ -170,22 +171,6 @@ public class UsersHistoryController {
 
     public void clearHistoryTableRowSelection() {
         historyTable.getSelectionModel().clearSelection();
-    }
-
-    public static List<HistoryRowDTO> convertToHistoryRows(List<ProgramExecutorDTO> historyPerProgram) {
-        List<HistoryRowDTO> historyRows = new ArrayList<>();
-        for (int i = 0; i < historyPerProgram.size(); i++) {
-            ProgramExecutorDTO dto = historyPerProgram.get(i);
-            historyRows.add(new HistoryRowDTO(
-                    i + 1,                 // run number
-                    dto.getDegree(),
-                    dto.getResult(),
-                    dto.getTotalCycles(),
-                    dto.getVariablesToValuesSorted(),
-                    dto.getInputsValuesOfUser()
-            ));
-        }
-        return historyRows;
     }
 
     public void updateHistoryTableManual() {

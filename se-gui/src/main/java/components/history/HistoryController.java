@@ -2,7 +2,7 @@ package components.history;
 
 import components.history.historyRowPopUp.HistoryRowPopUpController;
 import components.mainApp.MainAppController;
-import dto.v2.HistoryRowDTO;
+import dto.v2.HistoryRowV2DTO;
 import dto.v2.ProgramExecutorDTO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -26,15 +26,15 @@ public class HistoryController {
     private MainAppController mainController;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
 
-    private HistoryRowDTO selectedHistoryRow;
+    private HistoryRowV2DTO selectedHistoryRow;
     private int selectedRowIndex;
     private boolean lockHistoryButton = false;
 
-    @FXML private TableView<HistoryRowDTO> historyTable;
-    @FXML private TableColumn<HistoryRowDTO, Number> colRunNumber;
-    @FXML private TableColumn<HistoryRowDTO, Number> colDegree;
-    @FXML private TableColumn<HistoryRowDTO, Number> colCycles;
-    @FXML private TableColumn<HistoryRowDTO, Number> colResult;
+    @FXML private TableView<HistoryRowV2DTO> historyTable;
+    @FXML private TableColumn<HistoryRowV2DTO, Number> colRunNumber;
+    @FXML private TableColumn<HistoryRowV2DTO, Number> colDegree;
+    @FXML private TableColumn<HistoryRowV2DTO, Number> colCycles;
+    @FXML private TableColumn<HistoryRowV2DTO, Number> colResult;
     @FXML private Button showStatusButton;
     @FXML private Button reRunButton;
 
@@ -84,7 +84,7 @@ public class HistoryController {
         });
     }
 
-    public void fillHistoryTable(List<HistoryRowDTO> historyOfProgramList) {
+    public void fillHistoryTable(List<HistoryRowV2DTO> historyOfProgramList) {
         if(historyOfProgramList.isEmpty()) {
             historyTable.getItems().clear();
         } else {
@@ -131,11 +131,11 @@ public class HistoryController {
         historyTable.getSelectionModel().clearSelection();
     }
 
-    public static List<HistoryRowDTO> convertToHistoryRows(List<ProgramExecutorDTO> historyPerProgram) {
-        List<HistoryRowDTO> historyRows = new ArrayList<>();
+    public static List<HistoryRowV2DTO> convertToHistoryRows(List<ProgramExecutorDTO> historyPerProgram) {
+        List<HistoryRowV2DTO> historyRows = new ArrayList<>();
         for (int i = 0; i < historyPerProgram.size(); i++) {
             ProgramExecutorDTO dto = historyPerProgram.get(i);
-            historyRows.add(new HistoryRowDTO(
+            historyRows.add(new HistoryRowV2DTO(
                     i + 1,                 // run number
                     dto.getDegree(),
                     dto.getResult(),
