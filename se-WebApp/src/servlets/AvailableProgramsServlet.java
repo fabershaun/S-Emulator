@@ -1,5 +1,6 @@
 package servlets;
 
+import dto.v2.ProgramDTO;
 import dto.v3.AvailableProgramsDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,7 +11,6 @@ import utils.ServletUtils;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import static constants.Constants.*;
 
@@ -21,14 +21,9 @@ public class AvailableProgramsServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        Set<String> programsSet = engine.getMainProgramsSetStr();   // getMainProgramsSetStr()
+        List<AvailableProgramsDTO> availableProgramsDTOsList = engine.getAvailableMainProgramsDTOsList();
 
-        List<AvailableProgramsDTO> availableProgramsDTO = programsSet.stream()
-                .map(name -> new AvailableProgramsDTO("Main", name, "III")) // דוגמה
-                .toList();
-        String json = GSON_INSTANCE.toJson(programsSet);
+        String json = GSON_INSTANCE.toJson(availableProgramsDTOsList);
         response.getWriter().write(json);
     }
 }
-// לשלוח את שם התוכנית
-// לקבל בחזרה AvailableProgramsDTO
