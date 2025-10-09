@@ -2,7 +2,7 @@ package dto.v3;
 
 public class UserDTO {
 
-    public static String DEFAULT_NAME = "";
+    public static String DEFAULT_NAME = "MANAGER";
 
     private final String userName;
     private int mainProgramsCount;
@@ -60,14 +60,22 @@ public class UserDTO {
     public void subtractFromCurrentCredits(int creditsToSubtract) {
         this.currentCredits -= creditsToSubtract;
         this.usedCredits += creditsToSubtract;
+
+        assertHasPositiveCredits();
     }
 
     public void addOneToExecutionsCount() {
         this.executionsCount += 1;
     }
 
-    public boolean hasPositiveCredits() {
-        return currentCredits >= 0;
+    private void assertHasPositiveCredits() {
+        if (currentCredits < 0) {
+            String errorMessage = "Execution isn't finished." + System.lineSeparator() +
+                    "You don't have enough credits." + System.lineSeparator() +
+                    "Current credits amount: " + getCurrentCredits();
+
+            throw new IllegalStateException(errorMessage);
+        }
     }
 
     public boolean hasEnoughCredits(int requiredCredits) {

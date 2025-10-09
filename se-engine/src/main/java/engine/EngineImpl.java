@@ -13,7 +13,6 @@ import engine.logic.programData.program.Program;
 import engine.logic.loadFromXml.XmlProgramLoader;
 import engine.logic.programData.variable.Variable;
 import dto.v3.UserDTO;
-import utils.Constants;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -31,7 +30,7 @@ public class EngineImpl implements Engine, Serializable {
         // Create default user with empty name (For version 2)
         UserDTO defaultUser = new UserDTO(UserDTO.DEFAULT_NAME);
         usernameToUserDTO.put(UserDTO.DEFAULT_NAME, defaultUser);
-        getUserDTO(UserDTO.DEFAULT_NAME).addToCurrentCredits(Constants.EXTRA_CREDIT_AMOUNT);
+        getUserDTO(UserDTO.DEFAULT_NAME).addToCurrentCredits(Integer.MAX_VALUE);
     }
 
     @Override

@@ -61,16 +61,7 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
 
                 currentInstruction = nextInstruction;
 
-                // When the user doesn't have positive credits and the program isn't finished
-            if (!userDTO.hasPositiveCredits() && nextLabel != FixedLabel.EXIT) {    // TODO: to add the not finish run to the history
-                StringBuilder errorMessage = new StringBuilder()
-                        .append("Execution isn't finished.").append(System.lineSeparator())
-                        .append("You don't have enough credits.").append(System.lineSeparator())
-                        .append("Current credits amount: ").append(userDTO.getCurrentCredits());
-
-                throw new IllegalStateException(errorMessage.toString());
-            }
-
+            // TODO: to add the not finish run to the history
         } while(nextLabel != FixedLabel.EXIT);
 
         context.getVariableValue(Variable.RESULT);

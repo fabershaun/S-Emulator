@@ -131,7 +131,7 @@ public class DebugImpl implements Debug {
     }
 
 
-    // Note: **NOT touch history here**
+    // Note: ** NOT touch history here **
     private void stepOverWithoutSavingHistory() {
         if (currentInstructionIndex >= instructions.size()) {
             return; // already out of range
@@ -141,7 +141,9 @@ public class DebugImpl implements Debug {
 
         // Execute the instruction on the current context
         Label nextInstructionLabel = currentInstruction.execute(context, userDTO);
-        currentCycles += currentInstruction.getCycleOfInstruction();
+
+        // Update cycles and credits
+        updateCyclesAndCredits(currentInstruction);
 
         // Update target variable if exists
         if (currentInstruction.getTargetVariable() != null) {
@@ -168,7 +170,9 @@ public class DebugImpl implements Debug {
             } else if(historyPointer == stepsHistory.size() - 1) {
                 Instruction currentInstruction = instructions.get(currentInstructionIndex);
                 Label nextInstructionLabel = currentInstruction.execute(context, userDTO);
-                currentCycles +=  currentInstruction.getCycleOfInstruction();
+
+                updateCyclesAndCredits(currentInstruction);
+
                 targetVariable = currentInstruction.getTargetVariable().getRepresentation();
 
                 updateProgramExecutorData();
@@ -179,6 +183,7 @@ public class DebugImpl implements Debug {
                 ++historyPointer;
             } else {    // When historyPointer is less than the list size
                 historyPointer++;
+                updateCreditsOnly();
                 DebugDTO dto = stepsHistory.get(historyPointer);
                 currentInstructionIndex = dto.getCurrentInstructionNumber();
                 nextInstructionIndex = dto.getNextInstructionNumber();
@@ -186,6 +191,21 @@ public class DebugImpl implements Debug {
         }
 
         return stepsHistory.get(historyPointer);
+    }
+
+    private void updateCreditsOnly() {
+        int totalCyclesInCurrentInstruction = stepsHistory.get(historyPointer).getTotalCycles();
+        int totalCyclesInPreviousInstruction = stepsHistory.get(historyPointer - 1).getTotalCycles();
+        int currentInstructionCycles = totalCyclesInCurrentInstruction - totalCyclesInPreviousInstruction;
+
+        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
+    }
+
+    private void updateCyclesAndCredits(Instruction currentInstruction) {
+        int currentInstructionCycles = currentInstruction.getCycleOfInstruction();
+        currentCycles += currentInstructionCycles;
+
+        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
     }
 
     private void updateNextInstructionIndexToNextIndex(Label nextInstructionLabel) {
@@ -203,6 +223,12 @@ public class DebugImpl implements Debug {
         historyPointer--;
 
         if (historyPointer < 0) {    // Before start
+            // Charge for stepping back over the very first step (totalCycles at step 0 minus first step)
+            if (!stepsHistory.isEmpty()) {
+                int firstStepCycles = stepsHistory.getFirst().getTotalCycles();
+                userDTO.subtractFromCurrentCredits(firstStepCycles); // consume credits for the action
+            }
+
             currentInstructionIndex = 0;
             nextInstructionIndex = 0;
 
@@ -224,6 +250,7 @@ public class DebugImpl implements Debug {
         // Case: historyPointer is still inside the valid range
         if (historyPointer < stepsHistory.size()) {
             // We already have a snapshot for this step
+            updateCreditsOnly();
             DebugDTO dto = stepsHistory.get(historyPointer);
             currentInstructionIndex = dto.getCurrentInstructionNumber();
             nextInstructionIndex = dto.getNextInstructionNumber();
@@ -234,6 +261,7 @@ public class DebugImpl implements Debug {
             stepsHistory.add(snapshot);
             historyPointer = stepsHistory.size() - 1;
 
+            updateCreditsOnly();
             currentInstructionIndex = snapshot.getCurrentInstructionNumber();
             nextInstructionIndex = snapshot.getNextInstructionNumber();
             return snapshot;
