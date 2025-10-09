@@ -5,6 +5,7 @@ import dto.v2.InstructionDataDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+// Used in program creation of Version 2
 public class InstructionDataMapper {
 
     public static int getCyclesOfInstruction(String kind) {
