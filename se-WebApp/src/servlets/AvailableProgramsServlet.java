@@ -1,6 +1,6 @@
 package servlets;
 
-import dto.v3.AvailableProgramsDTO;
+import dto.v3.MainProgramDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,9 +20,9 @@ public class AvailableProgramsServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        List<AvailableProgramsDTO> availableProgramsDTOsList = engine.getAvailableMainProgramsDTOsList();
+        List<MainProgramDTO> mainProgramDTOsList = engine.getAvailableMainProgramsDTOsList();
 
-        String json = GSON_INSTANCE.toJson(availableProgramsDTOsList);
+        String json = GSON_INSTANCE.toJson(mainProgramDTOsList);
         response.getWriter().write(json);
     }
 }

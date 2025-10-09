@@ -1,6 +1,6 @@
 package components.dashboard.availablePrograms;
 
-import dto.v3.AvailableProgramsDTO;
+import dto.v3.MainProgramDTO;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -19,16 +19,16 @@ public class AvailableProgramsListController implements Closeable {
     private Timer timer;
     private TimerTask programsListRefresher;
     private final IntegerProperty totalProgramsProperty;
-    private final ObjectProperty<AvailableProgramsDTO> selectedProgramProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<MainProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
 
     @FXML private Label programListLabel;
-    @FXML private TableView<AvailableProgramsDTO> availableProgramTableView;
-    @FXML private TableColumn<AvailableProgramsDTO, String> colProgramName;
-    @FXML private TableColumn<AvailableProgramsDTO, String> colUserUploaded;
-    @FXML private TableColumn<AvailableProgramsDTO, Number> colInstructionsAmount;
-    @FXML private TableColumn<AvailableProgramsDTO, Number> colMaxDegree;
-    @FXML private TableColumn<AvailableProgramsDTO, Number> colTimesPlayed;
-    @FXML private TableColumn<AvailableProgramsDTO, Number> colAverageCreditsCost;
+    @FXML private TableView<MainProgramDTO> availableProgramTableView;
+    @FXML private TableColumn<MainProgramDTO, String> colProgramName;
+    @FXML private TableColumn<MainProgramDTO, String> colUserUploaded;
+    @FXML private TableColumn<MainProgramDTO, Number> colInstructionsAmount;
+    @FXML private TableColumn<MainProgramDTO, Number> colMaxDegree;
+    @FXML private TableColumn<MainProgramDTO, Number> colTimesPlayed;
+    @FXML private TableColumn<MainProgramDTO, Number> colAverageCreditsCost;
     @FXML private Button executeProgramsButton;
 
     public AvailableProgramsListController() {
@@ -59,16 +59,16 @@ public class AvailableProgramsListController implements Closeable {
         });
     }
 
-    private void updateProgramsList(List<AvailableProgramsDTO> programsList) {
+    private void updateProgramsList(List<MainProgramDTO> programsList) {
         Platform.runLater(() -> {
             if (availableProgramTableView.getItems().equals(programsList)) {
                 return; // No change, skip refresh
             }
 
-            AvailableProgramsDTO currentSelection = availableProgramTableView.getSelectionModel().getSelectedItem();
+            MainProgramDTO currentSelection = availableProgramTableView.getSelectionModel().getSelectedItem();
 
             // Update list items
-            ObservableList<AvailableProgramsDTO> items = availableProgramTableView.getItems();
+            ObservableList<MainProgramDTO> items = availableProgramTableView.getItems();
             items.setAll(programsList);
 
             // Restore selection if still exists in the new list
@@ -87,6 +87,7 @@ public class AvailableProgramsListController implements Closeable {
         timer.schedule(programsListRefresher, 0, REFRESH_RATE);
     }
 
+    // TODO: WRITE
     @FXML
     void onExecuteProgramButtonClicked() {
         String mainProgramSelectedName = selectedProgramProperty.get().getProgramName();

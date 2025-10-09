@@ -1,5 +1,6 @@
 package components.dashboard.mainDashboard;
 
+import components.dashboard.availableFunctions.AvailableFunctionsListController;
 import components.dashboard.availablePrograms.AvailableProgramsListController;
 import components.dashboard.loadFileClient.LoadFileController;
 import components.dashboard.users.UsersListController;
@@ -43,7 +44,7 @@ public class DashboardController implements Closeable {
     @FXML private VBox availableProgramsList;
     @FXML private AvailableProgramsListController availableProgramsListController;        // must: field name = fx:id + "Controller"
     @FXML private VBox availableFunctionsList;
-    @FXML private AvailableProgramsListController availableFunctionsListController;       // must: field name = fx:id + "Controller"
+    @FXML private AvailableFunctionsListController availableFunctionsListController;       // must: field name = fx:id + "Controller"
 
 
     public void setMainAppController(MainAppController mainAppController) {
@@ -92,6 +93,7 @@ public class DashboardController implements Closeable {
     public void setActive() {
         usersListController.startListRefresher();
         availableProgramsListController.startListRefresher();
+        availableFunctionsListController.startListRefresher();
     }
 
     public void loadNewFile(File file, String pathStr) {

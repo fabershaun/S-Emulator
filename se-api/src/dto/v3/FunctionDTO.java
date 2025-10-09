@@ -1,13 +1,13 @@
 package dto.v3;
 
-public class AvailableFunctionsDTO {
+public class FunctionDTO {
     private final String functionName;
     private final String mainProgramName;
     private final String uploaderName;
     private final int instructionsAmount;
     private final int maxDegree;
 
-    public AvailableFunctionsDTO(String functionName, String mainProgramName, String uploaderName, int instructionsAmount, int maxDegree) {
+    public FunctionDTO(String functionName, String mainProgramName, String uploaderName, int instructionsAmount, int maxDegree) {
         this.functionName = functionName;
         this.mainProgramName = mainProgramName;
         this.uploaderName = uploaderName;

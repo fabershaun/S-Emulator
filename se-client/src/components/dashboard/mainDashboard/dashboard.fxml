@@ -20,7 +20,7 @@
             <SplitPane dividerPositions="0.5" orientation="VERTICAL">
             <items>
                <fx:include fx:id="availableProgramsList" source="../availablePrograms/availablePrograms.fxml" />
-               <fx:include fx:id="availableFunctionsList" source="../availablePrograms/availablePrograms.fxml" />
+               <fx:include fx:id="availableFunctionsList" source="../availableFunctions/availableFunctions.fxml" />
             </items>
             </SplitPane>
         </items>

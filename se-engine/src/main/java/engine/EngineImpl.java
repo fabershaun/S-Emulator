@@ -1,8 +1,8 @@
 package engine;
 
 import dto.v2.*;
-import dto.v3.AvailableFunctionsDTO;
-import dto.v3.AvailableProgramsDTO;
+import dto.v3.FunctionDTO;
+import dto.v3.MainProgramDTO;
 import dto.v3.HistoryRowV3DTO;
 import engine.logic.execution.debugMode.Debug;
 import engine.logic.execution.debugMode.DebugImpl;
@@ -261,25 +261,25 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public List<AvailableProgramsDTO> getAvailableMainProgramsDTOsList() {
-        List<AvailableProgramsDTO> availableProgramsDTOsList = new ArrayList<>();
+    public List<MainProgramDTO> getAvailableMainProgramsDTOsList() {
+        List<MainProgramDTO> mainProgramDTOsList = new ArrayList<>();
 
         for(Program mainProgram : programsHolder.getMainPrograms()) {
-            availableProgramsDTOsList.add(buildAvailableProgramDTO(mainProgram));
+            mainProgramDTOsList.add(buildAvailableProgramDTO(mainProgram));
         }
 
-        return availableProgramsDTOsList;
+        return mainProgramDTOsList;
     }
 
     @Override
-    public List<AvailableFunctionsDTO> getAvailableFunctionsDTOsList() {
-        List<AvailableFunctionsDTO> availableFunctionsDTOsList = new ArrayList<>();
+    public List<FunctionDTO> getAvailableFunctionsDTOsList() {
+        List<FunctionDTO> functionDTOsList = new ArrayList<>();
 
-        for(Program function : programsHolder.getMainPrograms()) {
-            availableFunctionsDTOsList.add(buildAvailableFunctionDTO(function));
+        for(Program function : programsHolder.getFunctions()) {
+            functionDTOsList.add(buildAvailableFunctionDTO(function));
         }
 
-        return availableFunctionsDTOsList;    }
+        return functionDTOsList;    }
 
 
     @Override
@@ -351,8 +351,8 @@ public class EngineImpl implements Engine, Serializable {
         );
     }
 
-    public AvailableProgramsDTO buildAvailableProgramDTO(Program program) {
-        return new AvailableProgramsDTO(
+    public MainProgramDTO buildAvailableProgramDTO(Program program) {
+        return new MainProgramDTO(
                 program.getName(),
                 program.getUploaderName(),
                 program.getInstructionsList().size(),
@@ -362,8 +362,8 @@ public class EngineImpl implements Engine, Serializable {
         );
     }
 
-    public AvailableFunctionsDTO buildAvailableFunctionDTO(Program function) {
-        return new AvailableFunctionsDTO(
+    public FunctionDTO buildAvailableFunctionDTO(Program function) {
+        return new FunctionDTO(
                 function.getName(),
                 function.getMainProgramNameOfThisProgram(),
                 function.getUploaderName(),

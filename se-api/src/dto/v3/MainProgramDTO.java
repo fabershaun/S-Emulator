@@ -1,6 +1,6 @@
 package dto.v3;
 
-public class AvailableProgramsDTO {
+public class MainProgramDTO {
     private final String programName;
     private final String uploaderName;
     private final int instructionsAmount;
@@ -8,7 +8,7 @@ public class AvailableProgramsDTO {
     private final int timesPlayed;
     private final long averageCreditCost;
 
-    public AvailableProgramsDTO(String programName, String uploaderName, int instructionsAmount, int maxDegree, int timesPlayed, long averageCreditCost) {
+    public MainProgramDTO(String programName, String uploaderName, int instructionsAmount, int maxDegree, int timesPlayed, long averageCreditCost) {
         this.programName = programName;
         this.uploaderName = uploaderName;
         this.instructionsAmount = instructionsAmount;

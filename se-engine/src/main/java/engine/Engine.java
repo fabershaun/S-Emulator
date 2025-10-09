@@ -4,8 +4,8 @@ import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
-import dto.v3.AvailableFunctionsDTO;
-import dto.v3.AvailableProgramsDTO;
+import dto.v3.FunctionDTO;
+import dto.v3.MainProgramDTO;
 import dto.v3.HistoryRowV3DTO;
 import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
@@ -39,8 +39,8 @@ public interface Engine {
     // V3:
     ProgramExecutorDTO getProgramAfterRunV3(String programName);
     List<HistoryRowV3DTO> getHistoryV3PerProgram(String programName);           // Version 3
-    List<AvailableProgramsDTO> getAvailableMainProgramsDTOsList();
-    List<AvailableFunctionsDTO> getAvailableFunctionsDTOsList();
+    List<MainProgramDTO> getAvailableMainProgramsDTOsList();
+    List<FunctionDTO> getAvailableFunctionsDTOsList();
 
 
     // Expansion:
