@@ -2,6 +2,7 @@ package engine.logic.programData.program;
 
 import dto.v2.InstructionDTO;
 import engine.logic.exceptions.EngineLoadException;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.label.Label;
 import engine.logic.programData.variable.Variable;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 public interface Program extends Serializable {
+
+    ArchitectureType minimumArchitectureType();
 
     String getName();
     String getUploaderName();
