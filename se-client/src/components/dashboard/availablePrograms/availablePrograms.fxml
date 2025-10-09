@@ -12,7 +12,7 @@
 
     <Label fx:id="programListLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-background-color: #ddd; -fx-padding: 4; -fx-alignment: CENTER;" text="Available Programs" />
 
-    <TableView fx:id="availableProgramTable">
+    <TableView fx:id="availableProgramTableView">
         <columns>
             <TableColumn fx:id="colProgramName" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Program Name" />
             <TableColumn fx:id="colUserUploaded" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Uploader" />
