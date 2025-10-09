@@ -1,6 +1,5 @@
 package servlets;
 
-import dto.v2.ProgramDTO;
 import dto.v3.AvailableProgramsDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
