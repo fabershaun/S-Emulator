@@ -50,8 +50,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public synchronized Set<String> getUsers() {
-        return Collections.unmodifiableSet(usernameToUserDTO.keySet());
+    public synchronized Set<UserDTO> getAllUsers() {
+        Set<UserDTO> filteredUsers = usernameToUserDTO.values().stream()
+                .filter(user -> !user.getUserName().equals(UserDTO.DEFAULT_NAME))          // Remove default user (from version 2)
+                .collect(Collectors.toSet());
+
+        return Collections.unmodifiableSet(filteredUsers);
     }
 
     @Override

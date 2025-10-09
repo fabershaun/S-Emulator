@@ -1,5 +1,6 @@
 package components.dashboard.users;
 
+import dto.v3.UserDTO;
 import javafx.application.Platform;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -19,9 +20,9 @@ import static utils.Constants.USERS_LIST_PAGE;
 
 public class UserListRefresher extends TimerTask {
 
-    private final Consumer<List<String>> usersListConsumer;
+    private final Consumer<List<UserDTO>> usersListConsumer;
 
-    public UserListRefresher(Consumer<List<String>> usersListConsumer) {
+    public UserListRefresher(Consumer<List<UserDTO>> usersListConsumer) {
         this.usersListConsumer = usersListConsumer;
     }
 
@@ -38,9 +39,22 @@ public class UserListRefresher extends TimerTask {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String jsonArrayOfUsersNames = response.body().string();
-                String[] usersNames = GSON_INSTANCE.fromJson(jsonArrayOfUsersNames, String[].class);
-                usersListConsumer.accept(Arrays.asList(usersNames));
+                if (response.code() != 200) {
+                    String errorBody = response.body() != null ? response.body().string() : "Unknown error";
+                    Platform.runLater(() -> showError("Load failed", errorBody));
+                    return;
+                }
+
+                String jsonArrayOfUsers = response.body().string();
+                UserDTO[] usersArray = GSON_INSTANCE.fromJson(jsonArrayOfUsers, UserDTO[].class);
+
+                // Handle null / empty response safely
+                if (usersArray == null) {
+                    usersListConsumer.accept(List.of());
+                    return;
+                }
+
+                usersListConsumer.accept(Arrays.asList(usersArray));
             }
         });
     }

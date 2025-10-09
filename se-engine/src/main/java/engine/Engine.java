@@ -18,7 +18,7 @@ public interface Engine {
     // Users:
     void addUser(String username);
     void removeUser(String username);
-    Set<String> getUsers();
+    Set<UserDTO> getAllUsers();
     boolean isUserExists(String username);
     UserDTO getUserDTO(String username);
 

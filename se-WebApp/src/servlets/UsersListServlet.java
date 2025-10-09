@@ -1,10 +1,11 @@
 package servlets;
 
+import dto.v3.UserDTO;
+import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import dto.v3.UserDTO;
 import utils.ServletUtils;
 
 import java.io.IOException;
@@ -19,11 +20,11 @@ public class UsersListServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-//        TODO: UPDATE !!!
-//        UserDTO userManager = ServletUtils.getUserManager(getServletContext());
-//        Set<String> usersList = userManager.getUsers();
+        Engine engine = ServletUtils.getEngine(getServletContext());
 
-//        String json = GSON_INSTANCE.toJson(usersList);
-//        response.getWriter().write(json);
+        Set<UserDTO> usersList = engine.getAllUsers();
+
+        String json = GSON_INSTANCE.toJson(usersList);
+        response.getWriter().write(json);
     }
 }
