@@ -1,15 +1,11 @@
-package components.toastMessage;
+package components.UIUtils;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class ToastUtil {

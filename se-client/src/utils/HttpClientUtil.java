@@ -1,7 +1,11 @@
 package utils;
 
+import components.UIUtils.AlertUtils;
+import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 public class HttpClientUtil {
 
@@ -35,5 +39,19 @@ public class HttpClientUtil {
         System.out.println("Shutting down HTTP CLIENT");
         HTTP_CLIENT.dispatcher().executorService().shutdown();
         HTTP_CLIENT.connectionPool().evictAll();
+    }
+
+    public static String readResponseBodySafely(Response response) {
+        ResponseBody body = response.body();
+        if (body == null) {
+            Platform.runLater(() -> AlertUtils.showError("Error", "Empty response from server"));
+            return null;
+        }
+        try {
+            return body.string();
+        } catch (IOException e) {
+            Platform.runLater(() -> AlertUtils.showError("Error", "Failed to read server response"));
+            return null;
+        }
     }
 }

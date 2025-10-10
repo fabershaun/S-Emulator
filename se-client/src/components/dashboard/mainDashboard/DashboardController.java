@@ -6,7 +6,7 @@ import components.dashboard.loadFileClient.LoadFileController;
 import components.dashboard.users.UsersListController;
 import components.dashboard.usersHistory.UsersHistoryController;
 import components.mainApp.MainAppController;
-import components.toastMessage.ToastUtil;
+import components.UIUtils.ToastUtil;
 import dto.v2.ProgramDTO;
 import dto.v3.UserDTO;
 import javafx.application.Platform;
@@ -20,7 +20,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
@@ -130,7 +129,8 @@ public class DashboardController implements Closeable {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = response.body().string();
+
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
                 if (response.code() != 200) {
                     try {

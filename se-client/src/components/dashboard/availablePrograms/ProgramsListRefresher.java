@@ -32,9 +32,7 @@ public class ProgramsListRefresher extends TimerTask {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> {
-                    showError("Server Error", "Failed to load available programs" + e.getMessage());
-                });
+                Platform.runLater(() -> showError("Server Error", "Failed to load available programs" + e.getMessage()));
             }
 
             @Override
@@ -46,7 +44,7 @@ public class ProgramsListRefresher extends TimerTask {
                 }
 
                 // Read body only after confirming 200 OK
-                String jsonResponse  = response.body().string();
+                String jsonResponse = HttpClientUtil.readResponseBodySafely(response);
 
                 // Define the generic list type for deserialization
                 Type listType = new TypeToken<List<MainProgramDTO>>() {}.getType();
