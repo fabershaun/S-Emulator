@@ -1,5 +1,6 @@
 package components.dashboard.loadFileClient;
 
+import components.UIUtils.AlertUtils;
 import components.dashboard.mainDashboard.DashboardController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -12,10 +13,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-
 import java.io.File;
 
-import static components.dashboard.mainDashboard.DashboardController.showError;
 
 public class LoadFileController {
 
@@ -68,7 +67,7 @@ public class LoadFileController {
             // Pass the File object instead of the InputStream
             dashboardController.loadNewFile(file, file.getAbsolutePath());
         } catch (Exception e) {
-            showError("Load failed", "Unexpected error: " + e.getMessage());
+            AlertUtils.showError("Load failed", "Unexpected error: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,5 +1,6 @@
 package components.dashboard.mainDashboard;
 
+import components.UIUtils.AlertUtils;
 import components.dashboard.availableFunctions.AvailableFunctionsListController;
 import components.dashboard.availablePrograms.AvailableProgramsListController;
 import components.dashboard.loadFileClient.LoadFileController;
@@ -123,7 +124,7 @@ public class DashboardController implements Closeable {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showError("Load failed", e.getMessage())
+                        AlertUtils.showError("Load failed", e.getMessage())
                 );
             }
 
@@ -146,12 +147,12 @@ public class DashboardController implements Closeable {
                                 );
                             } else {
                                 // 500 = internal error
-                                showError("Server Error", errorMessage);
+                                AlertUtils.showError("Server Error", errorMessage);
                             }
                         });
                     } catch (Exception e) {
                         Platform.runLater(() ->
-                                showError("Load failed", "Server returned " + response.code() + ": " + responseBody)
+                                AlertUtils.showError("Load failed", "Server returned " + response.code() + ": " + responseBody)
                         );
                     }
                     return;
@@ -171,17 +172,17 @@ public class DashboardController implements Closeable {
         });
     }
 
-    // Handle request failure
-    public static void showError(String title, String message) {
-        javafx.scene.control.Alert alert =
-                new Alert(Alert.AlertType.NONE, message, ButtonType.CLOSE);
-
-        alert.setTitle(title);
-        alert.setHeaderText(null);   // no header
-        alert.setGraphic(null);      // no icon
-        alert.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-        alert.showAndWait();
-    }
+//    // Handle request failure
+//    public static void showError(String title, String message) {
+//        javafx.scene.control.Alert alert =
+//                new Alert(Alert.AlertType.NONE, message, ButtonType.CLOSE);
+//
+//        alert.setTitle(title);
+//        alert.setHeaderText(null);   // no header
+//        alert.setGraphic(null);      // no icon
+//        alert.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+//        alert.showAndWait();
+//    }
 
     @Override
     public void close() {

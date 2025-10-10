@@ -1,6 +1,7 @@
 package components.dashboard.availablePrograms;
 
 import com.google.gson.reflect.TypeToken;
+import components.UIUtils.AlertUtils;
 import dto.v3.MainProgramDTO;
 import javafx.application.Platform;
 import okhttp3.Call;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-import static components.dashboard.mainDashboard.DashboardController.showError;
 import static utils.Constants.*;
 
 
@@ -32,14 +32,14 @@ public class ProgramsListRefresher extends TimerTask {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> showError("Server Error", "Failed to load available programs" + e.getMessage()));
+                Platform.runLater(() -> AlertUtils.showError("Server Error", "Failed to load available programs" + e.getMessage()));
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
                 if (response.code() != 200) {
-                    Platform.runLater(() -> showError("Server Error", "Trying to load main programs list, the server returned: " + response.code()));
+                    Platform.runLater(() -> AlertUtils.showError("Server Error", "Trying to load main programs list, the server returned: " + response.code()));
                     return;
                 }
 

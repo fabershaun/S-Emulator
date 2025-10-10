@@ -1,5 +1,6 @@
 package components.dashboard.users;
 
+import components.UIUtils.AlertUtils;
 import dto.v3.UserDTO;
 import javafx.application.Platform;
 import okhttp3.Call;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-import static components.dashboard.mainDashboard.DashboardController.showError;
 import static utils.Constants.GSON_INSTANCE;
 import static utils.Constants.USERS_LIST_PAGE;
 
@@ -33,7 +33,7 @@ public class UserListRefresher extends TimerTask {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> {
-                    showError("Server Error", "Failed to load users list" + e.getMessage());
+                    AlertUtils.showError("Server Error", "Failed to load users list" + e.getMessage());
                 });
             }
 
@@ -41,7 +41,7 @@ public class UserListRefresher extends TimerTask {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.code() != 200) {
                     String errorBody = response.body() != null ? response.body().string() : "Unknown error";
-                    Platform.runLater(() -> showError("Load failed", errorBody));
+                    Platform.runLater(() -> AlertUtils.showError("Load failed", errorBody));
                     return;
                 }
 

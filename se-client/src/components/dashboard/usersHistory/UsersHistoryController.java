@@ -1,6 +1,7 @@
 package components.dashboard.usersHistory;
 
 import com.google.gson.reflect.TypeToken;
+import components.UIUtils.AlertUtils;
 import components.dashboard.mainDashboard.DashboardController;
 import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
 import dto.v3.HistoryRowV3DTO;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static components.dashboard.mainDashboard.DashboardController.showError;
 import static utils.Constants.*;
 
 public class UsersHistoryController {
@@ -111,7 +111,7 @@ public class UsersHistoryController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showError("Server Error", "Failed to load history" + e.getMessage())
+                        AlertUtils.showError("Server Error", "Failed to load history" + e.getMessage())
                 );
             }
 
