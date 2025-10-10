@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import okhttp3.*;
@@ -39,6 +40,7 @@ public class DashboardController implements Closeable {
     private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
     private StringProperty currentUsername;
 
+    @FXML private StackPane dashboardStackPane;
     @FXML private BorderPane loadFile;
     @FXML private LoadFileController loadFileController;          // must: field name = fx:id + "Controller"
     @FXML private VBox usersList;
@@ -138,8 +140,9 @@ public class DashboardController implements Closeable {
                             if (response.code() == 400) {
                                 // 400 = business logic issue, e.g. duplicate file
                                 ToastUtil.showToast(
-                                        (Stage) loadFile.getScene().getWindow(),
-                                        errorMessage
+                                        dashboardStackPane,
+                                        errorMessage,
+                                        false
                                 );
                             } else {
                                 // 500 = internal error
@@ -158,8 +161,10 @@ public class DashboardController implements Closeable {
 
                 Platform.runLater(() ->  {
                     ToastUtil.showToast(
-                            (Stage) loadFile.getScene().getWindow(),
-                            "XML file uploaded successfully: " + loadedProgramDTO.getProgramName());
+                            dashboardStackPane,
+                            "XML file uploaded successfully: " + loadedProgramDTO.getProgramName(),
+                            true
+                    );
                     selectedFilePathProperty.set(pathStr);
                 });
             }
