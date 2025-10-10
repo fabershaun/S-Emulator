@@ -9,21 +9,15 @@
     <fx:include fx:id="loadFile" source="../loadFileClient/loadFile.fxml" />
 
     <SplitPane dividerPositions="0.5">
-        <items>
-            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
-            <items>
-               <fx:include fx:id="usersList" source="../users/users.fxml" />
-               <fx:include fx:id="userHistoryList" source="../usersHistory/usersHistory.fxml" />
-            </items>
-            </SplitPane>
+        <SplitPane dividerPositions="0.5" orientation="VERTICAL">
+            <fx:include fx:id="usersList" source="../users/users.fxml"/>
+            <fx:include fx:id="userHistoryList" source="../usersHistory/usersHistory.fxml"/>
+        </SplitPane>
 
-            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
-            <items>
-               <fx:include fx:id="availableProgramsList" source="../availablePrograms/availablePrograms.fxml" />
-               <fx:include fx:id="availableFunctionsList" source="../availableFunctions/availableFunctions.fxml" />
-            </items>
-            </SplitPane>
-        </items>
+        <SplitPane dividerPositions="0.5" orientation="VERTICAL">
+            <fx:include fx:id="availableProgramsList" source="../availablePrograms/availablePrograms.fxml"/>
+            <fx:include fx:id="availableFunctionsList" source="../availableFunctions/availableFunctions.fxml"/>
+        </SplitPane>
     </SplitPane>
    <padding>
       <Insets left="5.0" right="5.0" />

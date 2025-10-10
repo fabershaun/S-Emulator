@@ -20,9 +20,8 @@
         </columnResizePolicy>
     </TableView>
     <ToolBar>
-        <items>
-            <Button fx:id="executeProgramsButton" alignment="CENTER" onAction="#onExecuteFunctionButtonClicked" text="Execute Program" />
-        </items>
+        <Button fx:id="executeProgramsButton" alignment="CENTER" onAction="#onExecuteFunctionButtonClicked"
+                text="Execute Program"/>
     </ToolBar>
 
 </VBox>
