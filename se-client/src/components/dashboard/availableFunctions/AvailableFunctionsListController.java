@@ -36,7 +36,7 @@ public class AvailableFunctionsListController implements Closeable {
 
     @FXML
     public void initialize() {
-        functionListLabel.textProperty().bind(Bindings.concat("Available programs: (", totalFunctionsProperty.asString(), ")"));
+        functionListLabel.textProperty().bind(Bindings.concat("Available Functions: (", totalFunctionsProperty.asString(), ")"));
 
         colFunctionName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getFunctionName()));
         mainProgramName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMainProgramName()));

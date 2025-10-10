@@ -37,7 +37,7 @@ public class AvailableProgramsListController implements Closeable {
 
     @FXML
     public void initialize() {
-        programListLabel.textProperty().bind(Bindings.concat("Available programs: (", totalProgramsProperty.asString(), ")"));
+        programListLabel.textProperty().bind(Bindings.concat("Available Main Programs: (", totalProgramsProperty.asString(), ")"));
 
         colProgramName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProgramName()));
         colUserUploaded.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUploaderName()));
