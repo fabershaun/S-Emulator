@@ -39,7 +39,14 @@ public class FunctionsListRefresher extends TimerTask {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                if (response.code() != 200) {
+                    Platform.runLater(() -> showError("Server Error", "Trying to load sub functions list, the server returned: " + response.code()));
+                    return;
+                }
+
                 String jsonResponse  = response.body().string();
+
                 // Define the generic list type for deserialization
                 Type listType = new TypeToken<List<FunctionDTO>>() {}.getType();
 
@@ -47,7 +54,7 @@ public class FunctionsListRefresher extends TimerTask {
                 List<FunctionDTO> programs = GSON_INSTANCE.fromJson(jsonResponse, listType);
 
                 // Update UI on JavaFX thread
-                functionsListConsumer.accept(programs);
+                Platform.runLater(() -> functionsListConsumer.accept(programs));
             }
         });
     }

@@ -4,7 +4,9 @@ import com.google.gson.reflect.TypeToken;
 import components.dashboard.mainDashboard.DashboardController;
 import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
 import dto.v3.HistoryRowV3DTO;
+import dto.v3.UserDTO;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -31,7 +33,7 @@ import static utils.Constants.*;
 public class UsersHistoryController {
 
     private DashboardController dashboardController;
-    private StringProperty selectedUserProperty;
+    private ObjectProperty<UserDTO> selectedUserProperty;
     private StringProperty currentUserLoginProperty;
 
     private HistoryRowV3DTO selectedHistoryRow;
@@ -71,19 +73,15 @@ public class UsersHistoryController {
         this.dashboardController = dashboardController;
     }
 
-    public void setProperty(StringProperty selectedUserProperty, StringProperty currentUserLoginProperty) {
+    public void setProperty(ObjectProperty<UserDTO> selectedUserProperty, StringProperty currentUserLoginProperty) {
         this.selectedUserProperty = selectedUserProperty;
         this.currentUserLoginProperty = currentUserLoginProperty;
     }
 
     public void initializeListeners() {
         selectedUserProperty.addListener((obs, oldUser, newUser) -> {
-                String targetUser = (newUser == null || newUser.isEmpty())
-                        ? currentUserLoginProperty.get()   // fallback: current user
-                        : newUser;
-
-                userHistoryLabel.setText("History of: " + targetUser);
-                loadUserHistory(targetUser);
+            userHistoryLabel.setText("History of: " + newUser.getUserName());
+            loadUserHistory(newUser.getUserName());
                 });
 
         // Listen to row selection and notify the main controller

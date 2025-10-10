@@ -7,7 +7,6 @@ import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -23,7 +22,7 @@ public class UsersListController implements Closeable {
     private Timer timer;
     private TimerTask listRefresher;
     private final IntegerProperty totalUsers;
-    private final StringProperty selectedUserProperty = new SimpleStringProperty();
+    private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
 
     @FXML private Label usersLabel;
     @FXML private TableView<UserDTO> usersTableView;
@@ -51,7 +50,7 @@ public class UsersListController implements Closeable {
         colExecutionsCount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getExecutionsCount()));
 
         usersTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUserSelected) -> {
-            selectedUserProperty.set(newUserSelected != null ? newUserSelected.getUserName() : null);
+            selectedUserProperty.set(newUserSelected);
         });
     }
 
@@ -81,11 +80,6 @@ public class UsersListController implements Closeable {
 
     @FXML void onUnselectUserClicked() {
         usersTableView.getSelectionModel().clearSelection();
-    }
-
-    // Getter for other components to bind to
-    public StringProperty selectedUserProperty() {
-        return selectedUserProperty;
     }
 
     @Override

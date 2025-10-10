@@ -8,7 +8,10 @@ import components.dashboard.usersHistory.UsersHistoryController;
 import components.mainApp.MainAppController;
 import components.toastMessage.ToastUtil;
 import dto.v2.ProgramDTO;
+import dto.v3.UserDTO;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -33,6 +36,7 @@ public class DashboardController implements Closeable {
 
     private MainAppController mainAppController;
     private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
+    private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
     private StringProperty currentUsername;
 
     @FXML private BorderPane loadFile;
@@ -82,7 +86,7 @@ public class DashboardController implements Closeable {
 
     private void initHistoryListController() {
         userHistoryListController.setDashboardController(this);
-        userHistoryListController.setProperty(this.selectedUsernameProperty(), currentUsername);
+        userHistoryListController.setProperty(selectedUserProperty, currentUsername);
         userHistoryListController.initializeListeners();
     }
 
@@ -161,9 +165,5 @@ public class DashboardController implements Closeable {
         usersListController.close();
         availableProgramsListController.close();
         availableFunctionsListController.close();
-    }
-
-    public StringProperty selectedUsernameProperty() {
-        return usersListController.selectedUserProperty();
     }
 }

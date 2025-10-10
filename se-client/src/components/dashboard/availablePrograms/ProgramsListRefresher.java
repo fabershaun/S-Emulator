@@ -39,15 +39,23 @@ public class ProgramsListRefresher extends TimerTask {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                if (response.code() != 200) {
+                    Platform.runLater(() -> showError("Server Error", "Trying to load main programs list, the server returned: " + response.code()));
+                    return;
+                }
+
+                // Read body only after confirming 200 OK
                 String jsonResponse  = response.body().string();
+
                 // Define the generic list type for deserialization
                 Type listType = new TypeToken<List<MainProgramDTO>>() {}.getType();
 
                 // Parse JSON into a list of AvailableProgramDTO objects
                 List<MainProgramDTO> programs = GSON_INSTANCE.fromJson(jsonResponse, listType);
 
-                // Update UI on JavaFX thread
-                programsListConsumer.accept(programs);
+                // Update UI safely on JavaFX thread
+                Platform.runLater(() -> programsListConsumer.accept(programs));
             }
         });
     }
