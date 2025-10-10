@@ -284,10 +284,6 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public int getMaxDegree(String programName) {
-        if (nameAndDegreeToProgram == null) {
-            System.out.println("InEngineImpl: in getMaxDegree(): nameAndDegreeToProgram is null");
-            return 0;
-        }
         Map<Integer, Program> degreeMap = nameAndDegreeToProgram.get(programName);
 
         // If programName not found in the map, return default and log it
