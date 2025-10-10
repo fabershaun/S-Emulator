@@ -23,7 +23,6 @@ import static utils.ServletUtils.getEngine;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class FileUploadServlet extends HttpServlet {
 
-    // TODO: NOTIFY MESSAGE
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -49,13 +48,22 @@ public class FileUploadServlet extends HttpServlet {
                     username);
 
             ProgramDTO loadedProgramDTO = engine.getProgramDTOByName(loadedProgramName);
-
             String jsonResponse = GSON_INSTANCE.toJson(loadedProgramDTO);
             response.getWriter().write(jsonResponse);
-        } catch (EngineLoadException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+
+        } catch (IllegalArgumentException | EngineLoadException ex) {
+            // Business or validation error: the uploaded file is invalid, duplicated, or cannot be processed
+            sendJsonErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         } catch (Exception ex) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
+            // Unexpected error: covers all unhandled exceptions or system failures
+            sendJsonErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
+
         }
+    }
+
+    private void sendJsonErrorResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(GSON_INSTANCE.toJson(message));
     }
 }

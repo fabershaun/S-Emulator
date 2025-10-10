@@ -106,7 +106,7 @@ public class DashboardController implements Closeable {
                         .newBuilder()
                         .toString();
 
-        System.out.println("Final URL: " + finalUrl);
+//        System.out.println("Final URL: " + finalUrl);
         // Build multipart request body
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -131,19 +131,37 @@ public class DashboardController implements Closeable {
                 String responseBody = response.body().string();
 
                 if (response.code() != 200) {
-                    Platform.runLater(() ->
-                            showError("Load failed", responseBody)
-                    );
-                } else {
-                    ProgramDTO loadedProgramDTO = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+                    try {
+                        String errorMessage = GSON_INSTANCE.fromJson(responseBody, String.class);
 
-                    Platform.runLater(() ->  {
-                        ToastUtil.showToast(
-                                (Stage) loadFile.getScene().getWindow(),
-                                "XML file uploaded successfully: " + loadedProgramDTO.getProgramName());
-                        selectedFilePathProperty.set(pathStr);
-                    });
+                        Platform.runLater(() -> {
+                            if (response.code() == 400) {
+                                // 400 = business logic issue, e.g. duplicate file
+                                ToastUtil.showToast(
+                                        (Stage) loadFile.getScene().getWindow(),
+                                        errorMessage
+                                );
+                            } else {
+                                // 500 = internal error
+                                showError("Server Error", errorMessage);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Platform.runLater(() ->
+                                showError("Load failed", "Server returned " + response.code() + ": " + responseBody)
+                        );
+                    }
+                    return;
                 }
+
+                ProgramDTO loadedProgramDTO = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+
+                Platform.runLater(() ->  {
+                    ToastUtil.showToast(
+                            (Stage) loadFile.getScene().getWindow(),
+                            "XML file uploaded successfully: " + loadedProgramDTO.getProgramName());
+                    selectedFilePathProperty.set(pathStr);
+                });
             }
         });
     }
