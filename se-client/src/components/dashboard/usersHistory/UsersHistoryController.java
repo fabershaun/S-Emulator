@@ -1,5 +1,6 @@
 package components.dashboard.usersHistory;
 
+import com.google.gson.reflect.TypeToken;
 import components.dashboard.mainDashboard.DashboardController;
 import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
 import dto.v3.HistoryRowV3DTO;
@@ -21,8 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
+import static components.dashboard.mainDashboard.DashboardController.showError;
 import static utils.Constants.*;
 
 public class UsersHistoryController {
@@ -47,8 +50,6 @@ public class UsersHistoryController {
     @FXML private Button reRunButton;
     @FXML private Button showStatusButton;
 
-    @FXML private ListView<String> historyListView;     // TODO: delete
-
 
     @FXML
     protected void initialize() {
@@ -57,9 +58,9 @@ public class UsersHistoryController {
 
         colRunNumber.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(historyTable.getItems().indexOf(cellData.getValue()) + 1));
-        colDegree.setCellValueFactory(new PropertyValueFactory<>("programType"));
-        colDegree.setCellValueFactory(new PropertyValueFactory<>("programName"));
-        colDegree.setCellValueFactory(new PropertyValueFactory<>("architectureChoice"));
+        colMainProgramOrFunction.setCellValueFactory(new PropertyValueFactory<>("programType"));
+        colProgramName.setCellValueFactory(new PropertyValueFactory<>("programName"));
+        colArchitectureType.setCellValueFactory(new PropertyValueFactory<>("architectureChoice"));
 
         colDegree.setCellValueFactory(new PropertyValueFactory<>("degree"));
         colResult.setCellValueFactory(new PropertyValueFactory<>("result"));
@@ -112,21 +113,24 @@ public class UsersHistoryController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        historyListView.getItems().setAll("Failed to load history: " + e.getMessage())
+                        showError("Server Error", "Failed to load history" + e.getMessage())
                 );
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String json = response.body().string();
-                String[] historyItems = GSON_INSTANCE.fromJson(json, String[].class);
-                System.out.println("DEBUG - Server returned: " + json);
+                String jsonResponse  = response.body().string();
+
+                // Define the generic list type for deserialization
+                Type listType = new TypeToken<List<HistoryRowV3DTO>>() {}.getType();
+
+                List<HistoryRowV3DTO> historyRowV3DTOList = GSON_INSTANCE.fromJson(jsonResponse, listType);
 
                 Platform.runLater(() -> {
-                    if (historyItems == null || historyItems.length == 0) {
-                        historyListView.getItems().clear();
+                    if (historyRowV3DTOList == null || historyRowV3DTOList.isEmpty()) {
+                        historyTable.getItems().clear();
                     } else {
-                        historyListView.getItems().setAll(historyItems);
+                        historyTable.getItems().setAll(historyRowV3DTOList);
                     }
                 });
             }
