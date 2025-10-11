@@ -1,7 +1,6 @@
 package components.execution.mainExecution;
 
 import components.UIUtils.AlertUtils;
-import components.UIUtils.ToastUtil;
 import components.execution.chainInstructionsTable.ChainInstructionsTableController;
 import components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.execution.mainInstructionsTable.MainInstructionsTableController;
@@ -20,14 +19,12 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static utils.Constants.*;
 import static utils.Constants.GSON_INSTANCE;
@@ -36,12 +33,11 @@ public class MainExecutionController {
 
     private MainAppController mainAppController;
     private LongProperty totalCreditsAmount;
-    private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
 
     private final ExpansionCollapseModelV3 degreeModel = new ExpansionCollapseModelV3();
     private final HighlightSelectionModelV3 highlightSelectionModel = new HighlightSelectionModelV3();
 
-    @FXML private StackPane rootStackPane;
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
     @FXML private TableView<InstructionDTO> mainInstructionsTable;
@@ -68,12 +64,23 @@ public class MainExecutionController {
             initSummaryLineController();
             initChainInstructionTableController();
             initDebuggerExecutionMenuController();
+
+            initDegreeModel();
         }
+    }
+
+    private void initializeListeners() {
+        selectedProgramProperty.addListener((obs, oldProg, newProg) -> { // todo: remove
+            if (newProg != null) {
+                mainInstructionsTableController.fillTable(newProg.getInstructions());
+            }
+        });
     }
 
     private void initToolBarController() {
         topToolBarController.setExecutionController(this);
         topToolBarController.setModels(degreeModel, highlightSelectionModel);
+        topToolBarController.setProgramCurrentName(selectedProgramProperty.get().getProgramName());
     }
 
     private void initMainInstructionsTableController() {
@@ -91,6 +98,13 @@ public class MainExecutionController {
 
     }
 
+    private void initDegreeModel() {
+        String maxDegreeUrl = buildProgramDataUrl(MAX_DEGREE);
+
+        degreeModel.setCurrentDegree(0);
+        degreeModel.setMaxDegree(fetchMaxDegreeAsync(maxDegreeUrl));
+        degreeModel.setProgram(selectedProgramProperty.get());
+    }
 
     public void setMainAppController(MainAppController mainAppController) {
         this.mainAppController = mainAppController;
@@ -141,10 +155,7 @@ public class MainExecutionController {
 
         // Update UI (must be done on JavaFX thread)
         Platform.runLater(() -> {
-            currentProgramProperty.set(program); // triggers listeners automatically
-
-            // Optional success notification
-            ToastUtil.showToast(rootStackPane, "Program loaded successfully", true);
+            selectedProgramProperty.set(program); // triggers listeners automatically
         });
     }
 
@@ -156,7 +167,7 @@ public class MainExecutionController {
                 switch (statusCode) {
                     case 400 -> {
                         // 400 = business logic issue (user-level error)
-                        ToastUtil.showToast(rootStackPane, errorMessage, false);
+                        //ToastUtil.showToast(rootStackPane, errorMessage, false);
                     }
                     case 401 -> {
                         // 401 = not logged in / session expired
@@ -201,5 +212,38 @@ public class MainExecutionController {
 //        expansionTask.setOnFailed(ev -> handleTaskFailure(expansionTask, "Expand failed"));
 //
 //        new Thread(expansionTask, "expand-thread").start();
+    }
+
+    private int fetchMaxDegreeAsync(String url) {
+        HttpClientUtil.runAsync(url, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                handleMaxDegreeResponse(response);
+            }
+        });
+    }
+
+    private void handleMaxDegreeResponse(Response response) {
+        // Read the response body safely
+        String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+        // Check for non-200 HTTP codes
+        if (response.code() != 200) {
+            handleErrorResponse(response.code(), responseBody);
+            return;
+        }
+
+        // Parse the JSON into a ProgramDTO object
+        ProgramDTO program = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+
+        // Update UI (must be done on JavaFX thread)
+        Platform.runLater(() -> {
+            selectedProgramProperty.set(program); // triggers listeners automatically
+        });
     }
 }

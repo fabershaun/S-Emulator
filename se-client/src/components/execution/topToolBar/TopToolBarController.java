@@ -34,7 +34,11 @@ public class TopToolBarController {
         setupHighlightSelection(highlightSelectionModel);
     }
 
-    public void setupExpansionCollapseModel(ExpansionCollapseModelV3 expansionCollapseModel) {
+    public void setProgramCurrentName(String programName) {
+        currentProgramName.setText("Program Name: " + programName);
+    }
+
+    private void setupExpansionCollapseModel(ExpansionCollapseModelV3 expansionCollapseModel) {
 
         collapseCB.setItems(expansionCollapseModel.getCollapseOptions());
         expandCB.setItems(expansionCollapseModel.getExpandOptions());
@@ -69,7 +73,7 @@ public class TopToolBarController {
         configureExpandComboBoxDisplay(expandCB, "Expand");
     }
 
-    public void setupHighlightSelection(HighlightSelectionModelV3 highlightSelectionModel) {
+    private void setupHighlightSelection(HighlightSelectionModelV3 highlightSelectionModel) {
         this.highlightSelectionModel =  highlightSelectionModel;
 
         highlightSelectionCB.setItems(highlightSelectionModel.getHighlightOptions());  // Bind items to model-backed option lists
@@ -130,5 +134,6 @@ public class TopToolBarController {
         lockExpandCollapseCB.set(disable);
         lockHighlightCB.set(disable);
     }
+
 }
 
