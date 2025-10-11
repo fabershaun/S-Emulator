@@ -4,20 +4,25 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="debuggerExecutionMenu" alignment="TOP_CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController">
+<VBox fx:id="debuggerExecutionMenu"
+      alignment="TOP_CENTER"
+      spacing="10.0"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController"
+      VBox.vgrow="ALWAYS"
+      maxHeight="Infinity">
+
     <Label text="Debug \ Run" />
     <ToolBar>
         <Button fx:id="newRunButton" mnemonicParsing="false" onAction="#onNewRun" text="New Run" />
         <VBox>
-            <children>
-                <RadioButton fx:id="runRadio" selected="true" text="Run">
-                    <toggleGroup>
-                        <ToggleGroup fx:id="runModeToggleGroup" />
-                    </toggleGroup>
-                </RadioButton>
-                <RadioButton fx:id="debugRadio" text="Debug" toggleGroup="$runModeToggleGroup" />
-            </children>
+            <RadioButton fx:id="runRadio" selected="true" text="Run">
+                <toggleGroup>
+                    <ToggleGroup fx:id="runModeToggleGroup"/>
+                </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="debugRadio" text="Debug" toggleGroup="$runModeToggleGroup"/>
         </VBox>
         <Button fx:id="playButton" mnemonicParsing="false" onAction="#onPlay" prefWidth="100.0" text="Play!" />
     </ToolBar>
@@ -27,8 +32,8 @@
         <Button fx:id="stepBackButton" mnemonicParsing="false" onAction="#onStepBack" text="↩ Step Back" />
         <Button fx:id="stepOverButton" mnemonicParsing="false" onAction="#onStepOver" text="⏭ Step Over" />
     </ToolBar>
-    <HBox prefWidth="350.0" VBox.vgrow="NEVER">
-        <TableView fx:id="variablesTable" prefHeight="300.0" HBox.hgrow="ALWAYS">
+    <HBox prefWidth="350.0" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" maxHeight="Infinity">
+        <TableView fx:id="variablesTable" prefHeight="300.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="colVariables" editable="false" maxWidth="1.7976931348623157E308" prefWidth="50.0" style="-fx-alignment: CENTER;" text="Variables" />
                 <TableColumn fx:id="colVariablesValue" maxWidth="1.7976931348623157E308" prefWidth="50.0" style="-fx-alignment: CENTER;" text="Value" />
@@ -37,7 +42,7 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-        <TableView fx:id="inputsTable" prefHeight="300.0" HBox.hgrow="ALWAYS">
+        <TableView fx:id="inputsTable" prefHeight="300.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="colInputs" maxWidth="1.7976931348623157E308" prefWidth="50.0" style="-fx-alignment: CENTER;" text="Input" />
                 <TableColumn fx:id="colInputsValue" maxWidth="1.7976931348623157E308" prefWidth="50.0" style="-fx-alignment: CENTER;" text="Value" />
@@ -48,20 +53,18 @@
         </TableView>
     </HBox>
     <HBox spacing="5.0">
-        <children>
-            <Label alignment="TOP_LEFT" text="Cycles:">
-                <padding>
-                    <Insets top="3.0" />
-                </padding>
-            </Label>
-            <Label fx:id="cyclesNumberLabel" alignment="TOP_LEFT" text="0">
-                <padding>
-                    <Insets top="3.0" />
-                </padding>
-            </Label>
-        </children>
         <padding>
-            <Insets top="-10.0" />
+            <Insets top="-10.0"/>
         </padding>
+        <Label alignment="TOP_LEFT" text="Cycles:">
+            <padding>
+                <Insets top="3.0"/>
+            </padding>
+        </Label>
+        <Label fx:id="cyclesNumberLabel" alignment="TOP_LEFT" text="0">
+            <padding>
+                <Insets top="3.0"/>
+            </padding>
+        </Label>
     </HBox>
 </VBox>

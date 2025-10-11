@@ -4,26 +4,25 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0"
+      xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="components.execution.summaryLineOfMainInstructionsTable.SummaryLineController">
-    <children>
-        <Label fx:id="totalInstructions" text="Total:" />
-        <Label fx:id="amountTotal" text="amount">
-            <padding>
-                <Insets right="15.0" />
-            </padding>
-        </Label>
-        <Label fx:id="basicInstructions" text="Basic:" />
-        <Label fx:id="amountBasic" text="amount">
-            <padding>
-                <Insets right="15.0" />
-            </padding>
-        </Label>
-        <Label fx:id="syntheticInstructions" text="Synthetic:" />
-        <Label fx:id="amountSynthetic" text="amount">
-            <padding>
-                <Insets right="15.0" />
-            </padding>
-        </Label>
-    </children>
+    <Label text="Total:"/>
+    <Label fx:id="amountTotal" text="amount">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
+    <Label text="Basic:"/>
+    <Label fx:id="amountBasic" text="amount">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
+    <Label text="Synthetic:"/>
+    <Label fx:id="amountSynthetic" text="amount">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
 </HBox>

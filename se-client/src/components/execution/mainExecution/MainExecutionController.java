@@ -12,6 +12,8 @@ import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
@@ -32,7 +34,7 @@ public class MainExecutionController {
 
     private MainAppController mainAppController;
     private LongProperty totalCreditsAmount;
-    private ProgramDTO currentProgram;
+    private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>();
 
     @FXML private StackPane rootStackPane;
     @FXML private HBox topToolBar;
@@ -55,54 +57,90 @@ public class MainExecutionController {
     }
 
     public void setupAfterMainAppInit(String programSelectedName) {
-        String finalUrl = HttpUrl
-                .parse(CURRENT_PROGRAM_DATA)
+        String url = buildProgramDataUrl(programSelectedName);
+        fetchProgramDataAsync(url);
+    }
+
+    private String buildProgramDataUrl(String programName) {
+        return HttpUrl.parse(CURRENT_PROGRAM_DATA)
                 .newBuilder()
-                .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programSelectedName)
+                .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
                 .build()
                 .toString();
+    }
 
-        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
-
+    private void fetchProgramDataAsync(String url) {
+        HttpClientUtil.runAsync(url, null, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        AlertUtils.showError("Failed trying get the current chosen program", e.getMessage())
-                );
+                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
-                String responseBody = HttpClientUtil.readResponseBodySafely(response);
-
-                if (response.code() != 200) {
-                    try {
-                        String errorMessage = GSON_INSTANCE.fromJson(responseBody, String.class);
-
-                        Platform.runLater(() -> {
-                            if (response.code() == 400) {
-                                // 400 = business logic issue, e.g. duplicate file
-                                ToastUtil.showToast(
-                                        rootStackPane,
-                                        errorMessage,
-                                        false
-                                );
-                            } else {
-                                // 500 = internal error
-                                AlertUtils.showError("Server Error", errorMessage);
-                            }
-                        });
-                    } catch (Exception e) {
-                        Platform.runLater(() ->
-                                AlertUtils.showError("Program data load failed", "Server returned " + response.code() + ": " + responseBody)
-                        );
-                    }
-                    return;
-                }
-
-                currentProgram = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+                handleProgramDataResponse(response);
             }
         });
     }
+
+    private void handleProgramDataResponse(Response response) throws IOException {
+        // Read the response body safely
+        String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+        // Check for non-200 HTTP codes
+        if (response.code() != 200) {
+            handleErrorResponse(response.code(), responseBody);
+            return;
+        }
+
+        // Parse the JSON into a ProgramDTO object
+        ProgramDTO program = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+
+        // Update UI (must be done on JavaFX thread)
+        Platform.runLater(() -> {
+            currentProgramProperty.set(program); // triggers listeners automatically
+
+            // Optional success notification
+            ToastUtil.showToast(rootStackPane, "Program loaded successfully", true);
+        });
+    }
+
+    private void handleErrorResponse(int statusCode, String responseBody) {
+        try {
+            String errorMessage = GSON_INSTANCE.fromJson(responseBody, String.class);
+
+            Platform.runLater(() -> {
+                switch (statusCode) {
+                    case 400 -> {
+                        // 400 = business logic issue (user-level error)
+                        ToastUtil.showToast(rootStackPane, errorMessage, false);
+                    }
+                    case 401 -> {
+                        // 401 = not logged in / session expired
+                        AlertUtils.showError("Unauthorized", "You are not logged in or your session has expired.");
+                    }
+                    case 404 -> {
+                        // 404 = program not found
+                        AlertUtils.showError("Program Not Found", errorMessage);
+                    }
+                    case 500 -> {
+                        // 500 = internal server error
+                        AlertUtils.showError("Server Error", errorMessage);
+                    }
+                    default -> {
+                        // Any other unexpected code
+                        AlertUtils.showError("Unexpected Error",
+                                "Server returned code " + statusCode + ": " + errorMessage);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Platform.runLater(() ->
+                    AlertUtils.showError("Program Data Load Failed",
+                            "Server returned " + statusCode + " with invalid JSON:\n" + responseBody)
+            );
+        }
+    }
+
+
 }
