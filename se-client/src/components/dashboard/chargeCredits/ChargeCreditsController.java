@@ -1,20 +1,14 @@
 package components.dashboard.chargeCredits;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import static components.UIUtils.ToastUtil.showToast;
 
 public class ChargeCreditsController {
 
     private LongProperty totalCreditsAmount;
 
-    @FXML private Button chargeCreditsButton;
     @FXML private TextField chargeCreditsTextField;
 
     public void setProperty(LongProperty totalCreditsAmount) {
@@ -30,7 +24,7 @@ public class ChargeCreditsController {
             }
 
             // Keep only digits
-            String digitsOnly = newValue.replaceAll("[^\\d]", "");
+            String digitsOnly = newValue.replaceAll("\\D", "");
 
             // Limit to 15 digits
             if (digitsOnly.length() > 12) {
@@ -59,8 +53,5 @@ public class ChargeCreditsController {
 
         // Clear field after successful charge
         chargeCreditsTextField.clear();
-
-//        // Optional: show a confirmation toast
-//        showToast("Charged " + amountToAdd + " credits successfully", true);
     }
 }

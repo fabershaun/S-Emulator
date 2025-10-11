@@ -7,7 +7,6 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -55,7 +54,7 @@ public class LoginController {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.code() != 200) {
-                    String responseBody = response.body().string();
+                    String responseBody = HttpClientUtil.readResponseBodySafely(response);
                     Platform.runLater(() ->
                             errorMessageProperty.set("Something went wrong: " + responseBody)
                     );
@@ -82,7 +81,7 @@ public class LoginController {
     }
 
     @FXML
-    private void userNameKeyTyped(KeyEvent event) {
+    private void userNameKeyTyped() {
         errorMessageProperty.set("");
     }
 }

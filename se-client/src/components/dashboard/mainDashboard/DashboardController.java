@@ -179,18 +179,6 @@ public class DashboardController implements Closeable {
         });
     }
 
-//    // Handle request failure
-//    public static void showError(String title, String message) {
-//        javafx.scene.control.Alert alert =
-//                new Alert(Alert.AlertType.NONE, message, ButtonType.CLOSE);
-//
-//        alert.setTitle(title);
-//        alert.setHeaderText(null);   // no header
-//        alert.setGraphic(null);      // no icon
-//        alert.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-//        alert.showAndWait();
-//    }
-
     @Override
     public void close() {
         usersListController.close();
