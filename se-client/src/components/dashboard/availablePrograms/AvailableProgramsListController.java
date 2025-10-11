@@ -21,8 +21,8 @@ public class AvailableProgramsListController implements Closeable {
     private final IntegerProperty totalProgramsProperty;
     private final ObjectProperty<MainProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
 
-    private Timer timer;
     private TimerTask programsListRefresher;
+    private Timer timer;
 
     @FXML private Label programListLabel;
     @FXML private TableView<MainProgramDTO> availableProgramTableView;

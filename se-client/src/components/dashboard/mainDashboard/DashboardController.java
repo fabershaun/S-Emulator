@@ -74,7 +74,8 @@ public class DashboardController implements Closeable {
             initChargeCreditsController();
             intiUserListController();
             initHistoryListController();
-            initProgramListController();
+            initProgramsListController();
+            initFunctionsListController();
         }
     }
 
@@ -83,7 +84,6 @@ public class DashboardController implements Closeable {
         loadFileController.setProperty(selectedFilePathProperty);
         loadFileController.initializeBindings();
     }
-
 
     private void initChargeCreditsController() {
         chargeCreditsController.setProperty(totalCreditsAmount);
@@ -99,9 +99,14 @@ public class DashboardController implements Closeable {
         userHistoryListController.initializeListeners();
     }
 
-    private void initProgramListController() {
+    private void initProgramsListController() {
         availableProgramsListController.initListeners();
         availableProgramsListController.setDashboardController(this);
+    }
+
+    private void initFunctionsListController() {
+        availableFunctionsListController.initListeners();
+        availableFunctionsListController.setDashboardController(this);
     }
 
     public void setActive() {

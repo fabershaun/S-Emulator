@@ -1,5 +1,6 @@
 package components.dashboard.availableFunctions;
 
+import components.dashboard.mainDashboard.DashboardController;
 import dto.v3.FunctionDTO;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -16,10 +17,12 @@ import static utils.Constants.REFRESH_RATE;
 
 public class AvailableFunctionsListController implements Closeable {
 
-    private Timer timer;
-    private TimerTask functionsListRefresher;
+    private DashboardController dashboardController;
     private final IntegerProperty totalFunctionsProperty;
     private final ObjectProperty<FunctionDTO> selectedFunctionProperty = new SimpleObjectProperty<>();
+
+    private TimerTask functionsListRefresher;
+    private Timer timer;
 
     @FXML private Label functionListLabel;
     @FXML private TableView<FunctionDTO> availableFunctionTableView;
@@ -32,6 +35,10 @@ public class AvailableFunctionsListController implements Closeable {
 
     public AvailableFunctionsListController() {
         totalFunctionsProperty = new SimpleIntegerProperty();
+    }
+
+    public void setDashboardController(DashboardController dashboardController) {
+        this.dashboardController = dashboardController;
     }
 
     @FXML
@@ -89,12 +96,10 @@ public class AvailableFunctionsListController implements Closeable {
         timer.schedule(functionsListRefresher, 0, REFRESH_RATE);
     }
 
-    // TODO: WRITE
     @FXML
     void onExecuteFunctionButtonClicked() {
         String functionSelectedName = selectedFunctionProperty.get().getFunctionName();
-
-
+        dashboardController.switchToExecution(functionSelectedName);
     }
 
     @Override
