@@ -121,7 +121,6 @@ public class DashboardController implements Closeable {
                         .newBuilder()
                         .toString();
 
-//        System.out.println("Final URL: " + finalUrl);
         // Build multipart request body
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)

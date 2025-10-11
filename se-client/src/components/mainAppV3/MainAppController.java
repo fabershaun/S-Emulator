@@ -75,7 +75,7 @@ public class MainAppController {
             executionController = fxmlLoader.getController();
             executionController.setMainAppController(this);
             executionController.setProperty(currentUserName, totalCreditsAmount);
-            executionController.setupAfterMainAppInit();
+            executionController.setupAfterMainAppInit(programSelectedName);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -44,6 +44,9 @@ public class Constants {
 
     // Get Available Functions List:
     public final static String AVAILABLE_FUNCTIONS_LIST_PAGE = FULL_SERVER_PATH + "/available-functions-list";
+
+    // Get current programDTO:
+    public final static String CURRENT_PROGRAM_DATA = FULL_SERVER_PATH + "/current-program-data";
 }
 
 // http://localhost:8080/S-Emulator
