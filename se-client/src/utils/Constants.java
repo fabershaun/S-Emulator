@@ -50,7 +50,11 @@ public class Constants {
     public final static String AVAILABLE_FUNCTIONS_LIST_PAGE = FULL_SERVER_PATH + "/available-functions-list";
 
     // Get current programDTO:
-    public final static String CURRENT_PROGRAM_DATA = FULL_SERVER_PATH + "/current-program-data";
+    public final static String CURRENT_PROGRAM_DATA_PATH = FULL_SERVER_PATH + "/current-program-data";
+
+    // Get Max Degree Of Selected Program:
+    public final static String MAX_DEGREE_PATH = FULL_SERVER_PATH + "/max-degree";
+    
 }
 
 // http://localhost:8080/S-Emulator

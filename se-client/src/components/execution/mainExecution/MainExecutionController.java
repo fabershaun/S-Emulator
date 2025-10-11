@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import static utils.Constants.*;
 import static utils.Constants.GSON_INSTANCE;
+import static utils.HttpResponseHandler.handleErrorResponse;
 
 public class MainExecutionController {
 
@@ -99,11 +100,15 @@ public class MainExecutionController {
     }
 
     private void initDegreeModel() {
-        String maxDegreeUrl = buildProgramDataUrl(MAX_DEGREE);
 
         degreeModel.setCurrentDegree(0);
-        degreeModel.setMaxDegree(fetchMaxDegreeAsync(maxDegreeUrl));
         degreeModel.setProgram(selectedProgramProperty.get());
+
+        String maxDegreeUrl = HttpUrl.parse(MAX_DEGREE_PATH)
+                .newBuilder()
+                .build()
+                .toString();
+        fetchMaxDegreeAsync(maxDegreeUrl);  // Get the max degree of the program: from the server
     }
 
     public void setMainAppController(MainAppController mainAppController) {
@@ -119,7 +124,7 @@ public class MainExecutionController {
     }
 
     private String buildProgramDataUrl(String programName) {
-        return HttpUrl.parse(CURRENT_PROGRAM_DATA)
+        return HttpUrl.parse(CURRENT_PROGRAM_DATA_PATH)
                 .newBuilder()
                 .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
                 .build()
@@ -146,7 +151,7 @@ public class MainExecutionController {
 
         // Check for non-200 HTTP codes
         if (response.code() != 200) {
-            handleErrorResponse(response.code(), responseBody);
+            handleErrorResponse(response.code(), responseBody, "Loading program data");
             return;
         }
 
@@ -159,42 +164,6 @@ public class MainExecutionController {
         });
     }
 
-    private void handleErrorResponse(int statusCode, String responseBody) {
-        try {
-            String errorMessage = GSON_INSTANCE.fromJson(responseBody, String.class);
-
-            Platform.runLater(() -> {
-                switch (statusCode) {
-                    case 400 -> {
-                        // 400 = business logic issue (user-level error)
-                        //ToastUtil.showToast(rootStackPane, errorMessage, false);
-                    }
-                    case 401 -> {
-                        // 401 = not logged in / session expired
-                        AlertUtils.showError("Unauthorized", "You are not logged in or your session has expired.");
-                    }
-                    case 404 -> {
-                        // 404 = program not found
-                        AlertUtils.showError("Program Not Found", errorMessage);
-                    }
-                    case 500 -> {
-                        // 500 = internal server error
-                        AlertUtils.showError("Server Error", errorMessage);
-                    }
-                    default -> {
-                        // Any other unexpected code
-                        AlertUtils.showError("Unexpected Error",
-                                "Server returned code " + statusCode + ": " + errorMessage);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            Platform.runLater(() ->
-                    AlertUtils.showError("Program Data Load Failed",
-                            "Server returned " + statusCode + " with invalid JSON:\n" + responseBody)
-            );
-        }
-    }
 
     public void jumpToDegree(int target) {
 //        int maxDegree = engine.getMaxDegree(selectedProgramProperty.get().getProgramName());
@@ -214,7 +183,7 @@ public class MainExecutionController {
 //        new Thread(expansionTask, "expand-thread").start();
     }
 
-    private int fetchMaxDegreeAsync(String url) {
+    private void fetchMaxDegreeAsync(String url) {
         HttpClientUtil.runAsync(url, null, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -234,16 +203,14 @@ public class MainExecutionController {
 
         // Check for non-200 HTTP codes
         if (response.code() != 200) {
-            handleErrorResponse(response.code(), responseBody);
+            handleErrorResponse(response.code(), responseBody, "Getting max degree");
             return;
         }
 
-        // Parse the JSON into a ProgramDTO object
-        ProgramDTO program = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+        int maxDegree = GSON_INSTANCE.fromJson(responseBody, Integer.class);
 
-        // Update UI (must be done on JavaFX thread)
         Platform.runLater(() -> {
-            selectedProgramProperty.set(program); // triggers listeners automatically
+            degreeModel.setMaxDegree(maxDegree);
         });
     }
 }
