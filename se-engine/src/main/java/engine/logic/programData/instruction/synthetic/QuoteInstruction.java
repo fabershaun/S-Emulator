@@ -42,11 +42,11 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
 
     @Override
     public Label execute(ExecutionContext context, UserDTO userDTO) {
-        ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction());
+        ProgramExecutor functionExecutor = new ProgramExecutorImpl(this.getFunctionOfThisInstruction(), null);
         List<FunctionExecutionResult> functionExecutionResultList = getInputs(quoteArguments, context, getMainProgram(), userDTO);
 
         // Run
-        functionExecutor.run(userDTO, null, 0, extractInputValues(functionExecutionResultList));  // architectureTypeSelected - not needed here (it's an inner call)
+        functionExecutor.run(userDTO, 0, extractInputValues(functionExecutionResultList));  // architectureTypeSelected - not needed here (it's an inner call)
 
         // Update value in parent program
         Variable resultVariable = this.getFunctionOfThisInstruction().getResultVariable();

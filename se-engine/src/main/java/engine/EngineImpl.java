@@ -32,6 +32,7 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();   // Program name : Execution history
     private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new HashMap<>();  // Username : Execution history
 
+
     public EngineImpl() {
         // Create default user with empty name (For version 2)
         UserDTO defaultUser = new UserDTO(UserDTO.DEFAULT_NAME);
@@ -112,12 +113,12 @@ public class EngineImpl implements Engine, Serializable {
 
         Program workingProgram = getExpandedProgram(programName, degree);  // Get the relevant program from the map
         workingProgram.incrementExecutionsCount();  // Add one to execution count of the program;
-        ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram);
         ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
+        ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram, architectureTypeSelected);
         UserDTO userDTO = getUserDTO(uploaderName);
         userDTO.addOneToExecutionsCount();
 
-        programExecutor.run(userDTO, architectureTypeSelected, degree, inputs); // The important method
+        programExecutor.run(userDTO, degree, inputs); // The important method
 
         // For Version 2
         List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());  // Get the history list per program (if not exist create empty list) and add it to the list
@@ -382,12 +383,15 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName) {
+    public void initializeDebugger(String programName, String architectureTypeRepresentation, int degree, List<Long> inputs, String uploaderName) {
         Program workingProgram = getExpandedProgram(programName, degree);
         UserDTO userDTO = getUserDTO(uploaderName);
 
-        // In any case, overwrite the previous value
-        usernameToDebug.put(uploaderName, new DebugImpl(workingProgram, degree, inputs, uploaderName, userDTO));
+        ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
+
+        // ALWAYS -> OVERWRITE the previous value
+        Debug newDebug = new DebugImpl(workingProgram, architectureTypeSelected, degree, inputs, uploaderName, userDTO);
+        usernameToDebug.put(uploaderName, newDebug);
     }
 
     private Debug getDebugSystemByUsername(String username) {

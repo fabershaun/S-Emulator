@@ -4,6 +4,7 @@ import java.util.Map;
 
 public class DebugDTO {
     private final String programName;
+    private final String architectureTypeSelected;
     private final int currentInstructionNumber;
     private final int nextInstructionNumber;
     private final boolean hasMoreInstructions;
@@ -15,6 +16,7 @@ public class DebugDTO {
     private final Map<String, Long> variablesToValuesSorted;
 
     public DebugDTO(String programName,
+                    String architectureTypeSelected,
                     int currentInstructionNumber,
                     int nextInstructionNumber,
                     boolean hasMoreInstructions,
@@ -25,6 +27,7 @@ public class DebugDTO {
                     Map<String, Long> variablesToValuesSorted) {
 
         this.programName = programName;
+        this.architectureTypeSelected = architectureTypeSelected;
         this.currentInstructionNumber = currentInstructionNumber;
         this.nextInstructionNumber = nextInstructionNumber;
         this.hasMoreInstructions = hasMoreInstructions;
@@ -36,6 +39,8 @@ public class DebugDTO {
     }
 
     public String getProgramName() { return programName; }
+
+    public String getArchitectureTypeSelected() { return architectureTypeSelected; }
 
     public int getCurrentInstructionNumber() {
         return currentInstructionNumber;

@@ -9,6 +9,7 @@ import dto.v3.MainProgramDTO;
 import dto.v3.HistoryRowV3DTO;
 import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
+import engine.logic.programData.architecture.ArchitectureType;
 
 import java.io.File;
 import java.io.InputStream;
@@ -54,7 +55,7 @@ public interface Engine {
     void runProgram(String programName, String architectureTypeRepresentation, int degree, String uploaderName, Long... inputs);
 
     // Debug
-    void initializeDebugger(String programName, int degree, List<Long> inputs, String uploaderName);
+    void initializeDebugger(String programName, String architectureTypeRepresentation, int degree, List<Long> inputs, String uploaderName);
     DebugDTO getProgramAfterStepOver(String uploaderName);
     DebugDTO getProgramAfterResume(List<Boolean> breakPoints, String uploaderName) throws InterruptedException;
     DebugDTO getProgramAfterStepBack(String uploaderName);

@@ -56,11 +56,11 @@ public class FunctionInstructionUtils {
         String innerFunctionName = innerFunctionArgument.getFunctionName();
         Program innerFunction = mainProgram.getFunctionByName(innerFunctionName);
 
-        ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction);
+        ProgramExecutor functionExecutor = new ProgramExecutorImpl(innerFunction, null);
         List<FunctionExecutionResult> functionExecutionResultList = getInputs(innerFunctionArgument.getArguments(), context, mainProgram, userDTO);
 
         // Run
-        functionExecutor.run(userDTO, null, 0, extractInputValues(functionExecutionResultList));    // architectureTypeSelected - not needed here (it's an inner call)
+        functionExecutor.run(userDTO, 0, extractInputValues(functionExecutionResultList));    // architectureTypeSelected - not needed here (it's an inner call)
 
         // Return function result
         Variable resultVariable = innerFunction.getResultVariable();

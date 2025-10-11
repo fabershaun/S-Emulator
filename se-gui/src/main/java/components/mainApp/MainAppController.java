@@ -9,6 +9,7 @@ import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import dto.v2.*;
 import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
+import engine.logic.programData.architecture.ArchitectureType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Modality;
@@ -300,7 +301,7 @@ public class MainAppController {
     }
 
     public void initializeDebugger(List<Long> inputValues) {
-        engine.initializeDebugger(getActiveProgramName(), degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
+        engine.initializeDebugger(getActiveProgramName(), ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
     }
 
     public void debugStop() {

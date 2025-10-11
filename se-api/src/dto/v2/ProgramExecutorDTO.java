@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 public class ProgramExecutorDTO {
+    public final static String DEFAULT_ARCHITECTURE = "IV";
+
     private final ProgramDTO programDTO;
     private final Map<String, Long> VariablesToValuesSorted;
     private final long result;
     private final int totalCycles;
     private final int degree;
     private final List<Long> inputs;
-    private String architectureTypeSelected;
+    private final String architectureTypeSelected;
 
 
     public ProgramExecutorDTO(ProgramDTO programDTO, Map<String, Long> VariablesToValuesSorted, long result, int totalCycles, int degree, List<Long> inputs, String architectureTypeSelected) {

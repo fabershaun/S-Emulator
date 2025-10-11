@@ -9,6 +9,7 @@ import engine.logic.execution.ExecutionContext;
 import engine.logic.execution.ExecutionContextImpl;
 import engine.logic.execution.runMode.ProgramExecutor;
 import engine.logic.execution.runMode.ProgramExecutorImpl;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.label.FixedLabel;
 import engine.logic.programData.label.Label;
@@ -39,7 +40,7 @@ public class DebugImpl implements Debug {
     private int historyPointer = -1;
     private boolean justStoppedOnBreakpoint = false;
 
-    public DebugImpl(Program program, int degree, List<Long> inputs, String uploaderName, UserDTO userDTO) { // TODO: why need both uploaderName, and userDTO
+    public DebugImpl(Program program, ArchitectureType architectureTypeSelected, int degree, List<Long> inputs, String uploaderName, UserDTO userDTO) { // TODO: why need both uploaderName, and userDTO
         this.program = program;
         this.uploaderName = uploaderName;
         this.userDTO = userDTO;
@@ -48,11 +49,11 @@ public class DebugImpl implements Debug {
         ExecutionContext initializeContext = new ExecutionContextImpl();
         initializeContext.initializeVariables(program, inputs.toArray(new Long[0]));
 
-        this.programExecutor = new ProgramExecutorImpl(program);
+        this.programExecutor = new ProgramExecutorImpl(program, architectureTypeSelected);
         this.programExecutor.setInputsValues(inputs);
         this.programExecutor.setRunDegree(degree);
 
-        this.initializeProgramExecutor = new ProgramExecutorImpl(program);
+        this.initializeProgramExecutor = new ProgramExecutorImpl(program, architectureTypeSelected);
         this.initializeProgramExecutor.setInputsValues(inputs);
         this.initializeProgramExecutor.setRunDegree(degree);
         this.initializeProgramExecutor.setExecutionContext(initializeContext);
@@ -69,6 +70,7 @@ public class DebugImpl implements Debug {
 
                 snapshot = new DebugDTO(
                         this.programExecutor.getProgram().getName(),
+                        this.programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation(),
                         0, // current instruction index
                         0, // next instruction index (still at start)
                         hasMoreInstructions(),
@@ -193,21 +195,6 @@ public class DebugImpl implements Debug {
         return stepsHistory.get(historyPointer);
     }
 
-    private void updateCreditsOnly() {
-        int totalCyclesInCurrentInstruction = stepsHistory.get(historyPointer).getTotalCycles();
-        int totalCyclesInPreviousInstruction = stepsHistory.get(historyPointer - 1).getTotalCycles();
-        int currentInstructionCycles = totalCyclesInCurrentInstruction - totalCyclesInPreviousInstruction;
-
-        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
-    }
-
-    private void updateCyclesAndCredits(Instruction currentInstruction) {
-        int currentInstructionCycles = currentInstruction.getCycleOfInstruction();
-        currentCycles += currentInstructionCycles;
-
-        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
-    }
-
     private void updateNextInstructionIndexToNextIndex(Label nextInstructionLabel) {
         if (nextInstructionLabel.equals(FixedLabel.EMPTY)) {
             nextInstructionIndex++;  // Step Over
@@ -236,6 +223,7 @@ public class DebugImpl implements Debug {
 
             return new DebugDTO(
                     this.programExecutor.getProgram().getName(),
+                    this.programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation(),
                     getCurrentInstructionIndex(),
                     getNextInstructionIndex(),
                     hasMoreInstructions(),
@@ -271,22 +259,6 @@ public class DebugImpl implements Debug {
     @Override
     public DebugDTO stop() {
         return stepsHistory.get(historyPointer);
-    }
-
-    private DebugDTO buildDebugDTO() {
-        ProgramExecutorDTO executorDTO = buildProgramExecutorDTO(this.programExecutor);
-
-        return new DebugDTO(
-                this.programExecutor.getProgram().getName(),
-                getCurrentInstructionIndex(),
-                getNextInstructionIndex(),
-                hasMoreInstructions(),
-                getTargetVariableOfCurrentInstruction(),
-                executorDTO.getDegree(),
-                executorDTO.getResult(),
-                executorDTO.getTotalCycles(),
-                executorDTO.getVariablesToValuesSorted()
-        );
     }
 
     @Override
@@ -327,6 +299,42 @@ public class DebugImpl implements Debug {
     @Override
     public int getNextInstructionIndex() {
         return nextInstructionIndex; // Return the index after the update
+    }
+
+    private DebugDTO buildDebugDTO() {
+        ProgramExecutorDTO executorDTO = buildProgramExecutorDTO(this.programExecutor);
+
+        return new DebugDTO(
+                this.programExecutor.getProgram().getName(),
+                this.programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation(),
+                getCurrentInstructionIndex(),
+                getNextInstructionIndex(),
+                hasMoreInstructions(),
+                getTargetVariableOfCurrentInstruction(),
+                executorDTO.getDegree(),
+                executorDTO.getResult(),
+                executorDTO.getTotalCycles(),
+                executorDTO.getVariablesToValuesSorted()
+        );
+    }
+
+    private void updateCreditsOnly() {
+        if (historyPointer <= 0) {
+            return; // No previous level to compare to
+        }
+
+        int totalCyclesInCurrentInstruction = stepsHistory.get(historyPointer).getTotalCycles();
+        int totalCyclesInPreviousInstruction = stepsHistory.get(historyPointer - 1).getTotalCycles();
+        int currentInstructionCycles = totalCyclesInCurrentInstruction - totalCyclesInPreviousInstruction;
+
+        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
+    }
+
+    private void updateCyclesAndCredits(Instruction currentInstruction) {
+        int currentInstructionCycles = currentInstruction.getCycleOfInstruction();
+        currentCycles += currentInstructionCycles;
+
+        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
     }
 
     private void updateProgramExecutorData() {

@@ -21,7 +21,7 @@ public class ProgramRunTask extends Task<ProgramExecutorDTO> {
 
     @Override
     protected ProgramExecutorDTO call() {
-        engine.runProgram(programToRunName, null, degree, UserDTO.DEFAULT_NAME, inputs);   // architectureTypeRepresentation - only for version 3
+        engine.runProgram(programToRunName, ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degree, UserDTO.DEFAULT_NAME, inputs);   // architectureTypeRepresentation - only for version 3
         return engine.getProgramAfterRunV2(programToRunName);
     }
 }

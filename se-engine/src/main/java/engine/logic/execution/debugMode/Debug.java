@@ -3,6 +3,7 @@ package engine.logic.execution.debugMode;
 import dto.v2.DebugDTO;
 import dto.v2.ProgramExecutorDTO;
 import engine.logic.execution.runMode.ProgramExecutor;
+import engine.logic.programData.architecture.ArchitectureType;
 
 import java.util.List;
 
@@ -20,5 +21,4 @@ public interface Debug {
     ProgramExecutor getDebugProgramExecutor();
     int getCurrentInstructionIndex();
     int getNextInstructionIndex();
-
 }

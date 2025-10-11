@@ -23,14 +23,15 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
     private int totalCycles = 0;
     private ArchitectureType architectureTypeSelected;
 
-    public ProgramExecutorImpl(Program program) {
+    public ProgramExecutorImpl(Program program, ArchitectureType architectureTypeSelected) {
         this.program = program;
+        this.architectureTypeSelected = architectureTypeSelected;
         this.context = new ExecutionContextImpl();
         this.inputsValues = new ArrayList<>();
     }
 
     @Override
-    public void run(UserDTO userDTO, ArchitectureType architectureTypeSelected, int runDegree, Long... inputs) {
+    public void run(UserDTO userDTO, int runDegree, Long... inputs) {
         Instruction currentInstruction = program.getInstructionsList().getFirst();
         Instruction nextInstruction = null;
         Label nextLabel;
