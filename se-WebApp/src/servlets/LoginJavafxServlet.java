@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import dto.v3.UserDTO;
 import utils.ServletUtils;
 import utils.SessionUtils;
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class LoginJavafxServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
 
         if (usernameFromSession == null) { //user is not logged in yet
-            String usernameFromParameter = request.getParameter(USERNAME);
+            String usernameFromParameter = request.getParameter(USERNAME_QUERY_PARAM);
             if (usernameFromParameter == null ||  usernameFromParameter.isEmpty()) { //no username in session and no username in parameter - not standard situation. it's a conflict
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
             } else {
@@ -37,7 +36,7 @@ public class LoginJavafxServlet extends HttpServlet {
                     }
                     else {
                         engine.addUser(usernameFromParameter);
-                        request.getSession(true).setAttribute(USERNAME, usernameFromParameter);
+                        request.getSession(true).setAttribute(USERNAME_QUERY_PARAM, usernameFromParameter);
                         System.out.println("On login, request URI is: " + request.getRequestURI());
                         response.setStatus(HttpServletResponse.SC_OK);
                     }

@@ -6,7 +6,8 @@ public class Constants {
 
     public static final Gson GSON_INSTANCE = new Gson();
 
-    public static final String USERNAME = "username";
+    public static final String USERNAME_QUERY_PARAM = "username";
+    public static final String PROGRAM_NAME_QUERY_PARAM = "username";
 
     // Login:
     public static final String LOGIN_SERVLET_NAME = "LoginServlet";
@@ -32,4 +33,9 @@ public class Constants {
     // Get Available Functions List:
     public static final String AVAILABLE_FUNCTIONS_LIST_NAME = "AvailableFunctionsListServlet";
     public static final String AVAILABLE_FUNCTIONS_LIST_URL = "/available-functions-list";
+
+    // Get ProgramDTO:
+    public final static String CURRENT_PROGRAM_DATA_NAME = "ProgramDtoServlet";
+    public final static String CURRENT_PROGRAM_DATA_URL = "/current-program-data";
+
 }

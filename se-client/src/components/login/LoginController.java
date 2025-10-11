@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
 import java.io.IOException;
 import static utils.Constants.LOGIN_PAGE;
+import static utils.Constants.USERNAME_QUERY_PARAM;
 
 
 public class LoginController {
@@ -45,7 +46,7 @@ public class LoginController {
         String finalUrl = HttpUrl
                 .parse(LOGIN_PAGE)
                 .newBuilder()
-                .addQueryParameter("username", userName)
+                .addQueryParameter(USERNAME_QUERY_PARAM, userName)
                 .build()
                 .toString();
 

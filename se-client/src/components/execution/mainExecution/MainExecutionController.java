@@ -58,7 +58,7 @@ public class MainExecutionController {
         String finalUrl = HttpUrl
                 .parse(CURRENT_PROGRAM_DATA)
                 .newBuilder()
-                .addQueryParameter("program-name", programSelectedName)
+                .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programSelectedName)
                 .build()
                 .toString();
 

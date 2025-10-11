@@ -18,6 +18,10 @@ public class Constants {
     public final static String EXECUTION_PAGE_FXML_RESOURCE_LOCATION = "/components/execution/mainExecution/mainExecution.fxml";
     public final static String HISTORY_ROW_POP_UP_LOCATION = "/components/dashboard/usersHistory/historyRowPopUp/historyRowPopUp.fxml";
 
+    // Query parameters:
+    public static final String USERNAME_QUERY_PARAM = "username";
+    public static final String PROGRAM_NAME_QUERY_PARAM = "username";
+
     // Server resources locations
     private final static String BASE_DOMAIN = "localhost";
     private final static String BASE_URL = "http://" + BASE_DOMAIN + ":8080";
