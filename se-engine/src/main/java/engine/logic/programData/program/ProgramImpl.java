@@ -30,7 +30,7 @@ public class ProgramImpl implements Program, Serializable {
     private ArchitectureType minimumArchitectureRequired;
     private int executionsCount = 0;
     private int creditCostOfProgram = 0;
-    private String mainProgramNameOfThisProgram;
+    private final String mainProgramNameOfThisProgram;
 
     private final List<Instruction> programInstructions;
     private final Set<Variable> inputVariables;

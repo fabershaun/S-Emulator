@@ -226,18 +226,18 @@ public class EngineImpl implements Engine, Serializable {
 
         List<HistoryRowV3DTO> historyRows = new ArrayList<>();
 
-        for (ProgramExecutorDTO executor : executors) {
-            ProgramDTO programDTO = executor.getProgramDTO();
+        for (ProgramExecutorDTO programExecutorDTO : executors) {
+            ProgramDTO programDTO = programExecutorDTO.getProgramDTO();
 
             HistoryRowV3DTO row = new HistoryRowV3DTO(
                     programDTO.getProgramType(),
                     programDTO.getProgramUserString(),
-                    executor.getArchitectureTypeSelected(),
-                    executor.getDegree(),
-                    executor.getResult(),
-                    executor.getTotalCycles(),
-                    executor.getVariablesToValuesSorted(),
-                    executor.getInputsValuesOfUser()
+                    programExecutorDTO.getArchitectureTypeSelected(),
+                    programExecutorDTO.getDegree(),
+                    programExecutorDTO.getResult(),
+                    programExecutorDTO.getTotalCycles(),
+                    programExecutorDTO.getVariablesToValuesSorted(),
+                    programExecutorDTO.getInputsValuesOfUser()
             );
 
             historyRows.add(row);
