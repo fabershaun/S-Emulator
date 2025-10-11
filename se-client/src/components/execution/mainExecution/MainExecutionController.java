@@ -5,6 +5,7 @@ import javafx.beans.property.LongProperty;
 import javafx.beans.property.StringProperty;
 
 public class MainExecutionController {
+
     public void setMainAppController(MainAppController mainAppController) {
     }
 
