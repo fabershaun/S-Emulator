@@ -1,10 +1,9 @@
-package components.mainApp;
+package components.mainAppV3;
 
 import components.dashboard.mainDashboard.DashboardController;
 import components.login.LoginController;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,6 +16,8 @@ import java.net.URL;
 import static utils.Constants.*;
 
 public class MainAppController {
+
+    private final LongProperty totalCreditsAmount = new SimpleLongProperty();
 
     @FXML private Label availableCreditsLabel;
     @FXML private Label userNameLabel;
@@ -37,6 +38,7 @@ public class MainAppController {
     @FXML
     public void initialize() {
         userNameLabel.textProperty().bind(currentUserName);
+        availableCreditsLabel.textProperty().bind(totalCreditsAmount.asString());
 
         // Prepare components
         loadLoginPage();
@@ -53,7 +55,7 @@ public class MainAppController {
             dashboardScreen = fxmlLoader.load();
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainAppController(this);
-            dashboardController.setProperty(currentUserName);
+            dashboardController.setProperty(currentUserName, totalCreditsAmount);
             dashboardController.setupAfterMainAppInit();
         } catch (IOException e) {
             e.printStackTrace();

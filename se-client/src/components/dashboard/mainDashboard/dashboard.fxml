@@ -2,29 +2,36 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.layout.StackPane?>
-<StackPane fx:id="dashboardStackPane" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="components.dashboard.mainDashboard.DashboardController">
+<StackPane fx:id="dashboardStackPane" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.mainDashboard.DashboardController">
 
     <VBox spacing="10.0">
-
-        <fx:include fx:id="loadFile" source="../loadFileClient/loadFile.fxml"/>
+      <BorderPane>
+         <left>
+      
+              <fx:include fx:id="loadFile" source="../loadFileClient/loadFile.fxml" />
+         </left>
+         <right>
+            <fx:include fx:id="chargeCredits" source="../chargeCredits/chargeCredits.fxml" />
+         </right>
+      </BorderPane>
 
         <SplitPane dividerPositions="0.5">
             <SplitPane dividerPositions="0.5" orientation="VERTICAL">
-                <fx:include fx:id="usersList" source="../users/users.fxml"/>
-                <fx:include fx:id="userHistoryList" source="../usersHistory/usersHistory.fxml"/>
+                <fx:include fx:id="usersList" source="../users/users.fxml" />
+                <fx:include fx:id="userHistoryList" source="../usersHistory/usersHistory.fxml" />
             </SplitPane>
 
             <SplitPane dividerPositions="0.5" orientation="VERTICAL">
-                <fx:include fx:id="availableProgramsList" source="../availablePrograms/availablePrograms.fxml"/>
-                <fx:include fx:id="availableFunctionsList" source="../availableFunctions/availableFunctions.fxml"/>
+                <fx:include fx:id="availableProgramsList" source="../availablePrograms/availablePrograms.fxml" />
+                <fx:include fx:id="availableFunctionsList" source="../availableFunctions/availableFunctions.fxml" />
             </SplitPane>
         </SplitPane>
         <padding>
-            <Insets left="5.0" right="5.0"/>
+            <Insets left="5.0" right="5.0" />
         </padding>
     </VBox>
 </StackPane>

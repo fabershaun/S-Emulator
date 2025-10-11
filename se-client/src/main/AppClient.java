@@ -1,6 +1,6 @@
 package main;
 
-import components.mainApp.MainAppController;
+import components.mainAppV3.MainAppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

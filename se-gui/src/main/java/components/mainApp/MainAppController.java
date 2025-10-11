@@ -9,7 +9,6 @@ import components.summaryLineOfMainInstructionsTable.SummaryLineController;
 import dto.v2.*;
 import dto.v3.UserDTO;
 import engine.logic.exceptions.EngineLoadException;
-import engine.logic.programData.architecture.ArchitectureType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Modality;

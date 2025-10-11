@@ -1,6 +1,6 @@
 package components.login;
 
-import components.mainApp.MainAppController;
+import components.mainAppV3.MainAppController;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

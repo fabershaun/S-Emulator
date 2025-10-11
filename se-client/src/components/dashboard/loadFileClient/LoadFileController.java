@@ -21,12 +21,9 @@ public class LoadFileController {
     private DashboardController dashboardController;
     private StringProperty selectedFilePathProperty;
 
-
     @FXML private Button loadFileButton;
     @FXML private Label pathLabel;
 
-    @FXML private Button chargeCreditsButton;
-    @FXML private TextField chargeCreditsTextField;
 
     private Timeline pulseAnimation;       // Animation for button
 
@@ -70,11 +67,6 @@ public class LoadFileController {
             AlertUtils.showError("Load failed", "Unexpected error: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    @FXML
-    public void onChargeCreditsButton() {
-
     }
 
     private void initializePulseAnimationLoadButton() {

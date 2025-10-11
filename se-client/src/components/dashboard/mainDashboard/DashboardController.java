@@ -3,22 +3,18 @@ package components.dashboard.mainDashboard;
 import components.UIUtils.AlertUtils;
 import components.dashboard.availableFunctions.AvailableFunctionsListController;
 import components.dashboard.availablePrograms.AvailableProgramsListController;
+import components.dashboard.chargeCredits.ChargeCreditsController;
 import components.dashboard.loadFileClient.LoadFileController;
 import components.dashboard.users.UsersListController;
 import components.dashboard.usersHistory.UsersHistoryController;
-import components.mainApp.MainAppController;
+import components.mainAppV3.MainAppController;
 import components.UIUtils.ToastUtil;
 import dto.v2.ProgramDTO;
 import dto.v3.UserDTO;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
@@ -39,10 +35,13 @@ public class DashboardController implements Closeable {
     private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
     private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
     private StringProperty currentUsername;
+    private LongProperty totalCreditsAmount;
 
     @FXML private StackPane dashboardStackPane;
-    @FXML private BorderPane loadFile;
+    @FXML private HBox loadFile;
     @FXML private LoadFileController loadFileController;          // must: field name = fx:id + "Controller"
+    @FXML private HBox chargeCredits;
+    @FXML private ChargeCreditsController chargeCreditsController;
     @FXML private VBox usersList;
     @FXML private UsersListController usersListController;        // must: field name = fx:id + "Controller"
     @FXML private VBox userHistoryList;
@@ -57,19 +56,22 @@ public class DashboardController implements Closeable {
         this.mainAppController = mainAppController;
     }
 
-    public void setProperty(StringProperty currentUsername) {
+    public void setProperty(StringProperty currentUsername, LongProperty totalCreditsAmount) {
+        this.totalCreditsAmount = totalCreditsAmount;
         this.currentUsername = currentUsername;
     }
 
     public void setupAfterMainAppInit() {
         if (
             loadFileController != null &&
+            chargeCreditsController != null &&
             usersListController != null &&
             userHistoryListController != null &&
             availableProgramsListController != null &&
             availableFunctionsListController != null
         ) {
             initLoadFileController();
+            initChargeCreditsController();
             intiUserListController();
             initHistoryListController();
             initProgramListController();
@@ -80,6 +82,11 @@ public class DashboardController implements Closeable {
         loadFileController.setDashboardController(this);
         loadFileController.setProperty(selectedFilePathProperty);
         loadFileController.initializeBindings();
+    }
+
+
+    private void initChargeCreditsController() {
+        chargeCreditsController.setProperty(totalCreditsAmount);
     }
 
     private void intiUserListController() {
