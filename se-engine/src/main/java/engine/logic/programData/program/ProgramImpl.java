@@ -407,6 +407,12 @@ public class ProgramImpl implements Program, Serializable {
 
     // Called every time the program executes
     @Override
+    public void addCreditCostOfProgram(int creditCost) {
+        this.creditCostOfProgram += creditCost;
+    }
+
+    // Called every time the program executes
+    @Override
     public void incrementExecutionsCount() {
         this.executionsCount++;
     }
@@ -421,14 +427,7 @@ public class ProgramImpl implements Program, Serializable {
         if (executionsCount == 0) {
             return 0;
         }
-
         return creditCostOfProgram / this.executionsCount;
-    }
-
-    // Called every time the program executes
-    @Override
-    public void addCreditCostOfProgram(int creditCost) {
-        this.creditCostOfProgram += creditCost;
     }
 
     @Override

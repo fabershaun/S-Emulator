@@ -451,6 +451,9 @@ public class EngineImpl implements Engine, Serializable {
 
         UserDTO userDTO = this.usernameToUserDTO.get(uploaderName);
         userDTO.addOneToExecutionsCount();
+
+        // Increase the execution count of the program
+        debug.getDebugProgramExecutor().getProgram().incrementExecutionsCount();
     }
 
     @Override

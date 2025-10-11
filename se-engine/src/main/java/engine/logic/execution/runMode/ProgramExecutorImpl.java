@@ -17,11 +17,11 @@ import java.util.*;
 public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
 
     private final Program program;
+    private final ArchitectureType architectureTypeSelected;
     private ExecutionContext context;
     private List<Long> inputsValues;
     private int runDegree = 0;
     private int totalCycles = 0;
-    private ArchitectureType architectureTypeSelected;
 
     public ProgramExecutorImpl(Program program, ArchitectureType architectureTypeSelected) {
         this.program = program;
@@ -39,7 +39,6 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         inputsValues = List.of(inputs);
         context.initializeVariables(program, inputs);
         this.runDegree = runDegree;
-        this.architectureTypeSelected = architectureTypeSelected;
 
         do {
                 nextLabel = currentInstruction.execute(context, userDTO);
