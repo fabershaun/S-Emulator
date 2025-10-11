@@ -23,8 +23,10 @@ import javafx.scene.layout.VBox;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
+import utils.HttpResponseHandler;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import static utils.Constants.*;
 import static utils.Constants.GSON_INSTANCE;
@@ -66,7 +68,7 @@ public class MainExecutionController {
             initChainInstructionTableController();
             initDebuggerExecutionMenuController();
 
-            initDegreeModel();
+            initializeListeners();
         }
     }
 
@@ -74,6 +76,7 @@ public class MainExecutionController {
         selectedProgramProperty.addListener((obs, oldProg, newProg) -> { // todo: remove
             if (newProg != null) {
                 mainInstructionsTableController.fillTable(newProg.getInstructions());
+                topToolBarController.setProgramCurrentName(selectedProgramProperty.get().getProgramName());
             }
         });
     }
@@ -81,7 +84,6 @@ public class MainExecutionController {
     private void initToolBarController() {
         topToolBarController.setExecutionController(this);
         topToolBarController.setModels(degreeModel, highlightSelectionModel);
-        topToolBarController.setProgramCurrentName(selectedProgramProperty.get().getProgramName());
     }
 
     private void initMainInstructionsTableController() {
@@ -100,15 +102,23 @@ public class MainExecutionController {
     }
 
     private void initDegreeModel() {
+        if (selectedProgramProperty.get() == null) return;
 
         degreeModel.setCurrentDegree(0);
         degreeModel.setProgram(selectedProgramProperty.get());
 
-        String maxDegreeUrl = HttpUrl.parse(MAX_DEGREE_PATH)
-                .newBuilder()
-                .build()
-                .toString();
-        fetchMaxDegreeAsync(maxDegreeUrl);  // Get the max degree of the program: from the server
+        String programSelectedName = selectedProgramProperty.get().getProgramName();
+        String maxDegreeUrl = buildUrlWithQueryParam(MAX_DEGREE_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
+        fetchMaxDegreeAsync(maxDegreeUrl)     // Get the max degree of the program: from the server
+                .thenAccept(maxDegree ->
+                        Platform.runLater(() -> degreeModel.setMaxDegree(maxDegree))
+                )
+                .exceptionally(ex -> {
+                    Platform.runLater(() ->
+                            AlertUtils.showError("Error", "Failed to fetch max degree: " + ex.getMessage())
+                    );
+                    return null;
+                });
     }
 
     public void setMainAppController(MainAppController mainAppController) {
@@ -119,14 +129,14 @@ public class MainExecutionController {
     }
 
     public void setupAfterMainAppInit(String programSelectedName) {
-        String url = buildProgramDataUrl(programSelectedName);
+        String url = buildUrlWithQueryParam(CURRENT_PROGRAM_DATA_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
         fetchProgramDataAsync(url);
     }
 
-    private String buildProgramDataUrl(String programName) {
-        return HttpUrl.parse(CURRENT_PROGRAM_DATA_PATH)
+    private String buildUrlWithQueryParam(String path, String queryParameterName, String queryParameter) {
+        return HttpUrl.parse(path)
                 .newBuilder()
-                .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
+                .addQueryParameter(queryParameterName, queryParameter)
                 .build()
                 .toString();
     }
@@ -158,12 +168,12 @@ public class MainExecutionController {
         // Parse the JSON into a ProgramDTO object
         ProgramDTO program = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
 
-        // Update UI (must be done on JavaFX thread)
+        // Update UI and Models (must be done on JavaFX thread after the program was loaded)
         Platform.runLater(() -> {
             selectedProgramProperty.set(program); // triggers listeners automatically
+            initDegreeModel();
         });
     }
-
 
     public void jumpToDegree(int target) {
 //        int maxDegree = engine.getMaxDegree(selectedProgramProperty.get().getProgramName());
@@ -183,34 +193,36 @@ public class MainExecutionController {
 //        new Thread(expansionTask, "expand-thread").start();
     }
 
-    private void fetchMaxDegreeAsync(String url) {
+    private CompletableFuture<Integer> fetchMaxDegreeAsync(String url) {
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+
         HttpClientUtil.runAsync(url, null, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
+                future.completeExceptionally(e);
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                handleMaxDegreeResponse(response);
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (response.code() != 200) {
+                    HttpResponseHandler.handleErrorResponse(response.code(), responseBody, "Getting max degree");
+                    future.completeExceptionally(new RuntimeException("Bad response: " + response.code()));
+                    return;
+                }
+
+                try {
+                    int maxDegree = GSON_INSTANCE.fromJson(responseBody, Integer.class);
+                    future.complete(maxDegree);
+                } catch (Exception e) {
+                    future.completeExceptionally(e);
+                }
             }
         });
+
+        return future;
     }
 
-    private void handleMaxDegreeResponse(Response response) {
-        // Read the response body safely
-        String responseBody = HttpClientUtil.readResponseBodySafely(response);
-
-        // Check for non-200 HTTP codes
-        if (response.code() != 200) {
-            handleErrorResponse(response.code(), responseBody, "Getting max degree");
-            return;
-        }
-
-        int maxDegree = GSON_INSTANCE.fromJson(responseBody, Integer.class);
-
-        Platform.runLater(() -> {
-            degreeModel.setMaxDegree(maxDegree);
-        });
-    }
 }

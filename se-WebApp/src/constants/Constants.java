@@ -38,4 +38,8 @@ public class Constants {
     public final static String CURRENT_PROGRAM_DATA_NAME = "ProgramDtoServlet";
     public final static String CURRENT_PROGRAM_DATA_URL = "/current-program-data";
 
+    // Get ProgramDTO:
+    public final static String MAX_DEGREE_NAME = "MaxDegreeServlet";
+    public final static String MAX_DEGREE_URL = "/max-degree";
+
 }

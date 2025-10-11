@@ -1,6 +1,5 @@
 package servlets;
 
-import dto.v2.ProgramDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,15 +9,16 @@ import utils.ServletUtils;
 import utils.SessionUtils;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static constants.Constants.*;
 
+@WebServlet(name = MAX_DEGREE_NAME, urlPatterns = {MAX_DEGREE_URL})
+public class MaxDegreeServlet extends HttpServlet {
 
-@WebServlet(name = CURRENT_PROGRAM_DATA_NAME, urlPatterns = {CURRENT_PROGRAM_DATA_URL})
-public class ProgramDtoServlet extends HttpServlet {
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         try {
             // Verify user session
@@ -45,16 +45,9 @@ public class ProgramDtoServlet extends HttpServlet {
                 return;
             }
 
-            // Fetch program data
-            ProgramDTO programDTO = engine.getProgramDTOByName(programName);
-            if (programDTO == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write(GSON_INSTANCE.toJson("Program not found"));
-                return;
-            }
+            int maxDegree = engine.getMaxDegree(programName);
 
-            // Return JSON response
-            String json = GSON_INSTANCE.toJson(programDTO);
+            String json = GSON_INSTANCE.toJson(Map.of("maxDegree", maxDegree));
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(json);
 
@@ -63,4 +56,5 @@ public class ProgramDtoServlet extends HttpServlet {
             response.getWriter().write(GSON_INSTANCE.toJson("Server error: " + e.getMessage()));
         }
     }
+
 }

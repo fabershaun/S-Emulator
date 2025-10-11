@@ -21,6 +21,7 @@ public class Constants {
     // Query parameters:
     public static final String USERNAME_QUERY_PARAM = "username";
     public static final String PROGRAM_NAME_QUERY_PARAM = "username";
+    public static final String MAX_DEGREE_QUERY_PARAM = "maxDegree";
 
     // Server resources locations
     private final static String BASE_DOMAIN = "localhost";
