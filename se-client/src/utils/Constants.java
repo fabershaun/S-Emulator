@@ -15,6 +15,7 @@ public class Constants {
     public final static String MAIN_PAGE_FXML_RESOURCE_LOCATION = "/components/mainAppV3/mainApp.fxml";
     public final static String LOGIN_PAGE_FXML_RESOURCE_LOCATION = "/components/login/login.fxml";
     public final static String DASHBOARD_PAGE_FXML_RESOURCE_LOCATION = "/components/dashboard/mainDashboard/dashboard.fxml";
+    public final static String EXECUTION_PAGE_FXML_RESOURCE_LOCATION = "/components/execution/mainExecution/mainExecution.fxml";
     public final static String HISTORY_ROW_POP_UP_LOCATION = "/components/dashboard/usersHistory/historyRowPopUp/historyRowPopUp.fxml";
 
     // Server resources locations

@@ -101,6 +101,7 @@ public class DashboardController implements Closeable {
 
     private void initProgramListController() {
         availableProgramsListController.initListeners();
+        availableProgramsListController.setDashboardController(this);
     }
 
     public void setActive() {
@@ -177,6 +178,10 @@ public class DashboardController implements Closeable {
                 });
             }
         });
+    }
+
+    public void switchToExecution(String programSelectedName) {
+        mainAppController.switchToExecution(programSelectedName);
     }
 
     @Override

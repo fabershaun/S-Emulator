@@ -1,6 +1,7 @@
 package components.mainAppV3;
 
 import components.dashboard.mainDashboard.DashboardController;
+import components.execution.mainExecution.MainExecutionController;
 import components.login.LoginController;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -24,10 +25,12 @@ public class MainAppController {
     private final StringProperty currentUserName;
     @FXML private AnchorPane mainPanel;     // Dynamic area (login / dashboard)
 
-    private Parent dashboardScreen;
     private Parent loginScreen;
+    private Parent dashboardScreen;
+    private Parent executionScreen;
 
     private DashboardController dashboardController;
+    private MainExecutionController executionController;
     private LoginController loginController;
 
 
@@ -57,6 +60,22 @@ public class MainAppController {
             dashboardController.setMainAppController(this);
             dashboardController.setProperty(currentUserName, totalCreditsAmount);
             dashboardController.setupAfterMainAppInit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void loadExecutionPage(String programSelectedName) {
+        URL executionPage = getClass().getResource(EXECUTION_PAGE_FXML_RESOURCE_LOCATION);
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(executionPage);
+            executionScreen = fxmlLoader.load();
+            executionController = fxmlLoader.getController();
+            executionController.setMainAppController(this);
+            executionController.setProperty(currentUserName, totalCreditsAmount);
+            executionController.setupAfterMainAppInit();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,6 +117,11 @@ public class MainAppController {
             currentUserName.set(ANONYMOUS);
             setMainPanelTo(loginScreen);
         });
+    }
+
+    public void switchToExecution(String programSelectedName) {
+        loadExecutionPage(programSelectedName);
+        setMainPanelTo(executionScreen);
     }
 
     public StringProperty currentUserNameProperty() {

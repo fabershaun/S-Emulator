@@ -1,5 +1,6 @@
 package components.dashboard.availablePrograms;
 
+import components.dashboard.mainDashboard.DashboardController;
 import dto.v3.MainProgramDTO;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -16,10 +17,12 @@ import static utils.Constants.REFRESH_RATE;
 
 public class AvailableProgramsListController implements Closeable {
 
-    private Timer timer;
-    private TimerTask programsListRefresher;
+    private DashboardController dashboardController;
     private final IntegerProperty totalProgramsProperty;
     private final ObjectProperty<MainProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
+
+    private Timer timer;
+    private TimerTask programsListRefresher;
 
     @FXML private Label programListLabel;
     @FXML private TableView<MainProgramDTO> availableProgramTableView;
@@ -33,6 +36,10 @@ public class AvailableProgramsListController implements Closeable {
 
     public AvailableProgramsListController() {
         totalProgramsProperty = new SimpleIntegerProperty();
+    }
+
+    public void setDashboardController(DashboardController dashboardController) {
+        this.dashboardController = dashboardController;
     }
 
     @FXML
@@ -92,12 +99,10 @@ public class AvailableProgramsListController implements Closeable {
         timer.schedule(programsListRefresher, 0, REFRESH_RATE);
     }
 
-    // TODO: WRITE
     @FXML
     void onExecuteProgramButtonClicked() {
-        String mainProgramSelectedName = selectedProgramProperty.get().getProgramName();
-
-
+        String programSelectedName = selectedProgramProperty.get().getProgramName();
+        dashboardController.switchToExecution(programSelectedName);
     }
 
     @Override
