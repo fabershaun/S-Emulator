@@ -8,11 +8,7 @@
 
 <HBox spacing="8.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="components.execution.topToolBar.TopToolBarController">
-    <ComboBox fx:id="programSelectorCB" promptText="Program \ Function Selector">
-        <HBox.margin>
-            <Insets right="7.0" />
-        </HBox.margin>
-    </ComboBox>
+    <Label fx:id="currentProgramName" text="Program Name"/>
     <ComboBox fx:id="collapseCB" prefWidth="120.0" promptText="Collapse" HBox.hgrow="ALWAYS" />
     <VBox alignment="CENTER">
         <Label text="Current Degree"

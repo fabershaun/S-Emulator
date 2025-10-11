@@ -6,6 +6,8 @@ import components.execution.chainInstructionsTable.ChainInstructionsTableControl
 import components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.execution.mainInstructionsTable.MainInstructionsTableController;
 import components.execution.summaryLineOfMainInstructionsTable.SummaryLineController;
+import components.execution.topToolBar.ExpansionCollapseModelV3;
+import components.execution.topToolBar.HighlightSelectionModelV3;
 import components.execution.topToolBar.TopToolBarController;
 import components.mainAppV3.MainAppController;
 import dto.v2.InstructionDTO;
@@ -36,6 +38,9 @@ public class MainExecutionController {
     private LongProperty totalCreditsAmount;
     private final ObjectProperty<ProgramDTO> currentProgramProperty = new SimpleObjectProperty<>();
 
+    private final ExpansionCollapseModelV3 degreeModel = new ExpansionCollapseModelV3();
+    private final HighlightSelectionModelV3 highlightSelectionModel = new HighlightSelectionModelV3();
+
     @FXML private StackPane rootStackPane;
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
@@ -47,6 +52,44 @@ public class MainExecutionController {
     @FXML private ChainInstructionsTableController chainInstructionTableController;    // must: field name = fx:id + "Controller"
     @FXML private VBox debuggerExecutionMenu;
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
+
+
+    @FXML
+    public void initialize() {
+        if (
+            topToolBarController != null &&
+            mainInstructionsTableController != null &&
+            summaryLineController != null &&
+            chainInstructionTableController != null &&
+            debuggerExecutionMenuController != null
+        ) {
+            initToolBarController();
+            initMainInstructionsTableController();
+            initSummaryLineController();
+            initChainInstructionTableController();
+            initDebuggerExecutionMenuController();
+        }
+    }
+
+    private void initToolBarController() {
+        topToolBarController.setExecutionController(this);
+        topToolBarController.setModels(degreeModel, highlightSelectionModel);
+    }
+
+    private void initMainInstructionsTableController() {
+
+    }
+
+    private void initSummaryLineController() {
+    }
+
+    private void initChainInstructionTableController() {
+
+    }
+
+    private void initDebuggerExecutionMenuController() {
+
+    }
 
 
     public void setMainAppController(MainAppController mainAppController) {
@@ -142,5 +185,21 @@ public class MainExecutionController {
         }
     }
 
-
+    public void jumpToDegree(int target) {
+//        int maxDegree = engine.getMaxDegree(selectedProgramProperty.get().getProgramName());
+//        int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));          // Clamp the requested degree to a valid range [0, maxDegree]
+//        String activeProgramName = getActiveProgramName();
+//        ExpandProgramTask expansionTask = new ExpandProgramTask(activeProgramName, engine, safeTargetDegree);
+//
+//        expansionTask.setOnSucceeded(ev -> {
+//            ProgramDTO programByDegree = expansionTask.getValue();
+//            selectedProgramProperty.set(programByDegree);
+//            degreeModel.setMaxDegree(maxDegree);
+//            degreeModel.setCurrentDegree(safeTargetDegree);
+//        });
+//
+//        expansionTask.setOnFailed(ev -> handleTaskFailure(expansionTask, "Expand failed"));
+//
+//        new Thread(expansionTask, "expand-thread").start();
+    }
 }

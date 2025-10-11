@@ -14,7 +14,6 @@ import static components.topToolBar.HighlightSelectionModel.EMPTY_CHOICE;
 public class TopToolBarController {
 
     private MainAppController mainController;
-    private ExpansionCollapseModel expansionCollapseModel;
     private HighlightSelectionModel highlightSelectionModel;
     private ProgramSelectorModel programSelectorModel;
     private final BooleanProperty lockExpandCollapseCB = new SimpleBooleanProperty(false);
@@ -39,7 +38,6 @@ public class TopToolBarController {
     }
 
     public void setupExpansionCollapseModel(ExpansionCollapseModel expansionCollapseModel) {
-        this.expansionCollapseModel = expansionCollapseModel;
 
         collapseCB.setItems(expansionCollapseModel.getCollapseOptions());
         expandCB.setItems(expansionCollapseModel.getExpandOptions());
