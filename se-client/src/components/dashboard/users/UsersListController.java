@@ -63,6 +63,16 @@ public class UsersListController implements Closeable {
             items.setAll(usersList);
 
             // Restore selection if still exists in the new list
+            if (currentSelection != null) {
+                String selectedName = currentSelection.getUserName();
+
+                usersList.stream()
+                        .filter(p -> p.getUserName().equals(selectedName))
+                        .findFirst()
+                        .ifPresent(p -> usersTableView.getSelectionModel().select(p));
+            }
+
+            // Restore selection if still exists in the new list
             if (currentSelection != null && usersList.contains(currentSelection)) {
                 usersTableView.getSelectionModel().select(currentSelection);
             }

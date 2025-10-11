@@ -69,8 +69,13 @@ public class AvailableFunctionsListController implements Closeable {
             items.setAll(functionsList);
 
             // Restore selection if still exists in the new list
-            if (currentSelection != null && functionsList.contains(currentSelection)) {
-                availableFunctionTableView.getSelectionModel().select(currentSelection);
+            if (currentSelection != null) {
+                String selectedName = currentSelection.getFunctionName();
+
+                functionsList.stream()
+                        .filter(p -> p.getFunctionName().equals(selectedName))
+                        .findFirst()
+                        .ifPresent(p -> availableFunctionTableView.getSelectionModel().select(p));
             }
 
             // Update count

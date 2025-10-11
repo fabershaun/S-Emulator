@@ -72,8 +72,13 @@ public class AvailableProgramsListController implements Closeable {
             items.setAll(programsList);
 
             // Restore selection if still exists in the new list
-            if (currentSelection != null && programsList.contains(currentSelection)) {
-                availableProgramTableView.getSelectionModel().select(currentSelection);
+            if (currentSelection != null) {
+                String selectedName = currentSelection.getProgramName();
+
+                programsList.stream()
+                        .filter(p -> p.getProgramName().equals(selectedName))
+                        .findFirst()
+                        .ifPresent(p -> availableProgramTableView.getSelectionModel().select(p));
             }
 
             // Update count
