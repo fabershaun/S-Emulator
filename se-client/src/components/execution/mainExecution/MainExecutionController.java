@@ -55,11 +55,12 @@ public class MainExecutionController {
     }
 
     public void setupAfterMainAppInit(String programSelectedName) {
-        String finalUrl = Objects.requireNonNull(HttpUrl
-                        .parse(CURRENT_PROGRAM_DATA))
+        String finalUrl = HttpUrl
+                .parse(CURRENT_PROGRAM_DATA)
                 .newBuilder()
+                .addQueryParameter("program-name", programSelectedName)
+                .build()
                 .toString();
-
 
         HttpClientUtil.runAsync(finalUrl, null, new Callback() {
 
@@ -94,21 +95,13 @@ public class MainExecutionController {
                         });
                     } catch (Exception e) {
                         Platform.runLater(() ->
-                                AlertUtils.showError("Load failed", "Server returned " + response.code() + ": " + responseBody)
+                                AlertUtils.showError("Program data load failed", "Server returned " + response.code() + ": " + responseBody)
                         );
                     }
                     return;
                 }
 
-                ProgramDTO loadedProgramDTO = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
-
-                Platform.runLater(() ->  {
-                    ToastUtil.showToast(
-                            rootStackPane,
-                            "XML file uploaded successfully: " + loadedProgramDTO.getProgramName(),
-                            true
-                    );
-                });
+                currentProgram = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
             }
         });
     }
