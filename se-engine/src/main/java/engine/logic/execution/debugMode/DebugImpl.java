@@ -115,8 +115,6 @@ public class DebugImpl implements Debug {
                 throw new InterruptedException("In DebugImpl - resume(): currentThread cancelled by user");
             }
 
-            //System.out.println("checking index: " + currentInstructionIndex);
-
             if (checkAndStopAtBreakpoint(breakPoints)) {
                 return stepsHistory.get(historyPointer);
             }
@@ -169,21 +167,21 @@ public class DebugImpl implements Debug {
         if(hasMoreInstructions()) {
             if(historyPointer > stepsHistory.size() - 1) {
                 throw new IllegalArgumentException("In DebugImpl: historyPointer is out of range. (historyPointer and currentInstructionIndex aren't synchronized");
-            } else if(historyPointer == stepsHistory.size() - 1) {
+            }
+            else if(historyPointer == stepsHistory.size() - 1) {
                 Instruction currentInstruction = instructions.get(currentInstructionIndex);
                 Label nextInstructionLabel = currentInstruction.execute(context, userDTO);
-
-                updateCyclesAndCredits(currentInstruction);
-
                 targetVariable = currentInstruction.getTargetVariable().getRepresentation();
 
+                updateCyclesAndCredits(currentInstruction);
                 updateProgramExecutorData();
                 updateNextInstructionIndexToNextIndex(nextInstructionLabel);
-                currentInstructionIndex = nextInstructionIndex;
 
+                currentInstructionIndex = nextInstructionIndex;
                 stepsHistory.add(buildDebugDTO());
                 ++historyPointer;
-            } else {    // When historyPointer is less than the list size
+            }
+            else {    // When historyPointer is less than the list size
                 historyPointer++;
                 updateCreditsOnly();
                 DebugDTO dto = stepsHistory.get(historyPointer);
@@ -328,6 +326,7 @@ public class DebugImpl implements Debug {
         int currentInstructionCycles = totalCyclesInCurrentInstruction - totalCyclesInPreviousInstruction;
 
         userDTO.subtractFromCurrentCredits(currentInstructionCycles);
+        programExecutor.getProgram().addCreditCost(currentInstructionCycles);
     }
 
     private void updateCyclesAndCredits(Instruction currentInstruction) {
@@ -335,6 +334,7 @@ public class DebugImpl implements Debug {
         currentCycles += currentInstructionCycles;
 
         userDTO.subtractFromCurrentCredits(currentInstructionCycles);
+        programExecutor.getProgram().addCreditCost(currentInstructionCycles);
     }
 
     private void updateProgramExecutorData() {

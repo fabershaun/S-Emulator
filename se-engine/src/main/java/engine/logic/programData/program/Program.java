@@ -55,7 +55,7 @@ public interface Program extends Serializable {
 
     Map<Integer, Program> calculateDegreeToProgram();
 
-    void addCreditCostOfProgram(int creditCost);
+    void addCreditCost(int creditCost);
     void incrementExecutionsCount();
     int getExecutionsCount();
     int getAverageCreditCost();

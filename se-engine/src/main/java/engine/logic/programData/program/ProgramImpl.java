@@ -407,7 +407,7 @@ public class ProgramImpl implements Program, Serializable {
 
     // Called every time the program executes
     @Override
-    public void addCreditCostOfProgram(int creditCost) {
+    public void addCreditCost(int creditCost) {
         this.creditCostOfProgram += creditCost;
     }
 
