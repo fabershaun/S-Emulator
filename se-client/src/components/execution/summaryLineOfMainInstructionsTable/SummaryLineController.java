@@ -46,16 +46,16 @@ public class SummaryLineController {
 
         // Architecture counts
         IntegerBinding a1CountBinding = Bindings.createIntegerBinding(
-                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "A_1"), currentSelectedProgramProperty);
+                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "I"), currentSelectedProgramProperty);
 
         IntegerBinding a2CountBinding = Bindings.createIntegerBinding(
-                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "A_2"), currentSelectedProgramProperty);
+                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "II"), currentSelectedProgramProperty);
 
         IntegerBinding a3CountBinding = Bindings.createIntegerBinding(
-                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "A_3"), currentSelectedProgramProperty);
+                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "III"), currentSelectedProgramProperty);
 
         IntegerBinding a4CountBinding = Bindings.createIntegerBinding(
-                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "A_4"), currentSelectedProgramProperty);
+                () -> computeArchitectureCount(currentSelectedProgramProperty.get(), "IV"), currentSelectedProgramProperty);
 
         // Bind labels to the string bindings
         amountTotalLabel.textProperty().bind(totalCountBinding.asString());
