@@ -348,6 +348,11 @@ public class MainExecutionController {
         });
     }
 
+    // TODO : Should be Blocking ?? not async
+    public void initializeDebugger(List<Long> inputValues) {
+//        engine.initializeDebugger(getActiveProgramName(), ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
+    }
+
     // TODO: write
     public void runProgram(List<Long> inputs) {
         int degree = degreeModel.currentDegreeProperty().get();
@@ -361,11 +366,6 @@ public class MainExecutionController {
 //        runTask.setOnFailed(ev -> handleTaskFailure(runTask, "Run Failed"));
 //
 //        new Thread(runTask, "runProgram-thread").start();
-    }
-
-    // TODO : Should be Blocking ?? not async
-    public void initializeDebugger(List<Long> inputValues) {
-//        engine.initializeDebugger(getActiveProgramName(), ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
     }
 
     // TODO : Should be Blocking ?? not async
