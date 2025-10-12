@@ -19,9 +19,12 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.converter.LongStringConverter;
+import okhttp3.HttpUrl;
 
 import java.util.List;
 import java.util.Map;
+
+import static utils.Constants.*;
 
 public class DebuggerExecutionMenuController {
 
@@ -36,12 +39,12 @@ public class DebuggerExecutionMenuController {
     @FXML private Button newRunButton;
     @FXML private RadioButton runRadio;
     @FXML private RadioButton debugRadio;
-    @FXML private ToggleGroup runModeToggleGroup;
+    @FXML private ComboBox<String> architectureComboBox;
+    @FXML private Button playButton;
     @FXML private Button stopButton;
     @FXML private Button resumeButton;
     @FXML private Button stepBackButton;
     @FXML private Button stepOverButton;
-    @FXML private Button playButton;
     @FXML private Label cyclesNumberLabel;
     @FXML private TableView<VariableRowV3> inputsTable;
     @FXML private TableColumn<VariableRowV3, String> colInputs;
@@ -58,6 +61,10 @@ public class DebuggerExecutionMenuController {
     public void setProperty(ObjectProperty<ProgramDTO> programProperty, ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty) {
         this.currentSelectedProgramProperty = programProperty;
         this.programAfterExecuteProperty = programAfterExecuteProperty;
+    }
+
+    public ComboBox<String> getArchitectureComboBox() {
+        return architectureComboBox;
     }
 
     @FXML
@@ -103,6 +110,10 @@ public class DebuggerExecutionMenuController {
                 variablesTable.getItems().clear();
             }
         });
+    }
+
+    private void loadArchitectureTypes() {
+        executionController.fetchArchitectureTypesAsync();
     }
 
     private void configureNumericEditableColumn(TableColumn<VariableRowV3, Long> column) {

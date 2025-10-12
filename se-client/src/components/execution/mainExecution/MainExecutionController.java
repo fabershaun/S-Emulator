@@ -13,6 +13,7 @@ import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
+import dto.v3.ArchitectureDTO;
 import dto.v3.UserDTO;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
@@ -300,6 +301,51 @@ public class MainExecutionController {
     public void EnterDebugMode() {
         mainInstructionsTableController.highlightLineDebugMode(0);  // Highlight the first line on table instructions
         disableToolBarComponents(true);
+    }
+
+    public void fetchArchitectureTypesAsync() {
+
+        HttpClientUtil.runAsync(ARCHITECTURE_TYPES_PATH, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtils.showError("Error", "Failed to load architecture types from server.")
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                try (ResponseBody body = response.body()) {
+                    if (!response.isSuccessful() || body == null) {
+                        Platform.runLater(() ->
+                                AlertUtils.showError("Error", "Failed to load architecture types from server.")
+                        );
+                        return;
+                    }
+
+                    String json = body.string();
+                    ArchitectureDTO dto = GSON_INSTANCE.fromJson(json, ArchitectureDTO.class);
+
+                    Platform.runLater(() -> {
+                        // Update the relevant controller (assuming you have a reference to it)
+                        debuggerExecutionMenuController.getArchitectureComboBox()
+                                .getItems()
+                                .setAll(dto.getArchitectureTypesStr());
+
+                        if (!dto.getArchitectureTypesStr().isEmpty()) {
+                            debuggerExecutionMenuController.getArchitectureComboBox()
+                                    .getSelectionModel()
+                                    .selectFirst();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Platform.runLater(() ->
+                            AlertUtils.showError("Error", "Failed to parse architecture types from server.")
+                    );
+                }
+            }
+        });
     }
 
     // TODO: write

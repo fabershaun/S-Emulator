@@ -58,6 +58,9 @@ public class Constants {
 
     // Jump To Degree:
     public final static String JUMP_TO_DEGREE_PATH = FULL_SERVER_PATH + "/jump-to-degree";
+
+    // Get Architecture Types Available:
+    public final static String ARCHITECTURE_TYPES_PATH = FULL_SERVER_PATH + "/architecture-types";
 }
 
 // http://localhost:8080/S-Emulator

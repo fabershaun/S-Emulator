@@ -25,7 +25,7 @@
             </RadioButton>
             <RadioButton fx:id="debugRadio" text="Debug" toggleGroup="$runModeToggleGroup" />
         </VBox>
-      <ComboBox promptText="Architecture" />
+      <ComboBox fx:id="architectureComboBox" promptText="Architecture" />
         <Button fx:id="playButton" mnemonicParsing="false" onAction="#onPlay" prefWidth="100.0" text="Play!" />
     </ToolBar>
     <ToolBar>
