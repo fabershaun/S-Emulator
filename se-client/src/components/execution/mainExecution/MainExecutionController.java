@@ -180,7 +180,7 @@ public class MainExecutionController {
         String jumpToDegreeUrl = HttpUrl.parse(JUMP_TO_DEGREE_PATH)
                 .newBuilder()
                 .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
-                .addQueryParameter("targetDegree", String.valueOf(targetDegree))
+                .addQueryParameter(TARGET_DEGREE_QUERY_PARAM, String.valueOf(targetDegree))
                 .build()
                 .toString();
 

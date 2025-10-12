@@ -8,6 +8,7 @@ public class Constants {
 
     public static final String USERNAME_QUERY_PARAM = "username";
     public static final String PROGRAM_NAME_QUERY_PARAM = "username";
+    public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
 
     // Login:
     public static final String LOGIN_SERVLET_NAME = "LoginServlet";
@@ -38,8 +39,12 @@ public class Constants {
     public final static String CURRENT_PROGRAM_DATA_NAME = "ProgramDtoServlet";
     public final static String CURRENT_PROGRAM_DATA_URL = "/current-program-data";
 
-    // Get ProgramDTO:
+    // Get Max Degree:
     public final static String MAX_DEGREE_NAME = "MaxDegreeServlet";
     public final static String MAX_DEGREE_URL = "/max-degree";
+
+    // Get ProgramDTO in taget degree:
+    public final static String JUMP_TO_DEGREE_NAME = "JumpToDegreeServlet";
+    public final static String JUMP_TO_DEGREE_URL = "/jump-to-degree";
 
 }
