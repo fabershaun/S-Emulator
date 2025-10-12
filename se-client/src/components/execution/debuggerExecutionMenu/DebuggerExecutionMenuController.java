@@ -262,6 +262,8 @@ public class DebuggerExecutionMenuController {
         resetInputTable(currentSelectedProgramProperty.getValue());
         executionController.disableToolBarComponents(false);
         inputsEditableMode = true; // enable blinking only now
+
+        loadArchitectureTypes();
     }
 
     private void enterRunning() {
