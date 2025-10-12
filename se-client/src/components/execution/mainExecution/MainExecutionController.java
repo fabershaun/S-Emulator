@@ -369,7 +369,6 @@ public class MainExecutionController {
     }
 
     // TODO : Should be Blocking ?? not async
-
     public void debugStop() {
 //        engine.stopDebugPress(UserDTO.DEFAULT_NAME);
 //
@@ -419,8 +418,7 @@ public class MainExecutionController {
         return null;
     }
 
-    // TODO: write
-    public void finishDebug(DebugDTO debugStep) {
+    public void finishDebug() {
         mainInstructionsTableController.turnOffHighlighting();
         topToolBarController.setComponentsDisabled(false);
     }

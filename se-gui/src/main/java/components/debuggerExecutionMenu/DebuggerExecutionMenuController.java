@@ -381,7 +381,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setModeSelectionDisabled(false);
 
-        mainController.finishDebug(currentDebugStep);
+        mainController.finishDebug();
     }
 
     @FXML

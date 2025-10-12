@@ -347,7 +347,7 @@ public class MainAppController {
         historyMenuController.setHistoryButtonsDisabled(true);
     }
 
-    public void finishDebug(DebugDTO debugStep) {
+    public void finishDebug() {
         historyMenuController.updateHistoryTableManual();   // Manual update
 
         mainInstructionsTableController.turnOffHighlighting();
