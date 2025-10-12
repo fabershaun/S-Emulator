@@ -8,8 +8,12 @@ import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,11 +24,7 @@ public class MainAppController {
 
     private final LongProperty totalCreditsAmount = new SimpleLongProperty();
 
-    @FXML private Label availableCreditsLabel;
-    @FXML private Label userNameLabel;
     private final StringProperty currentUserName;
-    @FXML private AnchorPane mainPanel;     // Dynamic area (login / dashboard)
-
     private Parent loginScreen;
     private Parent dashboardScreen;
     private Parent executionScreen;
@@ -33,6 +33,11 @@ public class MainAppController {
     private MainExecutionController executionController;
     private LoginController loginController;
 
+    @FXML private Label availableCreditsLabel;
+    @FXML private Label userNameLabel;
+    @FXML private AnchorPane mainPanel;     // Dynamic area (login / dashboard)
+    @FXML private GridPane headerGridPane;
+    private Button backToDashboardButton;
 
     public MainAppController() {
         this.currentUserName = new SimpleStringProperty(ANONYMOUS);
@@ -43,12 +48,21 @@ public class MainAppController {
         userNameLabel.textProperty().bind(currentUserName);
         availableCreditsLabel.textProperty().bind(totalCreditsAmount.asString());
 
+        // Build the back button dynamically
+        createBackToDashboardButton();
+
         // Prepare components
         loadLoginPage();
         loadDashboardPage();
 
         setMainPanelTo(loginScreen);
     }
+
+    @FXML
+    private void onBackToDashboardClicked() {
+        switchToDashboard();
+    }
+
 
     private void loadDashboardPage() {
         URL dashboardPage = getClass().getResource(DASHBOARD_PAGE_FXML_RESOURCE_LOCATION);
@@ -109,6 +123,10 @@ public class MainAppController {
 
     public void switchToDashboard() {
         setMainPanelTo(dashboardScreen);
+        if (backToDashboardButton != null) {
+            backToDashboardButton.setVisible(false);
+            backToDashboardButton.setManaged(false);
+        }
         dashboardController.setActive();
     }
 
@@ -121,10 +139,48 @@ public class MainAppController {
 
     public void switchToExecution(String programSelectedName) {
         loadExecutionPage(programSelectedName);
+        if (backToDashboardButton != null) {
+            backToDashboardButton.setVisible(true);
+            backToDashboardButton.setManaged(true);
+        }
         setMainPanelTo(executionScreen);
     }
 
     public StringProperty currentUserNameProperty() {
         return currentUserName;
+    }
+
+    private void createBackToDashboardButton() {
+        // Create button instance
+        Button backButton = new Button("← Back to Dashboard");
+        backButton.setStyle(
+                "-fx-font-size: 12px; " +
+                        "-fx-background-color: #f0f0f0; " +
+                        "-fx-border-color: #ccc; " +
+                        "-fx-border-radius: 5; " +
+                        "-fx-background-radius: 5;"
+        );
+
+        // Define click action
+        backButton.setOnAction(event -> switchToDashboard());
+
+        // Hidden by default (login screen)
+        backButton.setVisible(false);
+
+        // Optionally add tooltip
+        Tooltip tooltip = new Tooltip("Return to Dashboard");
+        Tooltip.install(backButton, tooltip);
+
+        // Find the left HBox in the header and insert the button
+        for (javafx.scene.Node node : headerGridPane.getChildren()) {
+            Integer col = GridPane.getColumnIndex(node);
+            Integer row = GridPane.getRowIndex(node);
+
+            if (col != null && row != null && col == 1 && row == 1 && node instanceof HBox hbox) {
+                hbox.getChildren().add(0, backButton); // insert at the start
+                this.backToDashboardButton = backButton; // save reference
+                break;
+            }
+        }
     }
 }
