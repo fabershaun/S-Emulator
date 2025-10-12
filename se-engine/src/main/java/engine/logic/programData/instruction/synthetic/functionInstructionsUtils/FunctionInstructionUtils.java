@@ -92,7 +92,8 @@ public class FunctionInstructionUtils {
                         .map(innerArgument -> buildSingleArgument(programsHolder, innerArgument, variableMapping))
                         .collect(Collectors.joining(","));
 
-                String functionUserString = programsHolder.getNameByUserString(functionArgument.getFunctionName());
+                Program function = programsHolder.getFunctionByName(functionArgument.getFunctionName());
+                String functionUserString = (function != null) ? function.getUserString() : null;
 
                 yield "(" + functionUserString
                         + (innerArgumentsAsString.isEmpty() ? "" : "," + innerArgumentsAsString)
