@@ -138,12 +138,6 @@ public class MainAppController {
                 selectedProgramProperty.set(null);
             }
         });
-
-        selectedProgramProperty.addListener((obs, oldProg, newProg) -> { // todo: remove
-            if (newProg != null) {
-                mainInstructionsTableController.fillTable(newProg.getInstructions());
-            }
-        });
     }
 
     private void initializeSubComponents() {

@@ -459,7 +459,20 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public InstructionDTO createOriginalInstruction() {
         // Create and return a new Origin instruction
-        return new InstructionDTO(InstructionData.ORIGIN.getName(), 0, InstructionData.ORIGIN.getCycles(), "B", null, null, null, null, 0,  "", null );
+        return new InstructionDTO(
+                InstructionData.ORIGIN.getName(),
+                0,
+                InstructionData.ORIGIN.getCycles(),
+                "B",
+                null,
+                null,
+                null,
+                null,
+                0,
+                "",
+                null,
+                InstructionData.ORIGIN.getArchitectureType().getArchitectureRepresentation()
+        );
     }
 
     @Override

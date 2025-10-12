@@ -26,6 +26,7 @@ import utils.HttpClientUtil;
 import utils.HttpResponseHandler;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static utils.Constants.*;
@@ -73,9 +74,8 @@ public class MainExecutionController {
     }
 
     private void initializeListeners() {
-        selectedProgramProperty.addListener((obs, oldProg, newProg) -> { // todo: remove
-            if (newProg != null) {
-                mainInstructionsTableController.fillTable(newProg.getInstructions());
+        selectedProgramProperty.addListener((obs, oldProg, newProgram) -> { // todo: remove
+            if (newProgram != null) {
                 topToolBarController.setProgramCurrentName(selectedProgramProperty.get().getProgramName());
             }
         });
@@ -87,6 +87,9 @@ public class MainExecutionController {
     }
 
     private void initMainInstructionsTableController() {
+        mainInstructionsTableController.setExecutionController(this);
+        mainInstructionsTableController.setModels(highlightSelectionModel);
+        mainInstructionsTableController.setProperty(selectedProgramProperty);
 
     }
 
@@ -223,6 +226,16 @@ public class MainExecutionController {
         });
 
         return future;
+    }
+
+    public void onInstructionSelected(InstructionDTO selectedInstruction) {
+        int instructionNumber = selectedInstruction.getInstructionNumber();
+        List<InstructionDTO> selectedInstructionChain = selectedProgramProperty.get().getExpandedProgram().get(instructionNumber - 1); // -1 because we started the count from 0
+        chainInstructionTableController.fillTable(selectedInstructionChain);
+    }
+
+    public void onInstructionDeselected() {
+        chainInstructionTableController.clearChainTable();
     }
 
 }

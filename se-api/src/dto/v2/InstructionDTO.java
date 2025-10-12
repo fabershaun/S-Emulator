@@ -2,18 +2,19 @@ package dto.v2;
 
 public class InstructionDTO {
     private final String instructionName;
-    private int instructionNumber;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
-    private final int cycleNumber;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
-    private final String instructionTypeStr;        // Do not change name (name needed in gui module: package components.mainInstructionsTable)
-    private final String labelStr;                  // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private int instructionNumber;                  // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
+    private final int cycleNumber;                  // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
+    private final String instructionTypeStr;        // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
+    private final String labelStr;                  // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
+    private final String command;                   // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
     private final String referenceLabelStr;
     private final String targetVariableStr;
     private final String sourceVariableStr;
     private final long constantValue;
-    private final String command;                   // Do not change name (name needed in gui module: package components.mainInstructionsTable)
     private final InstructionDTO origin;
+    private final String architecture;              // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
 
-    private boolean breakpoint;                     // Do not change name (name needed in gui module: package components.mainInstructionsTable)
+    private boolean breakpoint;                     // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
 
     public InstructionDTO(String instructionName,
                           int instructionNumber,
@@ -25,7 +26,8 @@ public class InstructionDTO {
                           String sourceVariableStr,
                           long constantValue,
                           String command,
-                          InstructionDTO origin
+                          InstructionDTO origin,
+                          String architecture
     ) {
         this.instructionName = instructionName;
         this.instructionNumber = instructionNumber;
@@ -38,6 +40,7 @@ public class InstructionDTO {
         this.constantValue = constantValue;
         this.command = command;
         this.origin = origin;
+        this.architecture = architecture;
     }
 
     public String getInstructionName() {
@@ -82,6 +85,10 @@ public class InstructionDTO {
 
     public InstructionDTO getOrigin() {
         return origin;
+    }
+
+    public String getArchitecture() {
+        return architecture;
     }
 
     public boolean isBreakpoint() {

@@ -128,7 +128,8 @@ public abstract class AbstractInstruction implements Instruction, Serializable {
                 sourceVariableStr,
                 getConstantValue(),
                 getCommand(),
-                parentDto
+                parentDto,
+                instructionData.getArchitectureType().getArchitectureRepresentation()
         );
     }
 

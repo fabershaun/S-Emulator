@@ -58,10 +58,7 @@ public class MainInstructionsTableController {
         });
 
         colIndex.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(instructionsTable.getItems().indexOf(param.getValue()) + 1)
-        );
-
-//        colIndex.setCellValueFactory(new PropertyValueFactory<>("instructionNumber"));
+                new ReadOnlyObjectWrapper<>(instructionsTable.getItems().indexOf(param.getValue()) + 1));
         colType.setCellValueFactory(new PropertyValueFactory<>("instructionTypeStr"));
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));

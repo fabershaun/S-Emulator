@@ -6,6 +6,7 @@ import dto.v3.UserDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.logic.exceptions.EngineLoadException;
+import engine.logic.programData.architecture.ArchitectureType;
 import engine.logic.programData.instruction.InstructionDataMapper;
 
 import java.io.File;
@@ -52,7 +53,8 @@ public class ProgramCreationModel {
                 null,           // sourceVariableStr
                 0,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_1.getArchitectureRepresentation()
         );
     }
 
@@ -85,7 +87,8 @@ public class ProgramCreationModel {
                 null,             // sourceVariableStr
                 0,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_1.getArchitectureRepresentation()
         );
     }
 
@@ -105,7 +108,8 @@ public class ProgramCreationModel {
                 null,                // sourceVariableStr
                 0,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_2.getArchitectureRepresentation()
         );
     }
 
@@ -125,7 +129,8 @@ public class ProgramCreationModel {
                 null,                   // sourceVariableStr
                 0,                      // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_2.getArchitectureRepresentation()
         );
     }
 
@@ -146,7 +151,8 @@ public class ProgramCreationModel {
                 referenceVariableStr,        // sourceVariableStr
                 0,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_3.getArchitectureRepresentation()
         );
     }
 
@@ -166,7 +172,8 @@ public class ProgramCreationModel {
                 null,
                 constantValue,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_2.getArchitectureRepresentation()
         );
     }
 
@@ -186,7 +193,8 @@ public class ProgramCreationModel {
                 null,
                 0,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_3.getArchitectureRepresentation()
         );
     }
 
@@ -206,7 +214,8 @@ public class ProgramCreationModel {
                 null,
                 constantValue,              // Constant value
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_3.getArchitectureRepresentation()
         );
     }
 
@@ -226,9 +235,8 @@ public class ProgramCreationModel {
                 sourceVariableStr,
                 0,
                 command,
-                originDTO
+                originDTO,
+                ArchitectureType.A_3.getArchitectureRepresentation()
         );
     }
-
-
 }

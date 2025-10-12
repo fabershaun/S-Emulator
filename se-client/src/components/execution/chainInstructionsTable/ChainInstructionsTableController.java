@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import java.util.List;
+
 public class ChainInstructionsTableController {
     @FXML
     private TableView<InstructionDTO> instructionsTable;
@@ -13,4 +15,11 @@ public class ChainInstructionsTableController {
     @FXML private TableColumn<InstructionDTO, String> colLabel;
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
+
+    public void fillTable(List<InstructionDTO> selectedInstructionChain) {
+    }
+
+    public void clearChainTable() {
+
+    }
 }
