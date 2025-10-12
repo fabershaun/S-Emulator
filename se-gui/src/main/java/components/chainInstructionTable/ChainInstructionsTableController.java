@@ -26,8 +26,6 @@ public class ChainInstructionsTableController {
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
-
-
     }
 
     public void fillTable(List<InstructionDTO> instructionChain) {

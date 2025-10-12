@@ -4,6 +4,7 @@ import dto.v2.InstructionDTO;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
 
@@ -15,11 +16,32 @@ public class ChainInstructionsTableController {
     @FXML private TableColumn<InstructionDTO, String> colLabel;
     @FXML private TableColumn<InstructionDTO, String> colInstruction;
     @FXML private TableColumn<InstructionDTO, Number> colCycles;
+    @FXML private TableColumn<InstructionDTO, String> colArchitecture;
 
-    public void fillTable(List<InstructionDTO> selectedInstructionChain) {
+
+    @FXML
+    protected void initialize() {
+        // Configure columns once when FXML loads
+        colIndex.setCellValueFactory(new PropertyValueFactory<>("instructionNumber"));
+        colType.setCellValueFactory(new PropertyValueFactory<>("instructionTypeStr"));
+        colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
+        colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));
+        colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
+        colArchitecture.setCellValueFactory(new PropertyValueFactory<>("architecture"));
+    }
+
+    public void fillTable(List<InstructionDTO> instructionChain) {
+        if (instructionChain == null || instructionChain.size() <= 1) {
+            instructionsTable.getItems().clear();
+            return;
+        }
+
+        // Replace table content starting from index 1 to the end
+        instructionsTable.getItems().setAll(instructionChain.subList(1, instructionChain.size()));
     }
 
     public void clearChainTable() {
-
+        // Clear the table content
+        instructionsTable.getItems().clear();
     }
 }
