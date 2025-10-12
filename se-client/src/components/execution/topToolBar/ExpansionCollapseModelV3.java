@@ -13,9 +13,9 @@ import static javafx.collections.FXCollections.observableArrayList;
 
 public class ExpansionCollapseModelV3 {
 
-    private ObjectProperty<ProgramDTO> currentProgram;
-    private IntegerProperty currentDegree;
-    private IntegerProperty maxDegree;
+    private final ObjectProperty<ProgramDTO> currentProgram = new SimpleObjectProperty<>(null);
+    private final IntegerProperty currentDegree = new SimpleIntegerProperty(0);
+    private final IntegerProperty maxDegree = new SimpleIntegerProperty(0);
 
     private final ObservableList<Integer> collapseOptions = observableArrayList();
     private final ObservableList<Integer> expandOptions = observableArrayList();

@@ -47,9 +47,8 @@ public class MaxDegreeServlet extends HttpServlet {
 
             int maxDegree = engine.getMaxDegree(programName);
 
-            String json = GSON_INSTANCE.toJson(Map.of("maxDegree", maxDegree));
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(json);
+            response.getWriter().write(String.valueOf(maxDegree));
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
