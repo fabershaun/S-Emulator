@@ -16,7 +16,7 @@
 
     </columns>
     <placeholder>
-        <Label text="No instruction selected" />
+        <Label text="No Chain History" />
     </placeholder>
     <columnResizePolicy>
         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

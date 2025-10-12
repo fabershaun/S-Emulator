@@ -9,8 +9,11 @@ import components.execution.topToolBar.ExpansionCollapseModelV3;
 import components.execution.topToolBar.HighlightSelectionModelV3;
 import components.execution.topToolBar.TopToolBarController;
 import components.mainAppV3.MainAppController;
+import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
+import dto.v2.ProgramExecutorDTO;
+import dto.v3.UserDTO;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
@@ -28,6 +31,7 @@ import utils.HttpResponseHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static utils.Constants.*;
 import static utils.Constants.GSON_INSTANCE;
@@ -38,6 +42,7 @@ public class MainExecutionController {
     private MainAppController mainAppController;
     private LongProperty totalCreditsAmount;
     private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
 
     private final ExpansionCollapseModelV3 degreeModel = new ExpansionCollapseModelV3();
     private final HighlightSelectionModelV3 highlightSelectionModel = new HighlightSelectionModelV3();
@@ -73,9 +78,11 @@ public class MainExecutionController {
     }
 
     private void initializeListeners() {
-        selectedProgramProperty.addListener((obs, oldProg, newProgram) -> { // todo: remove
+        selectedProgramProperty.addListener((obs, oldProg, newProgram) -> {
             if (newProgram != null) {
                 topToolBarController.setProgramCurrentName(selectedProgramProperty.get().getProgramName());
+            } else {
+                selectedProgramProperty.set(null);
             }
         });
     }
@@ -98,7 +105,9 @@ public class MainExecutionController {
     }
 
     private void initDebuggerExecutionMenuController() {
-
+        debuggerExecutionMenuController.setExecutionController(this);
+        debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty);
+        debuggerExecutionMenuController.initializeListeners();
     }
 
     private void initDegreeModel() {
@@ -107,7 +116,7 @@ public class MainExecutionController {
         degreeModel.setCurrentDegree(0);
         degreeModel.setProgram(selectedProgramProperty.get());
 
-        String programSelectedName = requireCurrentProgram().getProgramName();
+        String programSelectedName = requireCurrentProgramName();
         String maxDegreeUrl = buildUrlWithQueryParam(MAX_DEGREE_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
         fetchMaxDegreeAsync(maxDegreeUrl)     // Get the max degree of the program: from the server
                 .thenAccept(maxDegree ->
@@ -176,7 +185,7 @@ public class MainExecutionController {
     }
 
     public void jumpToDegree(int targetDegree) {
-        String programName = requireCurrentProgram().getProgramName();
+        String programName = requireCurrentProgramName();
         String jumpToDegreeUrl = HttpUrl.parse(JUMP_TO_DEGREE_PATH)
                 .newBuilder()
                 .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
@@ -266,5 +275,107 @@ public class MainExecutionController {
             return null;
         }
         return program;
+    }
+
+    private String requireCurrentProgramName() {
+        ProgramDTO currentProgram = requireCurrentProgram();
+        if (currentProgram == null) {
+            return null;
+        }
+
+        String currentProgramName = currentProgram.getProgramName();
+        if (currentProgramName == null) {
+            AlertUtils.showError("Unexpected Error", "Program has no name (unexpected state).");
+            return null;
+        }
+
+        return currentProgramName;
+    }
+
+
+    public void disableToolBarComponents(boolean disable) {
+        topToolBarController.setComponentsDisabled(disable);
+    }
+
+    public void EnterDebugMode() {
+        mainInstructionsTableController.highlightLineDebugMode(0);  // Highlight the first line on table instructions
+        disableToolBarComponents(true);
+    }
+
+    // TODO: write
+    public void runProgram(List<Long> inputs) {
+        int degree = degreeModel.currentDegreeProperty().get();
+        String programName = requireCurrentProgramName();
+
+
+//        ProgramRunTask runTask = new ProgramRunTask(activeProgramName, engine, degree, inputs.toArray(new Long[0]));
+//
+//        runTask.setOnSucceeded(ev -> programAfterExecuteProperty.set(runTask.getValue()));
+//
+//        runTask.setOnFailed(ev -> handleTaskFailure(runTask, "Run Failed"));
+//
+//        new Thread(runTask, "runProgram-thread").start();
+    }
+
+    // TODO : Should be Blocking ?? not async
+    public void initializeDebugger(List<Long> inputValues) {
+//        engine.initializeDebugger(getActiveProgramName(), ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
+    }
+
+    // TODO : Should be Blocking ?? not async
+
+    public void debugStop() {
+//        engine.stopDebugPress(UserDTO.DEFAULT_NAME);
+//
+//        if (currentDebugTask != null && currentDebugTask.isRunning()) { // kill the running thread
+//            currentDebugTask.cancel(true);
+//        }
+    }
+
+    // TODO: write
+    public void debugResume(Consumer<DebugDTO> onComplete) {
+        List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
+
+//        currentDebugTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
+//
+//        currentDebugTask.setOnSucceeded(ev -> {
+//            DebugDTO debugStep = currentDebugTask.getValue();
+//
+//            if (debugStep.hasMoreInstructions()) {
+//                updateControllerAfterDebugStep(debugStep);
+//            }
+//
+//            onComplete.accept(debugStep);
+//        });
+//
+//        currentDebugTask.setOnFailed(ev -> handleTaskFailure(currentDebugTask, "Debug Resume Failed"));
+//
+//        Thread thread = new Thread(currentDebugTask, "debugResume-thread");
+//        thread.setDaemon(true);
+//        thread.start();
+    }
+
+    // TODO: write
+    public DebugDTO debugStepOver() {
+//        DebugDTO debugStep = engine.getProgramAfterStepOver(UserDTO.DEFAULT_NAME);
+//        updateControllerAfterDebugStep(debugStep);
+//
+//        return debugStep;
+        return null;
+    }
+
+    // TODO: write
+    public DebugDTO debugStepBack() {
+//        DebugDTO debugStep = engine.getProgramAfterStepBack(UserDTO.DEFAULT_NAME);
+//        updateControllerAfterDebugStep(debugStep);
+//
+//        return debugStep;
+        return null;
+    }
+
+    // TODO: write
+    public void finishDebug(DebugDTO debugStep) {
+        mainInstructionsTableController.turnOffHighlighting();
+        topToolBarController.setComponentsDisabled(false);
     }
 }

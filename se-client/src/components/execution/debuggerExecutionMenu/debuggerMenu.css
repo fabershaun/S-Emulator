@@ -1,0 +1,58 @@
+/* Base button styles */
+.button {
+    -fx-font-weight: bold;
+    -fx-background-radius: 4px;
+    -fx-padding: 6px 12px;
+}
+
+/* Play and NewRun buttons - green when enabled */
+#playButton, #newRunButton {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+#playButton:hover, #newRunButton:hover {
+    -fx-background-color: #66BB6A;
+    -fx-cursor: hand;
+}
+
+#playButton:pressed, #newRunButton:pressed {
+    -fx-background-color: #43A047;
+}
+
+/* Step and Resume buttons - blue when enabled */
+#stepOverButton, #resumeButton, #stepBackButton {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+}
+
+#stepOverButton:hover, #resumeButton:hover, #stepBackButton:hover {
+    -fx-background-color: #42A5F5;
+    -fx-cursor: hand;
+}
+
+#stepOverButton:pressed, #resumeButton:pressed, #stepBackButton:pressed {
+    -fx-background-color: #1E88E5;
+}
+
+/* Stop button - red when enabled */
+#stopButton {
+    -fx-background-color: #F44336;
+    -fx-text-fill: white;
+}
+
+#stopButton:hover {
+    -fx-background-color: #EF5350;
+    -fx-cursor: hand;
+}
+
+#stopButton:pressed {
+    -fx-background-color: #E53935;
+}
+
+/* Disabled button styling - clearly shows they're unavailable */
+.button:disabled {
+    -fx-opacity: 0.5;
+    -fx-background-color: #CCCCCC;
+    -fx-text-fill: #888888;
+}

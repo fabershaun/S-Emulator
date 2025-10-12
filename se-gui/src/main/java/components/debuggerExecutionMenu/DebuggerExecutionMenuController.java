@@ -344,7 +344,7 @@ public class DebuggerExecutionMenuController {
         if (currentDebugStep != null) {
             updateControllerAfterStep(currentDebugStep);
         } else {
-            mainController.clearVariableTableInDebugController(); // Clear the variable table and rest cycles
+            clearVariableTableAndResetCycles(); // Clear the variable table and rest cycles
         }
 
         stopDebug();

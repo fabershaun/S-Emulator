@@ -417,8 +417,4 @@ public class MainAppController {
             e.printStackTrace(); // Or show an alert to the user
         }
     }
-
-    public void clearVariableTableInDebugController() {
-        debuggerExecutionMenuController.clearVariableTableAndResetCycles();
-    }
 }
