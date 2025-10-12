@@ -37,6 +37,7 @@ public class DebuggerExecutionMenuController {
 
     @FXML private VBox debuggerExecutionMenu;
     @FXML private Button newRunButton;
+    @FXML private ToggleGroup runModeToggleGroup;
     @FXML private RadioButton runRadio;
     @FXML private RadioButton debugRadio;
     @FXML private ComboBox<String> architectureComboBox;

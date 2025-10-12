@@ -47,4 +47,8 @@ public class Constants {
     public final static String JUMP_TO_DEGREE_NAME = "JumpToDegreeServlet";
     public final static String JUMP_TO_DEGREE_URL = "/jump-to-degree";
 
+    // Get Architecture Types Available:
+    public final static String ARCHITECTURE_TYPES_NAME = "ArchitectureTypes";
+    public final static String ARCHITECTURE_TYPES_URL = "/architecture-types";
+
 }
