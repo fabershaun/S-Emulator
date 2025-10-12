@@ -11,6 +11,7 @@ public class Constants {
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
     public static final String DEGREE_QUERY_PARAM = "degree";
     public static final String ARCHITECTURE_QUERY_PARAM = "architecture";
+    public static final String RUN_ID_QUERY_PARAM = "runId";
 
     // Login:
     public static final String LOGIN_SERVLET_NAME = "LoginServlet";
@@ -56,5 +57,9 @@ public class Constants {
     // Run Program:
     public final static String RUN_PROGRAM_NAME = "RunProgram";
     public final static String RUN_PROGRAM_URL = "/run-program";
+
+    // Get Program Status:
+    public final static String PROGRAM_STATUS_NAME = "ProgramStatus";
+    public final static String PROGRAM_STATUS_URL = "/program-status";
 
 }

@@ -73,13 +73,8 @@ public class RunProgramServlet extends HttpServlet {
             response.getWriter().write(GSON_INSTANCE.toJson(jsonResponse));
 
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentType("application/json");
-
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Server error during program submission");
-            errorResponse.put("details", e.getMessage());
-            response.getWriter().write(GSON_INSTANCE.toJson(errorResponse));
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error during program submission", e.getMessage());
         }
     }
 }

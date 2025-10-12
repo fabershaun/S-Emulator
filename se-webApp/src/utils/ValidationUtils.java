@@ -9,7 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static utils.Constants.GSON_INSTANCE;
 
@@ -86,8 +88,39 @@ public class ValidationUtils {
         return true;
     }
 
+    public static boolean validateRunIdParam(String runId, HttpServletResponse response) throws IOException {
+        if (runId == null || runId.isEmpty()) {
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Missing runId parameter");
+            return false;
+        }
+        return true;
+    }
+
     private static void writeError(HttpServletResponse response, int statusCode, String message) throws IOException {
         response.setStatus(statusCode);
         response.getWriter().write(GSON_INSTANCE.toJson(message));
+    }
+
+    public static void writeJsonError(HttpServletResponse response, int statusCode, String message) throws IOException {
+        writeJsonError(response, statusCode, message, null);
+    }
+
+    /**
+     * Writes a standardized JSON error response.
+     * If details is null, it will be omitted from the JSON.
+     */
+    public static void writeJsonError(HttpServletResponse response, int statusCode, String message, String details) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/json");
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", message);
+
+        // Add details only if provided
+        if (details != null && !details.isEmpty()) {
+            errorResponse.put("details", details);
+        }
+
+        response.getWriter().write(GSON_INSTANCE.toJson(errorResponse));
     }
 }
