@@ -66,7 +66,6 @@ public class MainExecutionController {
             initToolBarController();
             initMainInstructionsTableController();
             initSummaryLineController();
-            initChainInstructionTableController();
             initDebuggerExecutionMenuController();
 
             initializeListeners();
@@ -88,17 +87,14 @@ public class MainExecutionController {
 
     private void initMainInstructionsTableController() {
         mainInstructionsTableController.setExecutionController(this);
-        mainInstructionsTableController.setModels(highlightSelectionModel);
         mainInstructionsTableController.setProperty(selectedProgramProperty);
+        mainInstructionsTableController.setModels(highlightSelectionModel);
+        mainInstructionsTableController.initializeListeners();
     }
 
     private void initSummaryLineController() {
         summaryLineController.setProperty(selectedProgramProperty);
         summaryLineController.initializeBindings();
-    }
-
-    private void initChainInstructionTableController() {
-
     }
 
     private void initDebuggerExecutionMenuController() {
@@ -111,7 +107,7 @@ public class MainExecutionController {
         degreeModel.setCurrentDegree(0);
         degreeModel.setProgram(selectedProgramProperty.get());
 
-        String programSelectedName = selectedProgramProperty.get().getProgramName();
+        String programSelectedName = requireCurrentProgram().getProgramName();
         String maxDegreeUrl = buildUrlWithQueryParam(MAX_DEGREE_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
         fetchMaxDegreeAsync(maxDegreeUrl)     // Get the max degree of the program: from the server
                 .thenAccept(maxDegree ->
@@ -179,22 +175,46 @@ public class MainExecutionController {
         });
     }
 
-    public void jumpToDegree(int target) {
-//        int maxDegree = engine.getMaxDegree(selectedProgramProperty.get().getProgramName());
-//        int safeTargetDegree = Math.max(0, Math.min(target, maxDegree));          // Clamp the requested degree to a valid range [0, maxDegree]
-//        String activeProgramName = getActiveProgramName();
-//        ExpandProgramTask expansionTask = new ExpandProgramTask(activeProgramName, engine, safeTargetDegree);
-//
-//        expansionTask.setOnSucceeded(ev -> {
-//            ProgramDTO programByDegree = expansionTask.getValue();
-//            selectedProgramProperty.set(programByDegree);
-//            degreeModel.setMaxDegree(maxDegree);
-//            degreeModel.setCurrentDegree(safeTargetDegree);
-//        });
-//
-//        expansionTask.setOnFailed(ev -> handleTaskFailure(expansionTask, "Expand failed"));
-//
-//        new Thread(expansionTask, "expand-thread").start();
+    public void jumpToDegree(int targetDegree) {
+        String programName = requireCurrentProgram().getProgramName();
+        String jumpToDegreeUrl = HttpUrl.parse(JUMP_TO_DEGREE_PATH)
+                .newBuilder()
+                .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
+                .addQueryParameter("targetDegree", String.valueOf(targetDegree))
+                .build()
+                .toString();
+
+        fetchJumpDegreeAsync(jumpToDegreeUrl, targetDegree);
+    }
+
+    private void fetchJumpDegreeAsync(String jumpToDegreeUrl, int targetDegree) {
+        HttpClientUtil.runAsync(jumpToDegreeUrl, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        AlertUtils.showError("Network Error", "Failed to expand program: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (response.code() != 200) {
+                    handleErrorResponse(response.code(), responseBody, "Expanding program");
+                    return;
+                }
+
+                // Parse JSON to ProgramDTO
+                ProgramDTO expandedProgram = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
+                response.close();
+
+                Platform.runLater(() -> {
+                    selectedProgramProperty.set(expandedProgram);
+                    degreeModel.setCurrentDegree(targetDegree);
+                });
+            }
+        });
     }
 
     private CompletableFuture<Integer> fetchMaxDegreeAsync(String url) {
@@ -239,4 +259,12 @@ public class MainExecutionController {
         chainInstructionTableController.clearChainTable();
     }
 
+    private ProgramDTO requireCurrentProgram() {
+        ProgramDTO program = selectedProgramProperty.get();
+        if (program == null) {
+            AlertUtils.showError("Unexpected Error", "No active program loaded in execution view.");
+            return null;
+        }
+        return program;
+    }
 }

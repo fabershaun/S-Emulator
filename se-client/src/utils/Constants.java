@@ -55,7 +55,9 @@ public class Constants {
 
     // Get Max Degree Of Selected Program:
     public final static String MAX_DEGREE_PATH = FULL_SERVER_PATH + "/max-degree";
-    
+
+    // Jump To Degree:
+    public final static String JUMP_TO_DEGREE_PATH = FULL_SERVER_PATH + "/jump-to-degree";
 }
 
 // http://localhost:8080/S-Emulator
