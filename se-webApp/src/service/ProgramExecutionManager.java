@@ -25,15 +25,27 @@ public class ProgramExecutionManager implements ExecutionService {
     @Override
     public String submitRun(ProgramRunRequest request) {
         // 1. Generate unique run ID
-        String runId = UUID.randomUUID().toString();
+        String runId = UUID.randomUUID().toString();    // Universally Unique Identifier
 
         // 2. Create status object and put it in the map
-        ProgramRunStatus status = new ProgramRunStatus(runId, request.programName, request.username);
-        runStatusMap.put(runId, status);
+        ProgramRunStatus programRunStatus = new ProgramRunStatus(runId, request.programName, request.username);
+        runStatusMap.put(runId, programRunStatus);
 
-        // 3. Submit task to thread pool (we’ll fill this in Stage 3)
+        // 3. Submit background task
         threadPool.submit(() -> {
-            // placeholder - will implement the logic to call Engine later
+            try {
+                // Update state to RUNNING
+                programRunStatus.state = ProgramRunState.RUNNING;
+
+
+
+                // Update state to DONE
+                programRunStatus.state = ProgramRunState.DONE;
+
+            } catch (Exception e) {
+                programRunStatus.state = ProgramRunState.FAILED;
+                programRunStatus.error = e.getMessage();
+            }
         });
 
         // 4. Return run ID immediately

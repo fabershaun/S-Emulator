@@ -9,7 +9,7 @@ import utils.ServletUtils;
 import utils.SessionUtils;
 import java.io.IOException;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = LOGIN_SERVLET_NAME, urlPatterns = {LOGIN_SERVLET_URL})
 public class LoginJavafxServlet extends HttpServlet {

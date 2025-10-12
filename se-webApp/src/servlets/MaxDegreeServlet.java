@@ -9,7 +9,7 @@ import utils.ServletUtils;
 import utils.SessionUtils;
 import java.io.IOException;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = MAX_DEGREE_NAME, urlPatterns = {MAX_DEGREE_URL})
 public class MaxDegreeServlet extends HttpServlet {

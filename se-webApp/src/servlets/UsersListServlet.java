@@ -11,7 +11,7 @@ import utils.ServletUtils;
 import java.io.IOException;
 import java.util.Set;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = USERS_LIST_NAME, urlPatterns = {USERS_LIST_URL})
 public class UsersListServlet extends HttpServlet {

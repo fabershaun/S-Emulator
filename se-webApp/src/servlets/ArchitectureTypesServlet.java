@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = ARCHITECTURE_TYPES_NAME, urlPatterns = ARCHITECTURE_TYPES_URL)
 public class ArchitectureTypesServlet extends HttpServlet {

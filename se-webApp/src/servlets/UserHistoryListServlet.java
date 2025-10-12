@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = USER_HISTORY_LIST_NAME, urlPatterns = {USER_HISTORY_LIST_URL})
 public class UserHistoryListServlet extends HttpServlet {

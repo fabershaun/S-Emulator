@@ -12,7 +12,7 @@ import utils.SessionUtils;
 import java.io.IOException;
 import java.util.List;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = AVAILABLE_PROGRAMS_LIST_NAME, urlPatterns = {AVAILABLE_PROGRAMS_LIST_URL})
 public class AvailableProgramsServlet extends HttpServlet {

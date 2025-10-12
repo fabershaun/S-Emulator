@@ -1,4 +1,4 @@
-package constants;
+package utils;
 
 import com.google.gson.Gson;
 
@@ -7,8 +7,10 @@ public class Constants {
     public static final Gson GSON_INSTANCE = new Gson();
 
     public static final String USERNAME_QUERY_PARAM = "username";
-    public static final String PROGRAM_NAME_QUERY_PARAM = "username";
+    public static final String PROGRAM_NAME_QUERY_PARAM = "programName";
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
+    public static final String DEGREE_QUERY_PARAM = "degree";
+    public static final String ARCHITECTURE_QUERY_PARAM = "architecture";
 
     // Login:
     public static final String LOGIN_SERVLET_NAME = "LoginServlet";
@@ -50,5 +52,9 @@ public class Constants {
     // Get Architecture Types Available:
     public final static String ARCHITECTURE_TYPES_NAME = "ArchitectureTypes";
     public final static String ARCHITECTURE_TYPES_URL = "/architecture-types";
+
+    // Run Program:
+    public final static String RUN_PROGRAM_NAME = "RunProgram";
+    public final static String RUN_PROGRAM_URL = "/run-program";
 
 }

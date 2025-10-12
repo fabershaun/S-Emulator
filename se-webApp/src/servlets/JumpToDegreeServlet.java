@@ -11,7 +11,7 @@ import utils.SessionUtils;
 
 import java.io.IOException;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 @WebServlet(name = JUMP_TO_DEGREE_NAME, urlPatterns = {JUMP_TO_DEGREE_URL})
 public class JumpToDegreeServlet extends HttpServlet {

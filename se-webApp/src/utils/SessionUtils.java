@@ -3,7 +3,7 @@ package utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import static constants.Constants.USERNAME_QUERY_PARAM;
+import static utils.Constants.USERNAME_QUERY_PARAM;
 
 public class SessionUtils {
 

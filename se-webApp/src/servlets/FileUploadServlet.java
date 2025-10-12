@@ -15,7 +15,7 @@ import utils.SessionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 import static utils.ServletUtils.getEngine;
 
 

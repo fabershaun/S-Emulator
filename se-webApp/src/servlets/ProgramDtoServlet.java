@@ -11,7 +11,7 @@ import utils.SessionUtils;
 
 import java.io.IOException;
 
-import static constants.Constants.*;
+import static utils.Constants.*;
 
 
 @WebServlet(name = CURRENT_PROGRAM_DATA_NAME, urlPatterns = {CURRENT_PROGRAM_DATA_URL})
