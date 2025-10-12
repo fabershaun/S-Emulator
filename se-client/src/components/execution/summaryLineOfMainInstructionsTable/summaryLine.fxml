@@ -8,21 +8,52 @@
       xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="components.execution.summaryLineOfMainInstructionsTable.SummaryLineController">
     <Label text="Total:"/>
-    <Label fx:id="amountTotal" text="amount">
+    <Label fx:id="amountTotalLabel">
         <padding>
             <Insets right="15.0"/>
         </padding>
     </Label>
+
     <Label text="Basic:"/>
-    <Label fx:id="amountBasic" text="amount">
+    <Label fx:id="amountBasicLabel">
         <padding>
             <Insets right="15.0"/>
         </padding>
     </Label>
+
     <Label text="Synthetic:"/>
-    <Label fx:id="amountSynthetic" text="amount">
+    <Label fx:id="amountSyntheticLabel">
         <padding>
             <Insets right="15.0"/>
         </padding>
     </Label>
+
+    <Label text="I:"/>
+    <Label fx:id="a1Label">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
+
+    <Label text="II:"/>
+    <Label fx:id="a2Label">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
+
+    <Label text="III:"/>
+    <Label fx:id="a3Label">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
+
+    <Label text="IV:"/>
+    <Label fx:id="a4Label">
+        <padding>
+            <Insets right="15.0"/>
+        </padding>
+    </Label>
+
 </HBox>

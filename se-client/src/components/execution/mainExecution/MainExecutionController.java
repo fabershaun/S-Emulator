@@ -90,10 +90,11 @@ public class MainExecutionController {
         mainInstructionsTableController.setExecutionController(this);
         mainInstructionsTableController.setModels(highlightSelectionModel);
         mainInstructionsTableController.setProperty(selectedProgramProperty);
-
     }
 
     private void initSummaryLineController() {
+        summaryLineController.setProperty(selectedProgramProperty);
+        summaryLineController.initializeBindings();
     }
 
     private void initChainInstructionTableController() {
