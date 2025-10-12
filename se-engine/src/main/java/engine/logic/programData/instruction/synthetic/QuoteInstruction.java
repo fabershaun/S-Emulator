@@ -63,8 +63,6 @@ public class QuoteInstruction extends AbstractInstruction implements SyntheticIn
     public String getCommand() {
         String targetVariableRepresentation = getTargetVariable().getRepresentation();
         String userString = getFunctionOfThisInstruction().getUserString();
-        System.out.println("In function " + "   User-string = " + userString);
-
         String arguments = buildCommandArguments(getMainProgram().getProgramsHolder(), quoteArguments, variableMapping);
 
         StringBuilder command = new StringBuilder();

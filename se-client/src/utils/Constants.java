@@ -8,6 +8,9 @@ public class Constants {
     public static final String XML_FILE = "xmlFile";
     public final static int REFRESH_RATE = 500;
 
+    // CSS:
+    public final static String DEBUGGER_CSS = "/components/execution/debuggerExecutionMenu/debuggerMenu.css";
+
     // GSON instance
     public final static Gson GSON_INSTANCE = new Gson();
 
@@ -61,6 +64,7 @@ public class Constants {
 
     // Get Architecture Types Available:
     public final static String ARCHITECTURE_TYPES_PATH = FULL_SERVER_PATH + "/architecture-types";
+
 }
 
 // http://localhost:8080/S-Emulator

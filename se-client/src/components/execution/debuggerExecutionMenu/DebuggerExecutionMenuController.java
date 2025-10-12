@@ -73,7 +73,7 @@ public class DebuggerExecutionMenuController {
         enterNoProgramLoaded();
 
         // Load custom CSS
-        String cssPath = getClass().getResource("/components/debuggerExecutionMenu/debuggerMenu.css").toExternalForm();
+        String cssPath = getClass().getResource(DEBUGGER_CSS).toExternalForm();
         debuggerExecutionMenu.getStylesheets().add(cssPath);
 
         // Input table:
@@ -234,6 +234,7 @@ public class DebuggerExecutionMenuController {
         setPlayEnabled(false);
         setModeSelectionDisabled(true);
         setDebugControlsDisabled(true);
+        setArchitectureComboBoxDisabled(true);
         inputsTable.setEditable(false);
     }
 
@@ -243,6 +244,7 @@ public class DebuggerExecutionMenuController {
         setPlayEnabled(false);
         setModeSelectionDisabled(false);
         setDebugControlsDisabled(true);
+        setArchitectureComboBoxDisabled(true);
         inputsTable.setEditable(false);
     }
 
@@ -250,14 +252,40 @@ public class DebuggerExecutionMenuController {
         currentMode = ApplicationMode.NEW_RUN_PRESSED;
         setNewRunEnabled(true);
         setModeSelectionDisabled(false);
+
         setPlayEnabled(true);
         setDebugControlsDisabled(true);
+        setArchitectureComboBoxDisabled(false);
         inputsTable.setEditable(true);
         variablesTable.getItems().clear();
         cyclesNumberLabel.setText(String.valueOf(0));
         resetInputTable(currentSelectedProgramProperty.getValue());
         executionController.disableToolBarComponents(false);
         inputsEditableMode = true; // enable blinking only now
+    }
+
+    private void enterRunning() {
+        currentMode = ApplicationMode.RUN;
+        setNewRunEnabled(true);
+        setModeSelectionDisabled(true);
+        setPlayEnabled(false);
+        setDebugControlsDisabled(true);
+        setArchitectureComboBoxDisabled(true);
+        inputsTable.setEditable(false);
+    }
+
+    private void enterDebugging() {
+        currentMode = ApplicationMode.DEBUG;
+        setNewRunEnabled(true);
+        setModeSelectionDisabled(true);
+        setPlayEnabled(false);
+        setDebugControlsDisabled(false);
+        stepBackButton.setDisable(true); // Specific to shot down
+        stopButton.setDisable(true);     // Specific to shot down
+        inputsTable.setEditable(false);
+        setArchitectureComboBoxDisabled(true);
+        executionController.EnterDebugMode();
+        currentDebugStep = null; // Reset
     }
 
     private void resetInputTable(ProgramDTO program) {
@@ -281,28 +309,6 @@ public class DebuggerExecutionMenuController {
         }
     }
 
-    private void enterRunning() {
-        currentMode = ApplicationMode.RUN;
-        setNewRunEnabled(true);
-        setModeSelectionDisabled(true);
-        setPlayEnabled(false);
-        setDebugControlsDisabled(true);
-        inputsTable.setEditable(false);
-    }
-
-    private void enterDebugging() {
-        currentMode = ApplicationMode.DEBUG;
-        setNewRunEnabled(true);
-        setModeSelectionDisabled(true);
-        setPlayEnabled(false);
-        setDebugControlsDisabled(false);
-        stepBackButton.setDisable(true); // Specific to shot down
-        stopButton.setDisable(true);     // Specific to shot down
-        inputsTable.setEditable(false);
-        executionController.EnterDebugMode();
-        currentDebugStep = null; // Reset
-    }
-
     private void setPlayEnabled(boolean enabled) {
         playButton.setDisable(!enabled);
     }
@@ -312,6 +318,10 @@ public class DebuggerExecutionMenuController {
         resumeButton.setDisable(disable);
         stepBackButton.setDisable(disable);
         stepOverButton.setDisable(disable);
+    }
+
+    private void setArchitectureComboBoxDisabled(boolean disabled) {
+        architectureComboBox.setDisable(disabled);
     }
 
     private void setNewRunEnabled(boolean enabled) {
