@@ -68,8 +68,8 @@ public class ValidationUtils {
     }
 
     public static boolean validateDegree(int degree, HttpServletResponse response) throws IOException {
-        if (degree < 1) {
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid degree value (must be >= 1)");
+        if (degree < 0) {
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid degree value (must be >= 0)");
             return false;
         }
         return true;

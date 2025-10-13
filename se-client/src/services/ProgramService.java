@@ -209,21 +209,29 @@ public class ProgramService {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String body = HttpClientUtil.readResponseBodySafely(response);
+
                 if (!response.isSuccessful()) {
-                    String body = HttpClientUtil.readResponseBodySafely(response);
-                    handleErrorResponse(response.code(), body, "Run Program");
-                    onError.accept("Server returned error code: " + response.code());
+                    try {
+                        JsonObject obj = GSON_INSTANCE.fromJson(body, JsonObject.class);
+                        String message = obj != null && obj.has("message") ? obj.get("message").getAsString() : "Program execution failed on server.";
+                        String details = obj != null && obj.has("details") ? obj.get("details").getAsString() : "";
+                        String fullMessage = details.isEmpty() ? message : message + " - " + details;
+                        onError.accept(fullMessage);
+                    } catch (Exception e) {
+                        onError.accept("Program execution failed on server.");
+                    }
                     return;
                 }
 
-                try (ResponseBody body = response.body()) {
-                    if (body == null) {
-                        onError.accept("Empty response body");
-                        return;
-                    }
+                if (body == null) {
+                    onError.accept("Empty response body");
+                    return;
+                }
 
-                    JsonObject jsonResponse = GSON_INSTANCE.fromJson(body.string(), JsonObject.class);
-                    String runId = jsonResponse.get("runId").getAsString();
+                try {
+                    JsonObject jsonResponse = GSON_INSTANCE.fromJson(body, JsonObject.class);
+                    String runId = jsonResponse.get(RUN_ID_QUERY_PARAM).getAsString();
                     onSuccess.accept(runId);
                 } catch (Exception e) {
                     onError.accept("Failed to parse server response: " + e.getMessage());
