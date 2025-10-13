@@ -7,6 +7,7 @@ public class Constants {
     public static final Gson GSON_INSTANCE = new Gson();
 
     public static final String USERNAME_QUERY_PARAM = "username";
+    public static final String CREDITS_TO_CHARGE_QUERY_PARAM = "creditsToCharge";
     public static final String PROGRAM_NAME_QUERY_PARAM = "programName";
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
     public static final String DEGREE_QUERY_PARAM = "degree";
@@ -17,6 +18,14 @@ public class Constants {
     // Login:
     public static final String LOGIN_SERVLET_NAME = "LoginServlet";
     public static final String LOGIN_SERVLET_URL = "/login";
+
+    // Credits To Charge:
+    public final static String CHARGE_CREDITS_NAME = "ChargeCreditsServlet";
+    public final static String CHARGE_CREDITS_URL = "/charge-credits";
+
+    // Get Updated User's Credits:
+    public final static String FETCH_CREDITS_NAME = "FetchCreditsServlet";
+    public final static String FETCH_CREDITS_URL = "/fetch-credits";
 
     // Upload File:
     public static final String FILE_UPLOAD_SERVLET_NAME = "UploadFileServlet";

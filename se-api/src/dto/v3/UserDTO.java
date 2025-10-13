@@ -7,7 +7,7 @@ public class UserDTO {
     private final String userName;
     private int mainProgramsCount;
     private int subFunctionsCount;
-    private int currentCredits;
+    private long currentCredits;
     private int usedCredits;
     private int executionsCount;
 
@@ -33,7 +33,7 @@ public class UserDTO {
         return subFunctionsCount;
     }
 
-    public int getCurrentCredits() {
+    public long getCurrentCredits() {
         return currentCredits;
     }
 
@@ -53,7 +53,7 @@ public class UserDTO {
         this.subFunctionsCount += 1;
     }
 
-    public void addToCurrentCredits(int creditsToAdd) {
+    public void addToCurrentCredits(long creditsToAdd) {
         this.currentCredits += creditsToAdd;
     }
 

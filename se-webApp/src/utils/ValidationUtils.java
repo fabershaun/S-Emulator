@@ -36,6 +36,21 @@ public class ValidationUtils {
         return true;
     }
 
+    public static boolean validateCreditsToAdd(Long amountToAdd, HttpServletResponse response) throws IOException {
+
+        if (amountToAdd == null) {
+            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, "Credits amount is null", "");
+            return false;
+        }
+
+        if (amountToAdd <= 0) {
+            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Invalid amount", "Amount must be positive");
+            return false;
+        }
+        return true;
+    }
+
     public static boolean validateProgramName(String programName, HttpServletResponse response) throws IOException {
         if (programName == null || programName.isEmpty()) {
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Missing program name");

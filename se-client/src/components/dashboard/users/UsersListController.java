@@ -45,7 +45,7 @@ public class UsersListController implements Closeable {
         colUserName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUserName()));
         colMainProgramsCount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getMainProgramsCount()));
         colSubFunctionsCount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getSubFunctionsCount()));
-        colCurrentCredits.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getCurrentCredits()));
+        colCurrentCredits.setCellValueFactory(data -> new SimpleLongProperty(data.getValue().getCurrentCredits()));
         colUsedCredits.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getUsedCredits()));
         colExecutionsCount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getExecutionsCount()));
 
