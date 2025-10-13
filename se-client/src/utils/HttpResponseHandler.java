@@ -1,6 +1,6 @@
 package utils;
 
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import javafx.application.Platform;
 
 import static utils.Constants.GSON_INSTANCE;

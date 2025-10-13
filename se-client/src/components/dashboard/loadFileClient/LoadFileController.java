@@ -1,6 +1,6 @@
 package components.dashboard.loadFileClient;
 
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import components.dashboard.mainDashboard.DashboardController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

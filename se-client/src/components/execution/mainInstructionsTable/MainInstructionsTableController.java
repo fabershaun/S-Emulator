@@ -1,6 +1,5 @@
 package components.execution.mainInstructionsTable;
 
-import components.dashboard.mainDashboard.DashboardController;
 import components.execution.mainExecution.MainExecutionController;
 import components.execution.topToolBar.HighlightSelectionModelV3;
 import dto.v2.InstructionDTO;
@@ -15,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static components.UIUtils.GeneralUtils.scrollToCenter;
+import static utils.ui.GeneralUtils.scrollToCenter;
 
 public class MainInstructionsTableController {
 

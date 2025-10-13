@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static utils.Constants.GSON_INSTANCE;
+import static utils.Constants.INPUTS_VALUES_QUERY_PARAM;
 
 public class ValidationUtils {
 
@@ -60,10 +61,10 @@ public class ValidationUtils {
     }
 
     public static List<Long> validateInputs(JsonObject jsonBody, HttpServletResponse response) throws IOException {
-        if (jsonBody.has("inputs")) {
+        if (jsonBody.has(INPUTS_VALUES_QUERY_PARAM)) {
             try {
                 Type listType = new TypeToken<List<Long>>() {}.getType();
-                return GSON_INSTANCE.fromJson(jsonBody.get("inputs"), listType);
+                return GSON_INSTANCE.fromJson(jsonBody.get(INPUTS_VALUES_QUERY_PARAM), listType);
             } catch (Exception e) {
                 writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid inputs format (must be list of numbers)");
                 return null;

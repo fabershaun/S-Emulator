@@ -1,7 +1,7 @@
 package components.dashboard.availableFunctions;
 
 import com.google.gson.reflect.TypeToken;
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import dto.v3.FunctionDTO;
 import javafx.application.Platform;
 import okhttp3.Call;

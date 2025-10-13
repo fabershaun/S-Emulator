@@ -1,7 +1,7 @@
 package components.dashboard.usersHistory;
 
 import com.google.gson.reflect.TypeToken;
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import components.dashboard.mainDashboard.DashboardController;
 import components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController;
 import dto.v3.HistoryRowV3DTO;

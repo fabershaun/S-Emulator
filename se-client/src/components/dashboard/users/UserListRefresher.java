@@ -1,6 +1,6 @@
 package components.dashboard.users;
 
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import dto.v3.UserDTO;
 import javafx.application.Platform;
 import okhttp3.Call;

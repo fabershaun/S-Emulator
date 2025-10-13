@@ -1,6 +1,6 @@
 package utils;
 
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +15,7 @@ public class HttpClientUtil {
                     .cookieJar(simpleCookieManager)
                     .followRedirects(false)
                     .build();
+
 
     public static void removeCookiesOf(String domain) {
         simpleCookieManager.removeCookiesOf(domain);
@@ -33,6 +34,30 @@ public class HttpClientUtil {
         Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
 
         call.enqueue(callback);
+    }
+
+    public static String runSync(String finalUrl, @Nullable RequestBody requestBody) throws IOException {
+        Request.Builder builder = new Request.Builder().url(finalUrl);
+
+        // POST if there's a body, otherwise GET
+        if (requestBody != null) {
+            builder.post(requestBody);
+        }
+
+        Request request = builder.build();
+
+        try (Response response = HTTP_CLIENT.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("HTTP " + response.code() + ": " + response.message());
+            }
+
+            ResponseBody body = response.body();
+            if (body == null) {
+                throw new IOException("Empty response body");
+            }
+
+            return body.string();
+        }
     }
 
     public static void shutdown() {

@@ -14,6 +14,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +34,7 @@ public class MainAppController {
     private MainExecutionController executionController;
     private LoginController loginController;
 
+    @FXML private StackPane rootStackPane;
     @FXML private Label availableCreditsLabel;
     @FXML private Label userNameLabel;
     @FXML private AnchorPane mainPanel;     // Dynamic area (login / dashboard)
@@ -182,5 +184,9 @@ public class MainAppController {
                 break;
             }
         }
+    }
+
+    public StackPane getRootStackPane() {
+        return rootStackPane;
     }
 }

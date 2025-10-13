@@ -1,6 +1,8 @@
 package components.execution.mainExecution;
 
-import components.UIUtils.AlertUtils;
+import com.google.gson.JsonObject;
+import utils.ui.AlertUtils;
+import utils.ui.ToastUtil;
 import components.execution.chainInstructionsTable.ChainInstructionsTableController;
 import components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.execution.mainInstructionsTable.MainInstructionsTableController;
@@ -14,12 +16,8 @@ import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
 import dto.v3.ArchitectureDTO;
-import dto.v3.UserDTO;
 import javafx.application.Platform;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
@@ -28,10 +26,9 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.HttpClientUtil;
 import utils.HttpResponseHandler;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 import static utils.Constants.*;
@@ -44,9 +41,12 @@ public class MainExecutionController {
     private LongProperty totalCreditsAmount;
     private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
-
+    private final StringProperty chosenArchitecture = new SimpleStringProperty("");
     private final ExpansionCollapseModelV3 degreeModel = new ExpansionCollapseModelV3();
     private final HighlightSelectionModelV3 highlightSelectionModel = new HighlightSelectionModelV3();
+
+    private final ScheduledExecutorService pollingExecutor = Executors.newSingleThreadScheduledExecutor();  // Executor used for periodic server polling
+    private ScheduledFuture<?> currentPollingTask;  // Reference to the active polling task, used for stopping it when needed
 
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
@@ -107,7 +107,7 @@ public class MainExecutionController {
 
     private void initDebuggerExecutionMenuController() {
         debuggerExecutionMenuController.setExecutionController(this);
-        debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty);
+        debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty, chosenArchitecture);
         debuggerExecutionMenuController.initializeListeners();
     }
 
@@ -348,24 +348,142 @@ public class MainExecutionController {
         });
     }
 
+    public void runProgram(List<Long> inputs) {
+        RequestBody requestBody = buildRunProgramRequestBody(inputs);
+        fetchRunProgram(requestBody);
+    }
+
+    private void fetchRunProgram(RequestBody requestBody) {
+        HttpClientUtil.runAsync(RUN_PROGRAM_PATH, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Platform.runLater(() -> AlertUtils.showError("Run Failed", "Server returned an error"));
+                    return;
+                }
+
+                JsonObject jsonResponse = GSON_INSTANCE.fromJson(response.body().string(), JsonObject.class);
+                String runId = jsonResponse.get("runId").getAsString();
+                Platform.runLater(() -> ToastUtil.showToast(mainAppController.getRootStackPane(), "Program started successfully", true));
+                startPolling(runId);
+            }
+        });
+    }
+
+    private RequestBody buildRunProgramRequestBody(List<Long> inputs) {
+        // Collect all required data from the current state
+        String programName = requireCurrentProgramName();
+        String architecture = chosenArchitecture.get();
+        int degree = degreeModel.currentDegreeProperty().get();
+
+        // Build JSON body
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty(PROGRAM_NAME_QUERY_PARAM, programName);
+        jsonBody.addProperty(ARCHITECTURE_QUERY_PARAM, architecture);
+        jsonBody.addProperty(DEGREE_QUERY_PARAM, degree);
+        jsonBody.add(INPUTS_VALUES_QUERY_PARAM, GSON_INSTANCE.toJsonTree(inputs));
+
+        // Convert to RequestBody
+        return RequestBody.create(GSON_INSTANCE.toJson(jsonBody), MEDIA_TYPE_JSON);
+    }
+
+    private void startPolling(String runId) {
+
+        // Cancel any previous polling before starting a new one
+        if (currentPollingTask != null && !currentPollingTask.isCancelled()) {
+            currentPollingTask.cancel(true);
+        }
+
+        currentPollingTask = pollingExecutor.scheduleAtFixedRate(() -> {
+            try {
+                String url = buildUrlWithQueryParam(PROGRAM_STATUS_PATH, RUN_ID_QUERY_PARAM, runId);
+                fetchProgramStatus(url, runId);
+
+            }
+            catch (Exception e) {
+                System.err.println("Polling failed: " + e.getMessage());
+            }
+        },0, 2, TimeUnit.SECONDS); // repeat every 2 seconds
+    }
+
+    private void fetchProgramStatus(String url, String runId) {
+        HttpClientUtil.runAsync(url, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String body = HttpClientUtil.readResponseBodySafely(response);
+                if (body == null || response.code() != 200) {
+                    return;
+                }
+
+                JsonObject json = GSON_INSTANCE.fromJson(body, JsonObject.class);
+                String state = json.get("state").getAsString();
+
+                if ("DONE".equals(state)) {
+                    stopPolling();
+                    fetchProgramResult(runId);
+                } else if ("FAILED".equals(state)) {
+                    stopPolling();
+                    Platform.runLater(() ->
+                            AlertUtils.showError("Run Failed", "Program execution failed on server.")
+                    );
+                }
+            }
+        });
+    }
+
+    private void stopPolling() {
+        if (currentPollingTask != null && !currentPollingTask.isCancelled()) {
+            currentPollingTask.cancel(true); // Try to cancel the running task
+            currentPollingTask = null;
+        }
+    }
+
+    private void fetchProgramResult(String runId) {
+        String url = buildUrlWithQueryParam(PROGRAM_RESULT_PATH, RUN_ID_QUERY_PARAM, runId);
+
+        HttpClientUtil.runAsync(url, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Platform.runLater(() -> AlertUtils.showError("Fetch Failed", "Failed to get program result"));
+                    return;
+                }
+
+                String body = HttpClientUtil.readResponseBodySafely(response);
+                ProgramExecutorDTO result = GSON_INSTANCE.fromJson(body, ProgramExecutorDTO.class);
+
+                Platform.runLater(() -> programAfterExecuteProperty.set(result));
+            }
+        });
+    }
+
+
+
+
+
+    public void finishDebug() {
+        mainInstructionsTableController.turnOffHighlighting();
+        topToolBarController.setComponentsDisabled(false);
+    }
+
     // TODO : Should be Blocking ?? not async
     public void initializeDebugger(List<Long> inputValues) {
 //        engine.initializeDebugger(getActiveProgramName(), ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
-    }
-
-    // TODO: write
-    public void runProgram(List<Long> inputs) {
-        int degree = degreeModel.currentDegreeProperty().get();
-        String programName = requireCurrentProgramName();
-
-
-//        ProgramRunTask runTask = new ProgramRunTask(activeProgramName, engine, degree, inputs.toArray(new Long[0]));
-//
-//        runTask.setOnSucceeded(ev -> programAfterExecuteProperty.set(runTask.getValue()));
-//
-//        runTask.setOnFailed(ev -> handleTaskFailure(runTask, "Run Failed"));
-//
-//        new Thread(runTask, "runProgram-thread").start();
     }
 
     // TODO : Should be Blocking ?? not async
@@ -416,10 +534,5 @@ public class MainExecutionController {
 //
 //        return debugStep;
         return null;
-    }
-
-    public void finishDebug() {
-        mainInstructionsTableController.turnOffHighlighting();
-        topToolBarController.setComponentsDisabled(false);
     }
 }

@@ -1,4 +1,4 @@
-package components.UIUtils;
+package utils.ui;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;

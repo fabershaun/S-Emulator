@@ -1,6 +1,6 @@
 package components.dashboard.mainDashboard;
 
-import components.UIUtils.AlertUtils;
+import utils.ui.AlertUtils;
 import components.dashboard.availableFunctions.AvailableFunctionsListController;
 import components.dashboard.availablePrograms.AvailableProgramsListController;
 import components.dashboard.chargeCredits.ChargeCreditsController;
@@ -8,7 +8,7 @@ import components.dashboard.loadFileClient.LoadFileController;
 import components.dashboard.users.UsersListController;
 import components.dashboard.usersHistory.UsersHistoryController;
 import components.mainAppV3.MainAppController;
-import components.UIUtils.ToastUtil;
+import utils.ui.ToastUtil;
 import dto.v2.ProgramDTO;
 import dto.v3.UserDTO;
 import javafx.application.Platform;

@@ -1,6 +1,7 @@
 package utils;
 
 import com.google.gson.Gson;
+import okhttp3.MediaType;
 
 public class Constants {
 
@@ -13,6 +14,7 @@ public class Constants {
 
     // GSON instance
     public final static Gson GSON_INSTANCE = new Gson();
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json; charset=utf-8");
 
     // fxml locations
     public final static String MAIN_PAGE_FXML_RESOURCE_LOCATION = "/components/mainAppV3/mainApp.fxml";
@@ -27,6 +29,8 @@ public class Constants {
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
     public static final String DEGREE_QUERY_PARAM = "degree";
     public static final String ARCHITECTURE_QUERY_PARAM = "architecture";
+    public static final String INPUTS_VALUES_QUERY_PARAM = "inputsValues";
+    public static final String RUN_ID_QUERY_PARAM = "runId";
 
     // Server resources locations
     private final static String BASE_DOMAIN = "localhost";
@@ -66,6 +70,12 @@ public class Constants {
 
     // Get Architecture Types Available:
     public final static String ARCHITECTURE_TYPES_PATH = FULL_SERVER_PATH + "/architecture-types";
+
+    // Server resource
+    public static final String PROGRAM_STATUS_PATH = FULL_SERVER_PATH + "/program-status";
+
+    // Run Program:
+    public final static String RUN_PROGRAM_PATH = FULL_SERVER_PATH + "/run-program";
 
 }
 

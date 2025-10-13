@@ -1,4 +1,4 @@
-package components.UIUtils;
+package utils.ui;
 
 import javafx.scene.control.TableView;
 

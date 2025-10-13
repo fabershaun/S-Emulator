@@ -1,6 +1,6 @@
 package components.execution.debuggerExecutionMenu;
 
-import components.UIUtils.GeneralUtils;
+import utils.ui.GeneralUtils;
 import components.execution.mainExecution.MainExecutionController;
 import dto.v2.DebugDTO;
 import dto.v2.ProgramDTO;
@@ -12,6 +12,7 @@ import javafx.animation.Timeline;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,7 +20,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.converter.LongStringConverter;
-import okhttp3.HttpUrl;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +33,7 @@ public class DebuggerExecutionMenuController {
     private ApplicationMode currentMode = ApplicationMode.NEW_RUN_PRESSED;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
+    private StringProperty chosenArchitecture;
     private boolean inputsEditableMode = false;     // Flag to control whether blinking is active
 
     @FXML private VBox debuggerExecutionMenu;
@@ -59,9 +60,10 @@ public class DebuggerExecutionMenuController {
         this.executionController = executionController;
     }
 
-    public void setProperty(ObjectProperty<ProgramDTO> programProperty, ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty) {
+    public void setProperty(ObjectProperty<ProgramDTO> programProperty, ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty, StringProperty chosenArchitecture) {
         this.currentSelectedProgramProperty = programProperty;
         this.programAfterExecuteProperty = programAfterExecuteProperty;
+        this.chosenArchitecture = chosenArchitecture;
     }
 
     public ComboBox<String> getArchitectureComboBox() {
@@ -110,6 +112,10 @@ public class DebuggerExecutionMenuController {
             } else {
                 variablesTable.getItems().clear();
             }
+        });
+
+        architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitecture) -> {
+            chosenArchitecture.set(newArchitecture);
         });
     }
 
