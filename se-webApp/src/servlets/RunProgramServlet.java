@@ -62,7 +62,7 @@ public class RunProgramServlet extends HttpServlet {
                     inputValues
             );
 
-            String runId = ProgramExecutionManager.getInstance().submitRun(runRequest);
+            String runId = ProgramExecutionManager.getInstance().submitRun(runRequest, engine);
 
             Map<String, Object> jsonResponse = new HashMap<>();
             jsonResponse.put("runId", runId);

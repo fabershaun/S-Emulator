@@ -1,5 +1,9 @@
 package service;
 
+import engine.Engine;
+import utils.ServletUtils;
+
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,21 +27,30 @@ public class ProgramExecutionManager implements ExecutionService {
     }
 
     @Override
-    public String submitRun(ProgramRunRequest request) {
-        // 1. Generate unique run ID
+    public String submitRun(ProgramRunRequest request, Engine engine) {
+        // Generate unique run ID
         String runId = UUID.randomUUID().toString();    // Universally Unique Identifier
 
-        // 2. Create status object and put it in the map
+        // Create status object and put it in the map
         ProgramRunStatus programRunStatus = new ProgramRunStatus(runId, request.programName, request.username);
         runStatusMap.put(runId, programRunStatus);
 
-        // 3. Submit background task
+        // Submit background task
         threadPool.submit(() -> {
             try {
                 // Update state to RUNNING
                 programRunStatus.state = ProgramRunState.RUNNING;
 
+                List<Long> inputList = request.inputValues != null ? request.inputValues : List.of();
+                Long[] inputArray = inputList.toArray(new Long[0]);
 
+                engine.runProgram(
+                        request.programName,
+                        request.architecture,
+                        request.degree,
+                        request.username,
+                        inputArray
+                );
 
                 // Update state to DONE
                 programRunStatus.state = ProgramRunState.DONE;
