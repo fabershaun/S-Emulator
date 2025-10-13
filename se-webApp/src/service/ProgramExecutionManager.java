@@ -1,8 +1,6 @@
 package service;
 
 import engine.Engine;
-import utils.ServletUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,6 +31,7 @@ public class ProgramExecutionManager implements ExecutionService {
 
         // Create status object and put it in the map
         ProgramRunStatus programRunStatus = new ProgramRunStatus(runId, request.programName, request.username);
+        programRunStatus.state = ProgramRunState.PENDING;
         runStatusMap.put(runId, programRunStatus);
 
         // Submit background task
@@ -57,11 +56,11 @@ public class ProgramExecutionManager implements ExecutionService {
 
             } catch (Exception e) {
                 programRunStatus.state = ProgramRunState.FAILED;
-                programRunStatus.error = e.getMessage();
+                programRunStatus.error = e.getClass().getSimpleName() + ": " + e.getMessage();
             }
         });
 
-        // 4. Return run ID immediately
+        // Return run ID immediately
         return runId;
     }
 
