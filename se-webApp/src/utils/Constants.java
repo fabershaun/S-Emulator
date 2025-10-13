@@ -63,4 +63,8 @@ public class Constants {
     public final static String PROGRAM_STATUS_NAME = "ProgramStatus";
     public final static String PROGRAM_STATUS_URL = "/program-status";
 
+    // Get Program After Run:
+    public final static String PROGRAM_AFTER_RUN_NAME = "ProgramAfterRun";
+    public final static String PROGRAM_AFTER_RUN_URL =  "/program-after-run";
+
 }
