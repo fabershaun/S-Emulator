@@ -1,5 +1,7 @@
 package components.dashboard.mainDashboard;
 
+import com.google.gson.JsonObject;
+import services.ProgramService;
 import utils.ui.AlertUtils;
 import components.dashboard.availableFunctions.AvailableFunctionsListController;
 import components.dashboard.availablePrograms.AvailableProgramsListController;
@@ -32,6 +34,9 @@ import static utils.Constants.*;
 public class DashboardController implements Closeable {
 
     private MainAppController mainAppController;
+
+    private ProgramService programService;
+
     private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
     private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
     private StringProperty currentUsername;
@@ -54,6 +59,10 @@ public class DashboardController implements Closeable {
 
     public void setMainAppController(MainAppController mainAppController) {
         this.mainAppController = mainAppController;
+    }
+
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
     }
 
     public void setProperty(StringProperty currentUsername, LongProperty totalCreditsAmount) {
@@ -79,47 +88,11 @@ public class DashboardController implements Closeable {
         }
     }
 
-    private void initLoadFileController() {
-        loadFileController.setDashboardController(this);
-        loadFileController.setProperty(selectedFilePathProperty);
-        loadFileController.initializeBindings();
-    }
-
-    private void initChargeCreditsController() {
-        chargeCreditsController.setProperty(totalCreditsAmount);
-    }
-
-    private void intiUserListController() {
-
-    }   //TODO: WRITE
-
-    private void initHistoryListController() {
-        userHistoryListController.setDashboardController(this);
-        userHistoryListController.setProperty(selectedUserProperty, currentUsername);
-        userHistoryListController.initializeListeners();
-    }
-
-    private void initProgramsListController() {
-        availableProgramsListController.initListeners();
-        availableProgramsListController.setDashboardController(this);
-    }
-
-    private void initFunctionsListController() {
-        availableFunctionsListController.initListeners();
-        availableFunctionsListController.setDashboardController(this);
-    }
-
-    public void setActive() {
-        usersListController.startListRefresher();
-        availableProgramsListController.startListRefresher();
-        availableFunctionsListController.startListRefresher();
-    }
-
     public void loadNewFile(File file, String pathStr) {
         String finalUrl = Objects.requireNonNull(HttpUrl
                         .parse(FILE_UPLOAD_PAGE))
-                        .newBuilder()
-                        .toString();
+                .newBuilder()
+                .toString();
 
         // Build multipart request body
         RequestBody requestBody = new MultipartBody.Builder()
@@ -186,6 +159,65 @@ public class DashboardController implements Closeable {
 
     public void switchToExecution(String programSelectedName) {
         mainAppController.switchToExecution(programSelectedName);
+    }
+
+    public void setActive() {
+        usersListController.startListRefresher();
+        availableProgramsListController.startListRefresher();
+        availableFunctionsListController.startListRefresher();
+    }
+
+    public void addCreditsToUser(long amountToAdd) {
+
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty(CREDITS_TO_CHARGE_QUERY_PARAM, amountToAdd);
+        RequestBody requestBody = RequestBody.create(GSON_INSTANCE.toJson(jsonBody), MEDIA_TYPE_JSON);
+
+        programService.addCreditsAsync(
+                CHARGE_CREDITS_PATH,
+                requestBody,
+                updatedCredits -> Platform.runLater(() -> {
+                    totalCreditsAmount.set(updatedCredits);
+                    ToastUtil.showToast(mainAppController.getRootStackPane(),
+                            "Credits added successfully! New total: " + updatedCredits,
+                            true);
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Charge Failed", errorMsg)
+                )
+        );
+    }
+
+
+    private void initLoadFileController() {
+        loadFileController.setDashboardController(this);
+        loadFileController.setProperty(selectedFilePathProperty);
+        loadFileController.initializeBindings();
+    }
+
+    private void initChargeCreditsController() {
+        chargeCreditsController.setDashboardController(this);
+        chargeCreditsController.setProperty(totalCreditsAmount);
+    }
+
+    private void intiUserListController() {
+
+    }   //TODO: WRITE
+
+    private void initHistoryListController() {
+        userHistoryListController.setDashboardController(this);
+        userHistoryListController.setProperty(selectedUserProperty, currentUsername);
+        userHistoryListController.initializeListeners();
+    }
+
+    private void initProgramsListController() {
+        availableProgramsListController.initListeners();
+        availableProgramsListController.setDashboardController(this);
+    }
+
+    private void initFunctionsListController() {
+        availableFunctionsListController.initListeners();
+        availableFunctionsListController.setDashboardController(this);
     }
 
     @Override

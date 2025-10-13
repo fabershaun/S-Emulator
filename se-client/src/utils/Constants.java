@@ -25,6 +25,7 @@ public class Constants {
 
     // Query parameters:
     public static final String USERNAME_QUERY_PARAM = "username";
+    public static final String CREDITS_TO_CHARGE_QUERY_PARAM = "creditsToCharge";
     public static final String PROGRAM_NAME_QUERY_PARAM = "programName";
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
     public static final String DEGREE_QUERY_PARAM = "degree";
@@ -43,6 +44,12 @@ public class Constants {
 
     // Login:
     public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
+
+    // Credits To Charge:
+    public final static String CHARGE_CREDITS_PATH = FULL_SERVER_PATH + "/charge-credits";
+
+    // Get Updated User's Credits:
+    public final static String FETCH_CREDITS_PATH = FULL_SERVER_PATH + "/fetch-credits";
 
     // Upload File:
     public final static String FILE_UPLOAD_PAGE = FULL_SERVER_PATH + "/upload-file";

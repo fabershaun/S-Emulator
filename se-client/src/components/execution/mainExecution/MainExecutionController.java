@@ -26,7 +26,6 @@ import javafx.scene.layout.VBox;
 import okhttp3.*;
 
 import java.util.List;
-import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 import static utils.Constants.*;
@@ -34,19 +33,18 @@ import static utils.Constants.GSON_INSTANCE;
 
 public class MainExecutionController {
 
-    private final ProgramService programService = new ProgramService();
+    private MainAppController mainAppController;
+
+    private ProgramService programService;
     private ProgramPollingService programPollingService;
 
-    private MainAppController mainAppController;
     private LongProperty totalCreditsAmount;
+    private StringProperty currentUserName;
     private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
     private final StringProperty chosenArchitecture = new SimpleStringProperty("");
     private final ExpansionCollapseModelV3 degreeModel = new ExpansionCollapseModelV3();
     private final HighlightSelectionModelV3 highlightSelectionModel = new HighlightSelectionModelV3();
-
-    private final ScheduledExecutorService pollingExecutor = Executors.newSingleThreadScheduledExecutor();  // Executor used for periodic server polling
-    private ScheduledFuture<?> currentPollingTask;  // Reference to the active polling task, used for stopping it when needed
 
     @FXML private HBox topToolBar;
     @FXML private TopToolBarController topToolBarController;    // must: field name = fx:id + "Controller"
@@ -137,9 +135,13 @@ public class MainExecutionController {
         this.programPollingService = programPollingService;
     }
 
-    // TODO: write
-    public void setProperty(StringProperty currentUserName, LongProperty totalCreditsAmount) {
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
+    }
 
+    public void setProperty(StringProperty currentUserName, LongProperty totalCreditsAmount) {
+        this.currentUserName = currentUserName;
+        this.totalCreditsAmount = totalCreditsAmount;
     }
 
     public void setupAfterMainAppInit(String programSelectedName) {
@@ -230,14 +232,14 @@ public class MainExecutionController {
     }
 
     public void loadArchitectureTypes() {
-        programService.fetchArchitectureTypes(
+        programService.fetchArchitectureTypesAsync(
                 ARCHITECTURE_TYPES_PATH,
-                dto -> Platform.runLater(() -> {
+                architectureDTO -> Platform.runLater(() -> {
                     debuggerExecutionMenuController.getArchitectureComboBox()
                             .getItems()
-                            .setAll(dto.getArchitectureTypesStr());
+                            .setAll(architectureDTO.getArchitectureTypesStr());
 
-                    if (!dto.getArchitectureTypesStr().isEmpty()) {
+                    if (!architectureDTO.getArchitectureTypesStr().isEmpty()) {
                         debuggerExecutionMenuController.getArchitectureComboBox()
                                 .getSelectionModel()
                                 .selectFirst();
@@ -252,7 +254,7 @@ public class MainExecutionController {
     public void runProgram(List<Long> inputs) {
 
         RequestBody requestBody = buildRunProgramRequestBody(inputs);
-        programService.fetchRunProgram(
+        programService.fetchRunProgramAsync(
                 RUN_PROGRAM_PATH,
                 requestBody,
                 runId -> Platform.runLater(() -> {
@@ -270,7 +272,7 @@ public class MainExecutionController {
         try {
             String url = buildUrlWithQueryParam(PROGRAM_STATUS_PATH, RUN_ID_QUERY_PARAM, runId);
 
-            programService.fetchProgramStatus(
+            programService.fetchProgramStatusAsync(
                     url,
                     state -> handleProgramState(runId, state), // "DONE", "FAILED", etc.
                     errorMsg -> Platform.runLater(() ->
@@ -315,7 +317,7 @@ public class MainExecutionController {
 
         String url = buildUrlWithQueryParam(PROGRAM_AFTER_RUN_PATH, RUN_ID_QUERY_PARAM, runId);
 
-        programService.fetchProgramAfterRun(
+        programService.fetchProgramAfterRunAsync(
                 url,
                 result -> Platform.runLater(() -> {
                     programAfterExecuteProperty.set(result);

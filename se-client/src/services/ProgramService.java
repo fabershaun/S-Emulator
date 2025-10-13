@@ -25,6 +25,69 @@ import static utils.http.HttpResponseHandler.handleErrorResponse;
  */
 public class ProgramService {
 
+    public void addCreditsAsync(String finalUrl,
+                                RequestBody requestBody,
+                                Consumer<Long> onSuccess,
+                                Consumer<String> onError) {
+
+        HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "Add credits");
+                    onError.accept("Server returned: " + response.code());
+                    return;
+                }
+
+                try {
+                    long updatedCredits = GSON_INSTANCE.fromJson(responseBody, Long.class);
+                    onSuccess.accept(updatedCredits);
+                } catch (Exception e) {
+                    onError.accept("Parse error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void fetchUserCreditsAsync(String finalUrl,
+                                      RequestBody requestBody,
+                                      Consumer<Long> onSuccess,
+                                      Consumer<String> onError) {
+
+        HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "Get user's credits");
+                    onError.accept("Server returned: " + response.code());
+                    return;
+                }
+
+                try {
+                    long updatedCredits =  GSON_INSTANCE.fromJson(responseBody, Long.class);
+                    onSuccess.accept(updatedCredits);
+                } catch (Exception e) {
+                    onError.accept("Parse error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+
     public void fetchProgramDataAsync(String url, Consumer<ProgramDTO> onSuccess, Consumer<String> onError) {
 
         // Run the HTTP call asynchronously
@@ -108,9 +171,9 @@ public class ProgramService {
         });
     }
 
-    public void fetchArchitectureTypes(String finalUrl,
-                                       Consumer<ArchitectureDTO> onSuccess,
-                                       Consumer<String> onError) {
+    public void fetchArchitectureTypesAsync(String finalUrl,
+                                            Consumer<ArchitectureDTO> onSuccess,
+                                            Consumer<String> onError) {
         HttpClientUtil.runAsync(finalUrl, null, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -133,10 +196,10 @@ public class ProgramService {
     }
 
 
-    public void fetchRunProgram(String finalUrl,
-                                RequestBody requestBody,
-                                Consumer<String> onSuccess,
-                                Consumer<String> onError) {
+    public void fetchRunProgramAsync(String finalUrl,
+                                     RequestBody requestBody,
+                                     Consumer<String> onSuccess,
+                                     Consumer<String> onError) {
 
         HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
             @Override
@@ -169,9 +232,9 @@ public class ProgramService {
         });
     }
 
-    public void fetchProgramStatus(String finalUrl,
-                                   Consumer<String> onSuccess,
-                                   Consumer<String> onError) {
+    public void fetchProgramStatusAsync(String finalUrl,
+                                        Consumer<String> onSuccess,
+                                        Consumer<String> onError) {
 
         HttpClientUtil.runAsync(finalUrl, null, new Callback() {
             @Override
@@ -204,9 +267,9 @@ public class ProgramService {
         });
     }
 
-    public void fetchProgramAfterRun(String finalUrl,
-                                     Consumer<ProgramExecutorDTO> onSuccess,
-                                     Consumer<String> onError) {
+    public void fetchProgramAfterRunAsync(String finalUrl,
+                                          Consumer<ProgramExecutorDTO> onSuccess,
+                                          Consumer<String> onError) {
 
         HttpClientUtil.runAsync(finalUrl, null, new Callback() {
             @Override

@@ -1,5 +1,6 @@
 package components.dashboard.chargeCredits;
 
+import components.dashboard.mainDashboard.DashboardController;
 import javafx.beans.property.LongProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -7,9 +8,15 @@ import javafx.scene.control.TextField;
 
 public class ChargeCreditsController {
 
+    private DashboardController dashboardController;
     private LongProperty totalCreditsAmount;
 
     @FXML private TextField chargeCreditsTextField;
+
+
+    public void setDashboardController(DashboardController dashboardController) {
+        this.dashboardController = dashboardController;
+    }
 
     public void setProperty(LongProperty totalCreditsAmount) {
         this.totalCreditsAmount = totalCreditsAmount;
@@ -48,10 +55,12 @@ public class ChargeCreditsController {
         // Parse the integer and add to the total
         long  amountToAdd = Long.parseLong(text);
 
-
         totalCreditsAmount.set(totalCreditsAmount.get() + amountToAdd);
 
         // Clear field after successful charge
         chargeCreditsTextField.clear();
+
+        // Update in engine
+        dashboardController.addCreditsToUser(amountToAdd);
     }
 }

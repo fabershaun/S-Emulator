@@ -20,7 +20,7 @@ public class ArchitectureTypesServlet extends HttpServlet {
         // Convert enum values to list of strings
         List<String> architectureTypeStrList = Arrays.stream(ArchitectureType.values())
                 .filter(type -> type != ArchitectureType.A_0)
-                .map(Enum::name)
+                .map(ArchitectureType::getArchitectureRepresentation)
                 .toList();
 
         // Wrap in DTO
