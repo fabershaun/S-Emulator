@@ -1,4 +1,4 @@
-package servlets;
+package servlets.upload;
 
 import dto.v2.ProgramDTO;
 import engine.Engine;

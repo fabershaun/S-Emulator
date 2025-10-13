@@ -1,4 +1,4 @@
-package servlets;
+package servlets.execution;
 
 import dto.v3.ArchitectureDTO;
 import engine.logic.programData.architecture.ArchitectureType;

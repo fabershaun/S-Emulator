@@ -24,7 +24,7 @@ public class Constants {
     public final static String CHARGE_CREDITS_URL = "/charge-credits";
 
     // Get Updated User's Credits:
-    public final static String FETCH_CREDITS_NAME = "FetchCreditsServlet";
+    public final static String FETCH_CREDITS_NAME = "FetchUserCreditsServlet";
     public final static String FETCH_CREDITS_URL = "/fetch-credits";
 
     // Upload File:

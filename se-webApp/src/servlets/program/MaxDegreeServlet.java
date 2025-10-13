@@ -1,6 +1,5 @@
-package servlets;
+package servlets.program;
 
-import dto.v2.ProgramDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,16 +7,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
 import utils.SessionUtils;
-
 import java.io.IOException;
 
 import static utils.Constants.*;
 
-@WebServlet(name = JUMP_TO_DEGREE_NAME, urlPatterns = {JUMP_TO_DEGREE_URL})
-public class JumpToDegreeServlet extends HttpServlet {
+@WebServlet(name = MAX_DEGREE_NAME, urlPatterns = {MAX_DEGREE_URL})
+public class MaxDegreeServlet extends HttpServlet {
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         try {
             // Verify user session
@@ -36,23 +35,6 @@ public class JumpToDegreeServlet extends HttpServlet {
                 return;
             }
 
-            // Extract degree
-            String degreeParam  = request.getParameter(TARGET_DEGREE_QUERY_PARAM);
-            if (degreeParam  == null || degreeParam .isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Missing target degree"));
-                return;
-            }
-
-            int targetDegree;
-            try {
-                targetDegree = Integer.parseInt(degreeParam);
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Invalid target degree: must be a number"));
-                return;
-            }
-
             // Retrieve engine
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
@@ -61,22 +43,15 @@ public class JumpToDegreeServlet extends HttpServlet {
                 return;
             }
 
-            // Fetch program data
-            ProgramDTO programDTO = engine.getExpandedProgramDTO(programName, targetDegree);
-            if (programDTO == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write(GSON_INSTANCE.toJson("Program not found"));
-                return;
-            }
+            int maxDegree = engine.getMaxDegree(programName);
 
-            // Return JSON response
-            String json = GSON_INSTANCE.toJson(programDTO);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(json);
+            response.getWriter().write(String.valueOf(maxDegree));
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write(GSON_INSTANCE.toJson("Server error: " + e.getMessage()));
         }
     }
+
 }

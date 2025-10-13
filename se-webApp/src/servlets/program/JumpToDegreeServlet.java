@@ -1,4 +1,4 @@
-package servlets;
+package servlets.program;
 
 import dto.v2.ProgramDTO;
 import engine.Engine;
@@ -13,9 +13,8 @@ import java.io.IOException;
 
 import static utils.Constants.*;
 
-
-@WebServlet(name = CURRENT_PROGRAM_DATA_NAME, urlPatterns = {CURRENT_PROGRAM_DATA_URL})
-public class ProgramDtoServlet extends HttpServlet {
+@WebServlet(name = JUMP_TO_DEGREE_NAME, urlPatterns = {JUMP_TO_DEGREE_URL})
+public class JumpToDegreeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -37,6 +36,23 @@ public class ProgramDtoServlet extends HttpServlet {
                 return;
             }
 
+            // Extract degree
+            String degreeParam  = request.getParameter(TARGET_DEGREE_QUERY_PARAM);
+            if (degreeParam  == null || degreeParam .isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write(GSON_INSTANCE.toJson("Missing target degree"));
+                return;
+            }
+
+            int targetDegree;
+            try {
+                targetDegree = Integer.parseInt(degreeParam);
+            } catch (NumberFormatException e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write(GSON_INSTANCE.toJson("Invalid target degree: must be a number"));
+                return;
+            }
+
             // Retrieve engine
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
@@ -46,7 +62,7 @@ public class ProgramDtoServlet extends HttpServlet {
             }
 
             // Fetch program data
-            ProgramDTO programDTO = engine.getProgramDTOByName(programName);
+            ProgramDTO programDTO = engine.getExpandedProgramDTO(programName, targetDegree);
             if (programDTO == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().write(GSON_INSTANCE.toJson("Program not found"));

@@ -1,4 +1,4 @@
-package servlets;
+package servlets.users;
 
 import com.google.gson.JsonObject;
 import dto.v3.UserDTO;
@@ -24,6 +24,9 @@ public class AddCreditsServlet extends HttpServlet {
 
         if (!validateUserSession(request, response)) return;
 
+        Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
+
         try (BufferedReader reader = request.getReader()) {
 
             String username = SessionUtils.getUsername(request);
@@ -33,9 +36,6 @@ public class AddCreditsServlet extends HttpServlet {
 
             Long amountToAdd = jsonBody.has(CREDITS_TO_CHARGE_QUERY_PARAM) ? jsonBody.get(CREDITS_TO_CHARGE_QUERY_PARAM).getAsLong() : null;
             if (!validateCreditsToAdd(amountToAdd, response)) return ;
-
-            Engine engine = ServletUtils.getEngine(getServletContext());
-            if (!validateEngineNotNull(engine, response)) return;
 
             UserDTO userDTO = engine.getUserDTO(username);
             userDTO.addToCurrentCredits(amountToAdd);

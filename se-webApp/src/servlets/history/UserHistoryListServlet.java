@@ -1,6 +1,6 @@
-package servlets;
+package servlets.history;
 
-import dto.v3.MainProgramDTO;
+import dto.v3.HistoryRowV3DTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,26 +10,32 @@ import utils.ServletUtils;
 import utils.SessionUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static utils.Constants.*;
 
-@WebServlet(name = AVAILABLE_PROGRAMS_LIST_NAME, urlPatterns = {AVAILABLE_PROGRAMS_LIST_URL})
-public class AvailableProgramsServlet extends HttpServlet {
+@WebServlet(name = USER_HISTORY_LIST_NAME, urlPatterns = {USER_HISTORY_LIST_URL})
+public class UserHistoryListServlet extends HttpServlet {
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         String username = SessionUtils.getUsername(request);
         if (username == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            String errorJson = GSON_INSTANCE.toJson("Error: User not logged in");
             return;
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        List<MainProgramDTO> mainProgramDTOsList = engine.getAvailableMainProgramsDTOsList();
+        List<HistoryRowV3DTO> userHistory = engine.getHistoryV3PerProgram(username);
 
-        String json = GSON_INSTANCE.toJson(mainProgramDTOsList);
-        response.getWriter().write(json);
+        if (userHistory == null) {
+            userHistory = new ArrayList<>();
+        }
+
+        String jsonResponse = GSON_INSTANCE.toJson(userHistory);
+        response.getWriter().write(jsonResponse);
     }
 }

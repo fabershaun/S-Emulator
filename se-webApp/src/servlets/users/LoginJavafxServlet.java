@@ -1,4 +1,4 @@
-package servlets;
+package servlets.users;
 
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;

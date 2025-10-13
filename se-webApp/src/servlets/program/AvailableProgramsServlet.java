@@ -1,6 +1,6 @@
-package servlets;
+package servlets.program;
 
-import dto.v3.FunctionDTO;
+import dto.v3.MainProgramDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,8 +14,8 @@ import java.util.List;
 
 import static utils.Constants.*;
 
-@WebServlet(name = AVAILABLE_FUNCTIONS_LIST_NAME, urlPatterns = {AVAILABLE_FUNCTIONS_LIST_URL})
-public class AvailableFunctionsServlet extends HttpServlet {
+@WebServlet(name = AVAILABLE_PROGRAMS_LIST_NAME, urlPatterns = {AVAILABLE_PROGRAMS_LIST_URL})
+public class AvailableProgramsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -27,9 +27,9 @@ public class AvailableFunctionsServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        List<FunctionDTO> availableProgramsDTOsList = engine.getAvailableFunctionsDTOsList();
+        List<MainProgramDTO> mainProgramDTOsList = engine.getAvailableMainProgramsDTOsList();
 
-        String json = GSON_INSTANCE.toJson(availableProgramsDTOsList);
+        String json = GSON_INSTANCE.toJson(mainProgramDTOsList);
         response.getWriter().write(json);
     }
 }

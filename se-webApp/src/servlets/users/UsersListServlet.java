@@ -1,4 +1,4 @@
-package servlets;
+package servlets.users;
 
 import dto.v3.UserDTO;
 import engine.Engine;
