@@ -19,14 +19,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import utils.HttpClientUtil;
+import utils.http.HttpClientUtil;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import static utils.Constants.*;
+import static utils.http.Constants.*;
 
 
 public class DashboardController implements Closeable {

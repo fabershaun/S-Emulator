@@ -8,14 +8,14 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import utils.HttpClientUtil;
+import utils.http.HttpClientUtil;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-import static utils.Constants.*;
+import static utils.http.Constants.*;
 
 
 public class FunctionsListRefresher extends TimerTask {

@@ -19,7 +19,7 @@ import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import java.net.URL;
 
-import static utils.Constants.*;
+import static utils.http.Constants.*;
 
 public class MainAppController {
 

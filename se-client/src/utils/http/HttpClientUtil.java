@@ -1,4 +1,4 @@
-package utils;
+package utils.http;
 
 import utils.ui.AlertUtils;
 import javafx.application.Platform;

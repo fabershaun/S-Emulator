@@ -12,10 +12,10 @@ import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import utils.HttpClientUtil;
+import utils.http.HttpClientUtil;
 import java.io.IOException;
-import static utils.Constants.LOGIN_PAGE;
-import static utils.Constants.USERNAME_QUERY_PARAM;
+import static utils.http.Constants.LOGIN_PAGE;
+import static utils.http.Constants.USERNAME_QUERY_PARAM;
 
 
 public class LoginController {

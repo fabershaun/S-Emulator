@@ -14,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static utils.ui.GeneralUtils.scrollToCenter;
+import static utils.general.GeneralUtils.scrollToCenter;
 
 public class MainInstructionsTableController {
 

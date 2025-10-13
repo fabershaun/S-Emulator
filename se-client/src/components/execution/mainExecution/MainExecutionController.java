@@ -24,16 +24,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import utils.HttpClientUtil;
-import utils.HttpResponseHandler;
+import utils.http.HttpClientUtil;
+import utils.http.HttpResponseHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
-import static utils.Constants.*;
-import static utils.Constants.GSON_INSTANCE;
-import static utils.HttpResponseHandler.handleErrorResponse;
+import static utils.http.Constants.*;
+import static utils.http.Constants.GSON_INSTANCE;
+import static utils.http.HttpResponseHandler.handleErrorResponse;
 
 public class MainExecutionController {
 

@@ -1,4 +1,4 @@
-package utils;
+package utils.http;
 
 import com.google.gson.Gson;
 import okhttp3.MediaType;

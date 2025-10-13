@@ -1,6 +1,6 @@
 package components.execution.debuggerExecutionMenu;
 
-import utils.ui.GeneralUtils;
+import utils.general.GeneralUtils;
 import components.execution.mainExecution.MainExecutionController;
 import dto.v2.DebugDTO;
 import dto.v2.ProgramDTO;
@@ -24,7 +24,7 @@ import javafx.util.converter.LongStringConverter;
 import java.util.List;
 import java.util.Map;
 
-import static utils.Constants.*;
+import static utils.http.Constants.*;
 
 public class DebuggerExecutionMenuController {
 

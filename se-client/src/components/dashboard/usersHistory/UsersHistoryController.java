@@ -22,13 +22,13 @@ import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import utils.HttpClientUtil;
+import utils.http.HttpClientUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static utils.Constants.*;
+import static utils.http.Constants.*;
 
 public class UsersHistoryController {
 

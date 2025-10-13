@@ -1,9 +1,9 @@
-package utils;
+package utils.http;
 
 import utils.ui.AlertUtils;
 import javafx.application.Platform;
 
-import static utils.Constants.GSON_INSTANCE;
+import static utils.http.Constants.GSON_INSTANCE;
 
 public class HttpResponseHandler {
 
