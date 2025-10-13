@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static utils.http.Constants.REFRESH_RATE;
+import static utils.Constants.REFRESH_RATE;
 
 public class UsersListController implements Closeable {
 

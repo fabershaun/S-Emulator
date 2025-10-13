@@ -1,4 +1,4 @@
-package utils.http;
+package utils;
 
 import com.google.gson.Gson;
 import okhttp3.MediaType;
@@ -77,6 +77,8 @@ public class Constants {
     // Run Program:
     public final static String RUN_PROGRAM_PATH = FULL_SERVER_PATH + "/run-program";
 
+    // Get Program After Run:
+    public final static String PROGRAM_AFTER_RUN_PATH = FULL_SERVER_PATH + "/program-after-run";
 }
 
 // http://localhost:8080/S-Emulator

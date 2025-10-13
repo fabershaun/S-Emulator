@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-import static utils.http.Constants.GSON_INSTANCE;
-import static utils.http.Constants.USERS_LIST_PAGE;
+import static utils.Constants.GSON_INSTANCE;
+import static utils.Constants.USERS_LIST_PAGE;
 
 public class UserListRefresher extends TimerTask {
 
@@ -39,7 +39,7 @@ public class UserListRefresher extends TimerTask {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
+                if (!response.isSuccessful()) {
                     String errorBody = response.body() != null ? response.body().string() : "Unknown error";
                     Platform.runLater(() -> AlertUtils.showError("Load failed", errorBody));
                     return;

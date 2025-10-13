@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import static utils.http.Constants.*;
+import static utils.Constants.*;
 
 
 public class DashboardController implements Closeable {
@@ -145,7 +145,7 @@ public class DashboardController implements Closeable {
 
                 String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
-                if (response.code() != 200) {
+                if (!response.isSuccessful()) {
                     try {
                         String errorMessage = GSON_INSTANCE.fromJson(responseBody, String.class);
 

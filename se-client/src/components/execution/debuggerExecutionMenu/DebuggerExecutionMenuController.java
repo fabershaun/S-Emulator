@@ -24,7 +24,7 @@ import javafx.util.converter.LongStringConverter;
 import java.util.List;
 import java.util.Map;
 
-import static utils.http.Constants.*;
+import static utils.Constants.*;
 
 public class DebuggerExecutionMenuController {
 
@@ -120,7 +120,7 @@ public class DebuggerExecutionMenuController {
     }
 
     private void loadArchitectureTypes() {
-        executionController.fetchArchitectureTypesAsync();
+        executionController.loadArchitectureTypes();
     }
 
     private void configureNumericEditableColumn(TableColumn<VariableRowV3, Long> column) {

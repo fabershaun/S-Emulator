@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
-import static utils.http.Constants.MAIN_PAGE_FXML_RESOURCE_LOCATION;
+import static utils.Constants.MAIN_PAGE_FXML_RESOURCE_LOCATION;
 
 public class AppClient extends Application {
     private MainAppController mainAppController;

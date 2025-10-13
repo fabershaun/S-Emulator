@@ -15,16 +15,18 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import services.ProgramPollingService;
 
 import java.io.IOException;
 import java.net.URL;
 
-import static utils.http.Constants.*;
+import static utils.Constants.*;
 
 public class MainAppController {
 
-    private final LongProperty totalCreditsAmount = new SimpleLongProperty();
+    private final ProgramPollingService programPollingService = new ProgramPollingService();
 
+    private final LongProperty totalCreditsAmount = new SimpleLongProperty();
     private final StringProperty currentUserName;
     private Parent loginScreen;
     private Parent dashboardScreen;
@@ -62,9 +64,9 @@ public class MainAppController {
 
     @FXML
     private void onBackToDashboardClicked() {
+        programPollingService.stopPolling();
         switchToDashboard();
     }
-
 
     private void loadDashboardPage() {
         URL dashboardPage = getClass().getResource(DASHBOARD_PAGE_FXML_RESOURCE_LOCATION);
@@ -90,6 +92,7 @@ public class MainAppController {
             executionScreen = fxmlLoader.load();
             executionController = fxmlLoader.getController();
             executionController.setMainAppController(this);
+            executionController.setProgramPollingService(programPollingService);
             executionController.setProperty(currentUserName, totalCreditsAmount);
             executionController.setupAfterMainAppInit(programSelectedName);
         } catch (IOException e) {

@@ -14,8 +14,8 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import utils.http.HttpClientUtil;
 import java.io.IOException;
-import static utils.http.Constants.LOGIN_PAGE;
-import static utils.http.Constants.USERNAME_QUERY_PARAM;
+import static utils.Constants.LOGIN_PAGE;
+import static utils.Constants.USERNAME_QUERY_PARAM;
 
 
 public class LoginController {
@@ -54,7 +54,7 @@ public class LoginController {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
+                if (!response.isSuccessful()) {
                     String responseBody = HttpClientUtil.readResponseBodySafely(response);
                     Platform.runLater(() ->
                             errorMessageProperty.set("Something went wrong: " + responseBody)

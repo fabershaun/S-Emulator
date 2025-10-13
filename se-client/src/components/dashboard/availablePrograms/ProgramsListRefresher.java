@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-import static utils.http.Constants.*;
+import static utils.Constants.*;
 
 
 public class ProgramsListRefresher extends TimerTask {
@@ -38,7 +38,7 @@ public class ProgramsListRefresher extends TimerTask {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
-                if (response.code() != 200) {
+                if (!response.isSuccessful()) {
                     Platform.runLater(() -> AlertUtils.showError("Server Error", "Trying to load main programs list, the server returned: " + response.code()));
                     return;
                 }

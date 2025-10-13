@@ -1,6 +1,8 @@
 package components.execution.mainExecution;
 
 import com.google.gson.JsonObject;
+import services.ProgramPollingService;
+import services.ProgramService;
 import utils.ui.AlertUtils;
 import utils.ui.ToastUtil;
 import components.execution.chainInstructionsTable.ChainInstructionsTableController;
@@ -15,7 +17,6 @@ import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
-import dto.v3.ArchitectureDTO;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
@@ -23,19 +24,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
-import utils.http.HttpClientUtil;
-import utils.http.HttpResponseHandler;
-import java.io.IOException;
+
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
-import static utils.http.Constants.*;
-import static utils.http.Constants.GSON_INSTANCE;
-import static utils.http.HttpResponseHandler.handleErrorResponse;
+import static utils.Constants.*;
+import static utils.Constants.GSON_INSTANCE;
 
 public class MainExecutionController {
+
+    private final ProgramService programService = new ProgramService();
+    private ProgramPollingService programPollingService;
 
     private MainAppController mainAppController;
     private LongProperty totalCreditsAmount;
@@ -119,28 +119,42 @@ public class MainExecutionController {
 
         String programSelectedName = requireCurrentProgramName();
         String maxDegreeUrl = buildUrlWithQueryParam(MAX_DEGREE_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
-        fetchMaxDegreeAsync(maxDegreeUrl)     // Get the max degree of the program: from the server
-                .thenAccept(maxDegree ->
-                        Platform.runLater(() -> degreeModel.setMaxDegree(maxDegree))
+
+        programService.fetchMaxDegreeAsync(
+                maxDegreeUrl,
+                maxDegree -> Platform.runLater(() -> degreeModel.setMaxDegree(maxDegree)),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Error", "Failed to fetch max degree: " + errorMsg)
                 )
-                .exceptionally(ex -> {
-                    Platform.runLater(() ->
-                            AlertUtils.showError("Error", "Failed to fetch max degree: " + ex.getMessage())
-                    );
-                    return null;
-                });
+        );
     }
 
     public void setMainAppController(MainAppController mainAppController) {
         this.mainAppController = mainAppController;
     }
 
+    public void setProgramPollingService(ProgramPollingService programPollingService) {
+        this.programPollingService = programPollingService;
+    }
+
+    // TODO: write
     public void setProperty(StringProperty currentUserName, LongProperty totalCreditsAmount) {
+
     }
 
     public void setupAfterMainAppInit(String programSelectedName) {
         String url = buildUrlWithQueryParam(CURRENT_PROGRAM_DATA_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
-        fetchProgramDataAsync(url);
+
+        programService.fetchProgramDataAsync(
+                url,
+                program -> Platform.runLater(() -> {
+                    selectedProgramProperty.set(program);
+                    initDegreeModel();
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Error", "Failed to fetch program: " + errorMsg)
+                )
+        );
     }
 
     private String buildUrlWithQueryParam(String path, String queryParameterName, String queryParameter) {
@@ -149,40 +163,6 @@ public class MainExecutionController {
                 .addQueryParameter(queryParameterName, queryParameter)
                 .build()
                 .toString();
-    }
-
-    private void fetchProgramDataAsync(String url) {
-        HttpClientUtil.runAsync(url, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                handleProgramDataResponse(response);
-            }
-        });
-    }
-
-    private void handleProgramDataResponse(Response response) throws IOException {
-        // Read the response body safely
-        String responseBody = HttpClientUtil.readResponseBodySafely(response);
-
-        // Check for non-200 HTTP codes
-        if (response.code() != 200) {
-            handleErrorResponse(response.code(), responseBody, "Loading program data");
-            return;
-        }
-
-        // Parse the JSON into a ProgramDTO object
-        ProgramDTO program = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
-
-        // Update UI and Models (must be done on JavaFX thread after the program was loaded)
-        Platform.runLater(() -> {
-            selectedProgramProperty.set(program); // triggers listeners automatically
-            initDegreeModel();
-        });
     }
 
     public void jumpToDegree(int targetDegree) {
@@ -194,69 +174,16 @@ public class MainExecutionController {
                 .build()
                 .toString();
 
-        fetchJumpDegreeAsync(jumpToDegreeUrl, targetDegree);
-    }
-
-    private void fetchJumpDegreeAsync(String jumpToDegreeUrl, int targetDegree) {
-        HttpClientUtil.runAsync(jumpToDegreeUrl, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        AlertUtils.showError("Network Error", "Failed to expand program: " + e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = HttpClientUtil.readResponseBodySafely(response);
-
-                if (response.code() != 200) {
-                    handleErrorResponse(response.code(), responseBody, "Expanding program");
-                    return;
-                }
-
-                // Parse JSON to ProgramDTO
-                ProgramDTO expandedProgram = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
-                response.close();
-
-                Platform.runLater(() -> {
+        programService.fetchJumpDegreeAsync(
+                jumpToDegreeUrl,
+                expandedProgram -> Platform.runLater(() -> {
                     selectedProgramProperty.set(expandedProgram);
                     degreeModel.setCurrentDegree(targetDegree);
-                });
-            }
-        });
-    }
-
-    private CompletableFuture<Integer> fetchMaxDegreeAsync(String url) {
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-
-        HttpClientUtil.runAsync(url, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
-                future.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = HttpClientUtil.readResponseBodySafely(response);
-
-                if (response.code() != 200) {
-                    HttpResponseHandler.handleErrorResponse(response.code(), responseBody, "Getting max degree");
-                    future.completeExceptionally(new RuntimeException("Bad response: " + response.code()));
-                    return;
-                }
-
-                try {
-                    int maxDegree = GSON_INSTANCE.fromJson(responseBody, Integer.class);
-                    future.complete(maxDegree);
-                } catch (Exception e) {
-                    future.completeExceptionally(e);
-                }
-            }
-        });
-
-        return future;
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Network Error", errorMsg)
+                )
+        );
     }
 
     public void onInstructionSelected(InstructionDTO selectedInstruction) {
@@ -293,7 +220,6 @@ public class MainExecutionController {
         return currentProgramName;
     }
 
-
     public void disableToolBarComponents(boolean disable) {
         topToolBarController.setComponentsDisabled(disable);
     }
@@ -303,76 +229,58 @@ public class MainExecutionController {
         disableToolBarComponents(true);
     }
 
-    public void fetchArchitectureTypesAsync() {
+    public void loadArchitectureTypes() {
+        programService.fetchArchitectureTypes(
+                ARCHITECTURE_TYPES_PATH,
+                dto -> Platform.runLater(() -> {
+                    debuggerExecutionMenuController.getArchitectureComboBox()
+                            .getItems()
+                            .setAll(dto.getArchitectureTypesStr());
 
-        HttpClientUtil.runAsync(ARCHITECTURE_TYPES_PATH, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        AlertUtils.showError("Error", "Failed to load architecture types from server.")
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody body = response.body()) {
-                    if (!response.isSuccessful() || body == null) {
-                        Platform.runLater(() ->
-                                AlertUtils.showError("Error", "Failed to load architecture types from server.")
-                        );
-                        return;
-                    }
-
-                    String json = body.string();
-                    ArchitectureDTO dto = GSON_INSTANCE.fromJson(json, ArchitectureDTO.class);
-
-                    Platform.runLater(() -> {
-                        // Update the relevant controller (assuming you have a reference to it)
+                    if (!dto.getArchitectureTypesStr().isEmpty()) {
                         debuggerExecutionMenuController.getArchitectureComboBox()
-                                .getItems()
-                                .setAll(dto.getArchitectureTypesStr());
-
-                        if (!dto.getArchitectureTypesStr().isEmpty()) {
-                            debuggerExecutionMenuController.getArchitectureComboBox()
-                                    .getSelectionModel()
-                                    .selectFirst();
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Platform.runLater(() ->
-                            AlertUtils.showError("Error", "Failed to parse architecture types from server.")
-                    );
-                }
-            }
-        });
+                                .getSelectionModel()
+                                .selectFirst();
+                    }
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Error", "Failed to load architecture types: " + errorMsg)
+                )
+        );
     }
 
     public void runProgram(List<Long> inputs) {
+
         RequestBody requestBody = buildRunProgramRequestBody(inputs);
-        fetchRunProgram(requestBody);
+        programService.fetchRunProgram(
+                RUN_PROGRAM_PATH,
+                requestBody,
+                runId -> Platform.runLater(() -> {
+                    ToastUtil.showToast(mainAppController.getRootStackPane(), "Program started successfully", true);
+                    programPollingService.startPolling(() -> checkProgramStatus(runId));
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Run Failed", errorMsg)
+                )
+        );
     }
 
-    private void fetchRunProgram(RequestBody requestBody) {
-        HttpClientUtil.runAsync(RUN_PROGRAM_PATH, requestBody, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
-            }
+    // Checks the current execution status of the program on the server
+    private void checkProgramStatus(String runId) {
+        try {
+            String url = buildUrlWithQueryParam(PROGRAM_STATUS_PATH, RUN_ID_QUERY_PARAM, runId);
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    Platform.runLater(() -> AlertUtils.showError("Run Failed", "Server returned an error"));
-                    return;
-                }
+            programService.fetchProgramStatus(
+                    url,
+                    state -> handleProgramState(runId, state), // "DONE", "FAILED", etc.
+                    errorMsg -> Platform.runLater(() ->
+                            AlertUtils.showError("Network Error", errorMsg)
+                    )
+            );
 
-                JsonObject jsonResponse = GSON_INSTANCE.fromJson(response.body().string(), JsonObject.class);
-                String runId = jsonResponse.get("runId").getAsString();
-                Platform.runLater(() -> ToastUtil.showToast(mainAppController.getRootStackPane(), "Program started successfully", true));
-                startPolling(runId);
-            }
-        });
+        } catch (Exception e) {
+            System.err.println("Polling failed: " + e.getMessage());
+        }
     }
 
     private RequestBody buildRunProgramRequestBody(List<Long> inputs) {
@@ -392,85 +300,46 @@ public class MainExecutionController {
         return RequestBody.create(GSON_INSTANCE.toJson(jsonBody), MEDIA_TYPE_JSON);
     }
 
-    private void startPolling(String runId) {
-
-        // Cancel any previous polling before starting a new one
-        if (currentPollingTask != null && !currentPollingTask.isCancelled()) {
-            currentPollingTask.cancel(true);
-        }
-
-        currentPollingTask = pollingExecutor.scheduleAtFixedRate(() -> {
-            try {
-                String url = buildUrlWithQueryParam(PROGRAM_STATUS_PATH, RUN_ID_QUERY_PARAM, runId);
-                fetchProgramStatus(url, runId);
-
-            }
-            catch (Exception e) {
-                System.err.println("Polling failed: " + e.getMessage());
-            }
-        },0, 2, TimeUnit.SECONDS); // repeat every 2 seconds
-    }
-
-    private void fetchProgramStatus(String url, String runId) {
-        HttpClientUtil.runAsync(url, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String body = HttpClientUtil.readResponseBodySafely(response);
-                if (body == null || response.code() != 200) {
-                    return;
-                }
-
-                JsonObject json = GSON_INSTANCE.fromJson(body, JsonObject.class);
-                String state = json.get("state").getAsString();
-
-                if ("DONE".equals(state)) {
-                    stopPolling();
-                    fetchProgramResult(runId);
-                } else if ("FAILED".equals(state)) {
-                    stopPolling();
-                    Platform.runLater(() ->
-                            AlertUtils.showError("Run Failed", "Program execution failed on server.")
-                    );
-                }
-            }
-        });
-    }
-
-    private void stopPolling() {
-        if (currentPollingTask != null && !currentPollingTask.isCancelled()) {
-            currentPollingTask.cancel(true); // Try to cancel the running task
-            currentPollingTask = null;
+    // Handles the state returned from the server ("DONE", "FAILED", etc.)
+    private void handleProgramState(String runId, String state) {
+        if ("DONE".equals(state)) {
+            handleProgramDone(runId);
+        } else if ("FAILED".equals(state)) {
+            handleProgramFailed();
         }
     }
 
-    private void fetchProgramResult(String runId) {
-        String url = buildUrlWithQueryParam(PROGRAM_RESULT_PATH, RUN_ID_QUERY_PARAM, runId);
+    // Called when the program finishes successfully
+    private void handleProgramDone(String runId) {
+        programPollingService.stopPolling();
 
-        HttpClientUtil.runAsync(url, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> AlertUtils.showError("Network Error", e.getMessage()));
-            }
+        String url = buildUrlWithQueryParam(PROGRAM_AFTER_RUN_PATH, RUN_ID_QUERY_PARAM, runId);
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    Platform.runLater(() -> AlertUtils.showError("Fetch Failed", "Failed to get program result"));
-                    return;
-                }
-
-                String body = HttpClientUtil.readResponseBodySafely(response);
-                ProgramExecutorDTO result = GSON_INSTANCE.fromJson(body, ProgramExecutorDTO.class);
-
-                Platform.runLater(() -> programAfterExecuteProperty.set(result));
-            }
-        });
+        programService.fetchProgramAfterRun(
+                url,
+                result -> Platform.runLater(() -> {
+                    programAfterExecuteProperty.set(result);
+                    ToastUtil.showToast(mainAppController.getRootStackPane(), "Program finished successfully", true);
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Fetch Failed", errorMsg)
+                )
+        );
     }
+
+    // Called when the program fails on the server
+    private void handleProgramFailed() {
+        programPollingService.stopPolling();
+        Platform.runLater(() ->
+                AlertUtils.showError("Run Failed", "Program execution failed on server.")
+        );
+    }
+
+
+
+
+
+
 
 
 
@@ -535,4 +404,6 @@ public class MainExecutionController {
 //        return debugStep;
         return null;
     }
+
+
 }
