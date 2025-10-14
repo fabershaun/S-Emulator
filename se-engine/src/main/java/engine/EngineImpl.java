@@ -373,7 +373,8 @@ public class EngineImpl implements Engine, Serializable {
                 program.getWorkVariablesSortedStr(),
                 instructionsDTO,
                 program.getExpandedProgram(),
-                program.getAverageCreditCost()
+                program.getAverageCreditCost(),
+                program.getMinimumRankArchitectureRequired()
         );
     }
 

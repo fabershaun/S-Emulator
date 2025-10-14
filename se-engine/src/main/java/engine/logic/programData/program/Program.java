@@ -16,7 +16,7 @@ public interface Program extends Serializable {
 
     ArchitectureType architectureRequired();
     void setMinimumArchitectureRequired(ArchitectureType minimumArchitectureRequired);
-    ArchitectureType getMinimumArchitectureRequired();
+    int getMinimumRankArchitectureRequired();
     ProgramType getProgramType();
 
     String getName();

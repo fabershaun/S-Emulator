@@ -19,21 +19,15 @@ import static utils.ValidationUtils.validateUserSession;
 
 @WebServlet(name = ARCHITECTURE_TYPES_NAME, urlPatterns = ARCHITECTURE_TYPES_URL)
 public class ArchitectureTypesServlet extends HttpServlet {
-    static {
-    System.out.println("### ArchitectureTypesServlet loaded successfully ###");
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
-        System.out.println("Checking session...");
         if (!validateUserSession(request, response)) return;
 
-        System.out.println("Checking 2");
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
-        System.out.println("Engine is: " + engine);
 
         try {
             List<ArchitectureDTO> architectureDTOList = engine.getArchitectures();

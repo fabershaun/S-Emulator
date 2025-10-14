@@ -145,6 +145,14 @@ public class DebuggerExecutionMenuController {
             architectureRepresentationProperty.set(newArchitectureDTO.getRepresentation());
             architectureRankProperty.set(newArchitectureDTO.getRank());
         });
+
+        architectureRankProperty.addListener((obs, oldRank, newRank) -> {
+            if (newRank == null) return;
+
+            int minimumRankProgramRequired = currentSelectedProgramProperty.get().getMiniminRequireRank();
+            int selectedArchitectureRank = architectureRankProperty.get();
+            playButton.setDisable(minimumRankProgramRequired > selectedArchitectureRank);
+        });
     }
 
     private void loadArchitectureTypes() {
@@ -334,15 +342,6 @@ public class DebuggerExecutionMenuController {
                 .map(varName -> new VariableRowV3(varName, 0L))
                 .toList();
         inputsTable.getItems().setAll(rows);
-    }
-
-    public void prepareForNewRun(List<Long> inputs) {
-        enterNewRunPressed(); // Like newRun was pressed
-
-        List<VariableRowV3> inputTableRows = inputsTable.getItems();      // Update inputs
-        for (int i = 0; i < inputTableRows.size() && i < inputs.size(); i++) {
-            inputTableRows.get(i).setVariableValue(inputs.get(i));
-        }
     }
 
     private void setPlayEnabled(boolean enabled) {

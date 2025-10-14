@@ -391,8 +391,8 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
-    public ArchitectureType getMinimumArchitectureRequired() {
-        return this.minimumArchitectureRequired;
+    public int getMinimumRankArchitectureRequired() {
+        return this.minimumArchitectureRequired.getRank();
     }
 
     @Override
