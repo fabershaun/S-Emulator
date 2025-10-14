@@ -11,6 +11,7 @@ public class ProgramDTO {
     private final List<String> workVariables;
     private final InstructionsDTO instructions;
     private final List<List<InstructionDTO>> expandedProgram;
+    private final long averageCreditCost;
 
     public ProgramDTO(
             String programName,
@@ -20,7 +21,8 @@ public class ProgramDTO {
             List<String> inputVariables,
             List<String> workVariables,
             InstructionsDTO instructions,
-            List<List<InstructionDTO>> expandedProgram
+            List<List<InstructionDTO>> expandedProgram,
+            long averageCreditCost
     ) {
         this.programName = programName;
         this.userString = userString;
@@ -30,6 +32,7 @@ public class ProgramDTO {
         this.workVariables = workVariables;
         this.instructions = instructions;
         this.expandedProgram = expandedProgram;
+        this.averageCreditCost = averageCreditCost;
     }
 
     public String getProgramName() {
@@ -66,5 +69,9 @@ public class ProgramDTO {
 
     public String getResult() {
         return "y";
+    }
+
+    public long getAverageCreditCost() {
+        return averageCreditCost;
     }
 }

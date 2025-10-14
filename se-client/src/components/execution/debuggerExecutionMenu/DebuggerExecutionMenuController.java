@@ -20,6 +20,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.converter.LongStringConverter;
+import utils.ui.AlertUtils;
+import utils.ui.ToastUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -348,6 +350,11 @@ public class DebuggerExecutionMenuController {
 
     @FXML
     private void onPlay() {
+        boolean isEnoughCredits = executionController.checkIfHasEnoughCreditsToPlay();
+        if (!isEnoughCredits) {
+            return;
+        }
+
         inputsEditableMode = false; // disable blinking only now
 
         List<Long> inputValues = inputsTable.getItems()

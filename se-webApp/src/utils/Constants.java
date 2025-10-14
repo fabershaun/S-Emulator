@@ -31,6 +31,10 @@ public class Constants {
     public final static String FETCH_CREDITS_NAME = "FetchUserCreditsServlet";
     public final static String FETCH_CREDITS_URL = "/fetch-credits";
 
+    // Get if user has enough credits to play a program:
+    public final static String CREDIT_CHECK_NAME = "CreditsCheckServlet";
+    public static final String CREDIT_CHECK_URL = "/credit-check";
+
     // Upload File:
     public static final String FILE_UPLOAD_SERVLET_NAME = "UploadFileServlet";
     public static final String FILE_UPLOAD_SERVLET_URL = "/upload-file";

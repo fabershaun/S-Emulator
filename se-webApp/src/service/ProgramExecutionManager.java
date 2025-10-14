@@ -17,7 +17,7 @@ public class ProgramExecutionManager implements ExecutionService {
 
     // Private constructor - initialize thread pool here
     private ProgramExecutionManager() {
-        this.threadPool = Executors.newFixedThreadPool(1);
+        this.threadPool = Executors.newFixedThreadPool(20);
     }
 
     public static ProgramExecutionManager getInstance() {

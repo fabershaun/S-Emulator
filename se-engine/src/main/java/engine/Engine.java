@@ -26,6 +26,7 @@ public interface Engine {
     boolean isUserExists(String username);
     UserDTO getUserDTO(String username);
     void addCreditsToUser(String username, long amountToAdd);
+    long getArchitectureCost(String architectureStr);
 
     String getProgramNameByUserString(String userString);
     ProgramDTO getProgramDTOByName(String programName);
@@ -43,7 +44,6 @@ public interface Engine {
     List<HistoryRowV3DTO> getHistoryV3PerProgram(String programName);           // Version 3
     List<MainProgramDTO> getAvailableMainProgramsDTOsList();
     List<FunctionDTO> getAvailableFunctionsDTOsList();
-
 
     // Expansion:
     void calculateExpansionForAllLoadedPrograms(String mainProgramName);

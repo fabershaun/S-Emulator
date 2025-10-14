@@ -54,6 +54,9 @@ public class Constants {
     // Get Updated User's Credits:
     public final static String FETCH_CREDITS_PATH = FULL_SERVER_PATH + "/fetch-credits";
 
+    // Get if user has enough credits to play a program:
+    public static final String CREDIT_CHECK_PATH = FULL_SERVER_PATH + "/credit-check";
+
     // Upload File:
     public final static String FILE_UPLOAD_PAGE = FULL_SERVER_PATH + "/upload-file";
 

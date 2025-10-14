@@ -68,7 +68,7 @@ public class ProgramService {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
                 if (!response.isSuccessful()) {
@@ -87,6 +87,36 @@ public class ProgramService {
         });
     }
 
+    public void fetchUserHasEnoughCredits(String finalUrl,
+                                          RequestBody requestBody,
+                                          Consumer<Boolean> onSuccess,
+                                          Consumer<String> onError) {
+        HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "Check enough credits");
+                    onError.accept("Server returned: " + response.code());
+                    return;
+                }
+
+                try {
+                    boolean isEnough =  GSON_INSTANCE.fromJson(responseBody, Boolean.class);
+                    onSuccess.accept(isEnough);
+                } catch (Exception e) {
+                    onError.accept("Parse error: " + e.getMessage());
+                }
+
+            }
+        });
+    }
 
     public void fetchProgramDataAsync(String url, Consumer<ProgramDTO> onSuccess, Consumer<String> onError) {
 

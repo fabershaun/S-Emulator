@@ -18,6 +18,7 @@ import javafx.scene.layout.StackPane;
 import services.ProgramPollingService;
 import services.ProgramService;
 import utils.ui.AlertUtils;
+import utils.ui.ToastUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -86,7 +87,6 @@ public class MainAppController {
             e.printStackTrace();
         }
     }
-
 
     private void loadExecutionPage(String programSelectedName) {
         URL executionPage = getClass().getResource(EXECUTION_PAGE_FXML_RESOURCE_LOCATION);
@@ -204,5 +204,13 @@ public class MainAppController {
 
     public StackPane getRootStackPane() {
         return rootStackPane;
+    }
+
+    public void popUpToastMessage(String message, boolean isSuccess) {
+        ToastUtil.showToast(
+                rootStackPane,
+                message,
+                false
+        );
     }
 }

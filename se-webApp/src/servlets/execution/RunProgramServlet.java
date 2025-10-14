@@ -29,10 +29,13 @@ public class RunProgramServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        try (BufferedReader reader = request.getReader()) {
-            if (!validateUserSession(request, response)) return;
+        if (!validateUserSession(request, response)) return;
+        String username = SessionUtils.getUsername(request);
 
-            String username = SessionUtils.getUsername(request);
+        Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
+
+        try (BufferedReader reader = request.getReader()) {
 
             JsonObject jsonBody = GSON_INSTANCE.fromJson(reader, JsonObject.class);
             if (!validateJsonBody(jsonBody, response)) return;
@@ -47,9 +50,6 @@ public class RunProgramServlet extends HttpServlet {
 
             List<Long> inputValues = validateInputs(jsonBody, response);
             if (inputValues == null) return;
-
-            Engine engine = ServletUtils.getEngine(getServletContext());
-            if (!validateEngineNotNull(engine, response)) return;
 
             ProgramDTO programDTO = engine.getProgramDTOByName(programName);
             if (!validateProgramExists(programDTO, response)) return;

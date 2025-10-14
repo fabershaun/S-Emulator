@@ -20,31 +20,32 @@ public class ProgramDtoServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+
+        // Verify user session
+        String username = SessionUtils.getUsername(request);
+        if (username == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(GSON_INSTANCE.toJson("User not logged in"));
+            return;
+        }
+
+        // Extract program name
+        String programName = request.getParameter(PROGRAM_NAME_QUERY_PARAM);
+        if (programName == null || programName.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(GSON_INSTANCE.toJson("Missing program name"));
+            return;
+        }
+
+        // Retrieve engine
+        Engine engine = ServletUtils.getEngine(getServletContext());
+        if (engine == null) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(GSON_INSTANCE.toJson("Engine not initialized"));
+            return;
+        }
+
         try {
-            // Verify user session
-            String username = SessionUtils.getUsername(request);
-            if (username == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(GSON_INSTANCE.toJson("User not logged in"));
-                return;
-            }
-
-            // Extract program name
-            String programName = request.getParameter(PROGRAM_NAME_QUERY_PARAM);
-            if (programName == null || programName.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Missing program name"));
-                return;
-            }
-
-            // Retrieve engine
-            Engine engine = ServletUtils.getEngine(getServletContext());
-            if (engine == null) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write(GSON_INSTANCE.toJson("Engine not initialized"));
-                return;
-            }
-
             // Fetch program data
             ProgramDTO programDTO = engine.getProgramDTOByName(programName);
             if (programDTO == null) {

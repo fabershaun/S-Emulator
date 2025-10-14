@@ -87,6 +87,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
+    public long getArchitectureCost(String architectureStr) {
+        ArchitectureType architectureType = ArchitectureType.fromRepresentation(architectureStr);
+        return architectureType.getCreditsCost();
+    }
+
+    @Override
     public String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);
@@ -352,7 +358,8 @@ public class EngineImpl implements Engine, Serializable {
                 program.getInputVariablesSortedStr(),
                 program.getWorkVariablesSortedStr(),
                 instructionsDTO,
-                program.getExpandedProgram()
+                program.getExpandedProgram(),
+                program.getAverageCreditCost()
         );
     }
 

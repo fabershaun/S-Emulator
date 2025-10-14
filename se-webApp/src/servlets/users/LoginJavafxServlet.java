@@ -37,7 +37,6 @@ public class LoginJavafxServlet extends HttpServlet {
                     else {
                         engine.addUser(usernameFromParameter);
                         request.getSession(true).setAttribute(USERNAME_QUERY_PARAM, usernameFromParameter);
-                        System.out.println("On login, request URI is: " + request.getRequestURI());
                         response.setStatus(HttpServletResponse.SC_OK);
                     }
                 }

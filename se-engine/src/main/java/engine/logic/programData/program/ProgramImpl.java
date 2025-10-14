@@ -29,7 +29,7 @@ public class ProgramImpl implements Program, Serializable {
 
     private ArchitectureType minimumArchitectureRequired;
     private int executionsCount = 0;
-    private int creditCostOfProgram = 0;
+    private long creditCostOfProgram = 0;
     private final String mainProgramNameOfThisProgram;
 
     private final List<Instruction> programInstructions;
@@ -423,7 +423,7 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
-    public int getAverageCreditCost() {
+    public long getAverageCreditCost() {
         if (executionsCount == 0) {
             return 0;
         }

@@ -26,6 +26,10 @@ import javafx.scene.layout.VBox;
 import okhttp3.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static utils.Constants.*;
@@ -34,6 +38,7 @@ import static utils.Constants.GSON_INSTANCE;
 public class MainExecutionController {
 
     private MainAppController mainAppController;
+    private static final ExecutorService CLIENT_EXECUTOR = Executors.newFixedThreadPool(2);
 
     private ProgramService programService;
     private ProgramPollingService programPollingService;
@@ -251,6 +256,39 @@ public class MainExecutionController {
         );
     }
 
+    public boolean checkIfHasEnoughCreditsToPlay() {
+        String programName = requireCurrentProgramName();
+        String architecture = chosenArchitecture.get();
+
+        // Build JSON body
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty(PROGRAM_NAME_QUERY_PARAM, programName);
+        jsonBody.addProperty(ARCHITECTURE_QUERY_PARAM, architecture);
+        RequestBody requestBody = RequestBody.create(GSON_INSTANCE.toJson(jsonBody), MEDIA_TYPE_JSON);
+
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        programService.fetchUserHasEnoughCredits(
+                CREDIT_CHECK_PATH,
+                requestBody,
+                future::complete,
+                errorMsg -> future.complete(false)
+        );
+
+        try {
+            boolean isEnoughCredits = future.get(2, TimeUnit.SECONDS);
+            if (!isEnoughCredits) {
+                Platform.runLater(() -> mainAppController.popUpToastMessage("Not enough credits to run program", false));
+            }
+
+            return isEnoughCredits;
+        } catch (Exception e) {
+            Platform.runLater(() -> AlertUtils.showError("Credits Check Failed", e.getMessage()));
+            return false;
+        }
+    }
+
+
     public void runProgram(List<Long> inputs) {
 
         RequestBody requestBody = buildRunProgramRequestBody(inputs);
@@ -258,12 +296,19 @@ public class MainExecutionController {
                 RUN_PROGRAM_PATH,
                 requestBody,
                 runId -> Platform.runLater(() -> {
-                    ToastUtil.showToast(mainAppController.getRootStackPane(), "Program started successfully", true);
                     programPollingService.startPolling(() -> checkProgramStatus(runId));
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Run Failed", errorMsg)
                 )
+        );
+
+        // Update credit amount
+        programService.fetchUserCreditsAsync(
+                FETCH_CREDITS_PATH,
+                null,
+                credits -> Platform.runLater(() -> totalCreditsAmount.set(credits)),
+                errorMsg -> Platform.runLater(() -> AlertUtils.showError("Error", errorMsg))
         );
     }
 
@@ -321,7 +366,6 @@ public class MainExecutionController {
                 url,
                 result -> Platform.runLater(() -> {
                     programAfterExecuteProperty.set(result);
-                    ToastUtil.showToast(mainAppController.getRootStackPane(), "Program finished successfully", true);
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Fetch Failed", errorMsg)
@@ -405,6 +449,4 @@ public class MainExecutionController {
 //        return debugStep;
         return null;
     }
-
-
 }

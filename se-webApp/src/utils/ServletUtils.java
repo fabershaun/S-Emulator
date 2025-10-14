@@ -7,11 +7,8 @@ import jakarta.servlet.ServletContext;
 public class ServletUtils {
 
     private static final String ENGINE_ATTRIBUTE_NAME = "engine";
-    private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
 
     private static final Object engineLock = new Object();
-    private static final Object userManagerLock = new Object();
-
 
     public static Engine getEngine(ServletContext servletContext) {
 

@@ -58,7 +58,7 @@ public interface Program extends Serializable {
     void addCreditCost(int creditCost);
     void incrementExecutionsCount();
     int getExecutionsCount();
-    int getAverageCreditCost();
+    long getAverageCreditCost();
 
     String getMainProgramNameOfThisProgram();
 }

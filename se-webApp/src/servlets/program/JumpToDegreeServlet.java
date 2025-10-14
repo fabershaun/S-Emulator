@@ -37,7 +37,7 @@ public class JumpToDegreeServlet extends HttpServlet {
             }
 
             // Extract degree
-            String degreeParam  = request.getParameter(TARGET_DEGREE_QUERY_PARAM);
+            String degreeParam = request.getParameter(TARGET_DEGREE_QUERY_PARAM);
             if (degreeParam  == null || degreeParam .isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write(GSON_INSTANCE.toJson("Missing target degree"));
