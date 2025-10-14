@@ -10,6 +10,7 @@ import engine.logic.programData.label.Label;
 import engine.logic.programData.program.Program;
 import engine.logic.programData.variable.Variable;
 import engine.logic.programData.variable.VariableType;
+import engine.user.UserLogic;
 
 import java.io.Serializable;
 import java.util.*;
@@ -41,22 +42,22 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         this.runDegree = runDegree;
 
         do {
-                nextLabel = currentInstruction.execute(context, userDTO);
+            nextLabel = currentInstruction.execute(context, userDTO);
 
-                // Cycles update:
-                int currentInstructionCycles  = currentInstruction.getCycleOfInstruction();
-                totalCycles += currentInstructionCycles ;
-                userDTO.subtractFromCurrentCredits(currentInstructionCycles );
+            // Cycles update:
+            int currentInstructionCycles  = currentInstruction.getCycleOfInstruction();
+            totalCycles += currentInstructionCycles ;
+            UserLogic.subtractCredits(userDTO, currentInstructionCycles);
 
-                if (nextLabel == FixedLabel.EMPTY) {
-                    int indexOfNextInstruction = program.getInstructionsList().indexOf(currentInstruction) + 1;
+            if (nextLabel == FixedLabel.EMPTY) {
+                int indexOfNextInstruction = program.getInstructionsList().indexOf(currentInstruction) + 1;
 
-                    // If there is more instructions, else Exit
-                    if (indexOfNextInstruction < program.getInstructionsList().size()) {
-                        nextInstruction = program.getInstructionsList().get(indexOfNextInstruction);
-                    } else {
-                        nextLabel = FixedLabel.EXIT;
-                    }
+                // If there is more instructions, else Exit
+                if (indexOfNextInstruction < program.getInstructionsList().size()) {
+                    nextInstruction = program.getInstructionsList().get(indexOfNextInstruction);
+                } else {
+                    nextLabel = FixedLabel.EXIT;
+                }
                 } else if (nextLabel != FixedLabel.EXIT) {
                         nextInstruction = program.getInstructionByLabel(nextLabel);
                 }

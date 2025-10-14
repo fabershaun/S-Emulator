@@ -45,40 +45,24 @@ public class UserDTO {
         return executionsCount;
     }
 
-    public void addOneToMainProgramsCount() {
-        this.mainProgramsCount += 1;
+
+    public void setMainProgramsCount(int mainProgramsCount) {
+        this.mainProgramsCount = mainProgramsCount;
     }
 
-    public void addOneToSubFunctionsCount() {
-        this.subFunctionsCount += 1;
+    public void setSubFunctionsCount(int subFunctionsCount) {
+        this.subFunctionsCount = subFunctionsCount;
     }
 
-    public void addToCurrentCredits(long creditsToAdd) {
-        this.currentCredits += creditsToAdd;
+    public void setCurrentCredits(long currentCredits) {
+        this.currentCredits = currentCredits;
     }
 
-    public void subtractFromCurrentCredits(int creditsToSubtract) {
-        this.currentCredits -= creditsToSubtract;
-        this.usedCredits += creditsToSubtract;
-
-        assertHasPositiveCredits();
+    public void setUsedCredits(int usedCredits) {
+        this.usedCredits = usedCredits;
     }
 
-    public void addOneToExecutionsCount() {
-        this.executionsCount += 1;
-    }
-
-    private void assertHasPositiveCredits() {
-        if (currentCredits < 0) {
-            String errorMessage = "Execution isn't finished." + System.lineSeparator() +
-                    "You don't have enough credits." + System.lineSeparator() +
-                    "Current credits amount: " + getCurrentCredits();
-
-            throw new IllegalStateException(errorMessage);
-        }
-    }
-
-    public boolean hasEnoughCredits(int requiredCredits) {
-        return currentCredits >= requiredCredits;
+    public void setExecutionsCount(int executionsCount) {
+        this.executionsCount = executionsCount;
     }
 }

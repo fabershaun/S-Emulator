@@ -24,6 +24,7 @@ import engine.logic.programData.instruction.basic.DecreaseInstruction;
 import engine.logic.programData.instruction.basic.IncreaseInstruction;
 import engine.logic.programData.instruction.basic.JumpNotZeroInstruction;
 import engine.logic.programData.instruction.basic.NoOpInstruction;
+import engine.user.UserLogic;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -57,7 +58,7 @@ final class XmlProgramMapper {
         // After validate all the functions -> add them to the programHolder
         for (Program innerFunction : innerFunctionsSet) {
             programsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
-            uploader.addOneToSubFunctionsCount();   // TODO: Need synchronized
+            UserLogic.incrementSubFunctions(uploader);
         }
 
         return targetProgram;

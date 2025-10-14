@@ -17,6 +17,7 @@ import engine.logic.programData.program.Program;
 import engine.logic.loadFromXml.XmlProgramLoader;
 import engine.logic.programData.variable.Variable;
 import dto.v3.UserDTO;
+import engine.user.UserLogic;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -37,7 +38,7 @@ public class EngineImpl implements Engine, Serializable {
         // Create default user with empty name (For version 2)
         UserDTO defaultUser = new UserDTO(UserDTO.DEFAULT_NAME);
         usernameToUserDTO.put(UserDTO.DEFAULT_NAME, defaultUser);
-        getUserDTO(UserDTO.DEFAULT_NAME).addToCurrentCredits(Integer.MAX_VALUE);
+        UserLogic.addCredits(defaultUser, Integer.MAX_VALUE);
     }
 
     @Override
@@ -103,7 +104,7 @@ public class EngineImpl implements Engine, Serializable {
         program.validateProgram();
         program.initialize();
         programsHolder.addMainProgram(program.getName(), program.getName(), program);
-        userDTO.addOneToMainProgramsCount();
+        UserLogic.incrementMainPrograms(userDTO);
 
         calculateExpansionForAllLoadedPrograms(program.getName());
     }
@@ -116,7 +117,7 @@ public class EngineImpl implements Engine, Serializable {
         ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram, architectureTypeSelected);
         UserDTO userDTO = getUserDTO(uploaderName);
-        userDTO.addOneToExecutionsCount();
+        UserLogic.incrementExecutions(userDTO);
 
         programExecutor.run(userDTO, degree, inputs); // The important method
 
@@ -450,7 +451,7 @@ public class EngineImpl implements Engine, Serializable {
         executionHistory.add(debug.getDebugProgramExecutor());
 
         UserDTO userDTO = this.usernameToUserDTO.get(uploaderName);
-        userDTO.addOneToExecutionsCount();
+        UserLogic.incrementExecutions(userDTO);
 
         // Increase the execution count of the program
         debug.getDebugProgramExecutor().getProgram().incrementExecutionsCount();

@@ -14,6 +14,7 @@ import engine.logic.programData.instruction.Instruction;
 import engine.logic.programData.label.FixedLabel;
 import engine.logic.programData.label.Label;
 import engine.logic.programData.program.Program;
+import engine.user.UserLogic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -211,7 +212,7 @@ public class DebugImpl implements Debug {
             // Charge for stepping back over the very first step (totalCycles at step 0 minus first step)
             if (!stepsHistory.isEmpty()) {
                 int firstStepCycles = stepsHistory.getFirst().getTotalCycles();
-                userDTO.subtractFromCurrentCredits(firstStepCycles); // consume credits for the action
+                UserLogic.subtractCredits(userDTO, firstStepCycles); // consume credits for the action
             }
 
             currentInstructionIndex = 0;
@@ -325,7 +326,7 @@ public class DebugImpl implements Debug {
         int totalCyclesInPreviousInstruction = stepsHistory.get(historyPointer - 1).getTotalCycles();
         int currentInstructionCycles = totalCyclesInCurrentInstruction - totalCyclesInPreviousInstruction;
 
-        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
+        UserLogic.subtractCredits(userDTO, currentInstructionCycles);
         programExecutor.getProgram().addCreditCost(currentInstructionCycles);
     }
 
@@ -333,7 +334,7 @@ public class DebugImpl implements Debug {
         int currentInstructionCycles = currentInstruction.getCycleOfInstruction();
         currentCycles += currentInstructionCycles;
 
-        userDTO.subtractFromCurrentCredits(currentInstructionCycles);
+        UserLogic.subtractCredits(userDTO, currentInstructionCycles);
         programExecutor.getProgram().addCreditCost(currentInstructionCycles);
     }
 
