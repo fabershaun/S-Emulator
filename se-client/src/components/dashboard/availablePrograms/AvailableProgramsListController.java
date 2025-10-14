@@ -46,7 +46,7 @@ public class AvailableProgramsListController implements Closeable {
     public void initialize() {
         programListLabel.textProperty().bind(Bindings.concat("Available Main Programs: (", totalProgramsProperty.asString(), ")"));
 
-        colProgramName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProgramName()));
+        colProgramName.setCellValueFactory(data -> new SimpleStringProperty(capitalizeOnlyFirstLetter(data.getValue().getProgramName())));
         colUserUploaded.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUploaderName()));
         colInstructionsAmount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getInstructionsAmount()));
         colMaxDegree.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getMaxDegree()));
@@ -113,5 +113,12 @@ public class AvailableProgramsListController implements Closeable {
             programsListRefresher.cancel();
             timer.cancel();
         }
+    }
+
+    public static String capitalizeOnlyFirstLetter(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 }

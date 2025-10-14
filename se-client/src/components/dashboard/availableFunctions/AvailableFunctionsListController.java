@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static components.dashboard.availablePrograms.AvailableProgramsListController.capitalizeOnlyFirstLetter;
 import static utils.Constants.REFRESH_RATE;
 
 public class AvailableFunctionsListController implements Closeable {
@@ -45,8 +46,9 @@ public class AvailableFunctionsListController implements Closeable {
     public void initialize() {
         functionListLabel.textProperty().bind(Bindings.concat("Available Functions: (", totalFunctionsProperty.asString(), ")"));
 
-        colFunctionName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getFunctionName()));
-        mainProgramName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMainProgramName()));
+        colFunctionName.setCellValueFactory(data -> new SimpleStringProperty(capitalizeOnlyFirstLetter(data.getValue().getFunctionUserString())));
+        mainProgramName.setCellValueFactory(data -> new SimpleStringProperty(capitalizeOnlyFirstLetter(data.getValue().getMainProgramName())));
+        colUserUploaded.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUploaderName()));
         colInstructionsAmount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getInstructionsAmount()));
         colMaxDegree.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getMaxDegree()));
     }

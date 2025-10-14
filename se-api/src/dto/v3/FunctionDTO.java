@@ -2,13 +2,15 @@ package dto.v3;
 
 public class FunctionDTO {
     private final String functionName;
+    private final String functionUserString;
     private final String mainProgramName;
     private final String uploaderName;
     private final int instructionsAmount;
     private final int maxDegree;
 
-    public FunctionDTO(String functionName, String mainProgramName, String uploaderName, int instructionsAmount, int maxDegree) {
+    public FunctionDTO(String functionName, String functionUserString, String mainProgramName, String uploaderName, int instructionsAmount, int maxDegree) {
         this.functionName = functionName;
+        this.functionUserString = functionUserString;
         this.mainProgramName = mainProgramName;
         this.uploaderName = uploaderName;
         this.instructionsAmount = instructionsAmount;
@@ -18,6 +20,10 @@ public class FunctionDTO {
 
     public String getFunctionName() {
         return functionName;
+    }
+
+    public String getFunctionUserString() {
+        return functionUserString;
     }
 
     public String getMainProgramName() {
@@ -35,5 +41,6 @@ public class FunctionDTO {
     public int getMaxDegree() {
         return maxDegree;
     }
+
 }
 

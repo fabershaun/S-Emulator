@@ -389,6 +389,7 @@ public class EngineImpl implements Engine, Serializable {
     public FunctionDTO buildAvailableFunctionDTO(Program function) {
         return new FunctionDTO(
                 function.getName(),
+                function.getUserString(),
                 function.getMainProgramNameOfThisProgram(),
                 function.getUploaderName(),
                 function.getInstructionsList().size(),
