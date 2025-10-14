@@ -53,5 +53,4 @@ public class MaxDegreeServlet extends HttpServlet {
             response.getWriter().write(GSON_INSTANCE.toJson("Server error: " + e.getMessage()));
         }
     }
-
 }

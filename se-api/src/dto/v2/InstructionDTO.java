@@ -12,7 +12,8 @@ public class InstructionDTO {
     private final String sourceVariableStr;
     private final long constantValue;
     private final InstructionDTO origin;
-    private final String architecture;              // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
+    private final String architectureStr;              // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
+    private final int architectureRank;
 
     private boolean breakpoint;                     // Do not change name (name needed in gui module: package components.execution.mainInstructionsTable)
 
@@ -27,7 +28,8 @@ public class InstructionDTO {
                           long constantValue,
                           String command,
                           InstructionDTO origin,
-                          String architecture
+                          String architectureStr,
+                          int architectureRank
     ) {
         this.instructionName = instructionName;
         this.instructionNumber = instructionNumber;
@@ -40,7 +42,8 @@ public class InstructionDTO {
         this.constantValue = constantValue;
         this.command = command;
         this.origin = origin;
-        this.architecture = architecture;
+        this.architectureStr = architectureStr;
+        this.architectureRank = architectureRank;
     }
 
     public String getInstructionName() {
@@ -87,8 +90,12 @@ public class InstructionDTO {
         return origin;
     }
 
-    public String getArchitecture() {
-        return architecture;
+    public String getArchitectureStr() {
+        return architectureStr;
+    }
+
+    public int getArchitectureRank() {
+        return architectureRank;
     }
 
     public boolean isBreakpoint() {

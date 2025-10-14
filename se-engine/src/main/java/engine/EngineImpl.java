@@ -1,9 +1,7 @@
 package engine;
 
 import dto.v2.*;
-import dto.v3.FunctionDTO;
-import dto.v3.MainProgramDTO;
-import dto.v3.HistoryRowV3DTO;
+import dto.v3.*;
 import engine.logic.execution.debugMode.Debug;
 import engine.logic.execution.debugMode.DebugImpl;
 import engine.logic.exceptions.EngineLoadException;
@@ -16,7 +14,6 @@ import engine.logic.programData.program.ProgramsHolder;
 import engine.logic.programData.program.Program;
 import engine.logic.loadFromXml.XmlProgramLoader;
 import engine.logic.programData.variable.Variable;
-import dto.v3.UserDTO;
 import engine.user.UserLogic;
 
 import java.io.*;
@@ -87,9 +84,26 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
+    public List<ArchitectureDTO> getArchitectures() {
+        return Arrays.stream(ArchitectureType.values())
+                .filter(type -> type != ArchitectureType.A_0)
+                .map(type -> new ArchitectureDTO(
+                        type.getRepresentation(),
+                        type.getRank()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public long getArchitectureCost(String architectureStr) {
         ArchitectureType architectureType = ArchitectureType.fromRepresentation(architectureStr);
         return architectureType.getCreditsCost();
+    }
+
+    @Override
+    public int getArchitectureRank(String architectureStr) {
+        ArchitectureType architectureType = ArchitectureType.fromRepresentation(architectureStr);
+        return architectureType.getRank();
     }
 
     @Override
@@ -184,7 +198,7 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser(),
-                programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
+                programExecutor.getArchitectureTypeSelected().getRepresentation()
         );
     }
 
@@ -199,7 +213,7 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser(),
-                programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
+                programExecutor.getArchitectureTypeSelected().getRepresentation()
         );
     }
 
@@ -371,7 +385,7 @@ public class EngineImpl implements Engine, Serializable {
                 programExecutor.getTotalCycles(),
                 programExecutor.getRunDegree(),
                 programExecutor.getInputsValuesOfUser(),
-                programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation()
+                programExecutor.getArchitectureTypeSelected().getRepresentation()
         );
     }
 
@@ -486,7 +500,8 @@ public class EngineImpl implements Engine, Serializable {
                 0,
                 "",
                 null,
-                InstructionData.ORIGIN.getArchitectureType().getArchitectureRepresentation()
+                InstructionData.ORIGIN.getArchitectureType().getRepresentation(),
+                InstructionData.ORIGIN.getArchitectureType().getRank()
         );
     }
 

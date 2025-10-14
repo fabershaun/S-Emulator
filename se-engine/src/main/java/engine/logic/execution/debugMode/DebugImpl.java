@@ -71,7 +71,7 @@ public class DebugImpl implements Debug {
 
                 snapshot = new DebugDTO(
                         this.programExecutor.getProgram().getName(),
-                        this.programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation(),
+                        this.programExecutor.getArchitectureTypeSelected().getRepresentation(),
                         0, // current instruction index
                         0, // next instruction index (still at start)
                         hasMoreInstructions(),
@@ -222,7 +222,7 @@ public class DebugImpl implements Debug {
 
             return new DebugDTO(
                     this.programExecutor.getProgram().getName(),
-                    this.programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation(),
+                    this.programExecutor.getArchitectureTypeSelected().getRepresentation(),
                     getCurrentInstructionIndex(),
                     getNextInstructionIndex(),
                     hasMoreInstructions(),
@@ -305,7 +305,7 @@ public class DebugImpl implements Debug {
 
         return new DebugDTO(
                 this.programExecutor.getProgram().getName(),
-                this.programExecutor.getArchitectureTypeSelected().getArchitectureRepresentation(),
+                this.programExecutor.getArchitectureTypeSelected().getRepresentation(),
                 getCurrentInstructionIndex(),
                 getNextInstructionIndex(),
                 hasMoreInstructions(),

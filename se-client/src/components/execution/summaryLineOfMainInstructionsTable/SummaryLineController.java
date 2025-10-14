@@ -100,7 +100,7 @@ public class SummaryLineController {
 
         // Count how many instructions have this architecture type
         return (int) list.stream()
-                .filter(instr -> architectureType.equals(instr.getArchitecture()))
+                .filter(instr -> architectureType.equals(instr.getArchitectureStr()))
                 .count();
     }
 

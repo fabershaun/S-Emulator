@@ -5,8 +5,7 @@ import components.execution.topToolBar.HighlightSelectionModelV3;
 import dto.v2.InstructionDTO;
 import dto.v2.InstructionsDTO;
 import dto.v2.ProgramDTO;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,6 +20,8 @@ public class MainInstructionsTableController {
     private MainExecutionController executionController;
     private HighlightSelectionModelV3 highlightModel;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
+    private StringProperty chosenArchitectureProperty;
+    private IntegerProperty architectureRankProperty;
 
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Boolean> colBreakPoint;
@@ -64,7 +65,7 @@ public class MainInstructionsTableController {
         colLabel.setCellValueFactory(new PropertyValueFactory<>("labelStr"));
         colInstruction.setCellValueFactory(new PropertyValueFactory<>("command"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
-        colArchitecture.setCellValueFactory(new PropertyValueFactory<>("architecture"));
+        colArchitecture.setCellValueFactory(new PropertyValueFactory<>("architectureStr"));
 
         // Load the CSS file
 //        String cssPath = getClass().getResource("/components/mainInstructionsTable/mainInstructions.css").toExternalForm();
@@ -75,8 +76,10 @@ public class MainInstructionsTableController {
         this.executionController = executionController;
     }
 
-    public void setProperty(ObjectProperty<ProgramDTO> programProperty) {
+    public void setProperty(ObjectProperty<ProgramDTO> programProperty, StringProperty chosenArchitecture, IntegerProperty architectureRankProperty) {
         this.currentSelectedProgramProperty = programProperty;
+        this.chosenArchitectureProperty = chosenArchitecture;
+        this.architectureRankProperty = architectureRankProperty;
     }
 
     public void setModels(HighlightSelectionModelV3 highlightModel) {
@@ -91,6 +94,32 @@ public class MainInstructionsTableController {
                 instructionsTable.getItems().setAll(newProgram.getInstructions().getProgramInstructionsDtoList());
             } else {
                 instructionsTable.getItems().clear();
+            }
+        });
+
+        chosenArchitectureProperty.addListener((obs, oldArchitecture, newArchitecture) -> {
+            if (newArchitecture != null && !newArchitecture.isEmpty()) {
+                instructionsTable.setRowFactory(tv -> new TableRow<>() {
+                    @Override
+                    protected void updateItem(InstructionDTO item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setStyle("");
+
+                        if (empty || item == null) return;
+
+                        int rowRank = item.getArchitectureRank();
+
+                        if (rowRank > architectureRankProperty.get()) {
+                            // Higher than selected architecture → red
+                            setStyle("-fx-background-color: #ffcccc;");
+                        } else {
+                            // Equal or lower → green
+                            setStyle("-fx-background-color: #ccffcc;");
+                        }
+                    }
+                });
+
+                instructionsTable.refresh();
             }
         });
 

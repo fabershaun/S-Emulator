@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import services.ProgramPollingService;
 import services.ProgramService;
 import utils.ui.AlertUtils;
-import utils.ui.ToastUtil;
 import components.execution.chainInstructionsTable.ChainInstructionsTableController;
 import components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController;
 import components.execution.mainInstructionsTable.MainInstructionsTableController;
@@ -47,7 +46,8 @@ public class MainExecutionController {
     private StringProperty currentUserName;
     private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
-    private final StringProperty chosenArchitecture = new SimpleStringProperty("");
+    private final StringProperty chosenArchitectureProperty = new SimpleStringProperty("");
+    private final IntegerProperty architectureRankProperty = new SimpleIntegerProperty();
     private final ExpansionCollapseModelV3 degreeModel = new ExpansionCollapseModelV3();
     private final HighlightSelectionModelV3 highlightSelectionModel = new HighlightSelectionModelV3();
 
@@ -98,7 +98,7 @@ public class MainExecutionController {
 
     private void initMainInstructionsTableController() {
         mainInstructionsTableController.setExecutionController(this);
-        mainInstructionsTableController.setProperty(selectedProgramProperty);
+        mainInstructionsTableController.setProperty(selectedProgramProperty, chosenArchitectureProperty, architectureRankProperty);
         mainInstructionsTableController.setModels(highlightSelectionModel);
         mainInstructionsTableController.initializeListeners();
     }
@@ -110,7 +110,7 @@ public class MainExecutionController {
 
     private void initDebuggerExecutionMenuController() {
         debuggerExecutionMenuController.setExecutionController(this);
-        debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty, chosenArchitecture);
+        debuggerExecutionMenuController.setProperty(selectedProgramProperty, programAfterExecuteProperty, chosenArchitectureProperty, architectureRankProperty);
         debuggerExecutionMenuController.initializeListeners();
     }
 
@@ -239,12 +239,12 @@ public class MainExecutionController {
     public void loadArchitectureTypes() {
         programService.fetchArchitectureTypesAsync(
                 ARCHITECTURE_TYPES_PATH,
-                architectureDTO -> Platform.runLater(() -> {
+                architectureList -> Platform.runLater(() -> {
                     debuggerExecutionMenuController.getArchitectureComboBox()
                             .getItems()
-                            .setAll(architectureDTO.getArchitectureTypesStr());
+                            .setAll(architectureList);
 
-                    if (!architectureDTO.getArchitectureTypesStr().isEmpty()) {
+                    if (!architectureList.isEmpty()) {
                         debuggerExecutionMenuController.getArchitectureComboBox()
                                 .getSelectionModel()
                                 .selectFirst();
@@ -258,12 +258,12 @@ public class MainExecutionController {
 
     public boolean checkIfHasEnoughCreditsToPlay() {
         String programName = requireCurrentProgramName();
-        String architecture = chosenArchitecture.get();
+        String architecture = chosenArchitectureProperty.get();
 
         // Build JSON body
         JsonObject jsonBody = new JsonObject();
         jsonBody.addProperty(PROGRAM_NAME_QUERY_PARAM, programName);
-        jsonBody.addProperty(ARCHITECTURE_QUERY_PARAM, architecture);
+        jsonBody.addProperty(CHOSEN_ARCHITECTURE_STR_QUERY_PARAM, architecture);
         RequestBody requestBody = RequestBody.create(GSON_INSTANCE.toJson(jsonBody), MEDIA_TYPE_JSON);
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -288,6 +288,16 @@ public class MainExecutionController {
         }
     }
 
+    public void getArchitectureRankFromString(String chosenArchitecture) {
+        String finalUrl = buildUrlWithQueryParam(ARCHITECTURE_RANK_PATH, CHOSEN_ARCHITECTURE_STR_QUERY_PARAM, chosenArchitecture);
+
+        programService.fetchArchitectureRankAsync(
+                finalUrl,
+                resultRank -> Platform.runLater(() -> architectureRankProperty.set(resultRank)),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Error", "Failed to fetch rank of chosen architecture: " + errorMsg))
+        );
+    }
 
     public void runProgram(List<Long> inputs) {
 
@@ -333,13 +343,13 @@ public class MainExecutionController {
     private RequestBody buildRunProgramRequestBody(List<Long> inputs) {
         // Collect all required data from the current state
         String programName = requireCurrentProgramName();
-        String architecture = chosenArchitecture.get();
+        String architecture = chosenArchitectureProperty.get();
         int degree = degreeModel.currentDegreeProperty().get();
 
         // Build JSON body
         JsonObject jsonBody = new JsonObject();
         jsonBody.addProperty(PROGRAM_NAME_QUERY_PARAM, programName);
-        jsonBody.addProperty(ARCHITECTURE_QUERY_PARAM, architecture);
+        jsonBody.addProperty(CHOSEN_ARCHITECTURE_STR_QUERY_PARAM, architecture);
         jsonBody.addProperty(DEGREE_QUERY_PARAM, degree);
         jsonBody.add(INPUTS_VALUES_QUERY_PARAM, GSON_INSTANCE.toJsonTree(inputs));
 

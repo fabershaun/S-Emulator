@@ -1,6 +1,7 @@
 package services;
 
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
 import dto.v3.ArchitectureDTO;
@@ -10,6 +11,8 @@ import utils.http.HttpClientUtil;
 import utils.http.HttpResponseHandler;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static utils.Constants.*;
@@ -118,10 +121,12 @@ public class ProgramService {
         });
     }
 
-    public void fetchProgramDataAsync(String url, Consumer<ProgramDTO> onSuccess, Consumer<String> onError) {
+    public void fetchProgramDataAsync(String finalUrl,
+                                      Consumer<ProgramDTO> onSuccess,
+                                      Consumer<String> onError) {
 
         // Run the HTTP call asynchronously
-        HttpClientUtil.runAsync(url, null, new Callback() {
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 onError.accept("Network Error: " + e.getMessage());
@@ -202,7 +207,7 @@ public class ProgramService {
     }
 
     public void fetchArchitectureTypesAsync(String finalUrl,
-                                            Consumer<ArchitectureDTO> onSuccess,
+                                            Consumer<List<ArchitectureDTO>> onSuccess,
                                             Consumer<String> onError) {
         HttpClientUtil.runAsync(finalUrl, null, new Callback() {
             @Override
@@ -216,8 +221,9 @@ public class ProgramService {
                 if (handleBadResponse(response, body, "Fetching architecture types", onError)) return;
 
                 try (response) {
-                    ArchitectureDTO dto = GSON_INSTANCE.fromJson(body, ArchitectureDTO.class);
-                    onSuccess.accept(dto);
+                    Type listType = new TypeToken<List<ArchitectureDTO>>() {}.getType();
+                    List<ArchitectureDTO> architectures = GSON_INSTANCE.fromJson(body, listType);
+                    onSuccess.accept(architectures);
                 } catch (Exception e) {
                     onError.accept("Failed to parse ArchitectureDTO: " + e.getMessage());
                 }
@@ -225,6 +231,36 @@ public class ProgramService {
         });
     }
 
+    public void fetchArchitectureRankAsync(String finalUrl,
+                                           Consumer<Integer> onSuccess,
+                                           Consumer<String> onError) {
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    HttpResponseHandler.handleErrorResponse(response.code(), responseBody, "Getting rank of chosen architecture");
+                    onError.accept("Bad response: " + response.code());
+                    return;
+                }
+
+                try (response) {
+                    int resultRank = GSON_INSTANCE.fromJson(responseBody, Integer.class);
+                    onSuccess.accept(resultRank);
+                } catch (Exception e) {
+                    onError.accept("Parse error: " + e.getMessage());
+                }
+            }
+        });
+
+
+    }
 
     public void fetchRunProgramAsync(String finalUrl,
                                      RequestBody requestBody,

@@ -54,7 +54,8 @@ public class ProgramCreationModel {
                 0,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_1.getArchitectureRepresentation()
+                ArchitectureType.A_1.getRepresentation(),
+                ArchitectureType.A_1.getRank()
         );
     }
 
@@ -88,7 +89,8 @@ public class ProgramCreationModel {
                 0,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_1.getArchitectureRepresentation()
+                ArchitectureType.A_1.getRepresentation(),
+                ArchitectureType.A_1.getRank()
         );
     }
 
@@ -109,7 +111,8 @@ public class ProgramCreationModel {
                 0,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_2.getArchitectureRepresentation()
+                ArchitectureType.A_2.getRepresentation(),
+                ArchitectureType.A_2.getRank()
         );
     }
 
@@ -130,7 +133,8 @@ public class ProgramCreationModel {
                 0,                      // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_2.getArchitectureRepresentation()
+                ArchitectureType.A_2.getRepresentation(),
+                ArchitectureType.A_2.getRank()
         );
     }
 
@@ -152,7 +156,8 @@ public class ProgramCreationModel {
                 0,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_3.getArchitectureRepresentation()
+                ArchitectureType.A_3.getRepresentation(),
+                ArchitectureType.A_3.getRank()
         );
     }
 
@@ -173,7 +178,8 @@ public class ProgramCreationModel {
                 constantValue,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_2.getArchitectureRepresentation()
+                ArchitectureType.A_2.getRepresentation(),
+                ArchitectureType.A_2.getRank()
         );
     }
 
@@ -194,7 +200,8 @@ public class ProgramCreationModel {
                 0,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_3.getArchitectureRepresentation()
+                ArchitectureType.A_3.getRepresentation(),
+                ArchitectureType.A_3.getRank()
         );
     }
 
@@ -215,7 +222,8 @@ public class ProgramCreationModel {
                 constantValue,              // Constant value
                 command,
                 originDTO,
-                ArchitectureType.A_3.getArchitectureRepresentation()
+                ArchitectureType.A_3.getRepresentation(),
+                ArchitectureType.A_3.getRank()
         );
     }
 
@@ -236,7 +244,8 @@ public class ProgramCreationModel {
                 0,
                 command,
                 originDTO,
-                ArchitectureType.A_3.getArchitectureRepresentation()
+                ArchitectureType.A_3.getRepresentation(),
+                ArchitectureType.A_3.getRank()
         );
     }
 }

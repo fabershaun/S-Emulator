@@ -5,28 +5,34 @@ import java.util.Set;
 
 public enum ArchitectureType {
 
-    A_0 (0, "A_0"), // Only for origin instruction
+    A_0 (0, "A_0", 0), // Only for origin instruction
 
-    A_1 (5, "I"),
-    A_2 (100, "II"),
-    A_3 (500, "III"),
-    A_4 (1000, "IV")
+    A_1 (5, "I", 1),
+    A_2 (100, "II", 2),
+    A_3 (500, "III", 3),
+    A_4 (1000, "IV", 4)
     ;
 
     private final int creditsCost;
     private final String architectureRepresentation;
+    private final int architectureRank;
 
-    ArchitectureType(int creditsCost, String architectureRepresentation) {
+    ArchitectureType(int creditsCost, String architectureRepresentation, int architectureRank) {
         this.creditsCost = creditsCost;
         this.architectureRepresentation = architectureRepresentation;
+        this.architectureRank = architectureRank;
     }
 
     public int getCreditsCost() {
         return creditsCost;
     }
 
-    public String getArchitectureRepresentation() {
+    public String getRepresentation() {
         return architectureRepresentation;
+    }
+
+    public int getRank() {
+        return architectureRank;
     }
 
     // Create new ArchitectureType from representation
@@ -41,7 +47,7 @@ public enum ArchitectureType {
 
     // Return all architectures this one supports
     public Set<ArchitectureType> getSupportedArchitectures() {
-        return EnumSet.range(A_0, this);
+        return EnumSet.range(A_1, this);
     }
 
     public boolean supports(ArchitectureType other) {

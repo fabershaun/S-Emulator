@@ -4,10 +4,7 @@ import dto.v2.DebugDTO;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
-import dto.v3.FunctionDTO;
-import dto.v3.MainProgramDTO;
-import dto.v3.HistoryRowV3DTO;
-import dto.v3.UserDTO;
+import dto.v3.*;
 import engine.logic.exceptions.EngineLoadException;
 import engine.logic.programData.architecture.ArchitectureType;
 
@@ -26,7 +23,10 @@ public interface Engine {
     boolean isUserExists(String username);
     UserDTO getUserDTO(String username);
     void addCreditsToUser(String username, long amountToAdd);
+
+    List<ArchitectureDTO> getArchitectures();
     long getArchitectureCost(String architectureStr);
+    int getArchitectureRank(String architectureStr);
 
     String getProgramNameByUserString(String userString);
     ProgramDTO getProgramDTOByName(String programName);

@@ -68,9 +68,17 @@ public class Constants {
     public final static String JUMP_TO_DEGREE_NAME = "JumpToDegreeServlet";
     public final static String JUMP_TO_DEGREE_URL = "/jump-to-degree";
 
+    // Can delete // Get Program After Run:
+    public final static String PROGRAM_AFTER_RUN_NAME = "ProgramAfterRun";
+    public final static String PROGRAM_AFTER_RUN_URL =  "/program-after-run";
+
     // Get Architecture Types Available:
     public final static String ARCHITECTURE_TYPES_NAME = "ArchitectureTypes";
     public final static String ARCHITECTURE_TYPES_URL = "/architecture-types";
+
+    // Get architecture rank:
+    public final static String ARCHITECTURE_RANK_NAME = "ArchitectureRankServlet";
+    public final static String ARCHITECTURE_RANK_URL = "/architecture-rank";
 
     // Run Program:
     public final static String RUN_PROGRAM_NAME = "RunProgram";
@@ -80,8 +88,6 @@ public class Constants {
     public final static String PROGRAM_STATUS_NAME = "ProgramStatus";
     public final static String PROGRAM_STATUS_URL = "/program-status";
 
-    // Get Program After Run:
-    public final static String PROGRAM_AFTER_RUN_NAME = "ProgramAfterRun";
-    public final static String PROGRAM_AFTER_RUN_URL =  "/program-after-run";
+
 
 }

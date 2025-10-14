@@ -1,5 +1,7 @@
 package components.execution.debuggerExecutionMenu;
 
+import dto.v3.ArchitectureDTO;
+import javafx.beans.property.*;
 import utils.general.GeneralUtils;
 import components.execution.mainExecution.MainExecutionController;
 import dto.v2.DebugDTO;
@@ -9,10 +11,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -20,8 +18,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.converter.LongStringConverter;
-import utils.ui.AlertUtils;
-import utils.ui.ToastUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +31,8 @@ public class DebuggerExecutionMenuController {
     private ApplicationMode currentMode = ApplicationMode.NEW_RUN_PRESSED;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty;
-    private StringProperty chosenArchitecture;
+    private StringProperty architectureRepresentationProperty;
+    private IntegerProperty architectureRankProperty;
     private boolean inputsEditableMode = false;     // Flag to control whether blinking is active
 
     @FXML private VBox debuggerExecutionMenu;
@@ -43,7 +40,7 @@ public class DebuggerExecutionMenuController {
     @FXML private ToggleGroup runModeToggleGroup;
     @FXML private RadioButton runRadio;
     @FXML private RadioButton debugRadio;
-    @FXML private ComboBox<String> architectureComboBox;
+    @FXML private ComboBox<ArchitectureDTO> architectureComboBox;
     @FXML private Button playButton;
     @FXML private Button stopButton;
     @FXML private Button resumeButton;
@@ -62,13 +59,14 @@ public class DebuggerExecutionMenuController {
         this.executionController = executionController;
     }
 
-    public void setProperty(ObjectProperty<ProgramDTO> programProperty, ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty, StringProperty chosenArchitecture) {
+    public void setProperty(ObjectProperty<ProgramDTO> programProperty, ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty, StringProperty chosenArchitecture, IntegerProperty architectureRankProperty) {
         this.currentSelectedProgramProperty = programProperty;
         this.programAfterExecuteProperty = programAfterExecuteProperty;
-        this.chosenArchitecture = chosenArchitecture;
+        this.architectureRepresentationProperty = chosenArchitecture;
+        this.architectureRankProperty = architectureRankProperty;
     }
 
-    public ComboBox<String> getArchitectureComboBox() {
+    public ComboBox<ArchitectureDTO> getArchitectureComboBox() {
         return architectureComboBox;
     }
 
@@ -93,6 +91,31 @@ public class DebuggerExecutionMenuController {
                 new SimpleLongProperty(cellData.getValue().getValue()).asObject());
 
         inputsTable.getSelectionModel().setCellSelectionEnabled(true);
+
+        // Combo box:
+        architectureComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(ArchitectureDTO item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getRepresentation());
+                }
+            }
+        });
+
+        architectureComboBox.setConverter(new javafx.util.StringConverter<>() {
+            @Override
+            public String toString(ArchitectureDTO item) {
+                return item == null ? "" : item.getRepresentation();
+            }
+
+            @Override
+            public ArchitectureDTO fromString(String string) {
+                return null;
+            }
+        });
     }
 
     public void initializeListeners() {
@@ -116,8 +139,11 @@ public class DebuggerExecutionMenuController {
             }
         });
 
-        architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitecture) -> {
-            chosenArchitecture.set(newArchitecture);
+        architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitectureDTO) -> {
+            if (newArchitectureDTO == null) return;
+
+            architectureRepresentationProperty.set(newArchitectureDTO.getRepresentation());
+            architectureRankProperty.set(newArchitectureDTO.getRank());
         });
     }
 

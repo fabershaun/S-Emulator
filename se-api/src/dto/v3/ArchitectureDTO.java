@@ -3,13 +3,19 @@ package dto.v3;
 import java.util.List;
 
 public class ArchitectureDTO {
-    private final List<String> architectureTypesStr;
+    private final String representation;
+    private final int rank;
 
-    public ArchitectureDTO(List<String> architectureTypesStr) {
-        this.architectureTypesStr = architectureTypesStr;
+    public ArchitectureDTO(String representation, int rank) {
+        this.representation = representation;
+        this.rank = rank;
     }
 
-    public List<String> getArchitectureTypesStr() {
-        return architectureTypesStr;
+    public String getRepresentation() {
+        return representation;
+    }
+
+    public int getRank() {
+        return rank;
     }
 }

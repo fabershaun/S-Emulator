@@ -32,7 +32,7 @@ public class Constants {
     public static final String PROGRAM_NAME_QUERY_PARAM = "programName";
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
     public static final String DEGREE_QUERY_PARAM = "degree";
-    public static final String ARCHITECTURE_QUERY_PARAM = "architecture";
+    public static final String CHOSEN_ARCHITECTURE_STR_QUERY_PARAM = "architecture";
     public static final String INPUTS_VALUES_QUERY_PARAM = "inputsValues";
     public static final String RUN_ID_QUERY_PARAM = "runId";
 
@@ -92,6 +92,9 @@ public class Constants {
 
     // Get Program After Run:
     public final static String PROGRAM_AFTER_RUN_PATH = FULL_SERVER_PATH + "/program-after-run";
+
+    // Get architecture rank:
+    public final static String ARCHITECTURE_RANK_PATH = FULL_SERVER_PATH + "/architecture-rank";
 }
 
 // http://localhost:8080/S-Emulator
