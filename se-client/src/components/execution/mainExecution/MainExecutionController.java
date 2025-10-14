@@ -276,7 +276,7 @@ public class MainExecutionController {
                     url,
                     state -> handleProgramState(runId, state), // "DONE", "FAILED", etc.
                     errorMsg -> Platform.runLater(() ->
-                            AlertUtils.showError("Network Error", errorMsg)
+                            AlertUtils.showError("Program Execution Failed", errorMsg)
                     )
             );
 
@@ -304,10 +304,10 @@ public class MainExecutionController {
 
     // Handles the state returned from the server ("DONE", "FAILED", etc.)
     private void handleProgramState(String runId, String state) {
-        if ("DONE".equals(state)) {
+        if (state.startsWith("FAILED")) {
+            handleProgramFailed(state);
+        } else if ("DONE".equals(state)) {
             handleProgramDone(runId);
-        } else if ("FAILED".equals(state)) {
-            handleProgramFailed();
         }
     }
 
@@ -330,11 +330,10 @@ public class MainExecutionController {
     }
 
     // Called when the program fails on the server
-    private void handleProgramFailed() {
+    private void handleProgramFailed(String state) {
         programPollingService.stopPolling();
-        Platform.runLater(() ->
-                AlertUtils.showError("Run Failed", "Program execution failed on server.")
-        );
+        String errorMsg = state.contains(":") ? state.split(":", 2)[1] : "Program execution failed.";
+        Platform.runLater(() -> AlertUtils.showError("Program Execution Failed", errorMsg));
     }
 
 

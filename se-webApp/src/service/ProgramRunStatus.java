@@ -6,11 +6,14 @@ public class ProgramRunStatus {
     public final String username;
     public volatile ProgramRunState state;
     public volatile String error;
+    public volatile String details;
 
     public ProgramRunStatus(String runId, String programName, String username) {
         this.runId = runId;
         this.programName = programName;
         this.username = username;
         this.state = ProgramRunState.PENDING;
+        this.error = "";
+        this.details = "";
     }
 }

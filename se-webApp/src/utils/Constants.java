@@ -15,6 +15,10 @@ public class Constants {
     public static final String INPUTS_VALUES_QUERY_PARAM = "inputsValues";
     public static final String RUN_ID_QUERY_PARAM = "runId";
 
+    public static final String STATE = "state";
+    public static final String ERROR = "error";
+    public static final String DETAILS = "details";
+
     // Login:
     public static final String LOGIN_SERVLET_NAME = "LoginServlet";
     public static final String LOGIN_SERVLET_URL = "/login";

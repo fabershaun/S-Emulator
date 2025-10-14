@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static utils.Constants.GSON_INSTANCE;
-import static utils.Constants.INPUTS_VALUES_QUERY_PARAM;
+import static utils.Constants.*;
 
 public class ValidationUtils {
 
@@ -130,11 +129,11 @@ public class ValidationUtils {
         response.setContentType("application/json");
 
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("error", message);
+        errorResponse.put(ERROR, message);
 
         // Add details only if provided
         if (details != null && !details.isEmpty()) {
-            errorResponse.put("details", details);
+            errorResponse.put(DETAILS, details);
         }
 
         response.getWriter().write(GSON_INSTANCE.toJson(errorResponse));

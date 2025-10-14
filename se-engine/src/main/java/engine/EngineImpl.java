@@ -81,6 +81,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
+    public void addCreditsToUser(String username, long amountToAdd) {
+        UserDTO userDTO = getUserDTO(username);
+        UserLogic.addCredits(userDTO, amountToAdd);
+    }
+
+    @Override
     public String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);

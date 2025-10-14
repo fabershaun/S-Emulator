@@ -214,8 +214,8 @@ public class ProgramService {
                 if (!response.isSuccessful()) {
                     try {
                         JsonObject obj = GSON_INSTANCE.fromJson(body, JsonObject.class);
-                        String message = obj != null && obj.has("message") ? obj.get("message").getAsString() : "Program execution failed on server.";
-                        String details = obj != null && obj.has("details") ? obj.get("details").getAsString() : "";
+                        String message = obj != null && obj.has(ERROR) ? obj.get(ERROR).getAsString() : "Program execution failed on server.";
+                        String details = obj != null && obj.has(DETAILS) ? obj.get(DETAILS).getAsString() : "";
                         String fullMessage = details.isEmpty() ? message : message + " - " + details;
                         onError.accept(fullMessage);
                     } catch (Exception e) {
@@ -260,17 +260,29 @@ public class ProgramService {
                 try (response) {
                     JsonObject json = GSON_INSTANCE.fromJson(body, JsonObject.class);
 
-                    // Expecting the JSON to contain a field named "state"
-                    if (json.has("state")) {
-                        String state = json.get("state").getAsString();
-                        onSuccess.accept(state);
-                    } else {
+                    // Always require "state"
+                    if (!json.has(STATE)) {
                         onError.accept("Missing 'state' field in server response.");
+                        return;
                     }
+
+                    String state = json.get(STATE).getAsString();
+
+                    // If FAILED, surface server error/details to UI
+                    if ("FAILED".equals(state)) {
+                        String err = json.has(ERROR) ? json.get(ERROR).getAsString() : "Program execution failed on server.";
+                        String det = json.has(DETAILS) ? json.get(DETAILS).getAsString() : "";
+                        onSuccess.accept("FAILED:" + (det.isEmpty() ? err : err + " - " + det));
+                        return;
+                    }
+
+                    // otherwise proceed normally
+                    onSuccess.accept(state);
 
                 } catch (Exception e) {
                     onError.accept("Failed to parse response: " + e.getMessage());
                 }
+
             }
         });
     }

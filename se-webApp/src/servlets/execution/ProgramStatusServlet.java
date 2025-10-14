@@ -1,5 +1,6 @@
 package servlets.execution;
 
+import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,8 +32,15 @@ public class ProgramStatusServlet extends HttpServlet {
             ProgramRunStatus status = ProgramExecutionManager.getInstance().getStatus(runId);
 
             if (status == null) {
-                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Run ID not found");
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Run ID not found", "");
                 return;
+            }
+
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty(STATE, status.state.name());
+
+            if (status.error != null && !status.error.isEmpty()) {
+                jsonResponse.addProperty(ERROR, status.error);
             }
 
             response.setStatus(HttpServletResponse.SC_OK);

@@ -25,6 +25,7 @@ public interface Engine {
     Set<UserDTO> getAllUsers();
     boolean isUserExists(String username);
     UserDTO getUserDTO(String username);
+    void addCreditsToUser(String username, long amountToAdd);
 
     String getProgramNameByUserString(String userString);
     ProgramDTO getProgramDTOByName(String programName);

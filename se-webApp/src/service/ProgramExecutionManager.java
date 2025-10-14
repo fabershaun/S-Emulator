@@ -56,7 +56,8 @@ public class ProgramExecutionManager implements ExecutionService {
 
             } catch (Exception e) {
                 programRunStatus.state = ProgramRunState.FAILED;
-                programRunStatus.error = e.getClass().getSimpleName() + ": " + e.getMessage();
+                programRunStatus.error = e.getClass().getSimpleName();
+                programRunStatus.details = e.getMessage();
                 e.printStackTrace();
             }
         });
