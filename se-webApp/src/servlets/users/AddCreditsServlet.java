@@ -9,8 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
 import utils.SessionUtils;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import static utils.Constants.*;
@@ -27,14 +25,15 @@ public class AddCreditsServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
-        try (BufferedReader reader = request.getReader()) {
-
+        try {
             String username = SessionUtils.getUsername(request);
 
-            JsonObject jsonBody = GSON_INSTANCE.fromJson(reader, JsonObject.class);
+            JsonObject jsonBody = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
             if (!validateJsonBody(jsonBody, response)) return;
 
-            Long amountToAdd = jsonBody.has(CREDITS_TO_CHARGE_QUERY_PARAM) ? jsonBody.get(CREDITS_TO_CHARGE_QUERY_PARAM).getAsLong() : null;
+            Long amountToAdd = jsonBody.has(CREDITS_TO_CHARGE_QUERY_PARAM)
+                    ? jsonBody.get(CREDITS_TO_CHARGE_QUERY_PARAM).getAsLong()
+                    : null;
             if (!validateCreditsToAdd(amountToAdd, response)) return ;
 
             engine.addCreditsToUser(username, amountToAdd);
@@ -43,7 +42,7 @@ public class AddCreditsServlet extends HttpServlet {
             long updatedCredits = userDTO.getCurrentCredits();
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json;charset=UTF-8");
+            response.setContentType("application/json");
             response.getWriter().write(GSON_INSTANCE.toJson(updatedCredits));
 
         } catch (Exception e) {
