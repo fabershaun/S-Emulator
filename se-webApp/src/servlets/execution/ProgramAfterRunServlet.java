@@ -26,6 +26,8 @@ public class ProgramAfterRunServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
+        response.setContentType("application/json");
+
         try {
             String runId = request.getParameter(RUN_ID_QUERY_PARAM);
             if (!validateRunIdParam(runId, response)) return;
@@ -60,7 +62,6 @@ public class ProgramAfterRunServlet extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
             response.getWriter().write(GSON_INSTANCE.toJson(programAfterRun));
 
 

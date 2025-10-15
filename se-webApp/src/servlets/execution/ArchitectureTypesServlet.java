@@ -23,12 +23,12 @@ public class ArchitectureTypesServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
+        response.setContentType("application/json");
         try {
             List<ArchitectureDTO> architectureDTOList = engine.getArchitectures();
             String json = GSON_INSTANCE.toJson(architectureDTOList);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
             response.getWriter().write(json);
         }
         catch (Exception e) {
