@@ -249,12 +249,6 @@ public class MainExecutionController {
                     debuggerExecutionMenuController.getArchitectureComboBox()
                             .getItems()
                             .setAll(architectureList);
-
-                    if (!architectureList.isEmpty()) {
-                        debuggerExecutionMenuController.getArchitectureComboBox()
-                                .getSelectionModel()
-                                .selectFirst();
-                    }
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Error", "Failed to load architecture types: " + errorMsg)

@@ -98,7 +98,7 @@ public class DebuggerExecutionMenuController {
             protected void updateItem(ArchitectureDTO item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
-                    setText(null);
+                    setText("Architecture");
                 } else {
                     setText(item.getRepresentation());
                 }
@@ -146,7 +146,10 @@ public class DebuggerExecutionMenuController {
         });
 
         architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitectureDTO) -> {
-            if (newArchitectureDTO == null) return;
+            if (newArchitectureDTO == null) {
+                playButton.setDisable(true);
+                return;
+            }
 
             architectureRepresentationProperty.set(newArchitectureDTO.getRepresentation());
             architectureRankProperty.set(newArchitectureDTO.getRank());
@@ -304,7 +307,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setModeSelectionDisabled(false);
 
-        setPlayEnabled(true);
+        setPlayEnabled(false);  // need to choose architecture first
         setDebugControlsDisabled(true);
         setArchitectureComboBoxDisabled(false);
         inputsTable.setEditable(true);
