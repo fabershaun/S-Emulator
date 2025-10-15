@@ -6,51 +6,45 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
-import utils.SessionUtils;
 import java.io.IOException;
-
 import static utils.Constants.*;
+import static utils.ValidationUtils.*;
+import static utils.ValidationUtils.writeJsonError;
 
 @WebServlet(name = MAX_DEGREE_NAME, urlPatterns = {MAX_DEGREE_URL})
 public class MaxDegreeServlet extends HttpServlet {
-
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
+
+        if (!validateUserSession(request, response)) return;
+
+        Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
+
+        response.setContentType("application/json");
 
         try {
-            // Verify user session
-            String username = SessionUtils.getUsername(request);
-            if (username == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(GSON_INSTANCE.toJson("User not logged in"));
-                return;
-            }
-
-            // Extract program name
             String programName = request.getParameter(PROGRAM_NAME_QUERY_PARAM);
             if (programName == null || programName.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Missing program name"));
-                return;
-            }
-
-            // Retrieve engine
-            Engine engine = ServletUtils.getEngine(getServletContext());
-            if (engine == null) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write(GSON_INSTANCE.toJson("Engine not initialized"));
+                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "Missing program name", "");
                 return;
             }
 
             int maxDegree = engine.getMaxDegree(programName);
 
+            if (maxDegree < 0) {
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND,
+                        "Program not found", "No program found with the given name");
+                return;
+            }
+
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(String.valueOf(maxDegree));
+            response.getWriter().write(GSON_INSTANCE.toJson(maxDegree));
 
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(GSON_INSTANCE.toJson("Server error: " + e.getMessage()));
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error while fetching max degree", e.getMessage());
         }
     }
 }
+

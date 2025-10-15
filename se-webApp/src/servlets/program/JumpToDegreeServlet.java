@@ -13,9 +13,12 @@ import java.io.IOException;
 
 import static utils.Constants.*;
 import static utils.ValidationUtils.*;
+import static utils.ValidationUtils.writeJsonError;
 
 @WebServlet(name = JUMP_TO_DEGREE_NAME, urlPatterns = {JUMP_TO_DEGREE_URL})
 public class JumpToDegreeServlet extends HttpServlet {
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if (!validateUserSession(request, response)) return;

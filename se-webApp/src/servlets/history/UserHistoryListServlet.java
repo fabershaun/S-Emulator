@@ -18,6 +18,7 @@ import static utils.ValidationUtils.*;
 @WebServlet(name = USER_HISTORY_LIST_NAME, urlPatterns = {USER_HISTORY_LIST_URL})
 public class UserHistoryListServlet extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if (!validateUserSession(request, response)) return;
