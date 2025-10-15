@@ -24,16 +24,17 @@ public class AvailableProgramsServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
+        response.setContentType("application/json");
+
         try {
             List<MainProgramDTO> mainProgramDTOsList = engine.getAvailableMainProgramsDTOsList();
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
             response.getWriter().write(GSON_INSTANCE.toJson(mainProgramDTOsList));
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while fetching available functions", e.getMessage());
+                    "Server error while fetching available programs", e.getMessage());
         }
     }
 }

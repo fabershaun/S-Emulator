@@ -22,11 +22,12 @@ public class AvailableFunctionsServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
+        response.setContentType("application/json");
+
         try {
             List<FunctionDTO> availableFunctionsList = engine.getAvailableFunctionsDTOsList();
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
             response.getWriter().write(GSON_INSTANCE.toJson(availableFunctionsList));
 
         } catch (Exception e) {
