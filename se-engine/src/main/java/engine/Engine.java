@@ -26,7 +26,6 @@ public interface Engine {
 
     List<ArchitectureDTO> getArchitectures();
     long getArchitectureCost(String architectureStr);
-    int getArchitectureRank(String architectureStr);
 
     String getProgramNameByUserString(String userString);
     ProgramDTO getProgramDTOByName(String programName);

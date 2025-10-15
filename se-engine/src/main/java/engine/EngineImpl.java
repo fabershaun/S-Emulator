@@ -101,12 +101,6 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public int getArchitectureRank(String architectureStr) {
-        ArchitectureType architectureType = ArchitectureType.fromRepresentation(architectureStr);
-        return architectureType.getRank();
-    }
-
-    @Override
     public String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);
