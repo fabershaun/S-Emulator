@@ -25,6 +25,8 @@ public class GetUserCreditsServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
+        response.setContentType("application/json");
+
         try {
             String username = SessionUtils.getUsername(request);
             UserDTO userDTO = engine.getUserDTO(username);
@@ -38,7 +40,6 @@ public class GetUserCreditsServlet extends HttpServlet {
             long currentCredits = userDTO.getCurrentCredits();
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(GSON_INSTANCE.toJson(currentCredits));
 
         } catch (Exception e) {
