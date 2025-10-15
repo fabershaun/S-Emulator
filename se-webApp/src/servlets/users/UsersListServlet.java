@@ -12,19 +12,35 @@ import java.io.IOException;
 import java.util.Set;
 
 import static utils.Constants.*;
+import static utils.ValidationUtils.validateEngineNotNull;
+import static utils.ValidationUtils.writeJsonError;
 
 @WebServlet(name = USERS_LIST_NAME, urlPatterns = {USERS_LIST_URL})
 public class UsersListServlet extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
 
         Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
 
-        Set<UserDTO> usersList = engine.getAllUsers();
+        try {
+            Set<UserDTO> usersList = engine.getAllUsers();
 
-        String json = GSON_INSTANCE.toJson(usersList);
-        response.getWriter().write(json);
+            if (usersList == null || usersList.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("[]");
+                return;
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(GSON_INSTANCE.toJson(usersList));
+
+        } catch (Exception e) {
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error while fetching user list", e.getMessage());
+        }
     }
 }
