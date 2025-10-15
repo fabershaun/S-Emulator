@@ -12,35 +12,32 @@ import utils.SessionUtils;
 import java.io.IOException;
 
 import static utils.Constants.*;
+import static utils.ValidationUtils.*;
 
 @WebServlet(name = JUMP_TO_DEGREE_NAME, urlPatterns = {JUMP_TO_DEGREE_URL})
 public class JumpToDegreeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        if (!validateUserSession(request, response)) return;
+
+        Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
+
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
 
         try {
-            // Verify user session
-            String username = SessionUtils.getUsername(request);
-            if (username == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(GSON_INSTANCE.toJson("User not logged in"));
-                return;
-            }
-
-            // Extract program name
             String programName = request.getParameter(PROGRAM_NAME_QUERY_PARAM);
+            String degreeParam = request.getParameter(TARGET_DEGREE_QUERY_PARAM);
+
             if (programName == null || programName.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Missing program name"));
+                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "Missing program name", "");
                 return;
             }
 
-            // Extract degree
-            String degreeParam = request.getParameter(TARGET_DEGREE_QUERY_PARAM);
-            if (degreeParam  == null || degreeParam .isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Missing target degree"));
+            if (degreeParam == null || degreeParam.isEmpty()) {
+                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "Missing target degree", "");
                 return;
             }
 
@@ -48,35 +45,24 @@ public class JumpToDegreeServlet extends HttpServlet {
             try {
                 targetDegree = Integer.parseInt(degreeParam);
             } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(GSON_INSTANCE.toJson("Invalid target degree: must be a number"));
+                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid target degree", "Degree must be a number");
                 return;
             }
 
-            // Retrieve engine
-            Engine engine = ServletUtils.getEngine(getServletContext());
-            if (engine == null) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write(GSON_INSTANCE.toJson("Engine not initialized"));
-                return;
-            }
-
-            // Fetch program data
             ProgramDTO programDTO = engine.getExpandedProgramDTO(programName, targetDegree);
             if (programDTO == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write(GSON_INSTANCE.toJson("Program not found"));
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND,
+                        "Program not found", "No program matches the given name and degree");
                 return;
             }
 
-            // Return JSON response
-            String json = GSON_INSTANCE.toJson(programDTO);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(json);
+            response.getWriter().write(GSON_INSTANCE.toJson(programDTO));
 
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(GSON_INSTANCE.toJson("Server error: " + e.getMessage()));
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error while fetching program by degree", e.getMessage());
         }
     }
 }
