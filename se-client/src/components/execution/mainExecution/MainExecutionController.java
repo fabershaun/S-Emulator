@@ -164,6 +164,12 @@ public class MainExecutionController {
         );
     }
 
+    public void clearArchitectureColors() {
+        if (mainInstructionsTableController != null) {
+            mainInstructionsTableController.clearArchitectureColors();
+        }
+    }
+
     private String buildUrlWithQueryParam(String path, String queryParameterName, String queryParameter) {
         return HttpUrl.parse(path)
                 .newBuilder()

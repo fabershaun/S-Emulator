@@ -1,0 +1,30 @@
+.table-row-cell.highlighted-row {
+    -fx-background-color: palegreen;
+}
+
+/* Base: empty gray circle */
+.table-cell .check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: gray;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+    -fx-padding: 2;        /* smaller padding */
+    -fx-min-width: 12px;   /* smaller size */
+    -fx-min-height: 12px;
+    -fx-max-width: 12px;
+    -fx-max-height: 12px;
+}
+
+/* Selected state: filled red circle */
+.table-cell .check-box:selected .box {
+    -fx-background-color: red;
+    -fx-border-color: red;
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+}
+
+/* Hide the default check mark (the "V") */
+.table-cell .check-box .mark {
+    -fx-shape: null;
+    -fx-background-color: transparent;
+}

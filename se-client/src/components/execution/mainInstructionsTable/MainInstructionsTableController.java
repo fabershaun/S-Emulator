@@ -22,6 +22,7 @@ public class MainInstructionsTableController {
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private StringProperty chosenArchitectureProperty;
     private IntegerProperty architectureRankProperty;
+    private BooleanProperty architectureDisabledProperty = new SimpleBooleanProperty(false);
 
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Boolean> colBreakPoint;
@@ -68,8 +69,8 @@ public class MainInstructionsTableController {
         colArchitecture.setCellValueFactory(new PropertyValueFactory<>("architectureStr"));
 
         // Load the CSS file
-//        String cssPath = getClass().getResource("/components/mainInstructionsTable/mainInstructions.css").toExternalForm();
-//        instructionsTable.getStylesheets().add(cssPath);
+        String cssPath = getClass().getResource("/components/execution/mainInstructionsTable/mainInstructions.css").toExternalForm();
+        instructionsTable.getStylesheets().add(cssPath);
     }
 
     public void setExecutionController(MainExecutionController executionController) {
@@ -191,5 +192,10 @@ public class MainInstructionsTableController {
         return instructionsTable.getItems().stream()
                 .map(InstructionDTO::isBreakpoint)
                 .toList();
+    }
+
+    public void clearArchitectureColors() {
+        instructionsTable.setRowFactory(instructionDTOTableView -> new TableRow<>());
+        instructionsTable.refresh();
     }
 }

@@ -1,7 +1,5 @@
 package dto.v3;
 
-import java.util.List;
-
 public class ArchitectureDTO {
     private final String representation;
     private final int rank;

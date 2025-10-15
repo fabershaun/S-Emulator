@@ -44,6 +44,8 @@ public class AvailableFunctionsListController implements Closeable {
 
     @FXML
     public void initialize() {
+        executeProgramsButton.setDisable(true);
+
         functionListLabel.textProperty().bind(Bindings.concat("Available Functions: (", totalFunctionsProperty.asString(), ")"));
 
         colFunctionName.setCellValueFactory(data -> new SimpleStringProperty(capitalizeOnlyFirstLetter(data.getValue().getFunctionUserString())));
@@ -100,6 +102,8 @@ public class AvailableFunctionsListController implements Closeable {
 
     @FXML
     void onExecuteFunctionButtonClicked() {
+        if (selectedFunctionProperty.get() == null) return;
+
         String functionSelectedName = selectedFunctionProperty.get().getFunctionName();
         dashboardController.switchToExecution(functionSelectedName);
     }

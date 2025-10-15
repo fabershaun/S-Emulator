@@ -44,6 +44,8 @@ public class AvailableProgramsListController implements Closeable {
 
     @FXML
     public void initialize() {
+        executeProgramsButton.setDisable(true);
+
         programListLabel.textProperty().bind(Bindings.concat("Available Main Programs: (", totalProgramsProperty.asString(), ")"));
 
         colProgramName.setCellValueFactory(data -> new SimpleStringProperty(capitalizeOnlyFirstLetter(data.getValue().getProgramName())));
@@ -101,6 +103,8 @@ public class AvailableProgramsListController implements Closeable {
 
     @FXML
     void onExecuteProgramButtonClicked() {
+        if (selectedProgramProperty.get() == null) return;
+
         String programSelectedName = selectedProgramProperty.get().getProgramName();
         dashboardController.switchToExecution(programSelectedName);
     }

@@ -139,6 +139,12 @@ public class DebuggerExecutionMenuController {
             }
         });
 
+        architectureComboBox.disableProperty().addListener((obs, wasDisabled, isNowDisabled) -> {
+            if (isNowDisabled) {
+                executionController.clearArchitectureColors();
+            }
+        });
+
         architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitectureDTO) -> {
             if (newArchitectureDTO == null) return;
 
