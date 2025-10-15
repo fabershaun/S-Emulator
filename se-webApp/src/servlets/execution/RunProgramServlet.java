@@ -35,47 +35,64 @@ public class RunProgramServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
-        try (BufferedReader reader = request.getReader()) {
+        try {
+            JsonObject jsonBody = parseAndValidateRequestBody(request, response);
+            if (jsonBody == null) return;
 
-            JsonObject jsonBody = GSON_INSTANCE.fromJson(reader, JsonObject.class);
-            if (!validateJsonBody(jsonBody, response)) return;
-
-            String programName = jsonBody.get(PROGRAM_NAME_QUERY_PARAM).getAsString();
-            String architecture = jsonBody.get(ARCHITECTURE_QUERY_PARAM).getAsString();
-            int degree = jsonBody.get(DEGREE_QUERY_PARAM).getAsInt();
-
-            if (!validateProgramName(programName, response)) return;
-            if (!validateArchitecture(architecture, response)) return;
-            if (!validateDegree(degree, response)) return;
-
-            List<Long> inputValues = validateInputs(jsonBody, response);
-            if (inputValues == null) return;
-
-            ProgramDTO programDTO = engine.getProgramDTOByName(programName);
-            if (!validateProgramExists(programDTO, response)) return;
-
-            ProgramRunRequest runRequest = new ProgramRunRequest(
-                    programName,
-                    degree,
-                    architecture,
-                    username,
-                    inputValues
-            );
+            ProgramRunRequest runRequest = buildProgramRunRequest(jsonBody, username, engine, response);
+            if (runRequest == null) return;
 
             String runId = ProgramExecutionManager.getInstance().submitRun(runRequest, engine);
-
-            Map<String, Object> jsonResponse = new HashMap<>();
-            jsonResponse.put("runId", runId);
-            jsonResponse.put("state", ProgramRunState.PENDING.name());
-
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
-            response.getWriter().write(GSON_INSTANCE.toJson(jsonResponse));
+            writeSuccessResponse(response, runId);
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Server error during program submission", e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private JsonObject parseAndValidateRequestBody(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JsonObject jsonBody = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
+        if (!validateJsonBody(jsonBody, response)) return null;
+
+        if (!jsonBody.has(PROGRAM_NAME_QUERY_PARAM) ||
+                !jsonBody.has(ARCHITECTURE_QUERY_PARAM) ||
+                !jsonBody.has(DEGREE_QUERY_PARAM)) {
+            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing required fields",
+                    "programName, architecture, and degree are required in JSON body");
+            return null;
+        }
+        return jsonBody;
+    }
+
+    private ProgramRunRequest buildProgramRunRequest(JsonObject jsonBody, String username, Engine engine, HttpServletResponse response) throws IOException {
+
+        String programName = jsonBody.get(PROGRAM_NAME_QUERY_PARAM).getAsString();
+        String architecture = jsonBody.get(ARCHITECTURE_QUERY_PARAM).getAsString();
+        int degree = jsonBody.get(DEGREE_QUERY_PARAM).getAsInt();
+
+        if (!validateProgramName(programName, response)) return null;
+        if (!validateArchitecture(architecture, response)) return null;
+        if (!validateDegree(degree, response)) return null;
+
+        List<Long> inputValues = validateInputs(jsonBody, response);
+        if (inputValues == null) return null;
+
+        ProgramDTO programDTO = engine.getProgramDTOByName(programName);
+        if (!validateProgramExists(programDTO, response)) return null;
+
+        return new ProgramRunRequest(programName, degree, architecture, username, inputValues);
+    }
+
+    private void writeSuccessResponse(HttpServletResponse response, String runId) throws IOException {
+        Map<String, Object> jsonResponse = new HashMap<>();
+        jsonResponse.put("runId", runId);
+        jsonResponse.put("state", ProgramRunState.PENDING.name());
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.getWriter().write(GSON_INSTANCE.toJson(jsonResponse));
     }
 }
