@@ -26,6 +26,7 @@ public class ValidationUtils {
         return true;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateJsonBody(JsonObject jsonBody, HttpServletResponse response) throws IOException {
         if (jsonBody == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -50,6 +51,7 @@ public class ValidationUtils {
         return true;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateProgramName(String programName, HttpServletResponse response) throws IOException {
         if (programName == null || programName.isEmpty()) {
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Missing program name");
@@ -58,6 +60,7 @@ public class ValidationUtils {
         return true;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateArchitecture(String architecture, HttpServletResponse response) throws IOException {
         if (architecture == null || architecture.isEmpty()) {
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Missing architecture");
@@ -103,6 +106,7 @@ public class ValidationUtils {
         return true;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateRunIdParam(String runId, HttpServletResponse response) throws IOException {
         if (runId == null || runId.isEmpty()) {
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, "Missing runId parameter");
