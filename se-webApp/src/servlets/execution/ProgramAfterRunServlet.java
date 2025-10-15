@@ -21,14 +21,14 @@ public class ProgramAfterRunServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        try {
-            if (!validateUserSession(request, response)) return;
+        if (!validateUserSession(request, response)) return;
 
+        Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
+
+        try {
             String runId = request.getParameter(RUN_ID_QUERY_PARAM);
             if (!validateRunIdParam(runId, response)) return;
-
-            Engine engine = ServletUtils.getEngine(getServletContext());
-            if (!validateEngineNotNull(engine, response)) return;
 
             ProgramExecutionManager manager = ProgramExecutionManager.getInstance();
             ProgramRunStatus status = manager.getStatus(runId);
@@ -38,9 +38,17 @@ public class ProgramAfterRunServlet extends HttpServlet {
                 return;
             }
 
-            if (status.state != ProgramRunState.DONE) {
+            if (status.state == ProgramRunState.FAILED) {
+                // Execution has completed but ended in failure
                 writeJsonError(response, HttpServletResponse.SC_CONFLICT,
-                        "Program not finished yet", "Run is still in progress or failed");
+                        "Program execution failed", status.error);
+                return;
+            }
+
+            if (status.state != ProgramRunState.DONE) {
+                // Execution is still running or pending
+                writeJsonError(response, HttpServletResponse.SC_CONFLICT,
+                        "Program not finished yet", "Run is still in progress");
                 return;
             }
 
@@ -55,8 +63,9 @@ public class ProgramAfterRunServlet extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().write(GSON_INSTANCE.toJson(programAfterRun));
 
-            } catch (Exception e) {
-                writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while retrieving program result", e.getMessage());
-            }
+
+        } catch (Exception e) {
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while retrieving program result", e.getMessage());
         }
     }
+}

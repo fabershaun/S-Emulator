@@ -23,16 +23,16 @@ public class ProgramStatusServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        try {
-            if (!validateUserSession(request, response)) return;
+        if (!validateUserSession(request, response)) return;
 
+        try {
             String runId = request.getParameter(RUN_ID_QUERY_PARAM);
             if (!validateRunIdParam(runId, response)) return;
 
             ProgramRunStatus status = ProgramExecutionManager.getInstance().getStatus(runId);
 
             if (status == null) {
-                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Run ID not found", "");
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Run ID not found", "status is null");
                 return;
             }
 
@@ -45,7 +45,7 @@ public class ProgramStatusServlet extends HttpServlet {
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
-            response.getWriter().write(GSON_INSTANCE.toJson(status));
+            response.getWriter().write(GSON_INSTANCE.toJson(jsonResponse));
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
