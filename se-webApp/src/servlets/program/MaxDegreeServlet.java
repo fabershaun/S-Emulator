@@ -13,6 +13,8 @@ import static utils.ValidationUtils.writeJsonError;
 
 @WebServlet(name = MAX_DEGREE_NAME, urlPatterns = {MAX_DEGREE_URL})
 public class MaxDegreeServlet extends HttpServlet {
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if (!validateUserSession(request, response)) return;
