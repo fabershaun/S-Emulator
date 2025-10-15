@@ -16,6 +16,7 @@ import engine.logic.programData.variable.VariableType;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Math.max;
 
@@ -63,13 +64,16 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public  Map<Integer, Program> calculateDegreeToProgram() {
         Map<Integer, Program>  degreeToProgram = new HashMap<>();
+        ArchitectureType currentInstructionArchitecture;
         boolean canExpandMore;
         int degree = 0;
 
-        Program workingProgram = this.deepClone();
+        Program workingProgram = this.deepClone();  // deep clone here -Important
 
         do {
-            degreeToProgram.put(degree, workingProgram.deepClone());
+            degreeToProgram.put(degree, workingProgram.deepClone());  // deep clone here -Importants
+
+            ArchitectureType maxArchitectureRequired = ArchitectureType.A_0; // the lowest
             int nextInstructionNumber = 1;
             canExpandMore = false;
 
@@ -95,9 +99,15 @@ public class ProgramImpl implements Program, Serializable {
                 for (Instruction extendedInstruction : newInstructionsList) {
                     workingProgram.updateVariableAndLabel(extendedInstruction);
                     iterator.add(extendedInstruction);          // Add the extended (inner) instruction to the list
+
+                    currentInstructionArchitecture = extendedInstruction.getArchitectureType();
+                    if (currentInstructionArchitecture.isHigherThan(maxArchitectureRequired)) {
+                        maxArchitectureRequired = currentInstructionArchitecture;
+                    }
                 }
             }
 
+            workingProgram.setMinimumArchitectureRequired(maxArchitectureRequired);
             degree++;
         } while (canExpandMore);
 
@@ -230,7 +240,7 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     private void validateLabelReferencesExist() throws EngineLoadException {
-        Set<Label> undefined = new java.util.LinkedHashSet<>(referencedLabels);
+        Set<Label> undefined = new LinkedHashSet<>(referencedLabels);
         undefined.removeAll(labelToInstruction.keySet());
         undefined.remove(FixedLabel.EXIT);
 
@@ -238,7 +248,7 @@ public class ProgramImpl implements Program, Serializable {
             String names = undefined.stream()
                     .filter(lbl -> lbl != FixedLabel.EMPTY && lbl != FixedLabel.EXIT)
                     .map(Label::getLabelRepresentation)
-                    .collect(java.util.stream.Collectors.joining(", "));
+                    .collect(Collectors.joining(", "));
             throw new EngineLoadException("Undefined label reference(s) in the program: " + names);
         }
     }
@@ -249,7 +259,7 @@ public class ProgramImpl implements Program, Serializable {
 
     @Override
     public List<String> getOrderedLabelsExitLastStr() {
-        return java.util.stream.Stream
+        return Stream
                 .concat(labelsInProgram.stream(), referencedLabels.stream())
                 .distinct()
                 .sorted(EXIT_LAST_THEN_NUMBER)

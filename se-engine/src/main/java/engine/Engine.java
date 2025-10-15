@@ -6,8 +6,6 @@ import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
 import dto.v3.*;
 import engine.logic.exceptions.EngineLoadException;
-import engine.logic.programData.architecture.ArchitectureType;
-
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
