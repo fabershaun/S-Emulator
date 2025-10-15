@@ -36,7 +36,7 @@ public class AddCreditsServlet extends HttpServlet {
             Long amountToAdd = jsonBody.has(CREDITS_TO_CHARGE_QUERY_PARAM)
                     ? jsonBody.get(CREDITS_TO_CHARGE_QUERY_PARAM).getAsLong()
                     : null;
-            if (!validateCreditsToAdd(amountToAdd, response)) return ;
+            if (!validateCreditsToAdd(amountToAdd, response)) return;
 
             engine.addCreditsToUser(username, amountToAdd);
 

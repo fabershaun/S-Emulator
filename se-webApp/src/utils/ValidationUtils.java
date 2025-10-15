@@ -26,6 +26,17 @@ public class ValidationUtils {
         return true;
     }
 
+    public static boolean validateJsonFields(JsonObject body, HttpServletResponse response, String... requiredFields) throws IOException {
+        for (String field : requiredFields) {
+            if (!body.has(field)) {
+                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "Missing required field", "Field '" + field + "' is required");
+                return false;
+            }
+        }
+        return true;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateJsonBody(JsonObject jsonBody, HttpServletResponse response) throws IOException {
         if (jsonBody == null) {

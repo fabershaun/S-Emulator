@@ -30,9 +30,10 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
 
-        try (BufferedReader reader = request.getReader()) {
+        response.setContentType("application/json");
 
-            JsonObject jsonBody = GSON_INSTANCE.fromJson(reader, JsonObject.class);
+        try {
+            JsonObject jsonBody = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
             if (!validateJsonBody(jsonBody, response)) return;
 
             UserDTO userDTO = engine.getUserDTO(username);
@@ -42,22 +43,33 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
                 return;
             }
 
+            if (!validateJsonFields(jsonBody, response, PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM)) return;
+
             String programName = jsonBody.get(PROGRAM_NAME_QUERY_PARAM).getAsString();
             String chosenArchitectureStr = jsonBody.get(ARCHITECTURE_QUERY_PARAM).getAsString();
 
             if (!validateProgramName(programName, response)) return;
             if (!validateArchitecture(chosenArchitectureStr, response)) return;
 
-            long currentCredits = userDTO.getCurrentCredits();
             ProgramDTO programDTO = engine.getProgramDTOByName(programName);
+            if (programDTO == null) {
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND,
+                        "Program not found", "No program found with the given name");
+                return;
+            }
+
+            long currentCredits = userDTO.getCurrentCredits();
             long architectureCost = engine.getArchitectureCost(chosenArchitectureStr);
             long requiredCredits = programDTO.getAverageCreditCost() + architectureCost;
 
             boolean hasEnough = currentCredits >= requiredCredits;
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(GSON_INSTANCE.toJson(hasEnough));
+
+        } catch (IllegalArgumentException e) {
+            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Invalid data", e.getMessage());
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,

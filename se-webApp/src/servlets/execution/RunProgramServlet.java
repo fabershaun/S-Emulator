@@ -56,14 +56,11 @@ public class RunProgramServlet extends HttpServlet {
         JsonObject jsonBody = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
         if (!validateJsonBody(jsonBody, response)) return null;
 
-        if (!jsonBody.has(PROGRAM_NAME_QUERY_PARAM) ||
-                !jsonBody.has(ARCHITECTURE_QUERY_PARAM) ||
-                !jsonBody.has(DEGREE_QUERY_PARAM)) {
-            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing required fields",
-                    "programName, architecture, and degree are required in JSON body");
+        if (!validateJsonFields(jsonBody, response,
+                PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM, DEGREE_QUERY_PARAM)) {
             return null;
         }
+
         return jsonBody;
     }
 
