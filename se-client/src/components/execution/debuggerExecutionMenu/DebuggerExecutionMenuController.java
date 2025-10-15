@@ -155,7 +155,10 @@ public class DebuggerExecutionMenuController {
         architectureRankProperty.addListener((obs, oldRank, newRank) -> {
             if (newRank == null) return;
 
-            int minimumRankProgramRequired = currentSelectedProgramProperty.get().getMiniminRequireRank();
+            ProgramDTO currentProgram = currentSelectedProgramProperty.get();
+            if (currentProgram == null) return;
+
+            int minimumRankProgramRequired = currentProgram.getMiniminRequireRank();
             int selectedArchitectureRank = architectureRankProperty.get();
             playButton.setDisable(minimumRankProgramRequired > selectedArchitectureRank);
         });

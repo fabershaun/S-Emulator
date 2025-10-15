@@ -93,6 +93,7 @@ public class MainInstructionsTableController {
         currentSelectedProgramProperty.addListener((obs, oldProg, newProgram) -> {
             if (newProgram != null) {
                 instructionsTable.getItems().setAll(newProgram.getInstructions().getProgramInstructionsDtoList());
+                instructionsTable.refresh();
             } else {
                 instructionsTable.getItems().clear();
             }
