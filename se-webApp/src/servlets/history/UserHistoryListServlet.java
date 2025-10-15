@@ -8,34 +8,37 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
 import utils.SessionUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static utils.Constants.*;
+import static utils.ValidationUtils.*;
 
 @WebServlet(name = USER_HISTORY_LIST_NAME, urlPatterns = {USER_HISTORY_LIST_URL})
 public class UserHistoryListServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
 
+        if (!validateUserSession(request, response)) return;
         String username = SessionUtils.getUsername(request);
-        if (username == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            String errorJson = GSON_INSTANCE.toJson("Error: User not logged in");
-            return;
-        }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        List<HistoryRowV3DTO> userHistory = engine.getHistoryV3PerProgram(username);
+        if (!validateEngineNotNull(engine, response)) return;
 
-        if (userHistory == null) {
-            userHistory = new ArrayList<>();
+        try {
+            List<HistoryRowV3DTO> userHistory = engine.getHistoryV3PerProgram(username);
+            if (userHistory == null) {
+                userHistory = new ArrayList<>();
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.getWriter().write(GSON_INSTANCE.toJson(userHistory));
+
+        } catch (Exception e) {
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error while fetching user history", e.getMessage());
         }
-
-        String jsonResponse = GSON_INSTANCE.toJson(userHistory);
-        response.getWriter().write(jsonResponse);
     }
 }
