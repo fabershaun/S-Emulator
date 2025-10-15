@@ -7,29 +7,31 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
-import utils.SessionUtils;
-
 import java.io.IOException;
 import java.util.List;
 
 import static utils.Constants.*;
+import static utils.ValidationUtils.*;
 
 @WebServlet(name = AVAILABLE_FUNCTIONS_LIST_NAME, urlPatterns = {AVAILABLE_FUNCTIONS_LIST_URL})
 public class AvailableFunctionsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
 
-        String username = SessionUtils.getUsername(request);
-        if (username == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+        if (!validateUserSession(request, response)) return;
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        List<FunctionDTO> availableProgramsDTOsList = engine.getAvailableFunctionsDTOsList();
+        if (!validateEngineNotNull(engine, response)) return;
 
-        String json = GSON_INSTANCE.toJson(availableProgramsDTOsList);
-        response.getWriter().write(json);
+        try {
+            List<FunctionDTO> availableFunctionsList = engine.getAvailableFunctionsDTOsList();
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.getWriter().write(GSON_INSTANCE.toJson(availableFunctionsList));
+
+        } catch (Exception e) {
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error while fetching available functions", e.getMessage());
+        }
     }
 }
