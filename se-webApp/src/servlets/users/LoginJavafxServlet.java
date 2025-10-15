@@ -10,40 +10,59 @@ import utils.SessionUtils;
 import java.io.IOException;
 
 import static utils.Constants.*;
+import static utils.ValidationUtils.*;
 
 @WebServlet(name = LOGIN_SERVLET_NAME, urlPatterns = {LOGIN_SERVLET_URL})
 public class LoginJavafxServlet extends HttpServlet {
 
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/plain;charset=UTF-8");
-        String usernameFromSession = SessionUtils.getUsername(request);
+
+        response.setContentType("application/json");
+
         Engine engine = ServletUtils.getEngine(getServletContext());
+        if (!validateEngineNotNull(engine, response)) return;
 
-        if (usernameFromSession == null) { //user is not logged in yet
-            String usernameFromParameter = request.getParameter(USERNAME_QUERY_PARAM);
-            if (usernameFromParameter == null ||  usernameFromParameter.isEmpty()) { //no username in session and no username in parameter - not standard situation. it's a conflict
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-            } else {
-                usernameFromParameter =  usernameFromParameter.trim();
+        String usernameFromSession = SessionUtils.getUsername(request);
 
-                synchronized (engine) {
-                    if (engine.isUserExists(usernameFromParameter)) {
-                        String errorMessage = "Username " + usernameFromParameter + " already exists. Please enter a different username";
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.getOutputStream().print(errorMessage);
-                    }
-                    else {
-                        engine.addUser(usernameFromParameter);
-                        request.getSession(true).setAttribute(USERNAME_QUERY_PARAM, usernameFromParameter);
-                        response.setStatus(HttpServletResponse.SC_OK);
-                    }
-                }
+        try {
+            // Already logged in
+            if (usernameFromSession != null) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(GSON_INSTANCE.toJson("User already logged in"));
+                return;
             }
-        } else {
-            //user is already logged in
-            response.setStatus(HttpServletResponse.SC_OK);
+
+            // Username not in session, check parameter
+            String usernameFromParameter = request.getParameter(USERNAME_QUERY_PARAM);
+            if (usernameFromParameter == null || usernameFromParameter.isEmpty()) {
+                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
+                        "Missing username", "No username provided in request");
+                return;
+            }
+
+            usernameFromParameter = usernameFromParameter.trim();
+
+            // synchronized on: isUserExists() and addUser()
+            synchronized (engine) {
+                if (engine.isUserExists(usernameFromParameter)) {
+                    writeJsonError(response, HttpServletResponse.SC_CONFLICT,
+                            "Username already exists",
+                            "Username " + usernameFromParameter + " is already in use");
+                    return;
+                }
+
+                // Create new user
+                engine.addUser(usernameFromParameter);
+                request.getSession(true).setAttribute(USERNAME_QUERY_PARAM, usernameFromParameter);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(GSON_INSTANCE.toJson("Login successful"));
+            }
+
+        } catch (Exception e) {
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error during login", e.getMessage());
         }
     }
 }
