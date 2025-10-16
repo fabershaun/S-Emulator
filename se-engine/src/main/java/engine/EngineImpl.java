@@ -133,13 +133,17 @@ public class EngineImpl implements Engine, Serializable {
     public void runProgram(String programName, String architectureTypeRepresentation, int degree, String uploaderName, Long... inputs) {
 
         Program workingProgram = getExpandedProgram(programName, degree);  // Get the relevant program from the map
-        workingProgram.incrementExecutionsCount();  // Add one to execution count of the program;
         ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram, architectureTypeSelected);
         UserDTO userDTO = getUserDTO(uploaderName);
         UserLogic.incrementExecutions(userDTO);
 
         programExecutor.run(userDTO, degree, inputs); // The important method
+
+        // Update Execution count and Credits cost in Original program
+        Program originalProgram = getProgramByName(programName);
+        originalProgram.incrementExecutionsCount();
+        originalProgram.addCreditCost(programExecutor.getTotalCycles());
 
         // For Version 2
         List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());  // Get the history list per program (if not exist create empty list) and add it to the list
@@ -467,16 +471,18 @@ public class EngineImpl implements Engine, Serializable {
 
     private void addDebugResultToHistoryMap(DebugDTO debugDTO, String uploaderName) {
         Debug debug = getDebugSystemByUsername(uploaderName);
-
         String programName = debugDTO.getProgramName();
+
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
         executionHistory.add(debug.getDebugProgramExecutor());
 
         UserDTO userDTO = this.usernameToUserDTO.get(uploaderName);
         UserLogic.incrementExecutions(userDTO);
 
-        // Increase the execution count of the program
-        debug.getDebugProgramExecutor().getProgram().incrementExecutionsCount();
+        // Increase the execution count in the original program
+        Program originalProgram = getProgramByName(programName);
+        originalProgram.incrementExecutionsCount();
+        originalProgram.addCreditCost(debug.getDebugProgramExecutor().getTotalCycles());
     }
 
     @Override

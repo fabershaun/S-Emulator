@@ -492,6 +492,7 @@ public class DebuggerExecutionMenuController {
 
             stepOverButton.setDisable(false);
             stopButton.setDisable(false);
+            resumeButton.setDisable(false);
             stepBackButton.setDisable(currentDebugStep.getCurrentInstructionNumber() == 0);  // When reached the first instruction, shout down step back button
         });
     }
