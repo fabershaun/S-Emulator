@@ -106,7 +106,7 @@ public class Constants {
     public final static String STEP_BACK_DEBUGGER_PATH = FULL_SERVER_PATH + "/step-back";
 
     // Stop debug step:
-    public final static String STOP__DEBUGGER_PATH = FULL_SERVER_PATH + "/stop-debug";
+    public final static String STOP_DEBUGGER_PATH = FULL_SERVER_PATH + "/stop-debug";
 }
 
 // http://localhost:8080/S-Emulator

@@ -357,6 +357,7 @@ public class ProgramService {
                                    RequestBody requestBody,
                                    Runnable onSuccess,
                                    Consumer<String> onError) {
+
         HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -382,11 +383,11 @@ public class ProgramService {
         });
     }
 
-    public void debugStepOverAsync(String url,
+    public void debugStepOverAsync(String finalUrl,
                                    Consumer<DebugDTO> onSuccess,
                                    Consumer<String> onError) {
 
-        HttpClientUtil.runAsync(url, null, new Callback() {
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 onError.accept("Network Error: " + e.getMessage());
@@ -408,7 +409,7 @@ public class ProgramService {
         });
     }
 
-    public void debugResumeAsync(String url,
+    public void debugResumeAsync(String finalUrl,
                                  List<Boolean> breakPoints,
                                  Consumer<DebugDTO> onSuccess,
                                  Consumer<String> onError) {
@@ -418,7 +419,7 @@ public class ProgramService {
 
         RequestBody requestBody = RequestBody.create(GSON_INSTANCE.toJson(json), MEDIA_TYPE_JSON);
 
-        HttpClientUtil.runAsync(url, requestBody, new Callback() {
+        HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 onError.accept("Network Error: " + e.getMessage());
@@ -439,6 +440,37 @@ public class ProgramService {
             }
         });
     }
+
+    public void debugStopAsync(String finalUrl,
+                               Runnable onSuccess,
+                               Consumer<String> onError) {
+
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+
+                try (ResponseBody ignored = response.body()) {
+                    if (!response.isSuccessful()) {
+                        String responseBody = HttpClientUtil.readResponseBodySafely(response);
+                        HttpResponseHandler.handleErrorResponse(response.code(), responseBody, "stop debugger");
+                        onError.accept("Server returned error: " + response.code());
+                        return;
+                    }
+
+                    onSuccess.run();
+                } catch (Exception ex) {
+                    onError.accept("UI error while entering debug mode: " + ex.getMessage());
+                }
+            }
+        });
+    }
+
 
 
     private boolean handleBadResponse(Response response, String body, String actionDescription, Consumer<String> onError) {

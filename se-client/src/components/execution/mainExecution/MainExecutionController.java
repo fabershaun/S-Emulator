@@ -452,16 +452,19 @@ public class MainExecutionController {
     }
 
 
-    // TODO : Should be Blocking ?? not async
     public void debugStop() {
-//        engine.stopDebugPress(UserDTO.DEFAULT_NAME);
-//
-//        if (currentDebugTask != null && currentDebugTask.isRunning()) { // kill the running thread
-//            currentDebugTask.cancel(true);
-//        }
+        programService.debugStopAsync(
+                STOP_DEBUGGER_PATH,
+                () -> Platform.runLater(() -> {
+                    finishDebug();
+                    mainAppController.popUpToastMessage("Debugger stopped successfully", true);
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Stop Failed", errorMsg)
+                )
+        );
     }
 
-    // TODO: write
     public DebugDTO debugStepBack() {
 //        DebugDTO debugStep = engine.getProgramAfterStepBack(UserDTO.DEFAULT_NAME);
 //        updateControllerAfterDebugStep(debugStep);
