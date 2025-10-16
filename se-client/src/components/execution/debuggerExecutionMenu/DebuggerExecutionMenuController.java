@@ -407,7 +407,6 @@ public class DebuggerExecutionMenuController {
         } else if (debugRadio.isSelected()) {
             executionController.initializeDebugger(inputValues); // Important
             enterDebugging();
-            onResume();
         }
     }
 
@@ -461,6 +460,9 @@ public class DebuggerExecutionMenuController {
 
     @FXML
     private void onStepOver() {
+        // While server calculating
+        disableDebugButtonsDuringServerCall();
+
         executionController.debugStepOver(debugStep -> {
             currentDebugStep = debugStep;
             updateControllerAfterStep(currentDebugStep);
@@ -468,34 +470,34 @@ public class DebuggerExecutionMenuController {
             if (!currentDebugStep.hasMoreInstructions()) {
                 stopDebug();
             } else {
+                stepOverButton.setDisable(false);
                 stepBackButton.setDisable(false);
                 stopButton.setDisable(false);
+                resumeButton.setDisable(false);
             }
         });
-
-        // While server calculating
-        stopButton.setDisable(false);
-        stepOverButton.setDisable(true);
-        resumeButton.setDisable(true);
-        stepBackButton.setDisable(true);
     }
 
     @FXML
     private void onStepBack() {
+        // While server calculating
+        disableDebugButtonsDuringServerCall();
+
         executionController.debugStepBack( debugStep -> {
             currentDebugStep = debugStep;
             updateControllerAfterStep(currentDebugStep);
 
-            if (currentDebugStep.getCurrentInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
-                stepBackButton.setDisable(true);
-            }
+            stepOverButton.setDisable(false);
+            stopButton.setDisable(false);
+            stepBackButton.setDisable(currentDebugStep.getCurrentInstructionNumber() == 0);  // When reached the first instruction, shout down step back button
         });
+    }
 
-        // While server calculating
+    private void disableDebugButtonsDuringServerCall() {
         stopButton.setDisable(false);
-        stepBackButton.setDisable(true);
-        resumeButton.setDisable(true);
         stepOverButton.setDisable(true);
+        resumeButton.setDisable(true);
+        stepBackButton.setDisable(true);
     }
 
     private void updateControllerAfterStep(DebugDTO debugStep) {

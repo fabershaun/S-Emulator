@@ -210,7 +210,7 @@ public class MainAppController {
         ToastUtil.showToast(
                 rootStackPane,
                 message,
-                false
+                isSuccess
         );
     }
 }

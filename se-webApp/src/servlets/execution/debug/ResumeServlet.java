@@ -22,7 +22,7 @@ import static utils.ValidationUtils.*;
 public class ResumeServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!validateUserSession(request, response)) return;
         String username = SessionUtils.getUsername(request);
 

@@ -35,8 +35,9 @@ public class StepBackServlet extends HttpServlet {
             response.getWriter().write(GSON_INSTANCE.toJson(debugDTO));
 
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while performing step back", e.getMessage());
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while performing step back", e.getMessage());
+            e.printStackTrace();
+
         }
     }
 }

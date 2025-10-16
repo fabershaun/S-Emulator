@@ -17,7 +17,7 @@ import static utils.ValidationUtils.*;
 @WebServlet(name = STEP_OVER_DEBUGGER_NAME, urlPatterns = STEP_OVER_DEBUGGER_URL)
 public class StepOverServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!validateUserSession(request, response)) return;
         String username = SessionUtils.getUsername(request);
 
@@ -34,8 +34,8 @@ public class StepOverServlet extends HttpServlet {
         } catch (IllegalStateException e) {
             writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while performing step-over", e.getMessage());
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while performing step-over", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

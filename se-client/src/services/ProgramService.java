@@ -372,7 +372,9 @@ public class ProgramService {
                                    Consumer<DebugDTO> onSuccess,
                                    Consumer<String> onError) {
 
-        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+        RequestBody emptyBody = RequestBody.create("", MEDIA_TYPE_JSON); // Must have body cause it doPost method
+
+        HttpClientUtil.runAsync(finalUrl, emptyBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 onError.accept("Network Error: " + e.getMessage());
@@ -430,7 +432,9 @@ public class ProgramService {
                                    Consumer<DebugDTO> onSuccess,
                                    Consumer<String> onError) {
 
-        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+        RequestBody emptyBody = RequestBody.create("", MEDIA_TYPE_JSON); // Must have body cause it doPost method
+
+        HttpClientUtil.runAsync(finalUrl, emptyBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 onError.accept("Network Error: " + e.getMessage());
@@ -456,7 +460,9 @@ public class ProgramService {
                                Runnable onSuccess,
                                Consumer<String> onError) {
 
-        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+        RequestBody emptyBody = RequestBody.create("", MEDIA_TYPE_JSON); // Must have body cause it doPost method
+
+        HttpClientUtil.runAsync(finalUrl, emptyBody, new Callback() {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
