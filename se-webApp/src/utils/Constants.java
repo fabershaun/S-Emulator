@@ -88,4 +88,19 @@ public class Constants {
     public final static String INITIALIZE_DEBUGGER_NAME = "InitializeDebuggerServlet";
     public final static String INITIALIZE_DEBUGGER_URL = "/initialize-debugger";
 
+    // Step Over:
+    public final static String STEP_OVER_DEBUGGER_NAME = "StepOverServlet";
+    public final static String STEP_OVER_DEBUGGER_URL = "/step-over";
+
+    // Resume:
+    public final static String RESUME_DEBUGGER_NAME = "ResumeServlet";
+    public final static String RESUME_DEBUGGER_URL = "/resume";
+
+    // Step back:
+    public final static String STEP_BACK_DEBUGGER_NAME = "StepBackServlet";
+    public final static String STEP_BACK_DEBUGGER_URL = "/step-back";
+
+    // Stop:
+    public final static String STOP_DEBUGGER_NAME = "StopDebugServlet";
+    public final static String STOP_DEBUGGER_URL = "/stop-debug";
 }

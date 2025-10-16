@@ -308,7 +308,7 @@ public class MainAppController {
     public void debugResume(Consumer<DebugDTO> onComplete) {
         List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
 
-        currentDebugTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
+        currentDebugTask = new DebugResumeTask(engine, breakPoints);
 
         currentDebugTask.setOnSucceeded(ev -> {
             DebugDTO debugStep = currentDebugTask.getValue();

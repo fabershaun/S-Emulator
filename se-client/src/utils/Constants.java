@@ -97,16 +97,16 @@ public class Constants {
     public final static String INITIALIZE_DEBUGGER_PATH = FULL_SERVER_PATH + "/initialize-debugger";
 
     // Step Over:
-    public final static String STEP_OVER_PATH = FULL_SERVER_PATH + "/step-over";
+    public final static String STEP_OVER_DEBUGGER_PATH = FULL_SERVER_PATH + "/step-over";
 
     // Step Over:
-    public final static String RESUME_PATH = FULL_SERVER_PATH + "/resume";
+    public final static String RESUME_DEBUGGER_PATH = FULL_SERVER_PATH + "/resume";
 
     // Step Back:
-    public final static String STEP_BACK_PATH = FULL_SERVER_PATH + "/step-back";
+    public final static String STEP_BACK_DEBUGGER_PATH = FULL_SERVER_PATH + "/step-back";
 
     // Stop debug step:
-    public final static String STOP_DEBUG_STEP_PATH = FULL_SERVER_PATH + "/stop-debug";
+    public final static String STOP__DEBUGGER_PATH = FULL_SERVER_PATH + "/stop-debug";
 }
 
 // http://localhost:8080/S-Emulator

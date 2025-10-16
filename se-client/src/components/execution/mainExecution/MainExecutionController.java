@@ -396,14 +396,55 @@ public class MainExecutionController {
         );
     }
 
+    public void debugResume(Consumer<DebugDTO> onComplete) {
+        List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
 
+        programService.debugResumeAsync(
+                RESUME_DEBUGGER_PATH,
+                breakPoints,
+                debugStep -> Platform.runLater(() -> {
+                    if (debugStep == null) {
+                        AlertUtils.showError("Debug Resume", "Server returned no data.");
+                        return;
+                    }
 
+                    if (debugStep.hasMoreInstructions()) {
+                        updateControllerAfterDebugStep(debugStep);
+                    }
+                    onComplete.accept(debugStep);
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Resume Failed", errorMsg)
+                )
+        );
+    }
 
+    public void debugStepOver(Consumer<DebugDTO> onComplete) {
+        programService.debugStepOverAsync(
+                STEP_OVER_DEBUGGER_PATH,
+                debugStep -> Platform.runLater(() -> {
+                    if (debugStep == null) {
+                        AlertUtils.showError("Debug Resume", "Server returned no data.");
+                        return;
+                    }
 
+                    if (debugStep.hasMoreInstructions()) {
+                        updateControllerAfterDebugStep(debugStep);
+                    }
 
+                    updateControllerAfterDebugStep(debugStep);
+                    onComplete.accept(debugStep);
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Step Over Failed", errorMsg)
+                )
+        );
+    }
 
-
-
+    private void updateControllerAfterDebugStep(DebugDTO debugStep) {
+        mainInstructionsTableController.highlightLineDebugMode(debugStep.getNextInstructionNumber());  // Highlight line on table instructions
+        topToolBarController.setComponentsDisabled(true);
+    }
 
     public void finishDebug() {
         mainInstructionsTableController.turnOffHighlighting();
@@ -418,38 +459,6 @@ public class MainExecutionController {
 //        if (currentDebugTask != null && currentDebugTask.isRunning()) { // kill the running thread
 //            currentDebugTask.cancel(true);
 //        }
-    }
-
-    // TODO: write
-    public void debugResume(Consumer<DebugDTO> onComplete) {
-        List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
-
-//        currentDebugTask = new DebugResumeTask(engine, getActiveProgramName(), breakPoints);
-//
-//        currentDebugTask.setOnSucceeded(ev -> {
-//            DebugDTO debugStep = currentDebugTask.getValue();
-//
-//            if (debugStep.hasMoreInstructions()) {
-//                updateControllerAfterDebugStep(debugStep);
-//            }
-//
-//            onComplete.accept(debugStep);
-//        });
-//
-//        currentDebugTask.setOnFailed(ev -> handleTaskFailure(currentDebugTask, "Debug Resume Failed"));
-//
-//        Thread thread = new Thread(currentDebugTask, "debugResume-thread");
-//        thread.setDaemon(true);
-//        thread.start();
-    }
-
-    // TODO: write
-    public DebugDTO debugStepOver() {
-//        DebugDTO debugStep = engine.getProgramAfterStepOver(UserDTO.DEFAULT_NAME);
-//        updateControllerAfterDebugStep(debugStep);
-//
-//        return debugStep;
-        return null;
     }
 
     // TODO: write

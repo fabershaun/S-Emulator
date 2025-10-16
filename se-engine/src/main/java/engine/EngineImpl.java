@@ -429,7 +429,6 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public DebugDTO getProgramAfterStepOver(String uploaderName) {
         Debug debug = getDebugSystemByUsername(uploaderName);
-        UserDTO userDTO = getUserDTO(uploaderName);
 
         DebugDTO debugDTO = debug.stepOver();    // Step Over
 

@@ -2,6 +2,7 @@ package services;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import dto.v2.DebugDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
 import dto.v3.ArchitectureDTO;
@@ -380,6 +381,65 @@ public class ProgramService {
             }
         });
     }
+
+    public void debugStepOverAsync(String url,
+                                   Consumer<DebugDTO> onSuccess,
+                                   Consumer<String> onError) {
+
+        HttpClientUtil.runAsync(url, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "debug step-over");
+                    onError.accept("Server returned: " + response.code());
+                    return;
+                }
+
+                DebugDTO step = GSON_INSTANCE.fromJson(responseBody, DebugDTO.class);
+                onSuccess.accept(step);
+            }
+        });
+    }
+
+    public void debugResumeAsync(String url,
+                                 List<Boolean> breakPoints,
+                                 Consumer<DebugDTO> onSuccess,
+                                 Consumer<String> onError) {
+
+        JsonObject json = new JsonObject();
+        json.add("breakPoints", GSON_INSTANCE.toJsonTree(breakPoints));
+
+        RequestBody requestBody = RequestBody.create(GSON_INSTANCE.toJson(json), MEDIA_TYPE_JSON);
+
+        HttpClientUtil.runAsync(url, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "debug resume");
+                    onError.accept("Server returned: " + response.code());
+                    return;
+                }
+
+                DebugDTO result = GSON_INSTANCE.fromJson(responseBody, DebugDTO.class);
+                onSuccess.accept(result);
+            }
+        });
+    }
+
 
     private boolean handleBadResponse(Response response, String body, String actionDescription, Consumer<String> onError) {
         if (body == null || response.code() != 200) {

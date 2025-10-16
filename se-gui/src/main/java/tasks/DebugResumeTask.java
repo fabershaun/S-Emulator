@@ -10,12 +10,10 @@ import java.util.List;
 public class DebugResumeTask extends Task<DebugDTO> {
 
     private final Engine engine;
-    private final String ProgramName;
     private final List<Boolean> breakPoints;
 
-    public DebugResumeTask(Engine engine, String ProgramName, List<Boolean> breakPoints) {
+    public DebugResumeTask(Engine engine, List<Boolean> breakPoints) {
         this.engine = engine;
-        this.ProgramName = ProgramName;
         this.breakPoints = breakPoints;
     }
 

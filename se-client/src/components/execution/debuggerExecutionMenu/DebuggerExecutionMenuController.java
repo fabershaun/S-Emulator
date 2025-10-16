@@ -461,15 +461,23 @@ public class DebuggerExecutionMenuController {
 
     @FXML
     private void onStepOver() {
-        currentDebugStep = executionController.debugStepOver();
-        updateControllerAfterStep(currentDebugStep);
+        executionController.debugStepOver(debugStep -> {
+            currentDebugStep = debugStep;
+            updateControllerAfterStep(currentDebugStep);
 
-        if (!currentDebugStep.hasMoreInstructions()) { // When reached the last instruction, shout down all debug buttons
-            stopDebug();
-        } else {
-            stepBackButton.setDisable(false);
-            stopButton.setDisable(false);
-        }
+            if (!currentDebugStep.hasMoreInstructions()) {
+                stopDebug();
+            } else {
+                stepBackButton.setDisable(false);
+                stopButton.setDisable(false);
+            }
+        });
+
+        // While server calculating
+        stepOverButton.setDisable(true);
+        resumeButton.setDisable(true);
+        stepBackButton.setDisable(true);
+        stopButton.setDisable(false);
     }
 
     @FXML
