@@ -14,10 +14,12 @@ import java.io.IOException;
 import static utils.Constants.*;
 import static utils.ValidationUtils.*;
 
-@WebServlet(name = STEP_OVER_DEBUGGER_NAME, urlPatterns = STEP_OVER_DEBUGGER_URL)
-public class StepOverDebuggerServlet extends HttpServlet {
+@WebServlet(name = STEP_BACK_DEBUGGER_NAME, urlPatterns = STEP_BACK_DEBUGGER_URL)
+public class StepBackServlet extends HttpServlet {
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         if (!validateUserSession(request, response)) return;
         String username = SessionUtils.getUsername(request);
 
@@ -27,15 +29,15 @@ public class StepOverDebuggerServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            DebugDTO debugStep = engine.getProgramAfterStepOver(username);
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(GSON_INSTANCE.toJson(debugStep));
+            DebugDTO debugDTO = engine.getProgramAfterStepBack(username);
 
-        } catch (IllegalStateException e) {
-            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(GSON_INSTANCE.toJson(debugDTO));
+
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while performing step-over", e.getMessage());
+                    "Server error while performing step back", e.getMessage());
         }
     }
 }
+

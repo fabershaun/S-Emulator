@@ -41,7 +41,7 @@ public class ProgramService {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
                 if (!response.isSuccessful()) {
@@ -171,7 +171,6 @@ public class ProgramService {
                 }
 
                 ProgramDTO expandedProgram = GSON_INSTANCE.fromJson(responseBody, ProgramDTO.class);
-                response.close();
                 onSuccess.accept(expandedProgram);
             }
         });
@@ -197,12 +196,8 @@ public class ProgramService {
                     return;
                 }
 
-                try (response) {
-                    int maxDegree = GSON_INSTANCE.fromJson(responseBody, Integer.class);
-                    onSuccess.accept(maxDegree);
-                } catch (Exception e) {
-                    onError.accept("Parse error: " + e.getMessage());
-                }
+                int maxDegree = GSON_INSTANCE.fromJson(responseBody, Integer.class);
+                onSuccess.accept(maxDegree);
             }
         });
     }
@@ -221,13 +216,9 @@ public class ProgramService {
                 String body = HttpClientUtil.readResponseBodySafely(response);
                 if (handleBadResponse(response, body, "Fetching architecture types", onError)) return;
 
-                try (response) {
-                    Type listType = new TypeToken<List<ArchitectureDTO>>() {}.getType();
-                    List<ArchitectureDTO> architectures = GSON_INSTANCE.fromJson(body, listType);
-                    onSuccess.accept(architectures);
-                } catch (Exception e) {
-                    onError.accept("Failed to parse ArchitectureDTO: " + e.getMessage());
-                }
+                Type listType = new TypeToken<List<ArchitectureDTO>>() {}.getType();
+                List<ArchitectureDTO> architectures = GSON_INSTANCE.fromJson(body, listType);
+                onSuccess.accept(architectures);
             }
         });
     }
@@ -293,32 +284,26 @@ public class ProgramService {
 
                 if (handleBadResponse(response, body, "Fetching program status", onError)) return;
 
-                try (response) {
-                    JsonObject json = GSON_INSTANCE.fromJson(body, JsonObject.class);
+                JsonObject json = GSON_INSTANCE.fromJson(body, JsonObject.class);
 
-                    // Always require "state"
-                    if (!json.has(STATE)) {
-                        onError.accept("Missing 'state' field in server response.");
-                        return;
-                    }
-
-                    String state = json.get(STATE).getAsString();
-
-                    // If FAILED, surface server error/details to UI
-                    if ("FAILED".equals(state)) {
-                        String err = json.has(ERROR) ? json.get(ERROR).getAsString() : "Program execution failed on server.";
-                        String det = json.has(DETAILS) ? json.get(DETAILS).getAsString() : "";
-                        onSuccess.accept("FAILED:" + (det.isEmpty() ? err : err + " - " + det));
-                        return;
-                    }
-
-                    // otherwise proceed normally
-                    onSuccess.accept(state);
-
-                } catch (Exception e) {
-                    onError.accept("Failed to parse response: " + e.getMessage());
+                // Always require "state"
+                if (!json.has(STATE)) {
+                    onError.accept("Missing 'state' field in server response.");
+                    return;
                 }
 
+                String state = json.get(STATE).getAsString();
+
+                // If FAILED, surface server error/details to UI
+                if ("FAILED".equals(state)) {
+                    String err = json.has(ERROR) ? json.get(ERROR).getAsString() : "Program execution failed on server.";
+                    String det = json.has(DETAILS) ? json.get(DETAILS).getAsString() : "";
+                    onSuccess.accept("FAILED:" + (det.isEmpty() ? err : err + " - " + det));
+                    return;
+                }
+
+                // otherwise proceed normally
+                onSuccess.accept(state);
             }
         });
     }
@@ -437,6 +422,32 @@ public class ProgramService {
 
                 DebugDTO result = GSON_INSTANCE.fromJson(responseBody, DebugDTO.class);
                 onSuccess.accept(result);
+            }
+        });
+    }
+
+    public void debugStepBackAsync(String finalUrl,
+                                   Consumer<DebugDTO> onSuccess,
+                                   Consumer<String> onError) {
+
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "step back");
+                    onError.accept("Server returned error: " + response.code());
+                    return;
+                }
+
+                DebugDTO debugStep = GSON_INSTANCE.fromJson(responseBody, DebugDTO.class);
+                onSuccess.accept(debugStep);
             }
         });
     }

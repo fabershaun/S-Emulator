@@ -1,5 +1,6 @@
 package servlets.execution.debug;
 
+import dto.v2.DebugDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,15 +11,13 @@ import utils.SessionUtils;
 
 import java.io.IOException;
 
-import static utils.Constants.STOP_DEBUGGER_NAME;
-import static utils.Constants.STOP_DEBUGGER_URL;
+import static utils.Constants.*;
 import static utils.ValidationUtils.*;
 
-@WebServlet(name = STOP_DEBUGGER_NAME, urlPatterns = STOP_DEBUGGER_URL)
-public class StopDebuggerServlet extends HttpServlet {
-
+@WebServlet(name = STEP_OVER_DEBUGGER_NAME, urlPatterns = STEP_OVER_DEBUGGER_URL)
+public class StepOverServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!validateUserSession(request, response)) return;
         String username = SessionUtils.getUsername(request);
 
@@ -28,12 +27,15 @@ public class StopDebuggerServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            engine.stopDebugPress(username);
+            DebugDTO debugStep = engine.getProgramAfterStepOver(username);
             response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(GSON_INSTANCE.toJson(debugStep));
 
+        } catch (IllegalStateException e) {
+            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Failed to stop debugger", e.getMessage());
+                    "Server error while performing step-over", e.getMessage());
         }
     }
 }

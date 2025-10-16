@@ -19,7 +19,7 @@ import static utils.Constants.*;
 import static utils.ValidationUtils.*;
 
 @WebServlet(name = RESUME_DEBUGGER_NAME, urlPatterns = RESUME_DEBUGGER_URL)
-public class ResumeDebuggerServlet extends HttpServlet {
+public class ResumeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

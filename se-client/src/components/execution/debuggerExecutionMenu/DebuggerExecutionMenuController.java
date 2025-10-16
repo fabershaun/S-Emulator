@@ -474,20 +474,28 @@ public class DebuggerExecutionMenuController {
         });
 
         // While server calculating
+        stopButton.setDisable(false);
         stepOverButton.setDisable(true);
         resumeButton.setDisable(true);
         stepBackButton.setDisable(true);
-        stopButton.setDisable(false);
     }
 
     @FXML
     private void onStepBack() {
-        currentDebugStep = executionController.debugStepBack();
-        updateControllerAfterStep(currentDebugStep);
+        executionController.debugStepBack( debugStep -> {
+            currentDebugStep = debugStep;
+            updateControllerAfterStep(currentDebugStep);
 
-        if (currentDebugStep.getCurrentInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
-            stepBackButton.setDisable(true);
-        }
+            if (currentDebugStep.getCurrentInstructionNumber() == 0) { // When reached the first instruction, shout down step back button
+                stepBackButton.setDisable(true);
+            }
+        });
+
+        // While server calculating
+        stopButton.setDisable(false);
+        stepBackButton.setDisable(true);
+        resumeButton.setDisable(true);
+        stepOverButton.setDisable(true);
     }
 
     private void updateControllerAfterStep(DebugDTO debugStep) {

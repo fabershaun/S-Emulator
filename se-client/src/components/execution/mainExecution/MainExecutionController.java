@@ -465,11 +465,21 @@ public class MainExecutionController {
         );
     }
 
-    public DebugDTO debugStepBack() {
-//        DebugDTO debugStep = engine.getProgramAfterStepBack(UserDTO.DEFAULT_NAME);
-//        updateControllerAfterDebugStep(debugStep);
-//
-//        return debugStep;
-        return null;
+    public void debugStepBack(Consumer<DebugDTO> onComplete) {
+        programService.debugStepBackAsync(
+                STEP_BACK_DEBUGGER_PATH,
+                debugStep -> Platform.runLater(() -> {
+                    if (debugStep == null) {
+                        AlertUtils.showError("Debug Step Back", "Server returned no data.");
+                        return;
+                    }
+
+                    updateControllerAfterDebugStep(debugStep);
+                    onComplete.accept(debugStep);
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Step Back Failed", errorMsg)
+                )
+        );
     }
 }

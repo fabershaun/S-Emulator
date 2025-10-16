@@ -66,6 +66,7 @@ public class HttpClientUtil {
         HTTP_CLIENT.connectionPool().evictAll();
     }
 
+    // Close ResponseBody safely anyway
     public static String readResponseBodySafely(Response response) {
         try (ResponseBody body = response.body()) {
             if (body == null) {
@@ -74,7 +75,7 @@ public class HttpClientUtil {
             }
 
             return body.string();
-            
+
         } catch (IOException e) {
             Platform.runLater(() -> AlertUtils.showError("Error", "Failed to read server response"));
             return null;
