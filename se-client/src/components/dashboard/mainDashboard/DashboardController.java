@@ -81,10 +81,11 @@ public class DashboardController implements Closeable {
         ) {
             initLoadFileController();
             initChargeCreditsController();
-            intiUserListController();
             initHistoryListController();
             initProgramsListController();
             initFunctionsListController();
+
+            initUserListControllerBinding();
         }
     }
 
@@ -161,7 +162,7 @@ public class DashboardController implements Closeable {
         mainAppController.switchToExecution(programSelectedName);
     }
 
-    public void setActive() {
+    public void startRefreshing() {
         usersListController.startListRefresher();
         availableProgramsListController.startListRefresher();
         availableFunctionsListController.startListRefresher();
@@ -200,14 +201,11 @@ public class DashboardController implements Closeable {
         chargeCreditsController.setProperty(totalCreditsAmount);
     }
 
-    private void intiUserListController() {
-
-    }   //TODO: WRITE
-
     private void initHistoryListController() {
         userHistoryListController.setDashboardController(this);
         userHistoryListController.setProperty(selectedUserProperty, currentUsername);
         userHistoryListController.initializeListeners();
+        userHistoryListController.loadInitialHistory();
     }
 
     private void initProgramsListController() {
@@ -218,6 +216,12 @@ public class DashboardController implements Closeable {
     private void initFunctionsListController() {
         availableFunctionsListController.initListeners();
         availableFunctionsListController.setDashboardController(this);
+    }
+
+    private void initUserListControllerBinding() {
+        usersListController.selectedUserProperty().addListener((obs, oldUser, newUser) -> {
+            selectedUserProperty.set(newUser);
+        });
     }
 
     @Override

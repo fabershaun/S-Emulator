@@ -145,12 +145,12 @@ public class EngineImpl implements Engine, Serializable {
         originalProgram.incrementExecutionsCount();
         originalProgram.addCreditCost(programExecutor.getTotalCycles());
 
-        // For Version 2
+        // For Version 2: the key in map is the program name
         List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());  // Get the history list per program (if not exist create empty list) and add it to the list
         executionV2History.add(programExecutor);
 
-        // For Version 3
-        List<ProgramExecutor> executionV3History = usernameToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());
+        // For Version 3: the key in map is the username
+        List<ProgramExecutor> executionV3History = usernameToExecutionHistory.computeIfAbsent(uploaderName, k -> new ArrayList<>());
         executionV3History.add(programExecutor);
     }
 
@@ -222,8 +222,8 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public List<HistoryRowV3DTO> getHistoryV3PerProgram(String programName) {
-        List<ProgramExecutor> programExecutors = usernameToExecutionHistory.get(programName);
+    public List<HistoryRowV3DTO> getHistoryV3PerProgram(String username) {
+        List<ProgramExecutor> programExecutors = usernameToExecutionHistory.get(username);
         List<ProgramExecutorDTO> programExecutorDTOList = buildExecutorDTOList(programExecutors);
         return buildHistoryRowsFromExecutors(programExecutorDTOList);
     }
@@ -473,9 +473,15 @@ public class EngineImpl implements Engine, Serializable {
         Debug debug = getDebugSystemByUsername(uploaderName);
         String programName = debugDTO.getProgramName();
 
+        // For Version 2: the key in map is the program name
         List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
         executionHistory.add(debug.getDebugProgramExecutor());
 
+        // For Version 3: the key in map is the username
+        List<ProgramExecutor> userExecutionHistory = usernameToExecutionHistory.computeIfAbsent(uploaderName, k -> new ArrayList<>());
+        userExecutionHistory.add(debug.getDebugProgramExecutor());
+
+        // Update user: increase the execution
         UserDTO userDTO = this.usernameToUserDTO.get(uploaderName);
         UserLogic.incrementExecutions(userDTO);
 

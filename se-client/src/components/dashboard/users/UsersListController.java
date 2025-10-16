@@ -88,6 +88,10 @@ public class UsersListController implements Closeable {
         timer.schedule(listRefresher, 0, REFRESH_RATE);
     }
 
+    public ObjectProperty<UserDTO> selectedUserProperty() {
+        return selectedUserProperty;
+    }
+
     @FXML void onUnselectUserClicked() {
         usersTableView.getSelectionModel().clearSelection();
     }

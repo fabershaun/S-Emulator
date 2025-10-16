@@ -64,7 +64,7 @@ public class Constants {
     public final static String USERS_LIST_PAGE = FULL_SERVER_PATH + "/users-list";
 
     // Get Users History List:
-    public final static String USER_HISTORY_LIST_PAGE = FULL_SERVER_PATH + "/users-list";
+    public final static String USER_HISTORY_LIST_PAGE = FULL_SERVER_PATH + "/user-history-list";
 
     // Get Available Programs List:
     public final static String AVAILABLE_PROGRAMS_LIST_PAGE = FULL_SERVER_PATH + "/available-programs-list";

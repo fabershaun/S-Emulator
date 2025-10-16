@@ -22,7 +22,6 @@ public class UserHistoryListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if (!validateUserSession(request, response)) return;
-        String username = SessionUtils.getUsername(request);
 
         Engine engine = ServletUtils.getEngine(getServletContext());
         if (!validateEngineNotNull(engine, response)) return;
@@ -30,6 +29,11 @@ public class UserHistoryListServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
+
+            String username = request.getParameter("username");
+            if (username == null || username.isEmpty()) {
+                username = SessionUtils.getUsername(request);
+            }
             List<HistoryRowV3DTO> userHistory = engine.getHistoryV3PerProgram(username);
             if (userHistory == null) {
                 userHistory = new ArrayList<>();

@@ -34,7 +34,7 @@ public class UsersHistoryController {
 
     private DashboardController dashboardController;
     private ObjectProperty<UserDTO> selectedUserProperty;
-    private StringProperty currentUserLoginProperty;
+    private StringProperty currentUsername;
 
     private HistoryRowV3DTO selectedHistoryRow;
     private int selectedRowIndex;
@@ -61,7 +61,7 @@ public class UsersHistoryController {
         colRunNumber.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(historyTable.getItems().indexOf(cellData.getValue()) + 1));
         colMainProgramOrFunction.setCellValueFactory(new PropertyValueFactory<>("programType"));
-        colProgramName.setCellValueFactory(new PropertyValueFactory<>("programName"));
+        colProgramName.setCellValueFactory(new PropertyValueFactory<>("programUserString"));
         colArchitectureType.setCellValueFactory(new PropertyValueFactory<>("architectureChoice"));
 
         colDegree.setCellValueFactory(new PropertyValueFactory<>("degree"));
@@ -75,14 +75,29 @@ public class UsersHistoryController {
 
     public void setProperty(ObjectProperty<UserDTO> selectedUserProperty, StringProperty currentUserLoginProperty) {
         this.selectedUserProperty = selectedUserProperty;
-        this.currentUserLoginProperty = currentUserLoginProperty;
+        this.currentUsername = currentUserLoginProperty;
+    }
+
+    public void loadInitialHistory() {
+        if (currentUsername != null && currentUsername.get() != null) {
+            userHistoryLabel.setText("History of: " + currentUsername.get());
+            loadHistoryForUser(currentUsername.get());
+        } else {
+            userHistoryLabel.setText("History: (no user)");
+            historyTable.getItems().clear();
+        }
     }
 
     public void initializeListeners() {
         selectedUserProperty.addListener((obs, oldUser, newUser) -> {
-            userHistoryLabel.setText("History of: " + newUser.getUserName());
-            loadUserHistory(newUser.getUserName());
-                });
+            if (newUser != null) {
+                userHistoryLabel.setText("History of: " + newUser.getUserName());
+                loadHistoryForUser(newUser.getUserName());
+            } else {
+                loadHistoryForUser(currentUsername.get());
+                userHistoryLabel.setText("History of: " + currentUsername.get());
+            }
+        });
 
         // Listen to row selection and notify the main controller
         historyTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newHistoryRowSelected) -> {
@@ -99,7 +114,7 @@ public class UsersHistoryController {
         });
     }
 
-    private void loadUserHistory(String username) {
+    private void loadHistoryForUser(String username) {
         String finalUrl = HttpUrl
                 .parse(USER_HISTORY_LIST_PAGE)
                 .newBuilder()

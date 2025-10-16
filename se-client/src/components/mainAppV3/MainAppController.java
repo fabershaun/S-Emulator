@@ -137,7 +137,7 @@ public class MainAppController {
             backToDashboardButton.setVisible(false);
             backToDashboardButton.setManaged(false);
         }
-        dashboardController.setActive();
+        dashboardController.startRefreshing();
 
         // updates user's credits:
         programService.fetchUserCreditsAsync(
