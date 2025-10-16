@@ -317,6 +317,9 @@ public class DebuggerExecutionMenuController {
         executionController.disableToolBarComponents(false);
         inputsEditableMode = true; // enable blinking only now
 
+        architectureRankProperty.set(0); // Important: to reset the last choice
+        architectureRepresentationProperty.set("");
+
         loadArchitectureTypes();
     }
 
