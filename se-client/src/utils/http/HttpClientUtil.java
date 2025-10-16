@@ -67,13 +67,14 @@ public class HttpClientUtil {
     }
 
     public static String readResponseBodySafely(Response response) {
-        ResponseBody body = response.body();
-        if (body == null) {
-            Platform.runLater(() -> AlertUtils.showError("Error", "Empty response from server"));
-            return null;
-        }
-        try {
+        try (ResponseBody body = response.body()) {
+            if (body == null) {
+                Platform.runLater(() -> AlertUtils.showError("Error", "Empty response from server"));
+                return null;
+            }
+
             return body.string();
+            
         } catch (IOException e) {
             Platform.runLater(() -> AlertUtils.showError("Error", "Failed to read server response"));
             return null;

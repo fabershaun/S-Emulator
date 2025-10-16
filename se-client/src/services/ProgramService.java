@@ -364,15 +364,15 @@ public class ProgramService {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
-                String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
-                if (!response.isSuccessful()) {
-                    handleErrorResponse(response.code(), responseBody, "initialize debugger");
-                    onError.accept("Server returned error code: " + response.code());
-                    return;
-                }
+                try (ResponseBody ignored = response.body()) {
+                    if (!response.isSuccessful()) {
+                        String responseBody = HttpClientUtil.readResponseBodySafely(response);
+                        handleErrorResponse(response.code(), responseBody, "initialize debugger");
+                        onError.accept("Server returned error code: " + response.code());
+                        return;
+                    }
 
-                try {
                     onSuccess.run();
                 } catch (Exception ex) {
                     onError.accept("UI error while entering debug mode: " + ex.getMessage());
@@ -390,6 +390,4 @@ public class ProgramService {
         }
         return false;
     }
-
-
 }

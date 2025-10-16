@@ -93,9 +93,6 @@ public class Constants {
     // Get Program After Run:
     public final static String PROGRAM_AFTER_RUN_PATH = FULL_SERVER_PATH + "/program-after-run";
 
-    // Get architecture rank:
-    public final static String ARCHITECTURE_RANK_PATH = FULL_SERVER_PATH + "/architecture-rank";
-
     // Initialize debugger:
     public final static String INITIALIZE_DEBUGGER_PATH = FULL_SERVER_PATH + "/initialize-debugger";
 

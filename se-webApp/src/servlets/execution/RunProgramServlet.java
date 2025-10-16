@@ -56,7 +56,7 @@ public class RunProgramServlet extends HttpServlet {
         if (!validateJsonBody(jsonBody, response)) return null;
 
         if (!validateJsonStringFields(jsonBody, response,
-                PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM, DEGREE_QUERY_PARAM)) {
+                PROGRAM_NAME_QUERY_PARAM, CHOSEN_ARCHITECTURE_STR_QUERY_PARAM, DEGREE_QUERY_PARAM)) {
             return null;
         }
 
@@ -66,7 +66,7 @@ public class RunProgramServlet extends HttpServlet {
     private ProgramRunRequest buildProgramRunRequest(JsonObject jsonBody, String username, Engine engine, HttpServletResponse response) throws IOException {
 
         String programName = jsonBody.get(PROGRAM_NAME_QUERY_PARAM).getAsString();
-        String architecture = jsonBody.get(ARCHITECTURE_QUERY_PARAM).getAsString();
+        String architecture = jsonBody.get(CHOSEN_ARCHITECTURE_STR_QUERY_PARAM).getAsString();
         int degree = jsonBody.get(DEGREE_QUERY_PARAM).getAsInt();
 
         if (!validateProgramName(programName, response)) return null;

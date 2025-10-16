@@ -42,10 +42,10 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
                 return;
             }
 
-            if (!validateJsonStringFields(jsonBody, response, PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM)) return;
+            if (!validateJsonStringFields(jsonBody, response, PROGRAM_NAME_QUERY_PARAM, CHOSEN_ARCHITECTURE_STR_QUERY_PARAM)) return;
 
             String programName = jsonBody.get(PROGRAM_NAME_QUERY_PARAM).getAsString();
-            String chosenArchitectureStr = jsonBody.get(ARCHITECTURE_QUERY_PARAM).getAsString();
+            String chosenArchitectureStr = jsonBody.get(CHOSEN_ARCHITECTURE_STR_QUERY_PARAM).getAsString();
 
             if (!validateProgramName(programName, response)) return;
             if (!validateArchitecture(chosenArchitectureStr, response)) return;

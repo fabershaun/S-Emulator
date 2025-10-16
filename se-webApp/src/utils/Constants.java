@@ -11,7 +11,7 @@ public class Constants {
     public static final String PROGRAM_NAME_QUERY_PARAM = "programName";
     public static final String TARGET_DEGREE_QUERY_PARAM = "targetDegree";
     public static final String DEGREE_QUERY_PARAM = "degree";
-    public static final String ARCHITECTURE_QUERY_PARAM = "architecture";
+    public static final String CHOSEN_ARCHITECTURE_STR_QUERY_PARAM = "architecture";
     public static final String INPUTS_VALUES_QUERY_PARAM = "inputsValues";
     public static final String RUN_ID_QUERY_PARAM = "runId";
 
@@ -76,10 +76,6 @@ public class Constants {
     public final static String ARCHITECTURE_TYPES_NAME = "ArchitectureTypes";
     public final static String ARCHITECTURE_TYPES_URL = "/architecture-types";
 
-    // Get architecture rank:
-    public final static String ARCHITECTURE_RANK_NAME = "ArchitectureRankServlet";
-    public final static String ARCHITECTURE_RANK_URL = "/architecture-rank";
-
     // Run Program:
     public final static String RUN_PROGRAM_NAME = "RunProgram";
     public final static String RUN_PROGRAM_URL = "/run-program";
@@ -88,6 +84,8 @@ public class Constants {
     public final static String PROGRAM_STATUS_NAME = "ProgramStatus";
     public final static String PROGRAM_STATUS_URL = "/program-status";
 
-
+    // Initialize debugger:
+    public final static String INITIALIZE_DEBUGGER_NAME = "InitializeDebuggerServlet";
+    public final static String INITIALIZE_DEBUGGER_URL = "/initialize-debugger";
 
 }
