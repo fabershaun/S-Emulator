@@ -231,37 +231,6 @@ public class ProgramService {
         });
     }
 
-    public void fetchArchitectureRankAsync(String finalUrl,
-                                           Consumer<Integer> onSuccess,
-                                           Consumer<String> onError) {
-        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                onError.accept("Network Error: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                String responseBody = HttpClientUtil.readResponseBodySafely(response);
-
-                if (!response.isSuccessful()) {
-                    HttpResponseHandler.handleErrorResponse(response.code(), responseBody, "Getting rank of chosen architecture");
-                    onError.accept("Bad response: " + response.code());
-                    return;
-                }
-
-                try (response) {
-                    int resultRank = GSON_INSTANCE.fromJson(responseBody, Integer.class);
-                    onSuccess.accept(resultRank);
-                } catch (Exception e) {
-                    onError.accept("Parse error: " + e.getMessage());
-                }
-            }
-        });
-
-
-    }
-
     public void fetchRunProgramAsync(String finalUrl,
                                      RequestBody requestBody,
                                      Consumer<String> onSuccess,
@@ -383,6 +352,35 @@ public class ProgramService {
         });
     }
 
+    public void initializeDebugger(String finalUrl,
+                                   RequestBody requestBody,
+                                   Runnable onSuccess,
+                                   Consumer<String> onError) {
+        HttpClientUtil.runAsync(finalUrl, requestBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "initialize debugger");
+                    onError.accept("Server returned error code: " + response.code());
+                    return;
+                }
+
+                try {
+                    onSuccess.run();
+                } catch (Exception ex) {
+                    onError.accept("UI error while entering debug mode: " + ex.getMessage());
+                }
+            }
+        });
+    }
+
     private boolean handleBadResponse(Response response, String body, String actionDescription, Consumer<String> onError) {
         if (body == null || response.code() != 200) {
             HttpResponseHandler.handleErrorResponse(response.code(), body, actionDescription);
@@ -392,4 +390,6 @@ public class ProgramService {
         }
         return false;
     }
+
+
 }

@@ -288,20 +288,9 @@ public class MainExecutionController {
         }
     }
 
-    public void getArchitectureRankFromString(String chosenArchitecture) {
-        String finalUrl = buildUrlWithQueryParam(ARCHITECTURE_RANK_PATH, CHOSEN_ARCHITECTURE_STR_QUERY_PARAM, chosenArchitecture);
+    public void runProgram(List<Long> inputValues) {
 
-        programService.fetchArchitectureRankAsync(
-                finalUrl,
-                resultRank -> Platform.runLater(() -> architectureRankProperty.set(resultRank)),
-                errorMsg -> Platform.runLater(() ->
-                        AlertUtils.showError("Error", "Failed to fetch rank of chosen architecture: " + errorMsg))
-        );
-    }
-
-    public void runProgram(List<Long> inputs) {
-
-        RequestBody requestBody = buildRunProgramRequestBody(inputs);
+        RequestBody requestBody = buildRunProgramRequestBody(inputValues);
         programService.fetchRunProgramAsync(
                 RUN_PROGRAM_PATH,
                 requestBody,
@@ -390,6 +379,22 @@ public class MainExecutionController {
         Platform.runLater(() -> AlertUtils.showError("Program Execution Failed", errorMsg));
     }
 
+    public void initializeDebugger(List<Long> inputValues) {
+        RequestBody requestBody = buildRunProgramRequestBody(inputValues);
+
+        programService.initializeDebugger(
+            INITIALIZE_DEBUGGER_PATH,
+            requestBody,
+            () -> Platform.runLater(() -> {
+                debuggerExecutionMenuController.enterDebugging();
+                debuggerExecutionMenuController.onResume();
+            }),
+            errorMsg -> Platform.runLater(() -> {
+                AlertUtils.showError("Initialized debugger Failed", errorMsg);
+                debuggerExecutionMenuController.enterNewRunPressed();
+            })
+        );
+    }
 
 
 
@@ -405,10 +410,6 @@ public class MainExecutionController {
         topToolBarController.setComponentsDisabled(false);
     }
 
-    // TODO : Should be Blocking ?? not async
-    public void initializeDebugger(List<Long> inputValues) {
-//        engine.initializeDebugger(getActiveProgramName(), ProgramExecutorDTO.DEFAULT_ARCHITECTURE, degreeModel.currentDegreeProperty().get(), inputValues, UserDTO.DEFAULT_NAME);
-    }
 
     // TODO : Should be Blocking ?? not async
     public void debugStop() {

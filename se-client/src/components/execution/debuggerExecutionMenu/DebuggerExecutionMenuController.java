@@ -302,7 +302,7 @@ public class DebuggerExecutionMenuController {
         inputsTable.setEditable(false);
     }
 
-    private void enterNewRunPressed() {
+    public void enterNewRunPressed() {
         currentMode = ApplicationMode.NEW_RUN_PRESSED;
         setNewRunEnabled(true);
         setModeSelectionDisabled(false);
@@ -330,7 +330,7 @@ public class DebuggerExecutionMenuController {
         inputsTable.setEditable(false);
     }
 
-    private void enterDebugging() {
+    public void enterDebugging() {
         currentMode = ApplicationMode.DEBUG;
         setNewRunEnabled(true);
         setModeSelectionDisabled(true);
@@ -426,7 +426,7 @@ public class DebuggerExecutionMenuController {
     }
 
     @FXML
-    private void onResume() {
+    public void onResume() {
         executionController.debugResume(debugStep -> {
 
             currentDebugStep = debugStep;

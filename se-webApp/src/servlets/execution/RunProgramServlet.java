@@ -14,7 +14,6 @@ import service.ProgramRunState;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ public class RunProgramServlet extends HttpServlet {
         JsonObject jsonBody = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
         if (!validateJsonBody(jsonBody, response)) return null;
 
-        if (!validateJsonFields(jsonBody, response,
+        if (!validateJsonStringFields(jsonBody, response,
                 PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM, DEGREE_QUERY_PARAM)) {
             return null;
         }

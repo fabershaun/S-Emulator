@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import static utils.Constants.*;
@@ -43,7 +42,7 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
                 return;
             }
 
-            if (!validateJsonFields(jsonBody, response, PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM)) return;
+            if (!validateJsonStringFields(jsonBody, response, PROGRAM_NAME_QUERY_PARAM, ARCHITECTURE_QUERY_PARAM)) return;
 
             String programName = jsonBody.get(PROGRAM_NAME_QUERY_PARAM).getAsString();
             String chosenArchitectureStr = jsonBody.get(ARCHITECTURE_QUERY_PARAM).getAsString();

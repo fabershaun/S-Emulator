@@ -22,7 +22,6 @@ public class MainInstructionsTableController {
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private StringProperty chosenArchitectureProperty;
     private IntegerProperty architectureRankProperty;
-    private BooleanProperty architectureDisabledProperty = new SimpleBooleanProperty(false);
 
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Boolean> colBreakPoint;
@@ -37,7 +36,7 @@ public class MainInstructionsTableController {
     @FXML
     protected void initialize() {
         colBreakPoint.setCellValueFactory(new PropertyValueFactory<>("breakpoint"));
-        colBreakPoint.setCellFactory(col -> new TableCell<InstructionDTO, Boolean>() {
+        colBreakPoint.setCellFactory(col -> new TableCell<>() {
             private final CheckBox checkBox = new CheckBox();
             {
                 checkBox.setOnAction(event -> {

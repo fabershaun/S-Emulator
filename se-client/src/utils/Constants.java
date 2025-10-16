@@ -95,7 +95,22 @@ public class Constants {
 
     // Get architecture rank:
     public final static String ARCHITECTURE_RANK_PATH = FULL_SERVER_PATH + "/architecture-rank";
+
+    // Initialize debugger:
+    public final static String INITIALIZE_DEBUGGER_PATH = FULL_SERVER_PATH + "/initialize-debugger";
+
+    // Step Over:
+    public final static String STEP_OVER_PATH = FULL_SERVER_PATH + "/step-over";
+
+    // Step Over:
+    public final static String RESUME_PATH = FULL_SERVER_PATH + "/resume";
+
+    // Step Back:
+    public final static String STEP_BACK_PATH = FULL_SERVER_PATH + "/step-back";
+
+    // Stop debug step:
+    public final static String STOP_DEBUG_STEP_PATH = FULL_SERVER_PATH + "/stop-debug";
 }
 
 // http://localhost:8080/S-Emulator
-// http://localhost:8080/S-Emulator/upload-file
+

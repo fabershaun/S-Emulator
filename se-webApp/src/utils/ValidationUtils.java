@@ -27,7 +27,7 @@ public class ValidationUtils {
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean validateJsonFields(JsonObject body, HttpServletResponse response, String... requiredFields) throws IOException {
+    public static boolean validateJsonStringFields(JsonObject body, HttpServletResponse response, String... requiredFields) throws IOException {
         for (String field : requiredFields) {
             if (!body.has(field)) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
