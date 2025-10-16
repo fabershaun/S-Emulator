@@ -7,10 +7,7 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.http.HttpClientUtil;
 import java.io.IOException;
@@ -54,18 +51,21 @@ public class LoginController {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    String responseBody = HttpClientUtil.readResponseBodySafely(response);
-                    Platform.runLater(() ->
-                            errorMessageProperty.set("Something went wrong: " + responseBody)
-                    );
-                } else {
-                    Platform.runLater(() -> {
-                        mainAppController.updateUserName(userName);
-                        mainAppController.switchToDashboard();
-                    });
+                try (ResponseBody ignored = response.body()) {
+                    if (!response.isSuccessful()) {
+                        String responseBody = HttpClientUtil.readResponseBodySafely(response);
+                        Platform.runLater(() ->
+                                errorMessageProperty.set("Something went wrong: " + responseBody)
+                        );
+                    } else {
+                        Platform.runLater(() -> {
+                            mainAppController.updateUserName(userName);
+                            mainAppController.switchToDashboard();
+                        });
+                    }
                 }
             }
+
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
