@@ -6,10 +6,13 @@ import dto.v2.DebugDTO;
 import dto.v2.ProgramDTO;
 import dto.v2.ProgramExecutorDTO;
 import dto.v3.ArchitectureDTO;
+import dto.v3.HistoryRowV3DTO;
+import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import utils.http.HttpClientUtil;
 import utils.http.HttpResponseHandler;
+import utils.ui.AlertUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -20,14 +23,48 @@ import static utils.Constants.*;
 import static utils.http.HttpResponseHandler.handleErrorResponse;
 
 /**
- * Handles all server interactions related to Program operations:
- * - Loading program data
- * - Jumping between degrees
- * - Fetching max degree
- * - Running program
- * - Fetching program result
+ * Handles all server communication for the client side.
+ * - Program operations (load, run, debug, degree management)
+ * - User operations (credits, history, validation)
+ * - Architecture operations (fetching architecture types)
  */
-public class ProgramService {
+public class AppService {
+
+    public void fetchUserHistoryAsync(String finalUrl,
+                                      Consumer<List<HistoryRowV3DTO>> onSuccess,
+                                      Consumer<String> onError) {
+
+        HttpClientUtil.runAsync(finalUrl, null, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                onError.accept("Network Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                String responseBody = HttpClientUtil.readResponseBodySafely(response);
+
+                if (!response.isSuccessful()) {
+                    handleErrorResponse(response.code(), responseBody, "Fetch user history");
+                    onError.accept("Server returned: " + response.code());
+                    return;
+                }
+
+                // Handle cases where response isn't a JSON array
+                if (!responseBody.trim().startsWith("[")) {
+                    Platform.runLater(() -> AlertUtils.showError("Error", "Unexpected response format: " + responseBody));
+                    return;
+                }
+
+                // Define the generic list type for deserialization
+                Type listType = new TypeToken<List<HistoryRowV3DTO>>() {}.getType();
+                List<HistoryRowV3DTO> historyRowV3DTOList = GSON_INSTANCE.fromJson(responseBody, listType);
+
+                onSuccess.accept(historyRowV3DTOList);
+
+            }
+        });
+    }
 
     public void addCreditsAsync(String finalUrl,
                                 RequestBody requestBody,

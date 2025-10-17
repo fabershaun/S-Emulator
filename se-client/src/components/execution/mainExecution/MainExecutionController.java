@@ -2,7 +2,7 @@ package components.execution.mainExecution;
 
 import com.google.gson.JsonObject;
 import services.ProgramPollingService;
-import services.ProgramService;
+import services.AppService;
 import utils.ui.AlertUtils;
 import components.execution.chainInstructionsTable.ChainInstructionsTableController;
 import components.execution.debuggerExecutionMenu.DebuggerExecutionMenuController;
@@ -39,7 +39,7 @@ public class MainExecutionController {
     private MainAppController mainAppController;
     private static final ExecutorService CLIENT_EXECUTOR = Executors.newFixedThreadPool(2);
 
-    private ProgramService programService;
+    private AppService appService;
     private ProgramPollingService programPollingService;
 
     private LongProperty totalCreditsAmount;
@@ -123,7 +123,7 @@ public class MainExecutionController {
         String programSelectedName = requireCurrentProgramName();
         String maxDegreeUrl = buildUrlWithQueryParam(MAX_DEGREE_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
 
-        programService.fetchMaxDegreeAsync(
+        appService.fetchMaxDegreeAsync(
                 maxDegreeUrl,
                 maxDegree -> Platform.runLater(() -> degreeModel.setMaxDegree(maxDegree)),
                 errorMsg -> Platform.runLater(() ->
@@ -140,8 +140,8 @@ public class MainExecutionController {
         this.programPollingService = programPollingService;
     }
 
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
+    public void setProgramService(AppService appService) {
+        this.appService = appService;
     }
 
     public void setProperty(StringProperty currentUserName, LongProperty totalCreditsAmount) {
@@ -152,7 +152,7 @@ public class MainExecutionController {
     public void setupAfterMainAppInit(String programSelectedName) {
         String url = buildUrlWithQueryParam(CURRENT_PROGRAM_DATA_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
 
-        programService.fetchProgramDataAsync(
+        appService.fetchProgramDataAsync(
                 url,
                 program -> Platform.runLater(() -> {
                     selectedProgramProperty.set(program);
@@ -187,7 +187,7 @@ public class MainExecutionController {
                 .build()
                 .toString();
 
-        programService.fetchJumpDegreeAsync(
+        appService.fetchJumpDegreeAsync(
                 jumpToDegreeUrl,
                 expandedProgram -> Platform.runLater(() -> {
                     selectedProgramProperty.set(expandedProgram);
@@ -243,7 +243,7 @@ public class MainExecutionController {
     }
 
     public void loadArchitectureTypes() {
-        programService.fetchArchitectureTypesAsync(
+        appService.fetchArchitectureTypesAsync(
                 ARCHITECTURE_TYPES_PATH,
                 architectureList -> Platform.runLater(() -> {
                     debuggerExecutionMenuController.getArchitectureComboBox()
@@ -268,7 +268,7 @@ public class MainExecutionController {
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        programService.fetchUserHasEnoughCredits(
+        appService.fetchUserHasEnoughCredits(
                 CREDIT_CHECK_PATH,
                 requestBody,
                 future::complete,
@@ -291,7 +291,7 @@ public class MainExecutionController {
     public void runProgram(List<Long> inputValues) {
 
         RequestBody requestBody = buildRunProgramRequestBody(inputValues);
-        programService.fetchRunProgramAsync(
+        appService.fetchRunProgramAsync(
                 RUN_PROGRAM_PATH,
                 requestBody,
                 runId -> Platform.runLater(() -> {
@@ -303,7 +303,7 @@ public class MainExecutionController {
         );
 
         // Update credit amount
-        programService.fetchUserCreditsAsync(
+        appService.fetchUserCreditsAsync(
                 FETCH_CREDITS_PATH,
                 null,
                 credits -> Platform.runLater(() -> totalCreditsAmount.set(credits)),
@@ -316,7 +316,7 @@ public class MainExecutionController {
         try {
             String url = buildUrlWithQueryParam(PROGRAM_STATUS_PATH, RUN_ID_QUERY_PARAM, runId);
 
-            programService.fetchProgramStatusAsync(
+            appService.fetchProgramStatusAsync(
                     url,
                     state -> handleProgramState(runId, state), // "DONE", "FAILED", etc.
                     errorMsg -> Platform.runLater(() ->
@@ -361,7 +361,7 @@ public class MainExecutionController {
 
         String url = buildUrlWithQueryParam(PROGRAM_AFTER_RUN_PATH, RUN_ID_QUERY_PARAM, runId);
 
-        programService.fetchProgramAfterRunAsync(
+        appService.fetchProgramAfterRunAsync(
                 url,
                 result -> Platform.runLater(() -> {
                     programAfterExecuteProperty.set(result);
@@ -382,7 +382,7 @@ public class MainExecutionController {
     public void initializeDebugger(List<Long> inputValues) {
         RequestBody requestBody = buildRunProgramRequestBody(inputValues);
 
-        programService.initializeDebugger(
+        appService.initializeDebugger(
             INITIALIZE_DEBUGGER_PATH,
             requestBody,
             () -> Platform.runLater(() -> {
@@ -399,7 +399,7 @@ public class MainExecutionController {
     public void debugResume(Consumer<DebugDTO> onComplete) {
         List<Boolean> breakPoints = mainInstructionsTableController.getBreakPoints();
 
-        programService.debugResumeAsync(
+        appService.debugResumeAsync(
                 RESUME_DEBUGGER_PATH,
                 breakPoints,
                 debugStep -> Platform.runLater(() -> {
@@ -420,7 +420,7 @@ public class MainExecutionController {
     }
 
     public void debugStepOver(Consumer<DebugDTO> onComplete) {
-        programService.debugStepOverAsync(
+        appService.debugStepOverAsync(
                 STEP_OVER_DEBUGGER_PATH,
                 debugStep -> Platform.runLater(() -> {
                     if (debugStep == null) {
@@ -453,7 +453,7 @@ public class MainExecutionController {
 
 
     public void debugStop() {
-        programService.debugStopAsync(
+        appService.debugStopAsync(
                 STOP_DEBUGGER_PATH,
                 () -> Platform.runLater(() -> {
                     finishDebug();
@@ -466,7 +466,7 @@ public class MainExecutionController {
     }
 
     public void debugStepBack(Consumer<DebugDTO> onComplete) {
-        programService.debugStepBackAsync(
+        appService.debugStepBackAsync(
                 STEP_BACK_DEBUGGER_PATH,
                 debugStep -> Platform.runLater(() -> {
                     if (debugStep == null) {

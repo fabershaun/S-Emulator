@@ -32,9 +32,7 @@ public class UserListRefresher extends TimerTask {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> {
-                    AlertUtils.showError("Server Error", "Failed to load users list" + e.getMessage());
-                });
+                Platform.runLater(() -> AlertUtils.showError("Server Error", "Failed to load users list" + e.getMessage()));
             }
 
             @Override

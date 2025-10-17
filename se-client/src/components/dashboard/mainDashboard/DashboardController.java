@@ -1,7 +1,7 @@
 package components.dashboard.mainDashboard;
 
 import com.google.gson.JsonObject;
-import services.ProgramService;
+import services.AppService;
 import utils.ui.AlertUtils;
 import components.dashboard.availableFunctions.AvailableFunctionsListController;
 import components.dashboard.availablePrograms.AvailableProgramsListController;
@@ -35,7 +35,7 @@ public class DashboardController implements Closeable {
 
     private MainAppController mainAppController;
 
-    private ProgramService programService;
+    private AppService appService;
 
     private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
     private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
@@ -61,8 +61,8 @@ public class DashboardController implements Closeable {
         this.mainAppController = mainAppController;
     }
 
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
+    public void setProgramService(AppService appService) {
+        this.appService = appService;
     }
 
     public void setProperty(StringProperty currentUsername, LongProperty totalCreditsAmount) {
@@ -174,7 +174,7 @@ public class DashboardController implements Closeable {
         jsonBody.addProperty(CREDITS_TO_CHARGE_QUERY_PARAM, amountToAdd);
         RequestBody requestBody = RequestBody.create(GSON_INSTANCE.toJson(jsonBody), MEDIA_TYPE_JSON);
 
-        programService.addCreditsAsync(
+        appService.addCreditsAsync(
                 CHARGE_CREDITS_PATH,
                 requestBody,
                 updatedCredits -> Platform.runLater(() -> {
@@ -229,5 +229,28 @@ public class DashboardController implements Closeable {
         usersListController.close();
         availableProgramsListController.close();
         availableFunctionsListController.close();
+    }
+
+    public void loadHistoryForUser(String username) {
+        String finalUrl = HttpUrl
+                .parse(USER_HISTORY_LIST_PAGE)
+                .newBuilder()
+                .addQueryParameter("username", username)
+                .build()
+                .toString();
+
+        appService.fetchUserHistoryAsync(
+                finalUrl,
+                historyRowV3DTOList -> Platform.runLater(() -> {
+                    if (historyRowV3DTOList == null || historyRowV3DTOList.isEmpty()) {
+                        userHistoryListController.clearHistoryTable();
+                    } else {
+                        userHistoryListController.setItemsInTable(historyRowV3DTOList);
+                    }
+                }),
+                errorMsg -> Platform.runLater(() ->
+                        AlertUtils.showError("Get User History Failed", errorMsg)
+                )
+        );
     }
 }

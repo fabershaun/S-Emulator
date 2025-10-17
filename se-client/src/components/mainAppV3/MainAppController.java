@@ -16,7 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import services.ProgramPollingService;
-import services.ProgramService;
+import services.AppService;
 import utils.ui.AlertUtils;
 import utils.ui.ToastUtil;
 
@@ -28,7 +28,7 @@ import static utils.Constants.*;
 public class MainAppController {
 
     private final ProgramPollingService programPollingService = new ProgramPollingService();
-    private ProgramService programService = new ProgramService();
+    private AppService appService = new AppService();
 
     private final LongProperty totalCreditsAmount = new SimpleLongProperty();
     private final StringProperty currentUserName;
@@ -80,7 +80,7 @@ public class MainAppController {
             dashboardScreen = fxmlLoader.load();
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainAppController(this);
-            dashboardController.setProgramService(programService);
+            dashboardController.setProgramService(appService);
             dashboardController.setProperty(currentUserName, totalCreditsAmount);
             dashboardController.setupAfterMainAppInit();
         } catch (IOException e) {
@@ -96,7 +96,7 @@ public class MainAppController {
             executionScreen = fxmlLoader.load();
             executionController = fxmlLoader.getController();
             executionController.setMainAppController(this);
-            executionController.setProgramService(programService);
+            executionController.setProgramService(appService);
             executionController.setProgramPollingService(programPollingService);
             executionController.setProperty(currentUserName, totalCreditsAmount);
             executionController.setupAfterMainAppInit(programSelectedName);
@@ -140,7 +140,7 @@ public class MainAppController {
         dashboardController.startRefreshing();
 
         // updates user's credits:
-        programService.fetchUserCreditsAsync(
+        appService.fetchUserCreditsAsync(
                 FETCH_CREDITS_PATH,
                 null,
                 credits -> Platform.runLater(() -> totalCreditsAmount.set(credits)),
