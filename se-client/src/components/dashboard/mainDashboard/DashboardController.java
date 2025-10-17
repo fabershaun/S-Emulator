@@ -39,7 +39,7 @@ public class DashboardController implements Closeable {
 
     private final StringProperty selectedFilePathProperty = new SimpleStringProperty();
     private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
-    private StringProperty currentUsername;
+    private StringProperty currentUserLoginProperty;
     private LongProperty totalCreditsAmount;
 
     @FXML private StackPane dashboardStackPane;
@@ -67,7 +67,7 @@ public class DashboardController implements Closeable {
 
     public void setProperty(StringProperty currentUsername, LongProperty totalCreditsAmount) {
         this.totalCreditsAmount = totalCreditsAmount;
-        this.currentUsername = currentUsername;
+        this.currentUserLoginProperty = currentUsername;
     }
 
     public void setupAfterMainAppInit() {
@@ -81,14 +81,14 @@ public class DashboardController implements Closeable {
         ) {
             initLoadFileController();
             initChargeCreditsController();
+            initUserListController();
             initHistoryListController();
             initProgramsListController();
             initFunctionsListController();
-
-            initUserListControllerBinding();
         }
     }
 
+    // TODO: move this http call
     public void loadNewFile(File file, String pathStr) {
         String finalUrl = Objects.requireNonNull(HttpUrl
                         .parse(FILE_UPLOAD_PAGE))
@@ -189,7 +189,6 @@ public class DashboardController implements Closeable {
         );
     }
 
-
     private void initLoadFileController() {
         loadFileController.setDashboardController(this);
         loadFileController.setProperty(selectedFilePathProperty);
@@ -201,9 +200,13 @@ public class DashboardController implements Closeable {
         chargeCreditsController.setProperty(totalCreditsAmount);
     }
 
+    private void initUserListController() {
+        usersListController.setProperty(selectedUserProperty);
+    }
+
     private void initHistoryListController() {
         userHistoryListController.setDashboardController(this);
-        userHistoryListController.setProperty(selectedUserProperty, currentUsername);
+        userHistoryListController.setProperty(selectedUserProperty, currentUserLoginProperty);
         userHistoryListController.initializeListeners();
         userHistoryListController.loadInitialHistory();
     }
@@ -216,12 +219,6 @@ public class DashboardController implements Closeable {
     private void initFunctionsListController() {
         availableFunctionsListController.initListeners();
         availableFunctionsListController.setDashboardController(this);
-    }
-
-    private void initUserListControllerBinding() {
-        usersListController.selectedUserProperty().addListener((obs, oldUser, newUser) -> {
-            selectedUserProperty.set(newUser);
-        });
     }
 
     @Override
@@ -252,5 +249,9 @@ public class DashboardController implements Closeable {
                         AlertUtils.showError("Get User History Failed", errorMsg)
                 )
         );
+    }
+
+    public void loadCurrentLoginUserHistory() {
+        userHistoryListController.loadInitialHistory();
     }
 }

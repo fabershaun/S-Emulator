@@ -31,7 +31,7 @@ public class MainAppController {
     private AppService appService = new AppService();
 
     private final LongProperty totalCreditsAmount = new SimpleLongProperty();
-    private final StringProperty currentUserName;
+    private final StringProperty currentUserNameLogin;
     private Parent loginScreen;
     private Parent dashboardScreen;
     private Parent executionScreen;
@@ -48,12 +48,12 @@ public class MainAppController {
     private Button backToDashboardButton;
 
     public MainAppController() {
-        this.currentUserName = new SimpleStringProperty(ANONYMOUS);
+        this.currentUserNameLogin = new SimpleStringProperty(ANONYMOUS);
     }
 
     @FXML
     public void initialize() {
-        userNameLabel.textProperty().bind(currentUserName);
+        userNameLabel.textProperty().bind(currentUserNameLogin);
         availableCreditsLabel.textProperty().bind(totalCreditsAmount.asString());
 
         // Build the back button dynamically
@@ -79,7 +79,7 @@ public class MainAppController {
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainAppController(this);
             dashboardController.setProgramService(appService);
-            dashboardController.setProperty(currentUserName, totalCreditsAmount);
+            dashboardController.setProperty(currentUserNameLogin, totalCreditsAmount);
             dashboardController.setupAfterMainAppInit();
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,7 +96,7 @@ public class MainAppController {
             executionController.setMainAppController(this);
             executionController.setProgramService(appService);
             executionController.setProgramPollingService(programPollingService);
-            executionController.setProperty(currentUserName, totalCreditsAmount);
+            executionController.setProperty(currentUserNameLogin, totalCreditsAmount);
             executionController.setupAfterMainAppInit(programSelectedName);
         } catch (IOException e) {
             e.printStackTrace();
@@ -126,7 +126,7 @@ public class MainAppController {
     }
 
     public void updateUserName(String userName) {
-        this.currentUserName.set(userName);
+        this.currentUserNameLogin.set(userName);
     }
 
     public void switchToDashboard() {
@@ -140,6 +140,7 @@ public class MainAppController {
             backToDashboardButton.setManaged(false);
         }
         dashboardController.startComponentRefreshing();
+        dashboardController.loadCurrentLoginUserHistory();
 
         // updates user's credits:
         appService.fetchUserCreditsAsync(
@@ -152,7 +153,7 @@ public class MainAppController {
 
     public void switchToLogin() {
         Platform.runLater(() -> {
-            currentUserName.set(ANONYMOUS);
+            currentUserNameLogin.set(ANONYMOUS);
             setMainPanelTo(loginScreen);
         });
     }
@@ -166,8 +167,8 @@ public class MainAppController {
         setMainPanelTo(executionScreen);
     }
 
-    public StringProperty currentUserNameProperty() {
-        return currentUserName;
+    public StringProperty currentUserNameLoginProperty() {
+        return currentUserNameLogin;
     }
 
     private void createBackToDashboardButton() {

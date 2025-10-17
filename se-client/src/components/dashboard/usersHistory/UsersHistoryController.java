@@ -18,13 +18,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 
+import static components.dashboard.availablePrograms.AvailableProgramsListController.capitalizeOnlyFirstLetter;
 import static utils.Constants.*;
 
 public class UsersHistoryController {
 
     private DashboardController dashboardController;
     private ObjectProperty<UserDTO> selectedUserProperty;
-    private StringProperty currentUsername;
+    private StringProperty currentUserLoginProperty;
+    private boolean showingOtherUser = false; // Indicates whether a non-logged-in user's history is displayed
 
     private HistoryRowV3DTO selectedHistoryRow;
     private int selectedRowIndex;
@@ -51,7 +53,7 @@ public class UsersHistoryController {
         colRunNumber.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(historyTable.getItems().indexOf(cellData.getValue()) + 1));
         colMainProgramOrFunction.setCellValueFactory(new PropertyValueFactory<>("programType"));
-        colProgramName.setCellValueFactory(new PropertyValueFactory<>("programUserString"));
+        colProgramName.setCellValueFactory(new PropertyValueFactory<>(capitalizeOnlyFirstLetter("programUserString")));
         colArchitectureType.setCellValueFactory(new PropertyValueFactory<>("architectureChoice"));
 
         colDegree.setCellValueFactory(new PropertyValueFactory<>("degree"));
@@ -65,27 +67,29 @@ public class UsersHistoryController {
 
     public void setProperty(ObjectProperty<UserDTO> selectedUserProperty, StringProperty currentUserLoginProperty) {
         this.selectedUserProperty = selectedUserProperty;
-        this.currentUsername = currentUserLoginProperty;
+        this.currentUserLoginProperty = currentUserLoginProperty;
     }
 
+
     public void loadInitialHistory() {
-        if (currentUsername != null && currentUsername.get() != null) {
-            userHistoryLabel.setText("History of: " + currentUsername.get());
-            loadHistoryForUser(currentUsername.get());
-        } else {
-            userHistoryLabel.setText("History: (no user)");
-            historyTable.getItems().clear();
+        if (currentUserLoginProperty != null && currentUserLoginProperty.get() != null) {
+            userHistoryLabel.setText("History of: " + currentUserLoginProperty.get());
+            loadHistoryForUser(currentUserLoginProperty.get());
         }
     }
 
     public void initializeListeners() {
         selectedUserProperty.addListener((obs, oldUser, newUser) -> {
+
             if (newUser != null) {
-                userHistoryLabel.setText("History of: " + newUser.getUserName());
-                loadHistoryForUser(newUser.getUserName());
-            } else {
-                loadHistoryForUser(currentUsername.get());
-                userHistoryLabel.setText("History of: " + currentUsername.get());
+                String selectedUserName = newUser.getUserName();
+                userHistoryLabel.setText("History of: " + selectedUserName);
+                loadHistoryForUser(selectedUserName);
+            }
+            else {
+                String loggedUserName = currentUserLoginProperty.get();
+                userHistoryLabel.setText("History of: " + loggedUserName);
+                loadHistoryForUser(loggedUserName);
             }
         });
 

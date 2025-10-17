@@ -22,7 +22,7 @@ public class UsersListController implements Closeable {
     private Timer timer;
     private TimerTask listRefresher;
     private final IntegerProperty totalUsers;
-    private final ObjectProperty<UserDTO> selectedUserProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<UserDTO> selectedUserProperty;
 
     @FXML private Label usersLabel;
     @FXML private TableView<UserDTO> usersTableView;
@@ -54,31 +54,52 @@ public class UsersListController implements Closeable {
         });
     }
 
-    private void updateUsersList(List<UserDTO> usersList) {
+    public void setProperty(ObjectProperty<UserDTO> selectedUserProperty) {
+        this.selectedUserProperty = selectedUserProperty;
+    }
+
+    private void updateUsersList(List<UserDTO> newUsersList) {
         Platform.runLater(() -> {
-            UserDTO currentSelection = usersTableView.getSelectionModel().getSelectedItem();
+            ObservableList<UserDTO> currentItems = usersTableView.getItems();
 
-            // Update list items
-            ObservableList<UserDTO> items = usersTableView.getItems();
-            items.setAll(usersList);
+            // Save current selection (if any)
+            UserDTO selected = usersTableView.getSelectionModel().getSelectedItem();
+            String selectedName = selected != null ? selected.getUserName() : null;
 
-            // Restore selection if still exists in the new list
-            if (currentSelection != null) {
-                String selectedName = currentSelection.getUserName();
+            // Add new users
+            for (UserDTO newUser : newUsersList) {
+                boolean exists = currentItems.stream()
+                        .anyMatch(u -> u.getUserName().equals(newUser.getUserName()));
+                if (!exists) {
+                    currentItems.add(newUser);
+                }
+            }
 
-                usersList.stream()
-                        .filter(p -> p.getUserName().equals(selectedName))
+            // Update existing users' data (fields that may change)
+            for (UserDTO existing : currentItems) {
+                newUsersList.stream()
+                        .filter(u -> u.getUserName().equals(existing.getUserName()))
                         .findFirst()
-                        .ifPresent(p -> usersTableView.getSelectionModel().select(p));
+                        .ifPresent(updated -> {
+                            // Update all relevant fields shown in the table
+                            existing.setMainProgramsCount(updated.getMainProgramsCount());
+                            existing.setSubFunctionsCount(updated.getSubFunctionsCount());
+                            existing.setCurrentCredits(updated.getCurrentCredits());
+                            existing.setUsedCredits(updated.getUsedCredits());
+                            existing.setExecutionsCount(updated.getExecutionsCount());
+                        });
             }
 
-            // Restore selection if still exists in the new list
-            if (currentSelection != null && usersList.contains(currentSelection)) {
-                usersTableView.getSelectionModel().select(currentSelection);
+            // Restore selection if possible
+            if (selectedName != null) {
+                currentItems.stream()
+                        .filter(u -> u.getUserName().equals(selectedName))
+                        .findFirst()
+                        .ifPresent(u -> usersTableView.getSelectionModel().select(u));
             }
 
-            // Update count
-            totalUsers.set(usersList.size());
+            // Update label
+            totalUsers.set(currentItems.size());
         });
     }
 
@@ -86,10 +107,6 @@ public class UsersListController implements Closeable {
         listRefresher = new UserListRefresher(this::updateUsersList);
         timer = new Timer();
         timer.schedule(listRefresher, 0, REFRESH_RATE);
-    }
-
-    public ObjectProperty<UserDTO> selectedUserProperty() {
-        return selectedUserProperty;
     }
 
     @FXML void onUnselectUserClicked() {
