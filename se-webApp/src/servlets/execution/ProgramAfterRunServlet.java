@@ -54,7 +54,17 @@ public class ProgramAfterRunServlet extends HttpServlet {
                 return;
             }
 
-            ProgramExecutorDTO programAfterRun = engine.getProgramAfterRunV3(status.programName);
+            // Program is marked DONE —> retrieve its results safely
+            ProgramExecutorDTO programAfterRun;
+            try {
+                programAfterRun = engine.getProgramAfterRunV3(status.username);
+            } catch (IllegalStateException e) {
+                // History not yet updated due to short timing gap, retry on next poll
+                writeJsonError(response, HttpServletResponse.SC_CONFLICT,
+                        "Program not finished yet", "Result not persisted yet; please retry shortly");
+                return;
+            }
+
             if (programAfterRun == null) {
                 writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                         "Program after run unavailable", "Possible internal error");

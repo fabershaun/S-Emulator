@@ -187,8 +187,8 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public ProgramExecutorDTO getProgramAfterRunV2(String programName) {
-        ProgramDTO programDTO = buildProgramDTO(getProgramByName(programName));
-        ProgramExecutor programExecutor = programToExecutionHistory.get(programName).getLast();
+        ProgramExecutor programExecutor = getLastProgramExecutor(programName);
+        ProgramDTO programDTO = buildProgramDTO(programExecutor.getProgram());
 
         return new ProgramExecutorDTO(programDTO,
                 programExecutor.getVariablesToValuesSorted(),
@@ -201,11 +201,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public ProgramExecutorDTO getProgramAfterRunV3(String programName) {
-        ProgramDTO programDTO = buildProgramDTO(getProgramByName(programName));
-        ProgramExecutor programExecutor = usernameToExecutionHistory.get(programName).getLast();
+    public ProgramExecutorDTO getProgramAfterRunV3(String username) {
+        ProgramExecutor programExecutor = getLastUserExecutor(username);
+        ProgramDTO programDTO = buildProgramDTO(programExecutor.getProgram());
 
-        return new ProgramExecutorDTO(programDTO,
+        return new ProgramExecutorDTO(
+                programDTO,
                 programExecutor.getVariablesToValuesSorted(),
                 programExecutor.getVariableValue(Variable.RESULT),
                 programExecutor.getTotalCycles(),
@@ -233,15 +234,14 @@ public class EngineImpl implements Engine, Serializable {
             return List.of();
         }
 
-        ProgramDTO programDTO = buildProgramDTO(programExecutors.getFirst().getProgram());
-
-        List<ProgramExecutorDTO> res = new ArrayList<>();
-        for(ProgramExecutor programExecutorItem : programExecutors) {
-            ProgramExecutorDTO programExecutorDTO = buildProgramExecutorDTO(programDTO, programExecutorItem);
-            res.add(programExecutorDTO);
+        List<ProgramExecutorDTO> result = new ArrayList<>();
+        for (ProgramExecutor executorItem : programExecutors) {
+            // Build ProgramDTO per executor to avoid mismatches across different programs
+            ProgramDTO programDTO = buildProgramDTO(executorItem.getProgram());
+            ProgramExecutorDTO dto = buildProgramExecutorDTO(programDTO, executorItem);
+            result.add(dto);
         }
-
-        return res;
+        return result;
     }
 
     private List<HistoryRowV3DTO> buildHistoryRowsFromExecutors(List<ProgramExecutorDTO> executors) {
@@ -532,5 +532,23 @@ public class EngineImpl implements Engine, Serializable {
     public ProgramDTO getMainProgramToConsoleModule() {
         Program mainProgram = this.programsHolder.getMainProgramForConsoleModuleOnly();
         return buildProgramDTO(mainProgram);
+    }
+
+    // For V2. Always return the last executor for a program, or throw a clear exception
+    private ProgramExecutor getLastProgramExecutor(String programName) {
+        List<ProgramExecutor> list = programToExecutionHistory.get(programName);
+        if (list == null || list.isEmpty()) {
+            throw new IllegalStateException("No executions found for program '" + programName + "'");
+        }
+        return list.getLast(); // Java 21, safe after checks
+    }
+
+    // For V3. Always return the last executor for a user, or throw a clear exception
+    private ProgramExecutor getLastUserExecutor(String username) {
+        List<ProgramExecutor> list = usernameToExecutionHistory.get(username);
+        if (list == null || list.isEmpty()) {
+            throw new IllegalStateException("No executions found for user '" + username + "'");
+        }
+        return list.getLast();
     }
 }

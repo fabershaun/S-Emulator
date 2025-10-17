@@ -380,14 +380,31 @@ public class ProgramImpl implements Program, Serializable {
         inputVariables.add(variable);
     }
 
+//    @Override
+//    public List<Variable> getInputAndWorkVariablesSortedBySerial() {
+//        sortVariableSetByNumber(inputVariables);
+//        sortVariableSetByNumber(workVariables);
+//
+//        List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
+//        inputAndWorkVariablesAndTheirValues.addAll(workVariables);
+//        return inputAndWorkVariablesAndTheirValues;
+//    }
+
     @Override
     public List<Variable> getInputAndWorkVariablesSortedBySerial() {
-        sortVariableSetByNumber(inputVariables);
-        sortVariableSetByNumber(workVariables);
+        // Work on local copies to prevent concurrent modification
+        List<Variable> inputs = new ArrayList<>(inputVariables);
+        List<Variable> works = new ArrayList<>(workVariables);
 
-        List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
-        inputAndWorkVariablesAndTheirValues.addAll(workVariables);
-        return inputAndWorkVariablesAndTheirValues;
+        inputs.removeIf(Objects::isNull);
+        works.removeIf(Objects::isNull);
+
+        inputs.sort(Comparator.comparingInt(Variable::number));
+        works.sort(Comparator.comparingInt(Variable::number));
+
+        List<Variable> combined = new ArrayList<>(inputs);
+        combined.addAll(works);
+        return combined;
     }
 
     @Override

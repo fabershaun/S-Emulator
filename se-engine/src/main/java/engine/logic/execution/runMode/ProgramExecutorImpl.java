@@ -96,13 +96,30 @@ public class ProgramExecutorImpl implements ProgramExecutor, Serializable {
         return this.totalCycles;
     }
 
+//    @Override
+//    public Map<String, Long> getVariablesToValuesSorted() {
+//        Map<String, Long> variablesToValuesSorted = new LinkedHashMap<>();
+//
+//        variablesToValuesSorted.put(VariableType.RESULT.getVariableRepresentation(0), context.getVariableValue(Variable.RESULT));
+//
+//        for (Variable v : program.getInputAndWorkVariablesSortedBySerial()) {
+//            variablesToValuesSorted.put(v.getRepresentation(), context.getVariableValue(v));
+//        }
+//
+//        return variablesToValuesSorted;
+//    }
+
     @Override
     public Map<String, Long> getVariablesToValuesSorted() {
+        // Create a local copy of variables (to avoid concurrent modification)
+        List<Variable> safeVariables = new ArrayList<>(program.getInputAndWorkVariablesSortedBySerial());
+
         Map<String, Long> variablesToValuesSorted = new LinkedHashMap<>();
+        variablesToValuesSorted.put(VariableType.RESULT.getVariableRepresentation(0),
+                context.getVariableValue(Variable.RESULT));
 
-        variablesToValuesSorted.put(VariableType.RESULT.getVariableRepresentation(0), context.getVariableValue(Variable.RESULT));
-
-        for (Variable v : program.getInputAndWorkVariablesSortedBySerial()) {
+        for (Variable v : safeVariables) {
+            if (v == null) continue; // avoid null variables
             variablesToValuesSorted.put(v.getRepresentation(), context.getVariableValue(v));
         }
 

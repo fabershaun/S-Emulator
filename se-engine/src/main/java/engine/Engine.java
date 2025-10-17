@@ -37,7 +37,7 @@ public interface Engine {
     List<ProgramDTO> getAllPrograms();    // V2 (to recalculateOptions())
 
     // V3:
-    ProgramExecutorDTO getProgramAfterRunV3(String programName);
+    ProgramExecutorDTO getProgramAfterRunV3(String username);
     List<HistoryRowV3DTO> getHistoryV3PerProgram(String username);           // Version 3
     List<MainProgramDTO> getAvailableMainProgramsDTOsList();
     List<FunctionDTO> getAvailableFunctionsDTOsList();
