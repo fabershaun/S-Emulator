@@ -59,10 +59,8 @@ public class MainAppController {
         // Build the back button dynamically
         createBackToDashboardButton();
 
-        // Prepare components
+        // Prepare component
         loadLoginPage();
-        loadDashboardPage();
-
         setMainPanelTo(loginScreen);
     }
 
@@ -132,12 +130,16 @@ public class MainAppController {
     }
 
     public void switchToDashboard() {
+        if (dashboardScreen == null) {
+            loadDashboardPage();
+        }
+
         setMainPanelTo(dashboardScreen);
         if (backToDashboardButton != null) {
             backToDashboardButton.setVisible(false);
             backToDashboardButton.setManaged(false);
         }
-        dashboardController.startRefreshing();
+        dashboardController.startComponentRefreshing();
 
         // updates user's credits:
         appService.fetchUserCreditsAsync(

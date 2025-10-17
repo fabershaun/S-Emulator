@@ -162,7 +162,7 @@ public class DashboardController implements Closeable {
         mainAppController.switchToExecution(programSelectedName);
     }
 
-    public void startRefreshing() {
+    public void startComponentRefreshing() {
         usersListController.startListRefresher();
         availableProgramsListController.startListRefresher();
         availableFunctionsListController.startListRefresher();
