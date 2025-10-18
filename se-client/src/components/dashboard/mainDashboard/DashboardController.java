@@ -26,6 +26,7 @@ import utils.http.HttpClientUtil;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import static utils.Constants.*;
@@ -253,5 +254,10 @@ public class DashboardController implements Closeable {
 
     public void loadCurrentLoginUserHistory() {
         userHistoryListController.loadInitialHistory();
+    }
+
+    // When re-run was pressed
+    public void prepareForNewRun(String programName, int newDegree, List<Long> inputs, String chosenArchitecture) {
+        mainAppController.prepareForNewRun(programName, newDegree, inputs, chosenArchitecture);
     }
 }

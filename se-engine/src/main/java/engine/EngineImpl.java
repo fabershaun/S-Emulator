@@ -256,6 +256,7 @@ public class EngineImpl implements Engine, Serializable {
 
             HistoryRowV3DTO row = new HistoryRowV3DTO(
                     programDTO.getProgramType(),
+                    programDTO.getProgramName(),
                     programDTO.getProgramUserString(),
                     programExecutorDTO.getArchitectureTypeSelected(),
                     programExecutorDTO.getDegree(),

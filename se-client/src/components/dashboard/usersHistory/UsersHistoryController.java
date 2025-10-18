@@ -53,12 +53,24 @@ public class UsersHistoryController {
         colRunNumber.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(historyTable.getItems().indexOf(cellData.getValue()) + 1));
         colMainProgramOrFunction.setCellValueFactory(new PropertyValueFactory<>("programType"));
-        colProgramName.setCellValueFactory(new PropertyValueFactory<>(capitalizeOnlyFirstLetter("programUserString")));
+        colProgramName.setCellValueFactory(new PropertyValueFactory<>("programUserString"));
         colArchitectureType.setCellValueFactory(new PropertyValueFactory<>("architectureChoice"));
 
         colDegree.setCellValueFactory(new PropertyValueFactory<>("degree"));
         colResult.setCellValueFactory(new PropertyValueFactory<>("result"));
         colCycles.setCellValueFactory(new PropertyValueFactory<>("totalCycles"));
+
+        colProgramName.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(capitalizeOnlyFirstLetter(item));
+                }
+            }
+        });
     }
 
     public void setDashboardController(DashboardController dashboardController) {
@@ -138,11 +150,11 @@ public class UsersHistoryController {
 
     @FXML
     public void onReRun() {
+        String programName = selectedHistoryRow.getProgramName();
         int degree = selectedHistoryRow.getDegree();
         List<Long> inputs = selectedHistoryRow.getInputsValuesOfUser();
-        //mainController.prepareForNewRun(degree, inputs);  // TODO: WRITE AND WIRE
-        clearHistoryTableSelection();
-        throw new IllegalStateException("Need to write this code in UserHistoryController");
+        String chosenArchitecture = selectedHistoryRow.getArchitectureChoice();
+        dashboardController.prepareForNewRun(programName, degree, inputs, chosenArchitecture);
     }
 
     public void clearHistoryTableSelection() {

@@ -1,7 +1,9 @@
 package components.execution.debuggerExecutionMenu;
 
 import dto.v3.ArchitectureDTO;
+import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.collections.ListChangeListener;
 import utils.general.GeneralUtils;
 import components.execution.mainExecution.MainExecutionController;
 import dto.v2.DebugDTO;
@@ -528,5 +530,36 @@ public class DebuggerExecutionMenuController {
     public void clearVariableTableAndResetCycles() {
         variablesTable.getItems().clear();
         cyclesNumberLabel.setText("");
+    }
+
+    // When re-run was pressed
+    public void prepareForNewRun(List<Long> inputs, String chosenArchitecture) {
+        enterNewRunPressed(); // Like newRun was pressed
+
+        // Update inputs
+        List<VariableRowV3> inputTableRows = inputsTable.getItems();
+        for (int i = 0; i < inputTableRows.size() && i < inputs.size(); i++) {
+            inputTableRows.get(i).setVariableValue(inputs.get(i));
+        }
+
+        // Select the matching architecture in the ComboBox
+        if (chosenArchitecture != null && !chosenArchitecture.isEmpty()) {
+            final javafx.collections.ListChangeListener<ArchitectureDTO>[] listener = new ListChangeListener[1];
+
+            listener[0] = change -> {
+                if (!architectureComboBox.getItems().isEmpty()) {
+                    for (ArchitectureDTO architectureDTO : architectureComboBox.getItems()) {
+                        if (chosenArchitecture.equals(architectureDTO.getRepresentation())) {
+                            architectureComboBox.getSelectionModel().select(architectureDTO);
+                            break;
+                        }
+                    }
+                    architectureComboBox.getItems().removeListener(listener[0]); // ✅ ככה עובד
+                }
+            };
+
+            architectureComboBox.getItems().addListener(listener[0]);
+        }
+
     }
 }

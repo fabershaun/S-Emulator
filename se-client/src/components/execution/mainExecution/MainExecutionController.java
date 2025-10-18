@@ -150,6 +150,10 @@ public class MainExecutionController {
     }
 
     public void setupAfterMainAppInit(String programSelectedName) {
+        setupAfterMainAppInit(programSelectedName, null);
+    }
+
+    public void setupAfterMainAppInit(String programSelectedName, Runnable onProgramLoaded) {
         String url = buildUrlWithQueryParam(CURRENT_PROGRAM_DATA_PATH, PROGRAM_NAME_QUERY_PARAM, programSelectedName);
 
         appService.fetchProgramDataAsync(
@@ -157,6 +161,11 @@ public class MainExecutionController {
                 program -> Platform.runLater(() -> {
                     selectedProgramProperty.set(program);
                     initDegreeModel();
+
+                    // Call the callback after program data is ready
+                    if (onProgramLoaded != null) {
+                        onProgramLoaded.run();
+                    }
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Error", "Failed to fetch program: " + errorMsg)
@@ -481,5 +490,11 @@ public class MainExecutionController {
                         AlertUtils.showError("Step Back Failed", errorMsg)
                 )
         );
+    }
+
+    // When re-run was pressed
+    public void prepareForNewRun(int newDegree, List<Long> inputs, String chosenArchitecture) {
+        degreeModel.setCurrentDegree(newDegree);
+        debuggerExecutionMenuController.prepareForNewRun(inputs, chosenArchitecture);
     }
 }

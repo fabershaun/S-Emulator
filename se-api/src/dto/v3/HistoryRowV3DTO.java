@@ -6,6 +6,7 @@ import java.util.Map;
 public class HistoryRowV3DTO {
 
     private final String programType;
+    private final String programName;
     private final String programUserString;
     private final String architectureChoice;
     private final int degree;
@@ -14,9 +15,10 @@ public class HistoryRowV3DTO {
     private final Map<String, Long> variablesToValuesSorted;
     private final List<Long> inputsValues;
 
-    public HistoryRowV3DTO(String programType, String programName, String architectureChoice, int degree, long result, long totalCycles, Map<String, Long> variablesToValuesSorted, List<Long> inputsValues) {
+    public HistoryRowV3DTO(String programType, String programName, String programUserString, String architectureChoice, int degree, long result, long totalCycles, Map<String, Long> variablesToValuesSorted, List<Long> inputsValues) {
         this.programType = programType;
-        this.programUserString = programName;
+        this.programName = programName;
+        this.programUserString = programUserString;
         this.architectureChoice = architectureChoice;
         this.degree = degree;
         this.result = result;
@@ -27,6 +29,9 @@ public class HistoryRowV3DTO {
 
     public String getProgramType() {
         return programType;
+    }
+    public String getProgramName() {
+        return programName;
     }
     public String getProgramUserString() {
         return programUserString;

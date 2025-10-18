@@ -3,7 +3,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 
-<TableView fx:id="variablesTableView" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.usersHistory.UsersHistoryController">
+<TableView fx:id="variablesTableView" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.dashboard.usersHistory.historyRowPopUp.HistoryRowPopUpController">
     <columns>
         <TableColumn fx:id="colVariables" editable="false" maxWidth="1.7976931348623157E308" prefWidth="150.0" style="-fx-alignment: CENTER;" text="Variables" />
         <TableColumn fx:id="colVariablesValue" maxWidth="1.7976931348623157E308" prefWidth="150.0" style="-fx-alignment: CENTER;" text="Value" />

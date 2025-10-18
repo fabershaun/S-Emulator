@@ -22,6 +22,7 @@ import utils.ui.ToastUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import static utils.Constants.*;
 
@@ -86,21 +87,37 @@ public class MainAppController {
         }
     }
 
-    private void loadExecutionPage(String programSelectedName) {
+    private void loadExecutionPageInternal(String programName, Runnable onProgramLoaded) {
         URL executionPage = getClass().getResource(EXECUTION_PAGE_FXML_RESOURCE_LOCATION);
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(executionPage);
             executionScreen = fxmlLoader.load();
             executionController = fxmlLoader.getController();
+
+            // Set shared properties
             executionController.setMainAppController(this);
             executionController.setProgramService(appService);
             executionController.setProgramPollingService(programPollingService);
             executionController.setProperty(currentUserNameLogin, totalCreditsAmount);
-            executionController.setupAfterMainAppInit(programSelectedName);
+
+            // Load program data
+            executionController.setupAfterMainAppInit(programName, onProgramLoaded);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if (backToDashboardButton != null) {
+            backToDashboardButton.setVisible(true);
+            backToDashboardButton.setManaged(true);
+        }
+
+        setMainPanelTo(executionScreen);
+    }
+
+    private void loadExecutionPage(String programSelectedName) {
+        loadExecutionPageInternal(programSelectedName, null);
     }
 
     private void loadLoginPage() {
@@ -114,6 +131,12 @@ public class MainAppController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void prepareForNewRun(String programName, int newDegree, List<Long> inputs, String chosenArchitecture) {
+        loadExecutionPageInternal(programName, () -> {
+            executionController.prepareForNewRun(newDegree, inputs, chosenArchitecture);
+        });
     }
 
     private void setMainPanelTo(Parent pane) {
@@ -160,15 +183,7 @@ public class MainAppController {
 
     public void switchToExecution(String programSelectedName) {
         loadExecutionPage(programSelectedName);
-        if (backToDashboardButton != null) {
-            backToDashboardButton.setVisible(true);
-            backToDashboardButton.setManaged(true);
-        }
         setMainPanelTo(executionScreen);
-    }
-
-    public StringProperty currentUserNameLoginProperty() {
-        return currentUserNameLogin;
     }
 
     private void createBackToDashboardButton() {
