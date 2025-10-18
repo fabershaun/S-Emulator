@@ -47,14 +47,6 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public synchronized void removeUser(String username) {
-        if (!usernameToUserDTO.containsKey(username)) {
-            throw new NoSuchElementException("In EngineImpl, when try to remove the user: " + username + "' not found");
-        }
-        usernameToUserDTO.remove(username);
-    }
-
-    @Override
     public synchronized Set<UserDTO> getAllUsers() {
         Set<UserDTO> filteredUsers = usernameToUserDTO.values().stream()
                 .filter(user -> !user.getUserName().equals(UserDTO.DEFAULT_NAME))          // Remove default user (from version 2)
