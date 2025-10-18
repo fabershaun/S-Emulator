@@ -554,7 +554,7 @@ public class DebuggerExecutionMenuController {
                             break;
                         }
                     }
-                    architectureComboBox.getItems().removeListener(listener[0]); // ✅ ככה עובד
+                    architectureComboBox.getItems().removeListener(listener[0]);
                 }
             };
 

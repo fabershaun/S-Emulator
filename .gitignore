@@ -1,7 +1,36 @@
 ### IntelliJ IDEA ###
-out/
 .idea/
 *.iml
 *.ipr
 *.iws
+out/
+
+### Build & Deployment Artifacts ###
+/dist/
+/target/
+/build/
+/submit*/
+/WEB-INF/classes/
+/WEB-INF/lib/
+/artifacts/
+/bin/
+/lib/
+/se-gui/lib/javafx-sdk-*/
+
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+*.dll
+*.log
+
+### Tools ###
 /tools/jaxb-ri-4.0.5/
+/tools/okHttp/
+/tools/jaxb/
+/tools/jaxb-ri*/
+
+### System ###
+.DS_Store
+Thumbs.db

@@ -188,6 +188,10 @@ public class MainExecutionController {
     }
 
     public void jumpToDegree(int targetDegree) {
+        jumpToDegree(targetDegree, null);
+    }
+
+    private void jumpToDegree(int targetDegree, Runnable onLoaded) {
         String programName = requireCurrentProgramName();
         String jumpToDegreeUrl = HttpUrl.parse(JUMP_TO_DEGREE_PATH)
                 .newBuilder()
@@ -201,6 +205,7 @@ public class MainExecutionController {
                 expandedProgram -> Platform.runLater(() -> {
                     selectedProgramProperty.set(expandedProgram);
                     degreeModel.setCurrentDegree(targetDegree);
+                    if (onLoaded != null) onLoaded.run(); // run only after program loaded
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Network Error", errorMsg)
@@ -494,7 +499,8 @@ public class MainExecutionController {
 
     // When re-run was pressed
     public void prepareForNewRun(int newDegree, List<Long> inputs, String chosenArchitecture) {
-        degreeModel.setCurrentDegree(newDegree);
-        debuggerExecutionMenuController.prepareForNewRun(inputs, chosenArchitecture);
+        jumpToDegree(newDegree, () ->
+                debuggerExecutionMenuController.prepareForNewRun(inputs, chosenArchitecture)
+        );
     }
 }

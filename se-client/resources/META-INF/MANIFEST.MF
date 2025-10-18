@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Main-Class: main.Main
+Class-Path: se-engine.jar se-api.jar lib/javafx/javafx.base.jar
+ lib/javafx/javafx.controls.jar
+ lib/javafx/javafx.fxml.jar
+ lib/javafx/javafx.graphics.jar
+ lib/javafx/javafx.media.jar
+ lib/javafx/javafx.swing.jar
+ lib/javafx/javafx.web.jar
+ lib/javafx/javafx-swt.jar
+ lib/jaxb/jakarta.xml.bind-api.jar
+ lib/jaxb/jaxb-core.jar
+ lib/jaxb/jaxb-impl.jar
+ lib/jaxb/jakarta.activation-api.jar
+ lib/jaxb/angus-activation.jar
+ lib/gson/gson-2.11.0.jar
+ lib/okHttp/annotations-13.0.jar
+ lib/okHttp/kotlin-stdlib-1.4.10.jar
+ lib/okHttp/kotlin-stdlib-common-1.4.10.jar
+ lib/okHttp/okhttp-4.9.1.jar
+ lib/okHttp/okio-2.8.0.jar
