@@ -3,7 +3,6 @@ package components.execution.mainInstructionsTable;
 import components.execution.mainExecution.MainExecutionController;
 import components.execution.topToolBar.HighlightSelectionModelV3;
 import dto.v2.InstructionDTO;
-import dto.v2.InstructionsDTO;
 import dto.v2.ProgramDTO;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
@@ -11,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static utils.general.GeneralUtils.scrollToCenter;
@@ -68,7 +68,7 @@ public class MainInstructionsTableController {
         colArchitecture.setCellValueFactory(new PropertyValueFactory<>("architectureStr"));
 
         // Load the CSS file
-        String cssPath = getClass().getResource("/components/execution/mainInstructionsTable/mainInstructions.css").toExternalForm();
+        String cssPath = Objects.requireNonNull(getClass().getResource("/components/execution/mainInstructionsTable/mainInstructions.css")).toExternalForm();
         instructionsTable.getStylesheets().add(cssPath);
     }
 
@@ -182,10 +182,6 @@ public class MainInstructionsTableController {
 
     public void turnOffHighlighting() {
         instructionsTable.getSelectionModel().clearSelection();
-    }
-
-    public void fillTable(InstructionsDTO instructions) {
-        instructionsTable.getItems().setAll(instructions.getProgramInstructionsDtoList());
     }
 
     public List<Boolean> getBreakPoints() {

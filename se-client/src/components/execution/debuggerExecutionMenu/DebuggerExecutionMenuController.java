@@ -1,7 +1,6 @@
 package components.execution.debuggerExecutionMenu;
 
 import dto.v3.ArchitectureDTO;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import utils.general.GeneralUtils;
@@ -23,6 +22,7 @@ import javafx.util.converter.LongStringConverter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static utils.Constants.*;
 
@@ -39,7 +39,6 @@ public class DebuggerExecutionMenuController {
 
     @FXML private VBox debuggerExecutionMenu;
     @FXML private Button newRunButton;
-    @FXML private ToggleGroup runModeToggleGroup;
     @FXML private RadioButton runRadio;
     @FXML private RadioButton debugRadio;
     @FXML private ComboBox<ArchitectureDTO> architectureComboBox;
@@ -77,7 +76,7 @@ public class DebuggerExecutionMenuController {
         enterNoProgramLoaded();
 
         // Load custom CSS
-        String cssPath = getClass().getResource(DEBUGGER_CSS).toExternalForm();
+        String cssPath = Objects.requireNonNull(getClass().getResource(DEBUGGER_CSS)).toExternalForm();
         debuggerExecutionMenu.getStylesheets().add(cssPath);
 
         // Input table:
@@ -149,7 +148,7 @@ public class DebuggerExecutionMenuController {
 
         architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitectureDTO) -> {
             if (newArchitectureDTO == null) {
-                playButton.setDisable(true);
+                setPlayDisabled(false);
                 return;
             }
 
@@ -287,7 +286,7 @@ public class DebuggerExecutionMenuController {
     private void enterNoProgramLoaded() {
         currentMode = ApplicationMode.NO_PROGRAM_LOADED;
         setNewRunEnabled(false);
-        setPlayEnabled(false);
+        setPlayDisabled(true);
         setModeSelectionDisabled(true);
         setDebugControlsDisabled(true);
         setArchitectureComboBoxDisabled(true);
@@ -297,7 +296,7 @@ public class DebuggerExecutionMenuController {
     public void enterProgramReady() {
         currentMode = ApplicationMode.PROGRAM_READY;
         setNewRunEnabled(true);
-        setPlayEnabled(false);
+        setPlayDisabled(true);
         setModeSelectionDisabled(false);
         setDebugControlsDisabled(true);
         setArchitectureComboBoxDisabled(true);
@@ -309,7 +308,7 @@ public class DebuggerExecutionMenuController {
         setNewRunEnabled(true);
         setModeSelectionDisabled(false);
 
-        setPlayEnabled(false);  // need to choose architecture first
+        setPlayDisabled(true); // need to choose architecture first
         setDebugControlsDisabled(true);
         setArchitectureComboBoxDisabled(false);
         inputsTable.setEditable(true);
@@ -329,7 +328,7 @@ public class DebuggerExecutionMenuController {
         currentMode = ApplicationMode.RUN;
         setNewRunEnabled(true);
         setModeSelectionDisabled(true);
-        setPlayEnabled(false);
+        setPlayDisabled(true);
         setDebugControlsDisabled(true);
         setArchitectureComboBoxDisabled(true);
         inputsTable.setEditable(false);
@@ -339,7 +338,7 @@ public class DebuggerExecutionMenuController {
         currentMode = ApplicationMode.DEBUG;
         setNewRunEnabled(true);
         setModeSelectionDisabled(true);
-        setPlayEnabled(false);
+        setPlayDisabled(true);
         setDebugControlsDisabled(false);
         stepBackButton.setDisable(true); // Specific to shot down
         stopButton.setDisable(true);     // Specific to shot down
@@ -361,8 +360,8 @@ public class DebuggerExecutionMenuController {
         inputsTable.getItems().setAll(rows);
     }
 
-    private void setPlayEnabled(boolean enabled) {
-        playButton.setDisable(!enabled);
+    private void setPlayDisabled(boolean disable) {
+        playButton.setDisable(disable);
     }
 
     private void setDebugControlsDisabled(boolean disable) {
