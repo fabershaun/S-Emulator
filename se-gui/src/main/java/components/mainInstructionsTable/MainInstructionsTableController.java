@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static components.debuggerExecutionMenu.DebuggerExecutionMenuController.scrollToCenter;
@@ -65,7 +66,7 @@ public class MainInstructionsTableController {
         colCycles.setCellValueFactory(new PropertyValueFactory<>("cyclesNumber"));
 
         // Load the CSS file
-        String cssPath = getClass().getResource("/components/mainInstructionsTable/mainInstructions.css").toExternalForm();
+        String cssPath = Objects.requireNonNull(getClass().getResource("/components/mainInstructionsTable/mainInstructions.css")).toExternalForm();
         instructionsTable.getStylesheets().add(cssPath);
     }
 

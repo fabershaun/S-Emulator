@@ -1,5 +1,6 @@
 package components.dashboard.loadFileClient;
 
+import javafx.scene.layout.HBox;
 import utils.ui.AlertUtils;
 import components.dashboard.mainDashboard.DashboardController;
 import javafx.animation.Animation;
@@ -13,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import java.io.File;
+import java.util.Objects;
 
 
 public class LoadFileController {

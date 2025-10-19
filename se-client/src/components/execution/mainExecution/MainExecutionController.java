@@ -37,7 +37,6 @@ import static utils.Constants.GSON_INSTANCE;
 public class MainExecutionController {
 
     private MainAppController mainAppController;
-    private static final ExecutorService CLIENT_EXECUTOR = Executors.newFixedThreadPool(2);
 
     private AppService appService;
     private ProgramPollingService programPollingService;
@@ -132,6 +131,10 @@ public class MainExecutionController {
         );
     }
 
+    private void initHighlightSelectionModel() {
+        highlightSelectionModel.setProgram(selectedProgramProperty.get());
+    }
+
     public void setMainAppController(MainAppController mainAppController) {
         this.mainAppController = mainAppController;
     }
@@ -156,6 +159,7 @@ public class MainExecutionController {
                 program -> Platform.runLater(() -> {
                     selectedProgramProperty.set(program);
                     initDegreeModel();
+                    initHighlightSelectionModel();
 
                     // Call the callback after program data is ready
                     if (onProgramLoaded != null) {

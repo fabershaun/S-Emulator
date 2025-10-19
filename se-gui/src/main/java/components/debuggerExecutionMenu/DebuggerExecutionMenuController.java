@@ -21,6 +21,7 @@ import javafx.util.converter.LongStringConverter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DebuggerExecutionMenuController {
 
@@ -63,7 +64,7 @@ public class DebuggerExecutionMenuController {
         enterNoProgramLoaded();
 
         // Load custom CSS
-        String cssPath = getClass().getResource("/components/debuggerExecutionMenu/debuggerMenu.css").toExternalForm();
+        String cssPath = Objects.requireNonNull(getClass().getResource("/components/debuggerExecutionMenu/debuggerMenu.css")).toExternalForm();
         debuggerExecutionMenu.getStylesheets().add(cssPath);
 
         // Input table:
