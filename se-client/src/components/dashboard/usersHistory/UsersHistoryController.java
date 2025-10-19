@@ -26,7 +26,6 @@ public class UsersHistoryController {
     private DashboardController dashboardController;
     private ObjectProperty<UserDTO> selectedUserProperty;
     private StringProperty currentUserLoginProperty;
-    private boolean showingOtherUser = false; // Indicates whether a non-logged-in user's history is displayed
 
     private HistoryRowV3DTO selectedHistoryRow;
     private int selectedRowIndex;

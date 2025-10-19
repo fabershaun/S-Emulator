@@ -34,7 +34,7 @@ public class ProgramStatusServlet extends HttpServlet {
             ProgramRunStatus status = ProgramExecutionManager.getInstance().getStatus(runId);
 
             if (status == null) {
-                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Run ID not found", "status is null");
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Run ID not found");
                 return;
             }
 
@@ -50,7 +50,7 @@ public class ProgramStatusServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while fetching program status", e.getMessage());
+                    "Server error while fetching program status: " + e.getMessage());
         }
     }
 }

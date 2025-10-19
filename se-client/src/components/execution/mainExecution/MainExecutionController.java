@@ -306,14 +306,6 @@ public class MainExecutionController {
                         AlertUtils.showError("Run Failed", errorMsg)
                 )
         );
-
-        // Update credit amount
-        appService.fetchUserCreditsAsync(
-                FETCH_CREDITS_PATH,
-                null,
-                credits -> Platform.runLater(() -> totalCreditsAmount.set(credits)),
-                errorMsg -> Platform.runLater(() -> AlertUtils.showError("Error", errorMsg))
-        );
     }
 
     // Checks the current execution status of the program on the server
@@ -323,7 +315,7 @@ public class MainExecutionController {
 
             appService.fetchProgramStatusAsync(
                     url,
-                    state -> handleProgramState(runId, state), // "DONE", "FAILED", etc.
+                    state -> handleProgramState(runId, state),
                     errorMsg -> Platform.runLater(() ->
                             AlertUtils.showError("Program Execution Failed", errorMsg)
                     )
@@ -358,6 +350,8 @@ public class MainExecutionController {
         } else if ("DONE".equals(state)) {
             handleProgramDone(runId);
         }
+
+        updateUserCreditsAsync();
     }
 
     // Called when the program finishes successfully
@@ -378,7 +372,21 @@ public class MainExecutionController {
     // Called when the program fails on the server
     private void handleProgramFailed(String state) {
         programPollingService.stopPolling();
-        String errorMsg = state.contains(":") ? state.split(":", 2)[1] : "Program execution failed.";
+        String errorMsg;
+        if (state.contains(":")) {
+
+            String[] parts = state.split(":", 3);
+            if (parts.length >= 3) {
+                errorMsg = parts[1] + " - " + parts[2];
+            } else if (parts.length == 2) {
+                errorMsg = parts[1];
+            } else {
+                errorMsg = "Program execution failed.";
+            }
+        } else {
+            errorMsg = "Program execution failed.";
+        }
+
         Platform.runLater(() -> AlertUtils.showError("Program Execution Failed", errorMsg));
     }
 

@@ -277,11 +277,14 @@ public class AppService {
 
                 if (!response.isSuccessful()) {
                     try {
-                        JsonObject obj = GSON_INSTANCE.fromJson(body, JsonObject.class);
-                        String message = obj != null && obj.has(ERROR) ? obj.get(ERROR).getAsString() : "Program execution failed on server.";
-                        String details = obj != null && obj.has(DETAILS) ? obj.get(DETAILS).getAsString() : "";
-                        String fullMessage = details.isEmpty() ? message : message + " - " + details;
-                        onError.accept(fullMessage);
+                        JsonObject json  = GSON_INSTANCE.fromJson(body, JsonObject.class);
+                        String message;
+                        if (json != null && json.has(ERROR)) {
+                            message = json.get(ERROR).getAsString();
+                        } else {
+                            message = "Program execution failed on server.";
+                        }
+                        onError.accept(message);
                     } catch (Exception e) {
                         onError.accept("Program execution failed on server.");
                     }
@@ -331,11 +334,11 @@ public class AppService {
 
                 String state = json.get(STATE).getAsString();
 
-                // If FAILED, surface server error/details to UI
                 if ("FAILED".equals(state)) {
-                    String err = json.has(ERROR) ? json.get(ERROR).getAsString() : "Program execution failed on server.";
-                    String det = json.has(DETAILS) ? json.get(DETAILS).getAsString() : "";
-                    onSuccess.accept("FAILED:" + (det.isEmpty() ? err : err + " - " + det));
+                    String err = json.has(ERROR)
+                            ? json.get(ERROR).getAsString()
+                            : "Program execution failed on server.";
+                    onSuccess.accept("FAILED:" + err);
                     return;
                 }
 

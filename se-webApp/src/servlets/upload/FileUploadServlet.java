@@ -36,7 +36,7 @@ public class FileUploadServlet extends HttpServlet {
 
             if (filePart == null || filePart.getSize() == 0) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "No file uploaded", "Upload request did not include a valid XML file");
+                        "No file uploaded. Probably upload request did not included a valid XML file");
                 return;
             }
 

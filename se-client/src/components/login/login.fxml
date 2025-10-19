@@ -41,7 +41,7 @@
             <Button mnemonicParsing="false" onAction="#onLoginButtonClicked" styleClass="main-action-button" text="Login" />
             <Button id="quit-button" mnemonicParsing="false" onAction="#onQuitButtonClicked" styleClass="main-action-button" text="Quit" />
           <padding>
-              <Insets top="30.0" />
+              <Insets top="15.0" />
           </padding>
         </HBox>
     </VBox>

@@ -48,7 +48,7 @@ public class ResumeServlet extends HttpServlet {
             writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while resuming debugger", e.getMessage());
+                    "Server error while resuming debugger: " + e.getMessage());
         }
     }
 }

@@ -36,21 +36,21 @@ public class ProgramAfterRunServlet extends HttpServlet {
             ProgramRunStatus status = manager.getStatus(runId);
 
             if (status == null) {
-                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Unknown runId", "No matching execution found for this ID");
+                writeJsonError(response, HttpServletResponse.SC_NOT_FOUND, "Unknown runId. No matching execution found for this ID");
                 return;
             }
 
             if (status.state == ProgramRunState.FAILED) {
                 // Execution has completed but ended in failure
                 writeJsonError(response, HttpServletResponse.SC_CONFLICT,
-                        "Program execution failed", status.error);
+                        "Program execution failed: " + status.error);
                 return;
             }
 
             if (status.state != ProgramRunState.DONE) {
                 // Execution is still running or pending
                 writeJsonError(response, HttpServletResponse.SC_CONFLICT,
-                        "Program not finished yet", "Run is still in progress");
+                        "Program not finished yet. Run is still in progress");
                 return;
             }
 
@@ -61,13 +61,13 @@ public class ProgramAfterRunServlet extends HttpServlet {
             } catch (IllegalStateException e) {
                 // History not yet updated due to short timing gap, retry on next poll
                 writeJsonError(response, HttpServletResponse.SC_CONFLICT,
-                        "Program not finished yet", "Result not persisted yet; please retry shortly");
+                        "Program not finished yet. Result not persisted yet; please retry shortly");
                 return;
             }
 
             if (programAfterRun == null) {
                 writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Program after run unavailable", "Possible internal error");
+                        "Program after run unavailable. Possible internal error");
                 return;
             }
 
@@ -76,7 +76,8 @@ public class ProgramAfterRunServlet extends HttpServlet {
 
 
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while retrieving program result", e.getMessage());
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Server error while retrieving program result: " + e.getMessage());
         }
     }
 }

@@ -15,14 +15,12 @@
     <TableView fx:id="historyTable">
         <columns>
             <TableColumn fx:id="colRunNumber" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Run Number"/>
-            <TableColumn fx:id="colMainProgramOrFunction" prefWidth="120.0" style="-fx-alignment: CENTER;"
-                         text="Main / Function"/>
+            <TableColumn fx:id="colMainProgramOrFunction" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Main / Function"/>
             <TableColumn fx:id="colProgramName" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Name"/>
-            <TableColumn fx:id="colArchitectureType" prefWidth="120.0" style="-fx-alignment: CENTER;"
-                         text="Architecture type"/>
+            <TableColumn fx:id="colArchitectureType" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Architecture"/>
             <TableColumn fx:id="colDegree" prefWidth="60.0" style="-fx-alignment: CENTER;" text="Degree"/>
             <TableColumn fx:id="colResult" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Result"/>
-            <TableColumn fx:id="colCycles" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Avg Cycles"/>
+            <TableColumn fx:id="colCycles" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Cycles"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

@@ -166,9 +166,13 @@ public class EngineImpl implements Engine, Serializable {
         ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
         ProgramExecutor programExecutor = new ProgramExecutorImpl(workingProgram, architectureTypeSelected);
         UserDTO userDTO = getUserDTO(uploaderName);
-        UserLogic.incrementExecutions(userDTO);
 
-        programExecutor.run(userDTO, degree, inputs); // The important method
+        // User calculation
+        UserLogic.incrementExecutions(userDTO);
+        UserLogic.subtractCredits(userDTO, architectureTypeSelected.getCreditsCost());
+
+        // Execute the program
+        programExecutor.run(userDTO, degree, inputs);
 
         // Update Execution count and Credits cost in Original program
         Program originalProgram = getProgramByName(programName);
@@ -447,6 +451,7 @@ public class EngineImpl implements Engine, Serializable {
         UserDTO userDTO = getUserDTO(uploaderName);
 
         ArchitectureType architectureTypeSelected = ArchitectureType.fromRepresentation(architectureTypeRepresentation);
+        UserLogic.subtractCredits(userDTO, architectureTypeSelected.getCreditsCost());
 
         // ALWAYS -> OVERWRITE the previous value
         Debug newDebug = new DebugImpl(workingProgram, architectureTypeSelected, degree, inputs, uploaderName, userDTO);

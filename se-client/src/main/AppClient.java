@@ -1,6 +1,5 @@
 package main;
 
-import components.mainAppV3.MainAppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +10,6 @@ import java.net.URL;
 import static utils.Constants.MAIN_PAGE_FXML_RESOURCE_LOCATION;
 
 public class AppClient extends Application {
-    private MainAppController mainAppController;
 
     public void run() {
         launch();
@@ -26,7 +24,6 @@ public class AppClient extends Application {
         URL url = getClass().getResource(MAIN_PAGE_FXML_RESOURCE_LOCATION);
         loader.setLocation(url);
         Parent root = loader.load();
-        mainAppController = loader.getController();
 
         // Set stage
         stage.setTitle("S-Emulator");
@@ -34,11 +31,4 @@ public class AppClient extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
-    // todo
-//    @Override
-//    public void stop() throws Exception {
-//        HttpClientUtil.shutdown();
-//        mainAppController.close();
-//    }
 }

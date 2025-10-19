@@ -30,7 +30,7 @@ public class AvailableProgramsServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while fetching available programs", e.getMessage());
+                    "Server error while fetching available programs: " + e.getMessage());
         }
     }
 }

@@ -47,7 +47,7 @@ public class AddCreditsServlet extends HttpServlet {
             response.getWriter().write(GSON_INSTANCE.toJson(updatedCredits));
 
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server Error", e.getMessage());
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server Error: " + e.getMessage());
         }
     }
 }

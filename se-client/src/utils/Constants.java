@@ -11,7 +11,6 @@ public class Constants {
 
     public static final String STATE = "state";
     public static final String ERROR = "error";
-    public static final String DETAILS = "details";
     // CSS:
     public final static String DEBUGGER_CSS = "/components/execution/debuggerExecutionMenu/debuggerMenu.css";
 

@@ -31,7 +31,7 @@ public class ValidationUtils {
         for (String field : requiredFields) {
             if (!body.has(field)) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "Missing required field", "Field '" + field + "' is required");
+                        "Missing required field: " + field);
                 return false;
             }
         }
@@ -51,13 +51,13 @@ public class ValidationUtils {
     public static boolean validateCreditsToAdd(Long amountToAdd, HttpServletResponse response) throws IOException {
 
         if (amountToAdd == null) {
-            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, "Credits amount is null", "");
+            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, "Credits amount is null");
             return false;
         }
 
         if (amountToAdd <= 0) {
             writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "Invalid amount", "Amount must be positive");
+                    "Invalid amount: Amount must be positive");
             return false;
         }
         return true;
@@ -133,24 +133,11 @@ public class ValidationUtils {
     }
 
     public static void writeJsonError(HttpServletResponse response, int statusCode, String message) throws IOException {
-        writeJsonError(response, statusCode, message, null);
-    }
-
-    /**
-     * Writes a standardized JSON error response.
-     * If details is null, it will be omitted from the JSON.
-     */
-    public static void writeJsonError(HttpServletResponse response, int statusCode, String message, String details) throws IOException {
         response.setStatus(statusCode);
         response.setContentType("application/json");
 
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put(ERROR, message);
-
-        // Add details only if provided
-        if (details != null && !details.isEmpty()) {
-            errorResponse.put(DETAILS, details);
-        }
 
         response.getWriter().write(GSON_INSTANCE.toJson(errorResponse));
     }

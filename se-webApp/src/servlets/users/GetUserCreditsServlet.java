@@ -33,7 +33,7 @@ public class GetUserCreditsServlet extends HttpServlet {
 
             if (userDTO == null) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "User not found", "No user with name: " + username);
+                        "User not found: " + username);
                 return;
             }
 
@@ -44,7 +44,7 @@ public class GetUserCreditsServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server Error", e.getMessage());
+                    "Server Error: " + e.getMessage());
         }
     }
 }

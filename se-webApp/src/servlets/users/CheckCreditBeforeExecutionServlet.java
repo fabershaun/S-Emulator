@@ -38,7 +38,7 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
             UserDTO userDTO = engine.getUserDTO(username);
             if (userDTO == null) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "User not found", "No user with name: " + username);
+                        "User not found: " + username);
                 return;
             }
 
@@ -53,7 +53,7 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
             ProgramDTO programDTO = engine.getProgramDTOByName(programName);
             if (programDTO == null) {
                 writeJsonError(response, HttpServletResponse.SC_NOT_FOUND,
-                        "Program not found", "No program found with the given name");
+                        "Program not found");
                 return;
             }
 
@@ -68,11 +68,11 @@ public class CheckCreditBeforeExecutionServlet extends HttpServlet {
 
         } catch (IllegalArgumentException e) {
             writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "Invalid data", e.getMessage());
+                    "Invalid data: " + e.getMessage());
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server Error", e.getMessage());
+                    "Server Error: " + e.getMessage());
         }
     }
 }

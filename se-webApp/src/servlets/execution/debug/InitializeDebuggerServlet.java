@@ -52,7 +52,7 @@ public class InitializeDebuggerServlet extends HttpServlet {
 
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while initialize debugger", e.getMessage());
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while initialize debugger: " + e.getMessage());
         }
 
     }

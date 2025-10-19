@@ -46,7 +46,7 @@ public class RunProgramServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error during program submission", e.getMessage());
+                    "Server error during program submission: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -34,7 +34,7 @@ public class StepOverServlet extends HttpServlet {
         } catch (IllegalStateException e) {
             writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while performing step-over", e.getMessage());
+            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error while performing step-over: " + e.getMessage());
             e.printStackTrace();
         }
     }

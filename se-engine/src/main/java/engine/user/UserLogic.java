@@ -23,6 +23,8 @@ public class UserLogic {
         user.setUsedCredits(user.getUsedCredits() + creditsToSubtract);
 
         if (user.getCurrentCredits() < 0) {
+            user.setCurrentCredits(0);
+
             String errorMessage = "Execution isn't finished." + System.lineSeparator() +
                     "You don't have enough credits." + System.lineSeparator() +
                     "Current credits amount: " + user.getCurrentCredits();

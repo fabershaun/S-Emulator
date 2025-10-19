@@ -33,7 +33,7 @@ public class ArchitectureTypesServlet extends HttpServlet {
         }
         catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while fetching architectures", e.getMessage());
+                    "Server error while fetching architectures: " + e.getMessage());
 
         }
     }

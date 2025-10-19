@@ -31,7 +31,7 @@ public class StopServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Failed to stop debugger", e.getMessage());
+                    "Failed to stop debugger: " + e.getMessage());
         }
     }
 }

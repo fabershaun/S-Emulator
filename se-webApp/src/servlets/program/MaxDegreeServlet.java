@@ -28,7 +28,7 @@ public class MaxDegreeServlet extends HttpServlet {
             String programName = request.getParameter(PROGRAM_NAME_QUERY_PARAM);
             if (programName == null || programName.isEmpty()) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "Missing program name", "");
+                        "Missing program name");
                 return;
             }
 
@@ -36,7 +36,7 @@ public class MaxDegreeServlet extends HttpServlet {
 
             if (maxDegree < 0) {
                 writeJsonError(response, HttpServletResponse.SC_NOT_FOUND,
-                        "Program not found", "No program found with the given name");
+                        "Program not found");
                 return;
             }
 
@@ -45,7 +45,7 @@ public class MaxDegreeServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while fetching max degree", e.getMessage());
+                    "Server error while fetching max degree: " + e.getMessage());
         }
     }
 }

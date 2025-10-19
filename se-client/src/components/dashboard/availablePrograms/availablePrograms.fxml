@@ -10,11 +10,11 @@
     <TableView fx:id="availableProgramTableView">
         <columns>
             <TableColumn fx:id="colProgramName" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Program Name" />
-            <TableColumn fx:id="colUserUploaded" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Uploader" />
-            <TableColumn fx:id="colInstructionsAmount" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Instructions" />
+            <TableColumn fx:id="colUserUploaded" prefWidth="70.0" style="-fx-alignment: CENTER;" text="Uploader" />
+            <TableColumn fx:id="colInstructionsAmount" prefWidth="81.0" style="-fx-alignment: CENTER;" text="Instructions" />
             <TableColumn fx:id="colMaxDegree" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Max Degree" />
             <TableColumn fx:id="colTimesPlayed" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Times Played" />
-            <TableColumn fx:id="colAverageCreditsCost" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Credits Usage" />
+            <TableColumn fx:id="colAverageCreditsCost" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Avg Credits Usage" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

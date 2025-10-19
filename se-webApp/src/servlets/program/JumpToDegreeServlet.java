@@ -34,13 +34,13 @@ public class JumpToDegreeServlet extends HttpServlet {
 
             if (programName == null || programName.isEmpty()) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "Missing program name", "");
+                        "Missing program name");
                 return;
             }
 
             if (degreeParam == null || degreeParam.isEmpty()) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "Missing target degree", "");
+                        "Missing target degree");
                 return;
             }
 
@@ -49,14 +49,14 @@ public class JumpToDegreeServlet extends HttpServlet {
                 targetDegree = Integer.parseInt(degreeParam);
             } catch (NumberFormatException e) {
                 writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "Invalid target degree", "Degree must be a number");
+                        "Invalid target degree. Degree must be a number");
                 return;
             }
 
             ProgramDTO programDTO = engine.getExpandedProgramDTO(programName, targetDegree);
             if (programDTO == null) {
                 writeJsonError(response, HttpServletResponse.SC_NOT_FOUND,
-                        "Program not found", "No program matches the given name and degree");
+                        "Program not found: no program matches the given name and degree");
                 return;
             }
 
@@ -65,7 +65,7 @@ public class JumpToDegreeServlet extends HttpServlet {
 
         } catch (Exception e) {
             writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error while fetching program by degree", e.getMessage());
+                    "Server error while fetching program by degree: " + e.getMessage());
         }
     }
 }
