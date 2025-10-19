@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -9,39 +10,39 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<StackPane fx:id="rootStackPane" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.mainAppV3.MainAppController">
+    <ScrollPane fitToWidth="true" fitToHeight="true" maxWidth="Infinity" maxHeight="Infinity">
+        <VBox alignment="TOP_CENTER" prefHeight="500" prefWidth="1100" spacing="20.0">
 
-<StackPane fx:id="rootStackPane" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="components.mainAppV3.MainAppController">
-    <VBox alignment="TOP_CENTER" prefHeight="500" prefWidth="1100" spacing="20.0">
+            <!-- Header Section -->
+            <GridPane fx:id="headerGridPane" alignment="TOP_CENTER">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label fx:id="userNameLabel1" style="-fx-font-size: 14px; -fx-text-fill: #555;" text="User Name:"/>
+                    <Label fx:id="userNameLabel2" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                </HBox>
+                <Label alignment="CENTER" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #222;"
+                       text="S-Emulator" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1"
+                       GridPane.valignment="CENTER"/>
+                <HBox alignment="CENTER_RIGHT" spacing="5" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                    <Label fx:id="availableCreditsLabel1" style="-fx-font-size: 14px; -fx-text-fill: #555;"
+                           text="Available Credits:"/>
+                    <Label fx:id="availableCreditsLabel2" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                </HBox>
+            </GridPane>
 
-        <!-- Header Section -->
-        <GridPane fx:id="headerGridPane" alignment="TOP_CENTER">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="5.0" minWidth="5.0" prefWidth="5.0"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-            </rowConstraints>
-            <HBox alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Label fx:id="userNameLabel1" style="-fx-font-size: 14px; -fx-text-fill: #555;" text="User Name:"/>
-                <Label fx:id="userNameLabel2" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-            </HBox>
-            <Label alignment="CENTER" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #222;"
-                   text="S-Emulator" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1"
-                   GridPane.valignment="CENTER"/>
-            <HBox alignment="CENTER_RIGHT" spacing="5" GridPane.columnIndex="3" GridPane.rowIndex="1">
-                <Label fx:id="availableCreditsLabel1" style="-fx-font-size: 14px; -fx-text-fill: #555;"
-                       text="Available Credits:"/>
-                <Label fx:id="availableCreditsLabel2" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-            </HBox>
-        </GridPane>
-
-        <!-- Dynamic content area -->
-        <AnchorPane fx:id="mainPanel" VBox.vgrow="ALWAYS"/>
-    </VBox>
+            <!-- Dynamic content area -->
+            <AnchorPane fx:id="mainPanel" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </ScrollPane>
 </StackPane>
