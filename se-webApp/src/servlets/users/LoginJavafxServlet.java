@@ -36,8 +36,7 @@ public class LoginJavafxServlet extends HttpServlet {
             // Username not in session, check parameter
             String usernameFromParameter = request.getParameter(USERNAME_QUERY_PARAM);
             if (usernameFromParameter == null || usernameFromParameter.isEmpty()) {
-                writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                        "Missing username", "No username provided in request");
+                sendMessage(response, HttpServletResponse.SC_BAD_REQUEST, "Missing username");
                 return;
             }
 
@@ -46,9 +45,7 @@ public class LoginJavafxServlet extends HttpServlet {
             // synchronized on: isUserExists() and addUser()
             synchronized (engine) {
                 if (engine.isUserExists(usernameFromParameter)) {
-                    writeJsonError(response, HttpServletResponse.SC_CONFLICT,
-                            "Username already exists",
-                            "Username " + usernameFromParameter + " is already in use");
+                    sendMessage(response, HttpServletResponse.SC_CONFLICT, "Username is already in use");
                     return;
                 }
 
@@ -61,8 +58,13 @@ public class LoginJavafxServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Server error during login", e.getMessage());
+            sendMessage(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Something went wrong, please try again");
         }
+    }
+
+    private void sendMessage(HttpServletResponse response, int statusCode, String message) throws IOException {
+        response.setStatus(statusCode);
+        response.getWriter().write(GSON_INSTANCE.toJson(message));
     }
 }

@@ -29,7 +29,7 @@ import static utils.Constants.*;
 public class MainAppController {
 
     private final ProgramPollingService programPollingService = new ProgramPollingService();
-    private AppService appService = new AppService();
+    private final AppService appService = new AppService();
 
     private final LongProperty totalCreditsAmount = new SimpleLongProperty();
     private final StringProperty currentUserNameLogin;
@@ -42,8 +42,10 @@ public class MainAppController {
     private LoginController loginController;
 
     @FXML private StackPane rootStackPane;
-    @FXML private Label availableCreditsLabel;
-    @FXML private Label userNameLabel;
+    @FXML private Label availableCreditsLabel1;
+    @FXML private Label availableCreditsLabel2;
+    @FXML private Label userNameLabel1;
+    @FXML private Label userNameLabel2;
     @FXML private AnchorPane mainPanel;     // Dynamic area (login / dashboard)
     @FXML private GridPane headerGridPane;
     private Button backToDashboardButton;
@@ -54,8 +56,10 @@ public class MainAppController {
 
     @FXML
     public void initialize() {
-        userNameLabel.textProperty().bind(currentUserNameLogin);
-        availableCreditsLabel.textProperty().bind(totalCreditsAmount.asString());
+        userNameLabel2.textProperty().bind(currentUserNameLogin);
+        availableCreditsLabel2.textProperty().bind(totalCreditsAmount.asString());
+
+        makeHeaderVisible(false);
 
         // Build the back button dynamically
         createBackToDashboardButton();
@@ -63,12 +67,6 @@ public class MainAppController {
         // Prepare component
         loadLoginPage();
         setMainPanelTo(loginScreen);
-    }
-
-    @FXML
-    private void onBackToDashboardClicked() {
-        programPollingService.stopPolling();
-        switchToDashboard();
     }
 
     private void loadDashboardPage() {
@@ -116,6 +114,28 @@ public class MainAppController {
         setMainPanelTo(executionScreen);
     }
 
+    private void makeHeaderVisible(boolean enable) {
+        if (availableCreditsLabel2 != null) {
+            availableCreditsLabel2.setVisible(enable);
+            availableCreditsLabel2.setManaged(enable);
+        }
+
+        if (availableCreditsLabel1 != null) {
+            availableCreditsLabel1.setVisible(enable);
+            availableCreditsLabel1.setManaged(enable);
+        }
+
+        if (userNameLabel1 != null) {
+            userNameLabel1.setVisible(enable);
+            userNameLabel1.setManaged(enable);
+        }
+
+        if (userNameLabel2 != null) {
+            userNameLabel2.setVisible(enable);
+            userNameLabel2.setManaged(enable);
+        }
+    }
+
     private void loadExecutionPage(String programSelectedName) {
         loadExecutionPageInternal(programSelectedName, null);
     }
@@ -157,7 +177,9 @@ public class MainAppController {
             loadDashboardPage();
         }
 
+        makeHeaderVisible(true);
         setMainPanelTo(dashboardScreen);
+
         if (backToDashboardButton != null) {
             backToDashboardButton.setVisible(false);
             backToDashboardButton.setManaged(false);
@@ -174,15 +196,9 @@ public class MainAppController {
         );
     }
 
-    public void switchToLogin() {
-        Platform.runLater(() -> {
-            currentUserNameLogin.set(ANONYMOUS);
-            setMainPanelTo(loginScreen);
-        });
-    }
-
     public void switchToExecution(String programSelectedName) {
         loadExecutionPage(programSelectedName);
+        makeHeaderVisible(true);
         setMainPanelTo(executionScreen);
     }
 

@@ -50,13 +50,13 @@ public class LoginController {
         HttpClientUtil.runAsync(finalUrl, null, new Callback() {
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 try (ResponseBody ignored = response.body()) {
                     if (!response.isSuccessful()) {
                         String responseBody = HttpClientUtil.readResponseBodySafely(response);
-                        Platform.runLater(() ->
-                                errorMessageProperty.set("Something went wrong: " + responseBody)
-                        );
+                        if (responseBody != null) {
+                            Platform.runLater(() -> errorMessageProperty.set(responseBody.replaceAll("^\"|\"$", "")));
+                        }
                     } else {
                         Platform.runLater(() -> {
                             mainAppController.updateUserName(userName);
