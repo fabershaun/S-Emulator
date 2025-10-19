@@ -104,8 +104,9 @@ public class MainExecutionController {
     }
 
     private void initSummaryLineController() {
-        summaryLineController.setProperty(selectedProgramProperty);
+        summaryLineController.setProperty(selectedProgramProperty, architectureRankProperty);
         summaryLineController.initializeBindings();
+        summaryLineController.initializeColorBindings();
     }
 
     private void initDebuggerExecutionMenuController() {

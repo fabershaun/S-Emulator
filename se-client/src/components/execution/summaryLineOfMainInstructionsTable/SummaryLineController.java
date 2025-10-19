@@ -4,7 +4,10 @@ import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -13,6 +16,7 @@ import java.util.List;
 public class SummaryLineController {
 
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
+    private IntegerProperty architectureRankProperty;
 
     @FXML private Label amountTotalLabel;
     @FXML private Label amountBasicLabel;
@@ -23,8 +27,9 @@ public class SummaryLineController {
     @FXML private Label a4Label;
 
 
-    public void setProperty(ObjectProperty<ProgramDTO> programProperty) {
+    public void setProperty(ObjectProperty<ProgramDTO> programProperty, IntegerProperty architectureRankProperty) {
         this.currentSelectedProgramProperty = programProperty;
+        this.architectureRankProperty = architectureRankProperty;
     }
 
     public void initializeBindings() {
@@ -102,6 +107,43 @@ public class SummaryLineController {
         return (int) list.stream()
                 .filter(instr -> architectureType.equals(instr.getArchitectureStr()))
                 .count();
+    }
+
+    public void initializeColorBindings() {
+        if (architectureRankProperty == null || currentSelectedProgramProperty == null) return;
+
+        // Listen to changes in either the selected program or the chosen architecture
+        ChangeListener<Object> listener = (obs, oldVal, newVal) -> updateArchitectureLabelColors();
+        architectureRankProperty.addListener(listener);
+        currentSelectedProgramProperty.addListener(listener);
+    }
+
+    private void updateArchitectureLabelColors() {
+        ProgramDTO program = currentSelectedProgramProperty.get();
+        if (program == null) return;
+
+        // Get the minimum architecture rank required by the current program
+        int minRank = program.getMiniminRequireRank();
+
+        // Reset all label colors before applying new ones
+        Label[] labels = {a1Label, a2Label, a3Label, a4Label};
+        for (Label label : labels) {
+            label.setStyle("-fx-background-color: transparent; -fx-text-fill: black; -fx-font-weight: bold;");
+        }
+
+        // Apply colors based on rank comparison
+        for (int i = 0; i < labels.length; i++) {
+            int rank = i + 1;
+            if (rank < minRank) {
+                if (architectureRankProperty.get() < minRank) {    // Color in red only if the chosen one is not enough
+                    // Architecture below the minimum requirement → red text
+                    labels[i].setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-font-weight: bold;");
+                }
+            } else {
+                // Architecture equal or above the minimum requirement → green text
+                labels[i].setStyle("-fx-background-color: transparent; -fx-text-fill: green; -fx-font-weight: bold;");
+            }
+        }
     }
 
 }
