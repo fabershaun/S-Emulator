@@ -97,7 +97,7 @@ public class MainAppController {
             executionController.setMainAppController(this);
             executionController.setProgramService(appService);
             executionController.setProgramPollingService(programPollingService);
-            executionController.setProperty(currentUserNameLogin, totalCreditsAmount);
+            executionController.setProperty(totalCreditsAmount);
 
             // Load program data
             executionController.setupAfterMainAppInit(programName, onProgramLoaded);

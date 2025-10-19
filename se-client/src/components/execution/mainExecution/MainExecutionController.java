@@ -43,7 +43,6 @@ public class MainExecutionController {
     private ProgramPollingService programPollingService;
 
     private LongProperty totalCreditsAmount;
-    private StringProperty currentUserName;
     private final ObjectProperty<ProgramDTO> selectedProgramProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ProgramExecutorDTO> programAfterExecuteProperty = new SimpleObjectProperty<>(null);
     private final StringProperty chosenArchitectureProperty = new SimpleStringProperty("");
@@ -145,13 +144,8 @@ public class MainExecutionController {
         this.appService = appService;
     }
 
-    public void setProperty(StringProperty currentUserName, LongProperty totalCreditsAmount) {
-        this.currentUserName = currentUserName;
+    public void setProperty(LongProperty totalCreditsAmount) {
         this.totalCreditsAmount = totalCreditsAmount;
-    }
-
-    public void setupAfterMainAppInit(String programSelectedName) {
-        setupAfterMainAppInit(programSelectedName, null);
     }
 
     public void setupAfterMainAppInit(String programSelectedName, Runnable onProgramLoaded) {
@@ -260,11 +254,9 @@ public class MainExecutionController {
     public void loadArchitectureTypes() {
         appService.fetchArchitectureTypesAsync(
                 ARCHITECTURE_TYPES_PATH,
-                architectureList -> Platform.runLater(() -> {
-                    debuggerExecutionMenuController.getArchitectureComboBox()
-                            .getItems()
-                            .setAll(architectureList);
-                }),
+                architectureList -> Platform.runLater(() -> debuggerExecutionMenuController.getArchitectureComboBox()
+                        .getItems()
+                        .setAll(architectureList)),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Error", "Failed to load architecture types: " + errorMsg)
                 )
@@ -309,9 +301,7 @@ public class MainExecutionController {
         appService.fetchRunProgramAsync(
                 RUN_PROGRAM_PATH,
                 requestBody,
-                runId -> Platform.runLater(() -> {
-                    programPollingService.startPolling(() -> checkProgramStatus(runId));
-                }),
+                runId -> Platform.runLater(() -> programPollingService.startPolling(() -> checkProgramStatus(runId))),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Run Failed", errorMsg)
                 )
@@ -378,9 +368,7 @@ public class MainExecutionController {
 
         appService.fetchProgramAfterRunAsync(
                 url,
-                result -> Platform.runLater(() -> {
-                    programAfterExecuteProperty.set(result);
-                }),
+                result -> Platform.runLater(() -> programAfterExecuteProperty.set(result)),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Fetch Failed", errorMsg)
                 )
@@ -402,7 +390,7 @@ public class MainExecutionController {
             requestBody,
             () -> Platform.runLater(() -> {
                 debuggerExecutionMenuController.enterDebugging();
-                debuggerExecutionMenuController.onResume();
+//                debuggerExecutionMenuController.onResume();
             }),
             errorMsg -> Platform.runLater(() -> {
                 AlertUtils.showError("Initialized debugger Failed", errorMsg);
