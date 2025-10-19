@@ -415,6 +415,7 @@ public class MainExecutionController {
                         updateControllerAfterDebugStep(debugStep);
                     }
                     onComplete.accept(debugStep);
+                    updateUserCreditsAsync();
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Resume Failed", errorMsg)
@@ -437,6 +438,7 @@ public class MainExecutionController {
 
                     updateControllerAfterDebugStep(debugStep);
                     onComplete.accept(debugStep);
+                    updateUserCreditsAsync();
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Step Over Failed", errorMsg)
@@ -461,6 +463,7 @@ public class MainExecutionController {
                 () -> Platform.runLater(() -> {
                     finishDebug();
                     mainAppController.popUpToastMessage("Debugger stopped successfully", true);
+                    updateUserCreditsAsync();
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Stop Failed", errorMsg)
@@ -479,6 +482,7 @@ public class MainExecutionController {
 
                     updateControllerAfterDebugStep(debugStep);
                     onComplete.accept(debugStep);
+                    updateUserCreditsAsync();
                 }),
                 errorMsg -> Platform.runLater(() ->
                         AlertUtils.showError("Step Back Failed", errorMsg)
@@ -492,4 +496,14 @@ public class MainExecutionController {
                 debuggerExecutionMenuController.prepareForNewRun(inputs, chosenArchitecture)
         );
     }
+
+    private void updateUserCreditsAsync() {
+        appService.fetchUserCreditsAsync(
+                FETCH_CREDITS_PATH,
+                null,
+                credits -> Platform.runLater(() -> totalCreditsAmount.set(credits)),
+                errorMsg -> Platform.runLater(() -> AlertUtils.showError("Error", errorMsg))
+        );
+    }
+
 }
