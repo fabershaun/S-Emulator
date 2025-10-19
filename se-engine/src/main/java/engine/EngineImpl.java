@@ -96,9 +96,9 @@ public class EngineImpl implements Engine, Serializable {
     public String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);
-        List<Program> function = new ArrayList<>();
-        Program program = loader.loadFromStream(xmlStream, sourceName, this.function, userDTO, uploaderName);
-        finalizeProgramLoading(program, userDTO);
+        List<Program> functionsInProgram = new ArrayList<>();
+        Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder, functionsInProgram, userDTO, uploaderName);
+        finalizeProgramLoading(program, userDTO, functionsInProgram);
 
         return program.getName();
     }
@@ -107,26 +107,54 @@ public class EngineImpl implements Engine, Serializable {
     public String loadProgramFromFile(Path xmlPath, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);
-        Program program = loader.loadFromFile(xmlPath, this.programsHolder, userDTO, uploaderName);
-        finalizeProgramLoading(program, userDTO);
+        List<Program> functionsInProgram = new ArrayList<>();
+        Program program = loader.loadFromFile(xmlPath, this.programsHolder, functionsInProgram, userDTO, uploaderName);
+        finalizeProgramLoading(program, userDTO, functionsInProgram);
 
         return program.getName();
     }
 
-    private void finalizeProgramLoading(Program program, UserDTO userDTO) throws EngineLoadException {
+    private void finalizeProgramLoading(Program program, UserDTO userDTO, List<Program> functionsInProgram) throws EngineLoadException {
         program.validateProgram();
-        validateFunctionInProgramExist(program);
+        validateCalledFunctionsExist(program, functionsInProgram);
         program.initialize();
+
+        addFunctionsToProgramHolder(functionsInProgram);
         programsHolder.addMainProgram(program.getName(), program.getName(), program);
+
         UserLogic.incrementMainPrograms(userDTO);
 
         calculateExpansionForAllLoadedPrograms(program.getName());
     }
 
-    private void validateFunctionInProgramExist(Program program) {
-        for (String functionName : program.getFunctionNamesUsedInProgram()) {
-            if (programsHolder.getFunctionByName(functionName) == null) {
-                throw new IllegalArgumentException("Function: " + functionName + " is not in the system. Can't load file");
+    private void addFunctionsToProgramHolder(List<Program> functionsInProgram) {
+        for (Program function : functionsInProgram) {
+            programsHolder.addFunction(function.getName(), function.getUserString(), function);
+        }
+    }
+
+    private void validateCalledFunctionsExist(Program program, List<Program> functionsInProgram) {
+
+        // Validate the main program first
+        validateSingleProgramDependencies(program, functionsInProgram);
+
+        // Validate each internal function as well
+        for (Program function : functionsInProgram) {
+            validateSingleProgramDependencies(function, functionsInProgram);
+        }
+    }
+
+    private void validateSingleProgramDependencies(Program program, List<Program> functionsInProgram) {
+        for (String functionName : program.getCalledFunctionNames()) {
+
+            boolean existsInHolder = programsHolder.getFunctionByName(functionName) != null;
+            boolean existsInCurrentFile = functionsInProgram.stream()
+                    .anyMatch(f -> f.getName().equals(functionName));
+
+            if (!existsInHolder && !existsInCurrentFile) {
+                throw new IllegalArgumentException(
+                        "The function '" + functionName + "' that is used in this file is not defined in the system or in the current file."
+                );
             }
         }
     }

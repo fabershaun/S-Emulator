@@ -48,7 +48,7 @@
 			<S-Variable>z1</S-Variable>
 			<S-Instruction-Arguments>
 				<S-Instruction-Argument name="functionName" value="AND"/>
-				<S-Instruction-Argument name="functionArguments" value="(Smaller_Equal_Than,z3,x2),(NOT,(EQUAL,z3,(CONST0)))"/>
+				<S-Instruction-Argument name="functionArguments" value="(Bigger_Equal_Than,z3,x2),(NOT,(EQUAL,z3,(CONST0)))"/>
 			</S-Instruction-Arguments>
 		</S-Instruction>
 	
@@ -81,6 +81,5 @@
 				
 			</S-Instructions>
 		</S-Function>
-
 	</S-Functions>
 </S-Program>

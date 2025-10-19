@@ -40,7 +40,7 @@ public class ProgramImpl implements Program, Serializable {
     private final List<Label> labelsInProgram;  // Need it to keep the order of the labels
     private final Set<Label> labelsAddedAfterExtension;  // Need it to keep the order of the labels
     private final Set<Label> referencedLabels;
-    private final Set<String> functionsUsedInPrograms;
+    private final Set<String> calledFunctionNames;
 
     private int nextLabelNumber = 1;
     private int nextWorkVariableNumber = 1;
@@ -60,7 +60,7 @@ public class ProgramImpl implements Program, Serializable {
         this.labelsInProgram = new ArrayList<>();
         this.labelsAddedAfterExtension = new LinkedHashSet<>();
         this.referencedLabels  = new LinkedHashSet<>();
-        this.functionsUsedInPrograms = new HashSet<>();
+        this.calledFunctionNames = new HashSet<>();
     }
 
     @Override
@@ -242,13 +242,13 @@ public class ProgramImpl implements Program, Serializable {
     }
 
     @Override
-    public void addFunctionNameUsedInProgram(String functionName) {
-        functionsUsedInPrograms.add(functionName);
+    public void addCalledFunctionName(String functionName) {
+        calledFunctionNames.add(functionName);
     }
 
     @Override
-    public Set<String> getFunctionNamesUsedInProgram() {
-        return functionsUsedInPrograms;
+    public Set<String> getCalledFunctionNames() {
+        return calledFunctionNames;
     }
 
     private void validateLabelReferencesExist() throws EngineLoadException {

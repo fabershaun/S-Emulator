@@ -34,7 +34,7 @@ final class XmlProgramMapper {
 
     private XmlProgramMapper() {}
 
-    static Program map(SProgram sProgram, ProgramsHolder programsHolder, UserDTO uploader, String uploaderName) {
+    static Program map(SProgram sProgram, ProgramsHolder programsHolder, List<Program> functionsInProgram, UserDTO uploader, String uploaderName) {
         String programName = safeTrim(sProgram.getName());
         programName = programName != null ? programName : "Unnamed";
 
@@ -57,7 +57,7 @@ final class XmlProgramMapper {
 
         // After validate all the functions -> add them to the programHolder
         for (Program innerFunction : innerFunctionsSet) {
-            programsHolder.addFunction(innerFunction.getName(), innerFunction.getUserString(), innerFunction);
+            functionsInProgram.add(innerFunction);
             UserLogic.incrementSubFunctions(uploader);
         }
 
@@ -66,15 +66,16 @@ final class XmlProgramMapper {
 
     private static void validateUniqueMainProgramName(ProgramsHolder programsHolder, String programName) {
         if (programsHolder.getMainProgramByName(programName) != null) {
-            throw new IllegalArgumentException("Unable to upload file: main program with name " + programName + " already exists");
+            throw new IllegalArgumentException("Main program with name " + programName + " already exists");
         }
     }
 
     private static void validateUniqueFunctionName(ProgramsHolder programsHolder, String programName) {
         if (programsHolder.getFunctionByName(programName) != null) {
-            throw new IllegalArgumentException("Unable to upload file: function with name " + programName + " already exists");
+            throw new IllegalArgumentException("Function with name " + programName + " already exists");
         }
     }
+
     private static Program mapFunction(SFunction sFunction, ProgramsHolder programsHolder, String uploaderName, String mainProgramName) {
         String functionName = safeTrim(sFunction.getName());
         String userString = safeTrim(sFunction.getUserString());
@@ -235,7 +236,7 @@ final class XmlProgramMapper {
                         .findFirst()
                         .get();
 
-                targetProgram.addFunctionNameUsedInProgram(functionName);
+                targetProgram.addCalledFunctionName(functionName);
 
                 Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
                 targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction); // To add inner input variable (that inside inner quote instruction) to the program
@@ -265,7 +266,7 @@ final class XmlProgramMapper {
                         .get()
                         .toUpperCase();
 
-                targetProgram.addFunctionNameUsedInProgram(functionName);
+                targetProgram.addCalledFunctionName(functionName);
 
                 Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
                 targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction); // To add inner input variable (that inside inner quote instruction) to the program
@@ -306,7 +307,7 @@ final class XmlProgramMapper {
 
                 // normalize function name here:
                 functionName = functionName.trim().toUpperCase(Locale.ROOT);
-                targetProgram.addFunctionNameUsedInProgram(functionName);
+                targetProgram.addCalledFunctionName(functionName);
 
                 List<QuoteArgument> innerArguments = extractFunctionArguments(targetProgram, innerFunctionArgumentsStr);
                 quoteArguments.add(new FunctionArgument(functionName, innerArguments));
