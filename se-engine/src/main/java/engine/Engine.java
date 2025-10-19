@@ -65,7 +65,5 @@ public interface Engine {
     ProgramDTO getMainProgramToConsoleModule();
 //    void loadState(Path path) throws EngineLoadException;
 //    void saveState(Path path) throws EngineLoadException;
-
-
 }
 

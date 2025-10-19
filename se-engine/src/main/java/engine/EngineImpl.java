@@ -97,6 +97,7 @@ public class EngineImpl implements Engine, Serializable {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);
         List<Program> functionsInProgram = new ArrayList<>();
+
         Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder, functionsInProgram, userDTO, uploaderName);
         finalizeProgramLoading(program, userDTO, functionsInProgram);
 
