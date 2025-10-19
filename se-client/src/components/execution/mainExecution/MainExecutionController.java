@@ -23,14 +23,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import okhttp3.*;
-
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-
 import static utils.Constants.*;
 import static utils.Constants.GSON_INSTANCE;
 
@@ -133,6 +130,7 @@ public class MainExecutionController {
 
     private void initHighlightSelectionModel() {
         highlightSelectionModel.setProgram(selectedProgramProperty.get());
+        selectedProgramProperty.addListener((observableValue, oldProgram, newProgram) -> highlightSelectionModel.setProgram(newProgram));
     }
 
     public void setMainAppController(MainAppController mainAppController) {
@@ -179,7 +177,7 @@ public class MainExecutionController {
     }
 
     private String buildUrlWithQueryParam(String path, String queryParameterName, String queryParameter) {
-        return HttpUrl.parse(path)
+        return Objects.requireNonNull(HttpUrl.parse(path))
                 .newBuilder()
                 .addQueryParameter(queryParameterName, queryParameter)
                 .build()
@@ -192,7 +190,7 @@ public class MainExecutionController {
 
     private void jumpToDegree(int targetDegree, Runnable onLoaded) {
         String programName = requireCurrentProgramName();
-        String jumpToDegreeUrl = HttpUrl.parse(JUMP_TO_DEGREE_PATH)
+        String jumpToDegreeUrl = Objects.requireNonNull(HttpUrl.parse(JUMP_TO_DEGREE_PATH))
                 .newBuilder()
                 .addQueryParameter(PROGRAM_NAME_QUERY_PARAM, programName)
                 .addQueryParameter(TARGET_DEGREE_QUERY_PARAM, String.valueOf(targetDegree))

@@ -72,9 +72,5 @@ public class HighlightSelectionModelV3 {
     public void selectHighlight(String value) {
         selectedHighlight.set((value == null || EMPTY_CHOICE.equals(value)) ? null : value);
     }
-
-    public void clearSelection() {
-        selectedHighlight.set(EMPTY_CHOICE);
-    }
 }
 

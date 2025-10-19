@@ -17,7 +17,6 @@ public interface Debug {
     boolean hasMoreInstructions();
 
     ProgramExecutorDTO buildProgramExecutorDTO(ProgramExecutor programExecutor);
-    String getUploaderName();
     ProgramExecutor getDebugProgramExecutor();
     int getCurrentInstructionIndex();
     int getNextInstructionIndex();

@@ -454,7 +454,7 @@ public class EngineImpl implements Engine, Serializable {
         UserLogic.subtractCredits(userDTO, architectureTypeSelected.getCreditsCost());
 
         // ALWAYS -> OVERWRITE the previous value
-        Debug newDebug = new DebugImpl(workingProgram, architectureTypeSelected, degree, inputs, uploaderName, userDTO);
+        Debug newDebug = new DebugImpl(workingProgram, architectureTypeSelected, degree, inputs, userDTO);
         usernameToDebug.put(uploaderName, newDebug);
     }
 

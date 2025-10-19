@@ -23,7 +23,6 @@ import static engine.EngineImpl.buildProgramDTO;
 
 public class DebugImpl implements Debug {
 
-    private final String uploaderName;
     private final UserDTO userDTO;
     private final ProgramExecutor programExecutor;
     private final ProgramExecutor initializeProgramExecutor;
@@ -41,9 +40,8 @@ public class DebugImpl implements Debug {
     private int historyPointer = -1;
     private boolean justStoppedOnBreakpoint = false;
 
-    public DebugImpl(Program program, ArchitectureType architectureTypeSelected, int degree, List<Long> inputs, String uploaderName, UserDTO userDTO) { // TODO: why need both uploaderName, and userDTO
+    public DebugImpl(Program program, ArchitectureType architectureTypeSelected, int degree, List<Long> inputs, UserDTO userDTO) {
         this.program = program;
-        this.uploaderName = uploaderName;
         this.userDTO = userDTO;
         this.instructions = program.getInstructionsList();
         context.initializeVariables(program, inputs.toArray(new Long[0]));
@@ -278,11 +276,6 @@ public class DebugImpl implements Debug {
             throw new IllegalArgumentException("In DebugImpl: Instruction number: "
                     + currentInstructionIndex + ". Message: " + ev.getMessage());
         }
-    }
-
-    @Override
-    public String getUploaderName() {
-        return uploaderName;
     }
 
     @Override

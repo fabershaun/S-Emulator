@@ -89,7 +89,6 @@ public class DashboardController implements Closeable {
         }
     }
 
-    // TODO: move this http call
     public void loadNewFile(File file, String pathStr) {
         String finalUrl = Objects.requireNonNull(HttpUrl
                         .parse(FILE_UPLOAD_PAGE))
@@ -217,8 +216,8 @@ public class DashboardController implements Closeable {
     }
 
     public void loadHistoryForUser(String username) {
-        String finalUrl = HttpUrl
-                .parse(USER_HISTORY_LIST_PAGE)
+        String finalUrl = Objects.requireNonNull(HttpUrl
+                .parse(USER_HISTORY_LIST_PAGE))
                 .newBuilder()
                 .addQueryParameter("username", username)
                 .build()
