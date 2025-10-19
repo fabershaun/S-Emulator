@@ -1,6 +1,5 @@
 package servlets.program;
 
-import dto.v3.FunctionDTO;
 import dto.v3.MainProgramDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,11 +7,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.ServletUtils;
-import utils.SessionUtils;
-
 import java.io.IOException;
 import java.util.List;
-
 import static utils.Constants.*;
 import static utils.ValidationUtils.*;
 

@@ -17,7 +17,7 @@
 				<S-Instruction-Argument name="assignedVariable" value="x1"/>
 			</S-Instruction-Arguments>
 		</S-Instruction>
-				<S-Instruction type="synthetic" name="JuMP_ZERO">
+				<S-Instruction type="synthetic" name="JUMP_ZERO">
 			<S-Variable>Z1</S-Variable>
 			<S-Label>L1</S-Label>
 			<S-Instruction-Arguments>
