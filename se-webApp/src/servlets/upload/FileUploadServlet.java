@@ -55,12 +55,28 @@ public class FileUploadServlet extends HttpServlet {
                 response.getWriter().write(GSON_INSTANCE.toJson(loadedProgramDTO));
             }
         } catch (IllegalArgumentException | EngineLoadException ex) {
-            writeJsonError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "Invalid or duplicate file", ex.getMessage());
+            writePlainError(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
 
         } catch (Exception ex) {
-            writeJsonError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Unexpected server error while uploading file", ex.getMessage());
+            writePlainError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    ex.getMessage() != null ? ex.getMessage() : "Unexpected server error");
+            ex.printStackTrace();
         }
+    }
+
+    private void writePlainError(HttpServletResponse response, int statusCode, String message) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("text/plain;charset=UTF-8");
+
+        // Clean up message if it contains the exception class name
+        if (message != null && message.contains(":")) {
+            int index = message.indexOf(":");
+            // remove "java.lang.IllegalArgumentException:" part if present
+            if (message.startsWith("java")) {
+                message = message.substring(index + 1).trim();
+            }
+        }
+
+        response.getWriter().write(message != null ? message : "Unexpected error");
     }
 }

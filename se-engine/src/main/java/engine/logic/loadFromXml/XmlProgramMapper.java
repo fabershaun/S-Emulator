@@ -235,9 +235,11 @@ final class XmlProgramMapper {
                         .findFirst()
                         .get();
 
+                targetProgram.addFunctionNameUsedInProgram(functionName);
+
                 Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
                 targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction); // To add inner input variable (that inside inner quote instruction) to the program
-                List<QuoteArgument> quoteArguments = extractFunctionArguments(functionArguments);
+                List<QuoteArgument> quoteArguments = extractFunctionArguments(targetProgram, functionArguments);
 
                 return new QuoteInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, originInstruction, ordinal, functionName, quoteArguments);
             }
@@ -263,9 +265,11 @@ final class XmlProgramMapper {
                         .get()
                         .toUpperCase();
 
+                targetProgram.addFunctionNameUsedInProgram(functionName);
+
                 Set<Variable> innerVariablesInFunctionInstruction = extractXVariablesIntoSet(targetProgram.getInputVariables(), functionArguments);
                 targetProgram.bucketVariableByFunctionInstruction(innerVariablesInFunctionInstruction); // To add inner input variable (that inside inner quote instruction) to the program
-                List<QuoteArgument> quoteArguments = extractFunctionArguments(functionArguments);
+                List<QuoteArgument> quoteArguments = extractFunctionArguments(targetProgram, functionArguments);
 
                 return new JumpEqualFunctionInstruction(targetProgram, targetProgram, targetVariable, instructionLabel, addedLabel, originInstruction, ordinal, functionName, quoteArguments);
             }
@@ -277,7 +281,7 @@ final class XmlProgramMapper {
         }
     }
 
-    private static List<QuoteArgument> extractFunctionArguments(String functionArguments) {
+    private static List<QuoteArgument> extractFunctionArguments(Program targetProgram, String functionArguments) {
         if (functionArguments == null || functionArguments.isEmpty()) {
             return Collections.emptyList();
         }
@@ -295,12 +299,16 @@ final class XmlProgramMapper {
                     functionName = argumentStr.substring(1, indexOfFirstComma);
                     innerFunctionArgumentsStr = argumentStr.substring(indexOfFirstComma + 1, argumentStr.length() - 1);
                 } else {
-                    // פונקציה בלי ארגומנטים
+                    // functions without arguments:
                     functionName = argumentStr.substring(1, argumentStr.length() - 1);
                     innerFunctionArgumentsStr = "";
                 }
 
-                List<QuoteArgument> innerArguments = extractFunctionArguments(innerFunctionArgumentsStr);
+                // normalize function name here:
+                functionName = functionName.trim().toUpperCase(Locale.ROOT);
+                targetProgram.addFunctionNameUsedInProgram(functionName);
+
+                List<QuoteArgument> innerArguments = extractFunctionArguments(targetProgram, innerFunctionArgumentsStr);
                 quoteArguments.add(new FunctionArgument(functionName, innerArguments));
             } else {
                 quoteArguments.add(new VariableArgument(argumentStr));

@@ -121,27 +121,14 @@ public class DashboardController implements Closeable {
                 String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
                 if (!response.isSuccessful()) {
-                    try {
-                        String errorMessage = GSON_INSTANCE.fromJson(responseBody, String.class);
+                    Platform.runLater(() -> {
+                        // If server returned plain text (not JSON)
+                        String errorMessage = (responseBody != null && !responseBody.isBlank())
+                                ? responseBody.trim()
+                                : "Server returned error code " + response.code();
 
-                        Platform.runLater(() -> {
-                            if (response.code() == 400) {
-                                // 400 = business logic issue, e.g. duplicate file
-                                ToastUtil.showToast(
-                                        dashboardStackPane,
-                                        errorMessage,
-                                        false
-                                );
-                            } else {
-                                // 500 = internal error
-                                AlertUtils.showError("Server Error", errorMessage);
-                            }
-                        });
-                    } catch (Exception e) {
-                        Platform.runLater(() ->
-                                AlertUtils.showError("Load failed", "Server returned " + response.code() + ": " + responseBody)
-                        );
-                    }
+                        AlertUtils.showError("Load failed", errorMessage);
+                    });
                     return;
                 }
 

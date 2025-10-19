@@ -96,7 +96,8 @@ public class EngineImpl implements Engine, Serializable {
     public String loadProgramFromStream(InputStream xmlStream, String sourceName, String uploaderName) throws EngineLoadException {
         XmlProgramLoader loader = new XmlProgramLoader();
         UserDTO userDTO = getUserDTO(uploaderName);
-        Program program = loader.loadFromStream(xmlStream, sourceName, this.programsHolder, userDTO, uploaderName);
+        List<Program> function = new ArrayList<>();
+        Program program = loader.loadFromStream(xmlStream, sourceName, this.function, userDTO, uploaderName);
         finalizeProgramLoading(program, userDTO);
 
         return program.getName();
@@ -114,11 +115,20 @@ public class EngineImpl implements Engine, Serializable {
 
     private void finalizeProgramLoading(Program program, UserDTO userDTO) throws EngineLoadException {
         program.validateProgram();
+        validateFunctionInProgramExist(program);
         program.initialize();
         programsHolder.addMainProgram(program.getName(), program.getName(), program);
         UserLogic.incrementMainPrograms(userDTO);
 
         calculateExpansionForAllLoadedPrograms(program.getName());
+    }
+
+    private void validateFunctionInProgramExist(Program program) {
+        for (String functionName : program.getFunctionNamesUsedInProgram()) {
+            if (programsHolder.getFunctionByName(functionName) == null) {
+                throw new IllegalArgumentException("Function: " + functionName + " is not in the system. Can't load file");
+            }
+        }
     }
 
     @Override

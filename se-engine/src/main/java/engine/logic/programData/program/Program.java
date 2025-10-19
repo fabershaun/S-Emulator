@@ -47,6 +47,8 @@ public interface Program extends Serializable {
     void bucketVariableByFunctionInstruction(Set<Variable> variablesList);
     void addInstruction(Instruction instruction);
     void validateProgram() throws EngineLoadException;
+    void addFunctionNameUsedInProgram(String functionName);
+    Set<String> getFunctionNamesUsedInProgram();
 
     Label generateUniqueLabel();
     Variable generateUniqueVariable();
