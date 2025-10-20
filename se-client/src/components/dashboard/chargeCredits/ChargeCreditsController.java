@@ -5,7 +5,6 @@ import javafx.beans.property.LongProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
-
 public class ChargeCreditsController {
 
     private DashboardController dashboardController;
