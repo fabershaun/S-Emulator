@@ -20,6 +20,8 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
@@ -31,6 +33,7 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();   // Program name : Execution history
     private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new ConcurrentHashMap<>();  // Username : Execution history
 
+    private final ReadWriteLock programExpansionLock = new ReentrantReadWriteLock(); // For 'nameAndDegreeToProgram'
 
     public EngineImpl() {
         // Create default user with empty name (For version 2)
@@ -356,15 +359,21 @@ public class EngineImpl implements Engine, Serializable {
 
     @Override
     public int getMaxDegree(String programName) {
-        Map<Integer, Program> degreeMap = nameAndDegreeToProgram.get(programName);
+        programExpansionLock.readLock().lock();
+        try {
+            Map<Integer, Program> degreeMap = nameAndDegreeToProgram.get(programName);
 
-        // If programName not found in the map, return default and log it
-        if (degreeMap == null) {
-            return 0;
+            // If programName not found in the map, return default and log it
+            if (degreeMap == null) {
+                return 0;
+            }
+
+            // Normal case: return size minus 1
+            return degreeMap.size() - 1;
+
+        } finally {
+            programExpansionLock.readLock().unlock();
         }
-
-        // Normal case: return size minus 1
-        return degreeMap.size() - 1;
     }
 
     @Override
@@ -373,34 +382,44 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     private Program getExpandedProgram(String programName, int degree) {
-        Map<Integer, Program> degreeMap = this.nameAndDegreeToProgram.get(programName);
-        if (degreeMap == null) {
-            throw new IllegalArgumentException("Program not found: " + programName);
-        }
+        programExpansionLock.readLock().lock();
+        try {
+            Map<Integer, Program> degreeMap = this.nameAndDegreeToProgram.get(programName);
+            if (degreeMap == null) {
+                throw new IllegalArgumentException("Program not found: " + programName);
+            }
 
-        Program expandedProgram = degreeMap.get(degree);
-        if (expandedProgram == null) {
-            throw new IllegalArgumentException("Degree " + degree + " not found for program: " + programName);
-        }
+            Program expandedProgram = degreeMap.get(degree);
+            if (expandedProgram == null) {
+                throw new IllegalArgumentException("Degree " + degree + " not found for program: " + programName);
+            }
 
-        return expandedProgram;
+            return expandedProgram;
+        } finally {
+            programExpansionLock.readLock().unlock();
+        }
     }
 
     @Override
     public void calculateExpansionForAllLoadedPrograms(String mainProgramName) {
-        Program mainProgram = programsHolder.getMainProgramByName(mainProgramName);
+        programExpansionLock.writeLock().lock();
+        try {
+            Program mainProgram = programsHolder.getMainProgramByName(mainProgramName);
 
-        this.nameAndDegreeToProgram.put(
-                mainProgramName,
-                mainProgram.calculateDegreeToProgram()
-        );
-
-        List<Program> functions = programsHolder.getFunctions().stream().toList();
-        for (Program function : functions) {
             this.nameAndDegreeToProgram.put(
-                    function.getName(),
-                    function.calculateDegreeToProgram()
+                    mainProgramName,
+                    mainProgram.calculateDegreeToProgram()
             );
+
+            List<Program> functions = programsHolder.getFunctions().stream().toList();
+            for (Program function : functions) {
+                this.nameAndDegreeToProgram.put(
+                        function.getName(),
+                        function.calculateDegreeToProgram()
+                );
+            }
+        } finally {
+            programExpansionLock.writeLock().unlock();
         }
     }
 
