@@ -30,7 +30,7 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, Map<Integer, Program>> nameAndDegreeToProgram = new HashMap<>();      // Program name : ( Degree : Program )
     private final Map<String, Debug> usernameToDebug = new HashMap<>();                             // Username : Debug
     private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();                         // Username : UserDTO
-    private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();   // Program name : Execution history
+    private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new ConcurrentHashMap<>();   // Program name : Execution history
     private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new ConcurrentHashMap<>();  // Username : Execution history
 
     private final ReadWriteLock programExpansionLock = new ReentrantReadWriteLock(); // For 'nameAndDegreeToProgram'
@@ -185,7 +185,7 @@ public class EngineImpl implements Engine, Serializable {
         originalProgram.addCreditCost(programExecutor.getTotalCycles());
 
         // For Version 2: the key in map is the program name
-        List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());  // Get the history list per program (if not exist create empty list) and add it to the list
+        List<ProgramExecutor> executionV2History = programToExecutionHistory.computeIfAbsent(programName, k -> Collections.synchronizedList(new ArrayList<>()));  // Get the history list per program (if not exist create empty list) and add it to the list
         executionV2History.add(programExecutor);
 
         // For Version 3: the key in map is the username
@@ -258,7 +258,16 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public List<ProgramExecutorDTO> getHistoryV2PerProgram(String programName) {
         List<ProgramExecutor> programExecutors = programToExecutionHistory.get(programName);
-        return buildExecutorDTOList(programExecutors);
+        if (programExecutors == null || programExecutors.isEmpty()) {
+            return List.of();
+        }
+
+        List<ProgramExecutor> safeCopy;
+        synchronized (programExecutors) {
+            safeCopy = new ArrayList<>(programExecutors);
+        }
+
+        return buildExecutorDTOList(safeCopy);
     }
 
     @Override
@@ -539,7 +548,7 @@ public class EngineImpl implements Engine, Serializable {
         String programName = debugDTO.getProgramName();
 
         // For Version 2: the key in map is the program name
-        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> new ArrayList<>());    // Get the history list per program (if not exist create empty list
+        List<ProgramExecutor> executionHistory = programToExecutionHistory.computeIfAbsent(programName, k -> Collections.synchronizedList(new ArrayList<>()));    // Get the history list per program (if not exist create empty list
         executionHistory.add(debug.getDebugProgramExecutor());
 
         // For Version 3: the key in map is the username
@@ -605,7 +614,10 @@ public class EngineImpl implements Engine, Serializable {
         if (list == null || list.isEmpty()) {
             throw new IllegalStateException("No executions found for program '" + programName + "'");
         }
-        return list.getLast(); // Java 21, safe after checks
+
+        synchronized (list) {
+            return list.getLast();  // Java 21, safe after checks
+        }
     }
 
     // For V3. Always return the last executor for a user, or throw a clear exception
