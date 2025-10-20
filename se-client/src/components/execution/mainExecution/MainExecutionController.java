@@ -352,7 +352,6 @@ public class MainExecutionController {
         } else if ("DONE".equals(state)) {
             handleProgramDone(runId);
         }
-
         updateUserCreditsAsync();
     }
 
