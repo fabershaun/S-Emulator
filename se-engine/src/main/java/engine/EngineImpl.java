@@ -19,6 +19,7 @@ import engine.user.UserLogic;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine, Serializable {
@@ -28,7 +29,7 @@ public class EngineImpl implements Engine, Serializable {
     private final Map<String, Debug> usernameToDebug = new HashMap<>();                             // Username : Debug
     private final Map<String, UserDTO> usernameToUserDTO = new HashMap<>();                         // Username : UserDTO
     private final Map<String, List<ProgramExecutor>> programToExecutionHistory = new HashMap<>();   // Program name : Execution history
-    private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new HashMap<>();  // Username : Execution history
+    private final Map<String, List<ProgramExecutor>> usernameToExecutionHistory = new ConcurrentHashMap<>();  // Username : Execution history
 
 
     public EngineImpl() {
@@ -185,7 +186,7 @@ public class EngineImpl implements Engine, Serializable {
         executionV2History.add(programExecutor);
 
         // For Version 3: the key in map is the username
-        List<ProgramExecutor> executionV3History = usernameToExecutionHistory.computeIfAbsent(uploaderName, k -> new ArrayList<>());
+        List<ProgramExecutor> executionV3History = usernameToExecutionHistory.computeIfAbsent(uploaderName, k -> Collections.synchronizedList(new ArrayList<>()));
         executionV3History.add(programExecutor);
     }
 
@@ -260,7 +261,16 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public List<HistoryRowV3DTO> getHistoryV3PerProgram(String username) {
         List<ProgramExecutor> programExecutors = usernameToExecutionHistory.get(username);
-        List<ProgramExecutorDTO> programExecutorDTOList = buildExecutorDTOList(programExecutors);
+        if (programExecutors == null || programExecutors.isEmpty()) {
+            return List.of();
+        }
+
+        List<ProgramExecutor> safeCopy;
+        synchronized (programExecutors) {
+            safeCopy = new ArrayList<>(programExecutors);
+        }
+
+        List<ProgramExecutorDTO> programExecutorDTOList = buildExecutorDTOList(safeCopy);
         return buildHistoryRowsFromExecutors(programExecutorDTOList);
     }
 
@@ -514,7 +524,7 @@ public class EngineImpl implements Engine, Serializable {
         executionHistory.add(debug.getDebugProgramExecutor());
 
         // For Version 3: the key in map is the username
-        List<ProgramExecutor> userExecutionHistory = usernameToExecutionHistory.computeIfAbsent(uploaderName, k -> new ArrayList<>());
+        List<ProgramExecutor> userExecutionHistory = usernameToExecutionHistory.computeIfAbsent(uploaderName, k -> Collections.synchronizedList(new ArrayList<>()));
         userExecutionHistory.add(debug.getDebugProgramExecutor());
 
         // Update user: increase the execution
@@ -585,6 +595,9 @@ public class EngineImpl implements Engine, Serializable {
         if (list == null || list.isEmpty()) {
             throw new IllegalStateException("No executions found for user '" + username + "'");
         }
-        return list.getLast();
+
+        synchronized (list) {
+            return list.getLast();
+        }
     }
 }
