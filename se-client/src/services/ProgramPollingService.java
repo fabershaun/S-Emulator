@@ -2,6 +2,11 @@ package services;
 
 import java.util.concurrent.*;
 
+/**
+* This service uses a single thread because only one periodic polling task is needed at a time.
+* Having more threads would create redundant simultaneous polling tasks.
+**/
+
 public class ProgramPollingService {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> currentTask;

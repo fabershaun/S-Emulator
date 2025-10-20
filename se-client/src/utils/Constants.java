@@ -41,9 +41,6 @@ public class Constants {
     private final static String CONTEXT_PATH = "/S-Emulator";
     private final static String FULL_SERVER_PATH = BASE_URL + CONTEXT_PATH;
 
-    // Home Page:
-    public final static String DASHBOARD_PAGE = FULL_SERVER_PATH + "/dashboard";
-
     // Login:
     public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
 

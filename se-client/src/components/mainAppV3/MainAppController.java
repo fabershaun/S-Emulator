@@ -247,4 +247,9 @@ public class MainAppController {
                 isSuccess
         );
     }
+
+    public void shutdownApplication() {
+        programPollingService.shutdown(); // stop polling thread
+    }
+
 }

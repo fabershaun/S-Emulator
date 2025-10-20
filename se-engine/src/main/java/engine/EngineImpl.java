@@ -350,7 +350,6 @@ public class EngineImpl implements Engine, Serializable {
 
         // If programName not found in the map, return default and log it
         if (degreeMap == null) {
-            System.out.println("InEngineImpl: in getMaxDegree(): program '" + programName + "' not found in nameAndDegreeToProgram");
             return 0;
         }
 

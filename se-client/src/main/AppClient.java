@@ -1,5 +1,6 @@
 package main;
 
+import components.mainAppV3.MainAppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,6 +25,12 @@ public class AppClient extends Application {
         URL url = getClass().getResource(MAIN_PAGE_FXML_RESOURCE_LOCATION);
         loader.setLocation(url);
         Parent root = loader.load();
+
+        // Get the main controller instance
+        MainAppController mainAppController = loader.getController();
+
+        // Add listener to window close (X)
+        stage.setOnCloseRequest(event -> mainAppController.shutdownApplication());
 
         // Set stage
         stage.setTitle("S-Emulator");

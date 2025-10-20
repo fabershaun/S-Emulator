@@ -2,6 +2,7 @@ package engine.logic.programData.program;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // Class the holds all the Main Programs and Sub Functions
@@ -10,7 +11,7 @@ public class ProgramsHolder implements Serializable {
     private final Map<String, Program> nameToFunction = new HashMap<>();
     private final Map<String, Program> nameToMainProgram = new HashMap<>();
     private final Map<String, String> userStringToName = new HashMap<>();
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 
     public void addMainProgram(String programName, String UserString, Program mainProgram) {

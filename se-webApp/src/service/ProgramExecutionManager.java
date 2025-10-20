@@ -73,4 +73,8 @@ public class ProgramExecutionManager implements ExecutionService {
     public boolean cancelRun(String runId) {
         return false;
     }
+
+    public void shutdown() {
+        threadPool.shutdownNow(); // Stop all running tasks immediately
+    }
 }
