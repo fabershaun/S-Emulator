@@ -24,8 +24,10 @@ public class VariableArgument extends QuoteArgument {
         } else if (variableStr.startsWith("z")) {
             int number = Integer.parseInt(variableStr.substring(1));  // Cut the 'z'
             this.variable = new VariableImpl(VariableType.WORK, number);
+        } else if (variableStr.equals("y")) {
+            this.variable = Variable.RESULT;
         } else {
-            throw new IllegalArgumentException("In VariableArgument constructor: variableStr must start with x or z");
+            throw new IllegalArgumentException("In VariableArgument constructor: variableStr must start with x, z or y");
         }
     }
 

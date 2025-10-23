@@ -255,6 +255,26 @@ public class DebugImpl implements Debug {
 
     @Override
     public DebugDTO stop() {
+        // Case 1: no steps were executed yet
+        if (historyPointer < 0 || stepsHistory.isEmpty()) {
+            // Return initialized program state (before first step)
+            ProgramExecutorDTO initializedExecutorDTO = buildProgramExecutorDTO(initializeProgramExecutor);
+
+            return new DebugDTO(
+                    program.getName(),
+                    programExecutor.getArchitectureTypeSelected().getRepresentation(),
+                    0, // current instruction
+                    0, // next instruction
+                    hasMoreInstructions(),
+                    null, // no target variable
+                    initializedExecutorDTO.getDegree(),
+                    initializedExecutorDTO.getResult(),
+                    initializedExecutorDTO.getTotalCycles(),
+                    initializedExecutorDTO.getVariablesToValuesSorted()
+            );
+        }
+
+        // Case 2: normal stop after some execution
         return stepsHistory.get(historyPointer);
     }
 

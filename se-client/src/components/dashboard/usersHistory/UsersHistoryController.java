@@ -29,7 +29,7 @@ public class UsersHistoryController {
 
     private HistoryRowV3DTO selectedHistoryRow;
     private int selectedRowIndex;
-    private boolean lockHistoryButton = false;
+    private final boolean lockHistoryButton = false;
 
     @FXML private Label userHistoryLabel;
     @FXML private TableView<HistoryRowV3DTO> historyTable;

@@ -16,11 +16,6 @@ public class HttpClientUtil {
                     .followRedirects(false)
                     .build();
 
-
-    public static void removeCookiesOf(String domain) {
-        simpleCookieManager.removeCookiesOf(domain);
-    }
-
     public static void runAsync(String finalUrl, @Nullable RequestBody requestBody, Callback callback) {
         Request.Builder builder = new Request.Builder()
                 .url(finalUrl);

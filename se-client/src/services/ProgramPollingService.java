@@ -18,7 +18,7 @@ public class ProgramPollingService {
 
         currentTask = executor.scheduleAtFixedRate(
                 task,
-                0,              // No initial delay
+                0,    // No initial delay
                 2,              // Every 2 seconds
                 TimeUnit.SECONDS
         );

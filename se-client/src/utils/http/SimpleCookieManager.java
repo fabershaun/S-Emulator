@@ -36,9 +36,7 @@ public class SimpleCookieManager implements CookieJar {
             responseCookies
                     .stream()
                     .filter(cookie -> !cookieMap.containsKey(cookie.name()))
-                    .forEach(cookie -> {
-                        cookieMap.put(cookie.name(), cookie);
-                    });
+                    .forEach(cookie -> cookieMap.put(cookie.name(), cookie));
         }
     }
 

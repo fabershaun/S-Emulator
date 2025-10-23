@@ -49,9 +49,7 @@ public class UsersListController implements Closeable {
         colUsedCredits.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getUsedCredits()));
         colExecutionsCount.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getExecutionsCount()));
 
-        usersTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUserSelected) -> {
-            selectedUserProperty.set(newUserSelected);
-        });
+        usersTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUserSelected) -> selectedUserProperty.set(newUserSelected));
     }
 
     public void setProperty(ObjectProperty<UserDTO> selectedUserProperty) {

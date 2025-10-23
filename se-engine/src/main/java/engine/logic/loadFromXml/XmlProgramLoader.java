@@ -48,7 +48,7 @@ public class XmlProgramLoader {
         SProgram sProgram = unmarshalFromFile(xmlPath);
         Program program = XmlProgramMapper.map(sProgram, programsHolder, functionsInProgram, userDTO, uploaderName);
 
-        validateFunctionsForVersion2(program , programsHolder);
+        validateFunctionsForVersion2(program , functionsInProgram);
         return program;
     }
 
@@ -87,10 +87,10 @@ public class XmlProgramLoader {
     // Validates that all function calls within the given program (and its sub-functions)
     // refer to functions that are actually defined in the XML file.
     // Only for part 2
-    private void validateFunctionsForVersion2(Program program, ProgramsHolder programsHolder) throws EngineLoadException {
+    private void validateFunctionsForVersion2(Program program, List<Program> functionsInProgram) throws EngineLoadException {
 
         // Collect all defined function names
-        Set<String> definedFunctions = new HashSet<>(programsHolder.getFunctions()
+        Set<String> definedFunctions = new HashSet<>(functionsInProgram
                 .stream()
                 .map(func -> func.getName().toUpperCase(Locale.ROOT)) // normalize to uppercase
                 .toList());
@@ -99,7 +99,7 @@ public class XmlProgramLoader {
         validateFunctionCallsForVersion2(program, definedFunctions, "Main Program");
 
         // Validate each sub-function's instructions
-        for (Program function : programsHolder.getFunctions()) {
+        for (Program function : functionsInProgram) {
             function.validateProgram();                     // Validate that there are no undefined label references
             validateFunctionCallsForVersion2(function, definedFunctions, "Function: " + function.getName());
         }

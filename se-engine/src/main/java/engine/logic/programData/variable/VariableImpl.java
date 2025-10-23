@@ -20,5 +20,4 @@ public record VariableImpl(VariableType type, int number) implements Variable, S
 
         return this.number == other.number && this.type == other.type;
     }
-
 }
