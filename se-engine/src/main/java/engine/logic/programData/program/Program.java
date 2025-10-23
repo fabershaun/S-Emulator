@@ -14,7 +14,6 @@ import java.util.Set;
 
 public interface Program extends Serializable {
 
-    ArchitectureType architectureRequired();
     void setMinimumArchitectureRequired(ArchitectureType minimumArchitectureRequired);
     int getMinimumRankArchitectureRequired();
     ProgramType getProgramType();

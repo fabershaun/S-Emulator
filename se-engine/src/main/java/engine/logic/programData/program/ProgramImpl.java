@@ -73,7 +73,7 @@ public class ProgramImpl implements Program, Serializable {
         Program workingProgram = this.deepClone();  // deep clone here -Important
 
         do {
-            degreeToProgram.put(degree, workingProgram.deepClone());  // deep clone here -Importants
+            degreeToProgram.put(degree, workingProgram.deepClone());  // deep clone here - Important
 
             ArchitectureType maxArchitectureRequired = ArchitectureType.A_0; // the lowest
             int nextInstructionNumber = 1;
@@ -350,7 +350,7 @@ public class ProgramImpl implements Program, Serializable {
 
         if (labelsAddedAfterExtension.contains(uniqueLabel)) {
             throw new IllegalStateException(
-                    "Attempted to add duplicate labels after extention: " + uniqueLabel.getLabelRepresentation()
+                    "Attempted to add duplicate labels after extension: " + uniqueLabel.getLabelRepresentation()
             );
         }
         labelsAddedAfterExtension.add(uniqueLabel);
@@ -392,16 +392,6 @@ public class ProgramImpl implements Program, Serializable {
         inputVariables.add(variable);
     }
 
-//    @Override
-//    public List<Variable> getInputAndWorkVariablesSortedBySerial() {
-//        sortVariableSetByNumber(inputVariables);
-//        sortVariableSetByNumber(workVariables);
-//
-//        List<Variable> inputAndWorkVariablesAndTheirValues = new ArrayList<>(inputVariables);
-//        inputAndWorkVariablesAndTheirValues.addAll(workVariables);
-//        return inputAndWorkVariablesAndTheirValues;
-//    }
-
     @Override
     public List<Variable> getInputAndWorkVariablesSortedBySerial() {
         // Work on local copies to prevent concurrent modification
@@ -422,11 +412,6 @@ public class ProgramImpl implements Program, Serializable {
     @Override
     public Variable getResultVariable() {
         return Variable.RESULT;
-    }
-
-    @Override
-    public ArchitectureType architectureRequired() {
-        return minimumArchitectureRequired;
     }
 
     @Override

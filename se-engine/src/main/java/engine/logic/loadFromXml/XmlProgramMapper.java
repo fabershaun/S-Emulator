@@ -428,7 +428,7 @@ final class XmlProgramMapper {
 
         throw new IllegalArgumentException(
                 "Problem creating the variable: " + trimmed + ". expected x / y / z" + System.lineSeparator() +
-                        "The problem accour at instruction number: " + ordinal + " named: " + where
+                        "The problem occurred at instruction number: " + ordinal + " named: " + where
         );
     }
 

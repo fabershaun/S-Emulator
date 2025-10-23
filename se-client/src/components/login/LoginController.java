@@ -55,7 +55,8 @@ public class LoginController {
                     if (!response.isSuccessful()) {
                         String responseBody = HttpClientUtil.readResponseBodySafely(response);
                         if (responseBody != null) {
-                            Platform.runLater(() -> errorMessageProperty.set(responseBody.replaceAll("^\"|\"$", "")));
+                            String cleanedMessage = cleanErrorMessage(responseBody);
+                            Platform.runLater(() -> errorMessageProperty.set(cleanedMessage));
                         }
                     } else {
                         Platform.runLater(() -> {
@@ -84,5 +85,37 @@ public class LoginController {
     @FXML
     private void userNameKeyTyped() {
         errorMessageProperty.set("");
+    }
+
+    private String cleanErrorMessage(String rawMessage) {
+        if (rawMessage == null || rawMessage.isEmpty()) {
+            return "Unknown error occurred.";
+        }
+
+        // Extract key parts from HTML, like <h1>, <p>, <b>
+        StringBuilder extracted = new StringBuilder();
+
+        java.util.regex.Matcher h1 = java.util.regex.Pattern
+                .compile("<h1>(.*?)</h1>", java.util.regex.Pattern.DOTALL)
+                .matcher(rawMessage);
+        if (h1.find()) extracted.append(h1.group(1)).append("\n");
+
+        java.util.regex.Matcher p = java.util.regex.Pattern
+                .compile("<p>(.*?)</p>", java.util.regex.Pattern.DOTALL)
+                .matcher(rawMessage);
+        while (p.find()) extracted.append(p.group(1)).append("\n");
+
+        // Fallback: if nothing matched, just strip all tags but keep text
+        String text = extracted.length() > 0
+                ? extracted.toString()
+                : rawMessage.replaceAll("<[^>]*>", "");
+
+        // Clean and normalize whitespace
+        text = text.replaceAll("\\s+", " ").trim();
+
+        // Optional: shorten extremely long content
+        if (text.length() > 500) text = text.substring(0, 500) + "...";
+
+        return text;
     }
 }
