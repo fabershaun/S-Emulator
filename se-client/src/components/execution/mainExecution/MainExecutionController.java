@@ -527,4 +527,11 @@ public class MainExecutionController {
             mainInstructionsTableController.refreshTable();
         }
     }
+
+    public void setArchitectureColoring(boolean enable) {
+        if (mainInstructionsTableController != null) {
+            mainInstructionsTableController.setArchitectureColoring(enable);
+        }
+    }
+
 }

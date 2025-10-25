@@ -323,6 +323,7 @@ public class DebuggerExecutionMenuController {
         architectureRepresentationProperty.set("");
 
         loadArchitectureTypes();
+        executionController.setArchitectureColoring(false);
     }
 
     private void enterRunning() {
@@ -405,6 +406,7 @@ public class DebuggerExecutionMenuController {
                 .toList();
 
         inputsTable.refresh(); // force refresh so placeholders return to 0
+        executionController.setArchitectureColoring(false);
 
         if (runRadio.isSelected()) {
             enterRunning();
