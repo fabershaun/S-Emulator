@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-
 import java.io.Closeable;
 import java.util.List;
 import java.util.Timer;
@@ -98,6 +97,8 @@ public class UsersListController implements Closeable {
 
             // Update label
             totalUsers.set(currentItems.size());
+
+            usersTableView.refresh();
         });
     }
 

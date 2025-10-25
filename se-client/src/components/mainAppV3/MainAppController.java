@@ -19,7 +19,6 @@ import services.ProgramPollingService;
 import services.AppService;
 import utils.ui.AlertUtils;
 import utils.ui.ToastUtil;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
