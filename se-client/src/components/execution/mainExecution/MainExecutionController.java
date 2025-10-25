@@ -522,4 +522,9 @@ public class MainExecutionController {
         );
     }
 
+    public void refreshMainTableVisuals() {
+        if (mainInstructionsTableController != null) {
+            mainInstructionsTableController.refreshTable();
+        }
+    }
 }

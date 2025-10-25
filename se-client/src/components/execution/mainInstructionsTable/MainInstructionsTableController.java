@@ -186,6 +186,10 @@ public class MainInstructionsTableController {
         instructionsTable.refresh();
     }
 
+    public void refreshTable() {
+        instructionsTable.refresh();
+    }
+
     private void applyUnifiedRowFactory() {
         // Set a single RowFactory that covers both architecture coloring and highlight
         instructionsTable.setRowFactory(tableView -> new TableRow<InstructionDTO>() {
