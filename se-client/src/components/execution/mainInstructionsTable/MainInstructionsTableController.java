@@ -22,6 +22,7 @@ public class MainInstructionsTableController {
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private StringProperty chosenArchitectureProperty;
     private IntegerProperty architectureRankProperty;
+    private final BooleanProperty architectureColoringEnabled = new SimpleBooleanProperty(false);
 
     @FXML private TableView<InstructionDTO> instructionsTable;
     @FXML private TableColumn<InstructionDTO, Boolean> colBreakPoint;
@@ -70,6 +71,8 @@ public class MainInstructionsTableController {
         // Load the CSS file
         String cssPath = Objects.requireNonNull(getClass().getResource("/components/execution/mainInstructionsTable/mainInstructions.css")).toExternalForm();
         instructionsTable.getStylesheets().add(cssPath);
+
+        applyUnifiedRowFactory();
     }
 
     public void setExecutionController(MainExecutionController executionController) {
@@ -84,7 +87,7 @@ public class MainInstructionsTableController {
 
     public void setModels(HighlightSelectionModelV3 highlightModel) {
         this.highlightModel = highlightModel;
-        highlightSelectionOnMainTable();       // configure cell factories
+        //highlightSelectionOnMainTable();       // configure cell factories
     }
 
     public void initializeListeners() {
@@ -100,26 +103,12 @@ public class MainInstructionsTableController {
 
         chosenArchitectureProperty.addListener((obs, oldArchitecture, newArchitecture) -> {
             if (newArchitecture != null && !newArchitecture.isEmpty()) {
-                instructionsTable.setRowFactory(tv -> new TableRow<>() {
-                    @Override
-                    protected void updateItem(InstructionDTO item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setStyle("");
-
-                        if (empty || item == null) return;
-
-                        int rowRank = item.getArchitectureRank();
-
-                        if (rowRank > architectureRankProperty.get()) {
-                            // Higher than selected architecture → red
-                            setStyle("-fx-background-color: #ffcccc;");
-                        } else {
-                            // Equal or lower → green
-                            setStyle("-fx-background-color: #ccffcc;");
-                        }
-                    }
-                });
-
+                // Enable architecture coloring and refresh rows
+                architectureColoringEnabled.set(true);
+                instructionsTable.refresh();
+            } else {
+                // Disable when cleared
+                architectureColoringEnabled.set(false);
                 instructionsTable.refresh();
             }
         });
@@ -136,6 +125,8 @@ public class MainInstructionsTableController {
                 }
             }
         });
+
+        highlightModel.selectedHighlightProperty().addListener((obs, oldVal, newVal) -> instructionsTable.refresh());
     }
 
     // Highlighting lines - only on the main table
@@ -191,7 +182,55 @@ public class MainInstructionsTableController {
     }
 
     public void clearArchitectureColors() {
-        instructionsTable.setRowFactory(instructionDTOTableView -> new TableRow<>());
+        architectureColoringEnabled.set(false);
         instructionsTable.refresh();
+    }
+
+    private void applyUnifiedRowFactory() {
+        // Set a single RowFactory that covers both architecture coloring and highlight
+        instructionsTable.setRowFactory(tableView -> new TableRow<InstructionDTO>() {
+            @Override
+            protected void updateItem(InstructionDTO rowItem, boolean empty) {
+                super.updateItem(rowItem, empty);
+
+                // Always reset visuals first
+                getStyleClass().remove("highlighted-row");
+                setStyle("");
+
+                if (empty || rowItem == null) {
+                    return;
+                }
+
+                // 1) Architecture coloring, only if enabled
+                //    We use background color through setStyle. Keep it simple and deterministic.
+                if (architectureColoringEnabled.get()) {
+                    int rowArchitectureRank = rowItem.getArchitectureRank();
+                    int selectedArchitectureRank = architectureRankProperty != null ? architectureRankProperty.get() : Integer.MAX_VALUE;
+
+                    // Paint green when allowed by selected architecture, red when exceeds
+                    if (rowArchitectureRank > selectedArchitectureRank) {
+                        setStyle("-fx-background-color: #ffcccc;");
+                    } else {
+                        setStyle("-fx-background-color: #ccffcc;");
+                    }
+                }
+
+                // 2) Highlight by selected token from highlightModel
+                if (highlightModel != null) {
+                    String selectedToken = highlightModel.selectedHighlightProperty().get();
+                    if (selectedToken != null && !selectedToken.isEmpty()) {
+                        String tokenRegex = ".*\\b" + java.util.regex.Pattern.quote(selectedToken) + "\\b.*";
+
+                        boolean labelMatches = rowItem.getLabelStr() != null && rowItem.getLabelStr().matches(tokenRegex);
+                        boolean instructionMatches = rowItem.getCommand() != null && rowItem.getCommand().matches(tokenRegex);
+
+                        if (labelMatches || instructionMatches) {
+                            // Prefer highlight visually, class-based style can override background if defined in CSS
+                            getStyleClass().add("highlighted-row");
+                        }
+                    }
+                }
+            }
+        });
     }
 }
