@@ -148,7 +148,7 @@ public void initializeListeners() {
 
     architectureComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldArchitecture, newArchitectureDTO) -> {
         if (newArchitectureDTO == null) {
-            setPlayDisabled(false);
+            setPlayDisabled(true);
             return;
         }
 
@@ -163,7 +163,7 @@ public void initializeListeners() {
         if (currentProgram == null) return;
 
         int minimumRankProgramRequired = currentProgram.getMiniminRequireRank();
-        int selectedArchitectureRank = architectureRankProperty.get();
+        int selectedArchitectureRank = newRank.intValue();
         playButton.setDisable(minimumRankProgramRequired > selectedArchitectureRank);
     });
 }

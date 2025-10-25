@@ -1,6 +1,8 @@
 package components.execution.mainExecution;
 
 import com.google.gson.JsonObject;
+import dto.v3.ArchitectureDTO;
+import javafx.scene.control.ComboBox;
 import services.ProgramPollingService;
 import services.AppService;
 import utils.ui.AlertUtils;
@@ -99,6 +101,7 @@ public class MainExecutionController {
     }
 
     private void initSummaryLineController() {
+        summaryLineController.setExecutionController(this);
         summaryLineController.setProperty(selectedProgramProperty, architectureRankProperty);
         summaryLineController.initializeBindings();
         summaryLineController.initializeColorBindings();
@@ -326,6 +329,10 @@ public class MainExecutionController {
         } catch (Exception e) {
             System.err.println("Polling failed: " + e.getMessage());
         }
+    }
+
+    public ComboBox<ArchitectureDTO> getArchitectureComboBox() {
+        return debuggerExecutionMenuController.getArchitectureComboBox();
     }
 
     private RequestBody buildRunProgramRequestBody(List<Long> inputs) {

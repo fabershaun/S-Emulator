@@ -1,5 +1,6 @@
 package components.execution.summaryLineOfMainInstructionsTable;
 
+import components.execution.mainExecution.MainExecutionController;
 import dto.v2.InstructionDTO;
 import dto.v2.ProgramDTO;
 import javafx.beans.binding.Bindings;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class SummaryLineController {
 
+    private MainExecutionController executionController;
     private ObjectProperty<ProgramDTO> currentSelectedProgramProperty;
     private IntegerProperty architectureRankProperty;
 
@@ -25,6 +27,9 @@ public class SummaryLineController {
     @FXML private Label a3Label;
     @FXML private Label a4Label;
 
+    public void setExecutionController(MainExecutionController executionController) {
+        this.executionController = executionController;
+    }
 
     public void setProperty(ObjectProperty<ProgramDTO> programProperty, IntegerProperty architectureRankProperty) {
         this.currentSelectedProgramProperty = programProperty;
@@ -118,31 +123,35 @@ public class SummaryLineController {
     }
 
     private void updateArchitectureLabelColors() {
-        ProgramDTO program = currentSelectedProgramProperty.get();
-        if (program == null) return;
 
-        // Get the minimum architecture rank required by the current program
-        int minRank = program.getMiniminRequireRank();
+        if (executionController.getArchitectureComboBox().isDisable()) {
+            return;
+        }
 
-        // Reset all label colors before applying new ones
+        // Get the selected architecture rank
+        int selectedRank = architectureRankProperty.get();
+
+        // Reset all label colors
         Label[] labels = {a1Label, a2Label, a3Label, a4Label};
         for (Label label : labels) {
             label.setStyle("-fx-background-color: transparent; -fx-text-fill: black; -fx-font-weight: bold;");
         }
 
-        // Apply colors based on rank comparison
+        // Apply colors based on the selected architecture
         for (int i = 0; i < labels.length; i++) {
             int rank = i + 1;
-            if (rank < minRank) {
-                if (architectureRankProperty.get() < minRank) {    // Color in red only if the chosen one is not enough
-                    // Architecture below the minimum requirement → red text
-                    labels[i].setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-font-weight: bold;");
-                }
-            } else {
-                // Architecture equal or above the minimum requirement → green text
+            String labelText = labels[i].getText().trim();
+
+            // Skip red coloring if the value is 0
+            boolean isZero = labelText.equals("0");
+
+            if (rank <= selectedRank) {
+                // Current label rank is equal or below selected architecture → green
                 labels[i].setStyle("-fx-background-color: transparent; -fx-text-fill: green; -fx-font-weight: bold;");
+            } else if (!isZero) {
+                // Current label rank is above selected architecture → red (only if not 0)
+                labels[i].setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-font-weight: bold;");
             }
         }
     }
-
 }
