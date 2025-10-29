@@ -433,9 +433,10 @@ public class MainExecutionController {
                     onComplete.accept(debugStep);
                     updateUserCreditsAsync();
                 }),
-                errorMsg -> Platform.runLater(() ->
-                        AlertUtils.showError("Resume Failed", errorMsg)
-                )
+                errorMsg -> Platform.runLater(() -> {
+                    AlertUtils.showError("Resume Failed", errorMsg);
+                    updateUserCreditsAsync();
+                })
         );
     }
 
@@ -456,9 +457,10 @@ public class MainExecutionController {
                     onComplete.accept(debugStep);
                     updateUserCreditsAsync();
                 }),
-                errorMsg -> Platform.runLater(() ->
-                        AlertUtils.showError("Step Over Failed", errorMsg)
-                )
+                errorMsg -> Platform.runLater(() -> {
+                    AlertUtils.showError("Step Over Failed", errorMsg);
+                    updateUserCreditsAsync();
+                })
         );
     }
 

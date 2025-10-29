@@ -425,8 +425,18 @@ public class AppService {
                 String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
                 if (!response.isSuccessful()) {
-                    handleErrorResponse(response.code(), responseBody, "debug step-over");
-                    onError.accept("Server returned: " + response.code());
+                    try {
+                        JsonObject json = GSON_INSTANCE.fromJson(responseBody, JsonObject.class);
+                        String message;
+                        if (json != null && json.has(ERROR)) {
+                            message = json.get(ERROR).getAsString();
+                        } else {
+                            message = "Debug step-over failed on server.";
+                        }
+                        onError.accept(message);
+                    } catch (Exception e) {
+                        onError.accept("Failed to parse server response: " + e.getMessage());
+                    }
                     return;
                 }
 
@@ -457,8 +467,18 @@ public class AppService {
                 String responseBody = HttpClientUtil.readResponseBodySafely(response);
 
                 if (!response.isSuccessful()) {
-                    handleErrorResponse(response.code(), responseBody, "debug resume");
-                    onError.accept("Server returned: " + response.code());
+                    try {
+                        JsonObject json = GSON_INSTANCE.fromJson(responseBody, JsonObject.class);
+                        String message;
+                        if (json != null && json.has(ERROR)) {
+                            message = json.get(ERROR).getAsString();
+                        } else {
+                            message = "Debug resume failed on server.";
+                        }
+                        onError.accept(message);
+                    } catch (Exception e) {
+                        onError.accept("Failed to parse server response: " + e.getMessage());
+                    }
                     return;
                 }
 
