@@ -474,7 +474,6 @@ public class MainExecutionController {
         topToolBarController.setComponentsDisabled(false);
     }
 
-
     public void debugStop() {
         appService.debugStopAsync(
                 STOP_DEBUGGER_PATH,
