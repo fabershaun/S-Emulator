@@ -56,7 +56,7 @@ public class MainExecutionController {
     @FXML private SummaryLineController summaryLineController;
     @FXML private TableView<InstructionDTO> chainInstructionTable;
     @FXML private ChainInstructionsTableController chainInstructionTableController;    // must: field name = fx:id + "Controller"
-    @FXML private VBox debuggerExecutionMenu;
+@FXML private VBox debuggerExecutionMenu;
     @FXML private DebuggerExecutionMenuController debuggerExecutionMenuController;  // must: field name = fx:id + "Controller"
 
 
